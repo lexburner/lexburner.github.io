@@ -5,18 +5,18 @@
     
     <title>一个DDD指导下的实体类设计案例 | 徐靖峰|个人博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="1 引子项目开发中的工具类代码总是随着项目发展逐渐变大，在公司诸多的公用代码中，笔者发现了一个简单的，也是经常被使用的类：BaseDomain，引起了我的思考。在我们公司的开发习惯中，数据库实体类通常会继承一个叫做BaseDomain的类，这个类很简单，主要用来填充一些数据库实体公用的属性，它的设计如下： 1234567891011121314151617181920212223@MappedSu">
+    <meta name="description" content="1 引子项目开发中的工具类代码总是随着项目发展逐渐变大，在公司诸多的公用代码中，笔者发现了一个简单的，也是经常被使用的类：BaseDomain，引起了我的思考。在我们公司的开发习惯中，数据库实体类通常会继承一个叫做BaseDomain的类，这个类很简单，主要用来填充一些数据库实体公用的属性，它的设计如下：">
 <meta name="keywords" content="领域驱动设计">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一个DDD指导下的实体类设计案例">
-<meta property="og:url" content="http://yoursite.com/2017/08/21/一个DDD指导下的实体类设计案例/index.html">
+<meta property="og:url" content="http://lexburner.github.io/2017/08/21/一个DDD指导下的实体类设计案例/index.html">
 <meta property="og:site_name" content="徐靖峰|个人博客">
-<meta property="og:description" content="1 引子项目开发中的工具类代码总是随着项目发展逐渐变大，在公司诸多的公用代码中，笔者发现了一个简单的，也是经常被使用的类：BaseDomain，引起了我的思考。在我们公司的开发习惯中，数据库实体类通常会继承一个叫做BaseDomain的类，这个类很简单，主要用来填充一些数据库实体公用的属性，它的设计如下： 1234567891011121314151617181920212223@MappedSu">
+<meta property="og:description" content="1 引子项目开发中的工具类代码总是随着项目发展逐渐变大，在公司诸多的公用代码中，笔者发现了一个简单的，也是经常被使用的类：BaseDomain，引起了我的思考。在我们公司的开发习惯中，数据库实体类通常会继承一个叫做BaseDomain的类，这个类很简单，主要用来填充一些数据库实体公用的属性，它的设计如下：">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-08-21T08:14:16.058Z">
+<meta property="og:updated_time" content="2017-08-21T08:31:28.187Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个DDD指导下的实体类设计案例">
-<meta name="twitter:description" content="1 引子项目开发中的工具类代码总是随着项目发展逐渐变大，在公司诸多的公用代码中，笔者发现了一个简单的，也是经常被使用的类：BaseDomain，引起了我的思考。在我们公司的开发习惯中，数据库实体类通常会继承一个叫做BaseDomain的类，这个类很简单，主要用来填充一些数据库实体公用的属性，它的设计如下： 1234567891011121314151617181920212223@MappedSu">
+<meta name="twitter:description" content="1 引子项目开发中的工具类代码总是随着项目发展逐渐变大，在公司诸多的公用代码中，笔者发现了一个简单的，也是经常被使用的类：BaseDomain，引起了我的思考。在我们公司的开发习惯中，数据库实体类通常会继承一个叫做BaseDomain的类，这个类很简单，主要用来填充一些数据库实体公用的属性，它的设计如下：">
     
 
     
@@ -232,8 +232,7 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <h2 id="1-引子"><a href="#1-引子" class="headerlink" title="1 引子"></a>1 引子</h2><p>项目开发中的工具类代码总是随着项目发展逐渐变大，在公司诸多的公用代码中，笔者发现了一个简单的，也是经常被使用的类：BaseDomain，引起了我的思考。<br>在我们公司的开发习惯中，数据库实体类通常会继承一个叫做BaseDomain的类，这个类很简单，主要用来填充一些数据库实体公用的属性，它的设计如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@MappedSuperclass</span> &lt;<span class="number">1</span>&gt;</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseDomain</span> </span>&#123;</div><div class="line">    </div><div class="line">    <span class="keyword">private</span> Boolean deleteFlag; &lt;<span class="number">2</span>&gt;</div><div class="line">    <span class="keyword">private</span> Date deleteDate;</div><div class="line">    <span class="keyword">private</span> Date lastUpdateDate;</div><div class="line">    <span class="keyword">private</span> Date createDate;</div><div class="line">    <span class="meta">@Version</span> &lt;<span class="number">3</span>&gt;</div><div class="line">    <span class="keyword">private</span> Integer version;</div><div class="line">    </div><div class="line">    <span class="meta">@PrePersist</span> &lt;<span class="number">4</span>&gt;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>&#123;</div><div class="line">        Date now = <span class="keyword">new</span> Date();</div><div class="line">        deleteFlag = <span class="keyword">false</span>;</div><div class="line">        createDate = lastUpdateDate = now;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="meta">@PreUpdate</span> &lt;<span class="number">4</span>&gt;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span></span>&#123;</div><div class="line">        lastUpdateDate = <span class="keyword">new</span> Date();</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+             <h2 id="1-引子"><a href="#1-引子" class="headerlink" title="1 引子"></a>1 引子</h2><p>项目开发中的工具类代码总是随着项目发展逐渐变大，在公司诸多的公用代码中，笔者发现了一个简单的，也是经常被使用的类：BaseDomain，引起了我的思考。<br>在我们公司的开发习惯中，数据库实体类通常会继承一个叫做BaseDomain的类，这个类很简单，主要用来填充一些数据库实体公用的属性，它的设计如下：<br><a id="more"></a><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@MappedSuperclass</span> &lt;<span class="number">1</span>&gt;</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseDomain</span> </span>&#123;</div><div class="line">    </div><div class="line">    <span class="keyword">private</span> Boolean deleteFlag; &lt;<span class="number">2</span>&gt;</div><div class="line">    <span class="keyword">private</span> Date deleteDate;</div><div class="line">    <span class="keyword">private</span> Date lastUpdateDate;</div><div class="line">    <span class="keyword">private</span> Date createDate;</div><div class="line">    <span class="meta">@Version</span> &lt;<span class="number">3</span>&gt;</div><div class="line">    <span class="keyword">private</span> Integer version;</div><div class="line">    </div><div class="line">    <span class="meta">@PrePersist</span> &lt;<span class="number">4</span>&gt;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>&#123;</div><div class="line">        Date now = <span class="keyword">new</span> Date();</div><div class="line">        deleteFlag = <span class="keyword">false</span>;</div><div class="line">        createDate = lastUpdateDate = now;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="meta">@PreUpdate</span> &lt;<span class="number">4</span>&gt;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span></span>&#123;</div><div class="line">        lastUpdateDate = <span class="keyword">new</span> Date();</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>小小的一个类其实还是蕴含了不少的知识点在里面，至少可以包含以下几点：</p>
 <p><1> 被其他类继承后，父类的字段不会被忽略，也就意味着子类没有必要自己写这一堆公用的属性了。</1></p>
 <p><2> 逻辑删除标识，业务类的删除必须是这种打标识的行为，不能进行物理删除。值得一提的是，公司原先的该字段被命名成了isDelete，这不符合变量命名的规范，会导致一些序列化框架出现问题，而delete是数据库的保留字，所以本文中用deleteFlag。</2></p>
@@ -251,6 +250,14 @@
 <h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h2><p>BaseDomain这样的设计本身并不是我想要强调的重点，但是既然出现了BaseDomain这样的设计，那么它究竟应该被什么样的实体继承，就是需要被考虑的了。DDD下，识别aggregate root，entity，value object，是整个软件设计的核心点，在本文中，判别是否继承BaseDomain的前提，就是这个对象是entity，还是value object。大家都是存在数据库中的，但是地位是不一样的。</p>
 <p>本文若有什么不足之处，欢迎DDD爱好者指出。</p>
 
+            
+            
+                <div class="support-author">
+    <p class="support-talk" >如果觉得我的文章对您有用，请随意打赏。您的支持将鼓励我继续创作！</p>
+    <div name="dashmain" id="dash-main-id-878e3a" class="dash-main-2 878e3a-2"></div>
+    <script type="text/javascript" charset="utf-8" src="http://www.dashangcloud.com/static/ds.js"></script>
+</div>
+            
         
         </div>
         <footer class="article-footer">
@@ -313,7 +320,7 @@
 
             
     
-        <a href="http://yoursite.com/2017/08/21/一个DDD指导下的实体类设计案例/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2017/08/21/一个DDD指导下的实体类设计案例/">评论</a>
+        <a href="http://lexburner.github.io/2017/08/21/一个DDD指导下的实体类设计案例/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/21/一个DDD指导下的实体类设计案例/">评论</a>
     
 
         </footer>
@@ -468,7 +475,7 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'http://yoursite.com/2017/08/21/一个DDD指导下的实体类设计案例/';
+            this.page.url = 'http://lexburner.github.io/2017/08/21/一个DDD指导下的实体类设计案例/';
         
         this.page.identifier = '一个DDD指导下的实体类设计案例';
     };
