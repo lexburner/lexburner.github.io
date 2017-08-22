@@ -10,7 +10,7 @@ categories:
 
 
 
-##案例描述##
+## 案例描述
 本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。
 1. 在新的线程中，访问某个持久化对象的懒加载属性。
 2. 在quartz定时任务中，访问某个持久化对象的懒加载属性。
@@ -20,7 +20,7 @@ categories:
 
 <!-- more -->
 
-##前期准备##
+## 前期准备
 为了能直观的暴露出第一个案例的问题，我新建了一个项目，采用传统的mvc分层，一个student.java实体类，一个studentDao.java持久层，一个studentService.java业务层，一个studentController控制层。
 
 ```java
@@ -86,11 +86,11 @@ Exception in thread "Thread-6" org.hibernate.LazyInitializationException: could 
 	at java.lang.Thread.run(Thread.java:745)
 ```
 
-##问题分析##
+## 问题分析
 no session说明了什么？
 道理很简单，因为spring的session是和线程绑定的，在整个model->dao->service->controller的调用链中，这种事务和线程绑定的机制非常契合。而我们出现的问题正式由于新开启了一个线程，这个线程与调用链的线程不是同一个。
 
-##问题解决##
+## 问题解决
 我们先使用一种不太优雅的方式解决这个问题。在新的线程中，手动打开session。
 
 ```java
@@ -124,7 +124,7 @@ public class ApplicationContextProvider implements ApplicationContextAware {
 ```
 问题暂时得到了解决。
 
-##问题再思考##
+## 问题再思考
 我们一般情况下使用懒加载属性，为什么没有出现no session的问题呢？相信大家都知道`@Transactional`这个注解，他会帮我们进行事务包裹，当然也会绑定session；以及大家熟知的hiberbate中的`OpenSessionInterceptor`和`OpenSessionInViewFilter`以及jpa中的` OpenEntityManagerInViewInterceptor`都是在没有session的情况下，打开session的过滤器。这种方法开始前依赖事务开启，方法结束后回收资源的操作，非常适合用过滤器拦截器处理，后续的两个未讲解的案例，其实都是使用了特殊的过滤器。
 
 看一下官方文档如何描述这个jpa中的过滤器的：
@@ -160,7 +160,7 @@ spring.jpa.open-in-view=false
 ```
 是的，我们使用spring的controller作为单元测试时，以及我们平时在直接使用jpa的懒加载属性时没有太关注这个jpa的特性，因为springboot帮我们默认开启了这个过滤器。这也解释了，为什么在新的线程中，定时任务线程中，rpc远程调用时session没有打开的原因，因为这些流程没有经过springboot的web调用链。
 
-##另外两个实战案例##
+## 另外两个实战案例
 上文已经阐释了，为什么quartz定时任务中访问懒加载属性，rpc框架服务端访问懒加载属性（注意不是客户端，客户端访问懒加载属性那是一种作死的行为，因为是代理对象）为出现问题。我们仿照spring打开session的思路（这取决于你使用hibernate还是jpa，抑或是mybatis），来编写我们的过滤器。
 
 **quartz中打开session：**
@@ -377,6 +377,6 @@ public class OpenEntityManagerInMotanFilter implements Filter {
 }
 ```
 
-##总结##
+## 总结
 springboot中的事务管理做的永远比我们想的多，事务管理器的使用场景，@Transactional究竟起了哪些作用，以及spring-data这个对DDD最佳的阐释，以及mybatis一类的非j2ee规范在微服务的地位中是否高于jpa，各个层次之间的实体传输，消息传递...都是值得思考的。
 
