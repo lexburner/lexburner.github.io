@@ -80,3 +80,9 @@ deploy:
   type: git
   branch: master
   repo: https://github.com/lexburner/lexburner.github.io.git
+#  type: sftp
+#  host: jp.azure.ntzyz.io
+#  port: 22
+#  privateKey: C://Users//25057//.ssh//id_rsa
+#  remotePath: /home/xu/hexo
+  
