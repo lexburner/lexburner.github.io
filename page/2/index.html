@@ -146,11 +146,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                19
+                20
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                15
+                16
                 <span>标签</span>
             </div>
         </div>
@@ -1292,6 +1292,131 @@
 
 
 
+    <article id="post-java并发实践--ConcurrentHashMap与CAS" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/03/12/java并发实践--ConcurrentHashMap与CAS/">java并发实践--ConcurrentHashMap与CAS</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/12/java并发实践--ConcurrentHashMap与CAS/">
+            <time datetime="2017-03-11T16:02:00.000Z" itemprop="datePublished">2017-03-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>, <a class="tag-link" href="/tags/多线程/">多线程</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在做接口限流时涉及到了一个有意思问题，牵扯出了关于concurrentHashMap的一些用法，以及CAS的一些概念。限流算法很多，我主要就以最简单的计数器法来做引。先抽象化一下需求：统计每个接口访问的次数。一个接口对应一个url，也就是一个字符串，每调用一次对其进行加一处理。可能出现的问题主要有三个：</p>
+<ol>
+<li>多线程访问，需要选择合适的并发容器</li>
+<li>分布式下多个实例统计接口流量需要共享内存</li>
+<li>流量统计应该尽可能不损耗服务器性能</li>
+</ol>
+<p>但这次的博客并不是想描述怎么去实现接口限流，而是主要想描述一下遇到的问题，所以，第二点暂时不考虑，即不使用redis。</p>
+<p>说到并发的字符串统计，立即让人联想到的数据结构便是<code>ConcurrentHashpMap&lt;String,Long&gt; urlCounter;</code></p></p>
+            <p class="article-more-link">
+                <a href="/2017/03/12/java并发实践--ConcurrentHashMap与CAS/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+    <div class="jiathis_style">
+    <span class="jiathis_txt">分享到：</span>
+    <a class="jiathis_button_qzone">QQ空间</a>
+    <a class="jiathis_button_tsina">新浪微博</a>
+    <a class="jiathis_button_tqq">腾讯微博</a>
+    <a class="jiathis_button_weixin">微信</a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<style>
+    .jiathis_style div:first-child:not(.jiadiv_01) {
+        width: auto !important;
+        border: none !important;
+    }
+    .jiathis_style .jiadiv_01 {
+        margin: 10px 0;
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .jiathis_style .jiadiv_01 div:first-child {
+        display: none;
+    }
+    .jiathis_style .jiadiv_02 {
+        padding: 7px 0 !important;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle {
+        width: 85px;
+        border: none;
+        height: auto;
+        margin: 3px 10px;
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:hover {
+        border: none;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
+        margin-left: 0;
+    }
+    .jiathis_style .jtico:hover {
+        opacity: 1;
+    }
+    .jiathis_style .ckepopBottom,
+    .jiathis_style .centerBottom {
+        width: auto !important;
+        padding: 5px;
+        background: #f7f7f7;
+    }
+</style>
+
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/03/12/java并发实践--ConcurrentHashMap与CAS/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/03/12/java并发实践--ConcurrentHashMap与CAS/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -1526,7 +1651,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -1535,7 +1660,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">1</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -1544,7 +1669,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/DevOps/" style="font-size: 13.33px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 10px;">JAVA</a> <a href="/tags/Spring/" style="font-size: 16.67px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 13.33px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 16.67px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 13.33px;">Validation</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 20px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/规则引擎/" style="font-size: 20px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 13.33px;">领域驱动设计</a>
+            <a href="/tags/DevOps/" style="font-size: 13.33px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 13.33px;">JAVA</a> <a href="/tags/Spring/" style="font-size: 16.67px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 13.33px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 16.67px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 13.33px;">Validation</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 20px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/规则引擎/" style="font-size: 20px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 13.33px;">领域驱动设计</a>
         </div>
     </div>
 
