@@ -15,7 +15,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.blog.csdn.net/20170808145230975?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20170808145304794?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-08-22T02:34:58.745Z">
+<meta property="og:updated_time" content="2017-08-22T04:27:03.733Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Re：从零开始的Spring Security OAuth2（一）">
 <meta name="twitter:description" content="##前言今天来聊聊一个接口对接的场景，A厂家有一套HTTP接口需要提供给B厂家使用，由于是外网环境，所以需要有一套安全机制保障，这个时候oauth2就可以作为一个方案。 关于oauth2，其实是一个规范，本文重点讲解spring对他进行的实现，如果你还不清楚授权服务器，资源服务器，认证授权等基础概念，可以移步理解OAuth 2.0 - 阮一峰，这是一篇对于oauth2很好的科普文章。  需要对sp">
@@ -154,11 +154,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                6
+                7
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                4
+                5
                 <span>标签</span>
             </div>
         </div>
@@ -251,7 +251,7 @@
 </ul>
 <p>本文重点讲解接口对接中常使用的密码模式（以下简称password模式）和客户端模式（以下简称client模式）。授权码模式使用到了回调地址，是最为复杂的方式，通常网站中经常出现的微博，qq第三方登录，都会采用这个形式。简化模式不常用。</p>
 <h2 id="项目准备"><a href="#项目准备" class="headerlink" title="项目准备"></a>项目准备</h2><p>主要的maven依赖如下</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 注意是starter,自动配置 --&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line">&lt;!-- 不是starter,手动配置 --&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.springframework.security.oauth&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spring-security-oauth2&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line">&lt;!-- 将token存储在redis中 --&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- 注意是starter,自动配置 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-security<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"><span class="comment">&lt;!-- 不是starter,手动配置 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.security.oauth<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-security-oauth2<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"><span class="comment">&lt;!-- 将token存储在redis中 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>我们给自己先定个目标，要干什么事？既然说到保护应用，那必须得先有一些资源，我们创建一个endpoint作为提供给外部的接口：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestEndpoints</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/product/&#123;id&#125;"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getProduct</span><span class="params">(@PathVariable String id)</span> </span>&#123;</div><div class="line">        <span class="comment">//for debug</span></div><div class="line">        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</div><div class="line">        <span class="keyword">return</span> <span class="string">"product id : "</span> + id;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/order/&#123;id&#125;"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getOrder</span><span class="params">(@PathVariable String id)</span> </span>&#123;</div><div class="line">	    <span class="comment">//for debug</span></div><div class="line">        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</div><div class="line">        <span class="keyword">return</span> <span class="string">"order id : "</span> + id;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>暴露一个商品查询接口，后续不做安全限制，一个订单查询接口，后续添加访问控制。</p>
 <h2 id="配置资源服务器和授权服务器"><a href="#配置资源服务器和授权服务器" class="headerlink" title="配置资源服务器和授权服务器"></a>配置资源服务器和授权服务器</h2><p>由于是两个oauth2的核心配置，我们放到一个配置类中。<br>为了方便下载代码直接运行，我这里将客户端信息放到了内存中，生产中可以配置到数据库中。token的存储一般选择使用redis，一是性能比较好，二是自动过期的机制，符合token的特性。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OAuth2ServerConfig</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEMO_RESOURCE_ID = <span class="string">"order"</span>;</div><div class="line"></div><div class="line">    <span class="meta">@Configuration</span></div><div class="line">    <span class="meta">@EnableResourceServer</span></div><div class="line">    <span class="keyword">protected</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ResourceServerConfiguration</span> <span class="keyword">extends</span> <span class="title">ResourceServerConfigurerAdapter</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(ResourceServerSecurityConfigurer resources)</span> </span>&#123;</div><div class="line">            resources.resourceId(DEMO_RESOURCE_ID).stateless(<span class="keyword">true</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">            <span class="comment">// @formatter:off</span></div><div class="line">            http</div><div class="line">                    <span class="comment">// Since we want the protected resources to be accessible in the UI as well we need</span></div><div class="line">                    <span class="comment">// session creation to be allowed (it's disabled by default in 2.0.6)</span></div><div class="line">                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)</div><div class="line">                    .and()</div><div class="line">                    .requestMatchers().anyRequest()</div><div class="line">                    .and()</div><div class="line">                    .anonymous()</div><div class="line">                    .and()</div><div class="line">                    .authorizeRequests()</div><div class="line"><span class="comment">//                    .antMatchers("/product/**").access("#oauth2.hasScope('select') and hasRole('ROLE_USER')")</span></div><div class="line">                    .antMatchers(<span class="string">"/order/**"</span>).authenticated();<span class="comment">//配置order访问控制，必须认证过后才可以访问</span></div><div class="line">            <span class="comment">// @formatter:on</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="meta">@Configuration</span></div><div class="line">    <span class="meta">@EnableAuthorizationServer</span></div><div class="line">    <span class="keyword">protected</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthorizationServerConfiguration</span> <span class="keyword">extends</span> <span class="title">AuthorizationServerConfigurerAdapter</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="meta">@Autowired</span></div><div class="line">        AuthenticationManager authenticationManager;</div><div class="line">        <span class="meta">@Autowired</span></div><div class="line">        RedisConnectionFactory redisConnectionFactory;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(ClientDetailsServiceConfigurer clients)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">            <span class="comment">//配置两个客户端,一个用于password认证一个用于client认证</span></div><div class="line">            clients.inMemory().withClient(<span class="string">"client_1"</span>)</div><div class="line">                    .resourceIds(DEMO_RESOURCE_ID)</div><div class="line">                    .authorizedGrantTypes(<span class="string">"client_credentials"</span>, <span class="string">"refresh_token"</span>)</div><div class="line">                    .scopes(<span class="string">"select"</span>)</div><div class="line">                    .authorities(<span class="string">"client"</span>)</div><div class="line">                    .secret(<span class="string">"123456"</span>)</div><div class="line">                    .and().withClient(<span class="string">"client_2"</span>)</div><div class="line">                    .resourceIds(DEMO_RESOURCE_ID)</div><div class="line">                    .authorizedGrantTypes(<span class="string">"password"</span>, <span class="string">"refresh_token"</span>)</div><div class="line">                    .scopes(<span class="string">"select"</span>)</div><div class="line">                    .authorities(<span class="string">"client"</span>)</div><div class="line">                    .secret(<span class="string">"123456"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(AuthorizationServerEndpointsConfigurer endpoints)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">            endpoints</div><div class="line">                    .tokenStore(<span class="keyword">new</span> RedisTokenStore(redisConnectionFactory))</div><div class="line">                    .authenticationManager(authenticationManager);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(AuthorizationServerSecurityConfigurer oauthServer)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">            <span class="comment">//允许表单认证</span></div><div class="line">            oauthServer.allowFormAuthenticationForClients();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
@@ -373,6 +373,11 @@
         </a>
     
     
+        <a href="/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">对于Spring Cloud Feign入门示例的一点思考</div>
+        </a>
+    
 </nav>
 
 
@@ -417,25 +422,6 @@
                             <p class="item-category"><a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a></p>
                             <p class="item-title"><a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="title">一个DDD指导下的实体类设计案例</a></p>
                             <p class="item-date"><time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2017/08/16/hello-world/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
-                            <p class="item-title"><a href="/2017/08/16/hello-world/" class="title">Re：从零开始的Spring Security Oauth2（一）</a></p>
-                            <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
                         </div>
                     </li>
                 
@@ -496,6 +482,25 @@
                         </div>
                     </li>
                 
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
+                            <p class="item-title"><a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" class="title">Re：从零开始的Spring Security OAuth2（一）</a></p>
+                            <p class="item-date"><time datetime="2017-08-08T07:16:52.000Z" itemprop="datePublished">2017-08-08</time></p>
+                        </div>
+                    </li>
+                
             </ul>
         </div>
     </div>
@@ -505,7 +510,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">1</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -514,7 +519,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">6</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -523,7 +528,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Spring/" style="font-size: 15px;">Spring</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 20px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 15px;">Validation</a> <a href="/tags/领域驱动设计/" style="font-size: 10px;">领域驱动设计</a>
+            <a href="/tags/Spring/" style="font-size: 15px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 20px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 15px;">Validation</a> <a href="/tags/领域驱动设计/" style="font-size: 10px;">领域驱动设计</a>
         </div>
     </div>
 

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>对于Spring Cloud Feign入门示例的一点思考 | 徐靖峰|个人博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Spring Cloud FeignSpring Cloud Feign是一套基于Netflix Feign实现的声明式服务调用客户端。它使得编写Web服务客户端变得更加简单。我们只需要通过创建接口并用注解来配置它既可完成对Web服务接口的绑定。它具备可插拔的注解支持，包括Feign注解、JAX-RS注解。它也支持可插拔的编码器和解码器。Spring Cloud Feign还扩展了对Spring">
+<meta name="keywords" content="Spring Cloud">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对于Spring Cloud Feign入门示例的一点思考">
+<meta property="og:url" content="http://lexburner.github.io/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/index.html">
+<meta property="og:site_name" content="徐靖峰|个人博客">
+<meta property="og:description" content="Spring Cloud FeignSpring Cloud Feign是一套基于Netflix Feign实现的声明式服务调用客户端。它使得编写Web服务客户端变得更加简单。我们只需要通过创建接口并用注解来配置它既可完成对Web服务接口的绑定。它具备可插拔的注解支持，包括Feign注解、JAX-RS注解。它也支持可插拔的编码器和解码器。Spring Cloud Feign还扩展了对Spring">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://img.blog.csdn.net/20170803170857775?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170803171756343?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-08-22T04:26:14.456Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="对于Spring Cloud Feign入门示例的一点思考">
+<meta name="twitter:description" content="Spring Cloud FeignSpring Cloud Feign是一套基于Netflix Feign实现的声明式服务调用客户端。它使得编写Web服务客户端变得更加简单。我们只需要通过创建接口并用注解来配置它既可完成对Web服务接口的绑定。它具备可插拔的注解支持，包括Feign注解、JAX-RS注解。它也支持可插拔的编码器和解码器。Spring Cloud Feign还扩展了对Spring">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170803170857775?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/open-sans/styles.css">
+    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/vendor/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/vendor/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">徐靖峰|个人博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="https://avatars2.githubusercontent.com/u/11485990?v=4&amp;s=460" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="https://avatars2.githubusercontent.com/u/11485990?v=4&amp;s=460" />
+            <h2 id="name">徐靖峰</h2>
+            <h3 id="title">JAVA Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Shanghai, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lexburner">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                7
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                5
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lexburner" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/wechat.png" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-对于Spring Cloud Feign入门示例的一点思考" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            对于Spring Cloud Feign入门示例的一点思考
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/">
+            <time datetime="2017-08-03T09:40:16.000Z" itemprop="datePublished">2017-08-03</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring-Cloud/">Spring Cloud</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring-Cloud/">Spring Cloud</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <h2 id="Spring-Cloud-Feign"><a href="#Spring-Cloud-Feign" class="headerlink" title="Spring Cloud Feign"></a>Spring Cloud Feign</h2><p>Spring Cloud Feign是一套基于Netflix Feign实现的声明式服务调用客户端。它使得编写Web服务客户端变得更加简单。我们只需要通过创建接口并用注解来配置它既可完成对Web服务接口的绑定。它具备可插拔的注解支持，包括Feign注解、JAX-RS注解。它也支持可插拔的编码器和解码器。Spring Cloud Feign还扩展了对Spring MVC注解的支持，同时还整合了Ribbon和Eureka来提供均衡负载的HTTP客户端实现。</p>
+<p>分布式应用早在十几年前就开始出现，各自的应用运行在各自的tomcat，jboss一类的容器中，他们之间的相互调用变成了一种远程调用，而实现远程调用的方式很多。按照协议划分，可以有RPC，Webservice，http。不同的框架也对他们有了各自的实现，如dubbo(x)，motan就都是RPC框架，本文所要讲解的Feign便可以理解为一种http框架，用于分布式服务之间通过Http进行接口交互。说他是框架，有点过了，可以理解为一个http工具，只不过在spring cloud全家桶的体系中，它比httpclient，okhttp，retrofit这些http工具都要强大的多。</p>
+<h2 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h2><p>先用一个简单的例子，看看如何在项目中使用Feign。示例项目使用maven多module构建，采用springcloud的Dalston.SR1版本</p>
+<a id="more"></a>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></div><div class="line">     <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></div><div class="line">         <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">             <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">             <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">             <span class="tag">&lt;<span class="name">version</span>&gt;</span>Dalston.SR1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">             <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></div><div class="line">             <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></div><div class="line">         <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">     <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></div><div class="line"> <span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="服务提供方"><a href="#服务提供方" class="headerlink" title="服务提供方"></a>服务提供方</h3><p>在本例子中，使用两个应用模块，展示分布式应用中如何进行接口交互。<code>restful-provider</code>担任服务提供方，<code>restful-consumer</code>担任服务消费者。</p>
+<ul>
+<li><p><code>restful-provider</code>新建一个module<code>restful-provider-app</code>,模块中只需要写一个<code>CalculateController.java</code>即可</p>
+<p>​</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/api"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CalculateController</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/add"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">add</span><span class="params">(@RequestParam Integer a,@RequestParam Integer b)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> a+b;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/subtract"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">subtract</span><span class="params">(@RequestParam Integer a,@RequestParam Integer b)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> a-b;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>配置文件application.yml：</p>
+ <figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="attr">server:</span></div><div class="line"><span class="attr">  port:</span> <span class="number">7070</span></div></pre></td></tr></table></figure>
+<p>一个服务端就写好了，提供两个计算服务的接口，可以通过http访问</p>
+</li>
+</ul>
+<h3 id="服务消费方"><a href="#服务消费方" class="headerlink" title="服务消费方"></a>服务消费方</h3><ul>
+<li><p>使用Feign编写消费方，在restful-consumer项目中，我们将接口的定义和消费者应用分成两个module，<code>restful-consumer-api-definition</code>和<code>restful-consumer-app</code>。</p>
+</li>
+<li><p>在接口定义模块中，只有一个Feign接口：</p>
+</li>
+</ul>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@FeignClient</span>(value = <span class="string">"calculate"</span>,path = <span class="string">"/api"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CalculateApi</span> </span>&#123;</div><div class="line">	<span class="meta">@PostMapping</span>(path = <span class="string">"/add"</span>)</div><div class="line">    <span class="function">Integer <span class="title">add</span><span class="params">(@RequestParam(<span class="string">"a"</span>)</span> Integer a,@<span class="title">RequestParam</span><span class="params">(<span class="string">"b"</span>)</span> Integer b)</span>;</div><div class="line"></div><div class="line">    <span class="meta">@PostMapping</span>(path = <span class="string">"/subtract"</span>)</div><div class="line">    <span class="function">Integer <span class="title">subtract</span><span class="params">(@RequestParam(<span class="string">"a"</span>)</span> Integer a,@<span class="title">RequestParam</span><span class="params">(<span class="string">"b"</span>)</span> Integer b)</span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>   tip：@RequestParam中的参数值不能省略，否则会出现错误</p>
+<ul>
+<li><p><code>restful-consumer-app</code>依赖上面的<code>restful-consumer-api-definition</code>模块，并且启用Feign代理，自动生成一个远程调用。<br>启动类配置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@EnableFeignClients</span>(basePackages = &#123;<span class="string">"sinosoftsh.consumer.api"</span>&#125;)</div><div class="line"><span class="meta">@SpringBootApplication</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConsumerApp</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String []args)</span></span>&#123;</div><div class="line">        SpringApplication.run(ConsumerApp.class,args);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用<code>@EnableFeignClients(basePackages = {&quot;sinosoftsh.consumer.api&quot;})</code>扫描接口类所在的包，spring的容器中才会有代理实现类。</p>
+</li>
+<li><p>不要忘记配置消费者的相关属性，在application.yml中</p>
+</li>
+</ul>
+   <figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="attr">server:</span></div><div class="line"><span class="attr">  port:</span> <span class="number">7080</span></div><div class="line"><span class="attr">ribbon:</span></div><div class="line"><span class="attr">  eureka:</span></div><div class="line"><span class="attr">   enabled:</span> <span class="literal">false</span></div><div class="line"></div><div class="line"><span class="attr">calculate:</span></div><div class="line"><span class="attr">  ribbon:</span></div><div class="line"><span class="attr">    listOfServers:</span> <span class="attr">localhost:7070</span></div><div class="line"></div><div class="line"><span class="attr">logging:</span></div><div class="line"><span class="attr">  level:</span></div><div class="line">    <span class="string">org.apache.http:</span> <span class="string">trace</span></div></pre></td></tr></table></figure>
+<p>   在CalculateApi 接口的定义中，我们使用了一个calculate作为服务名称，必须要在配置文件中配置calculate所在的ip地址才行，由于本文只是作为一个示例，所以没有使用注册中心，在配置中禁用了eureka。最后一行的日志配置，可以发现其实Feign内部其实使用的是现成的http工具：httpclient，okhttp3，可以通过配置替换实现</p>
+<ul>
+<li><p>整体的项目结构如下：</p>
+<center><br><img src="http://img.blog.csdn.net/20170803170857775?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br></center><br><center>图一 第一种依赖关系结构</center>
+</li>
+<li><p>再编写一个单元测试类，验证一下Feign是否被正确的配置了</p>
+</li>
+</ul>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConsumerController</span> </span>&#123;</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">    CalculateApi calculateApi;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/test"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">test</span><span class="params">()</span> </span>&#123;</div><div class="line">        Integer result = calculateApi.add(<span class="number">1</span>, <span class="number">2</span>);</div><div class="line">        System.out.println(<span class="string">"the result is "</span> + result);</div><div class="line">        <span class="keyword">return</span> <span class="string">"success"</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>回顾一下我们入门实例，服务提供方使用的是一个RestController暴露计算服务，服务消费方使用http工具（Feign）进行远程调用，这再清晰不过了，也是符合软件设计的，因为Feign接口的定义是存在于消费方，所以是真正的松耦合。但是习惯了使用rpc共享接口的设计，我们也可以将接口定义在服务提供方，这样做的好处是，服务可能被多个消费者使用，不需要每个消费者都定义一次Feign接口。</p>
+<p><center><br><img src="http://img.blog.csdn.net/20170803171756343?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br></center></p>
+<p><center>图2 第二种依赖关系结构</center><br>在<code>restful-provider</code>创建一个<code>restful-provider-api-definition</code>模块，将<code>CalculateApi.java</code>的定义迁移到服务提供方，相应的<code>restful-provider-app</code>也可以进行改造：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/api"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CalculateController</span> <span class="keyword">implements</span> <span class="title">CalculateApi</span></span>&#123;</div><div class="line"></div><div class="line"><span class="comment">//    @PostMapping("/add")</span></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">add</span><span class="params">(@RequestParam Integer a,@RequestParam Integer b)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> a+b;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"><span class="comment">//    @PostMapping("/subtract")</span></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">subtract</span><span class="params">(@RequestParam Integer a,@RequestParam Integer b)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> a-b;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>因为接口的定义和服务提供方现在在一个限界上下文中，接口的定义同时也宣告了应该提供什么样的服务，所以直接继承CalculateApi。这里的理解比较绕，现在的设计中，CalculateApi在服务消费者和服务提供者中的定位是不一样的，服务消费者需要在启动类扫描CalculateApi所在的包，生成代理对象，远程调用；而在服务提供方则一定不能扫描CalculateApi所在的包，否则会污染容器中的CalculateApi实现类，要知道，CalculateController 之上有一个<code>@RestController</code>注解，意味着已经有一个本地代理实现了，我们也可以在服务提供方注入CalculateApi，便是进行的本地调用了，这符合我们的初衷：我自己的提供的服务，本地当然可以调用。在服务提供方的启动类上要额外注意@ComponentScan，@EnableFeignClients的扫描。</p>
+<p>这样，当我们有多个消费者，只需要让他们配置Feign，并且引入服务提供方的接口定义，扫描，即可进行远程调用。有点类似于RPC的共享接口。</p>
+<h2 id="设计原则"><a href="#设计原则" class="headerlink" title="设计原则"></a>设计原则</h2><p>restful设计以语言无关，松耦合的优势著称。在Spring Cloud Feign的相关文档中有这样的描述：</p>
+<blockquote>
+<p>It is generally not advisable to share an interface between a server and a client. It introduces tight coupling, and also actually doesn’t work with Spring MVC in its current form (method parameter mapping is not inherited).</p>
+</blockquote>
+<p>不建议使用上述改进后的共享接口的方式，并且警告我们，springmvc的注解在Feign接口中的定义和实现类中是不可继承的。关于这点，仁者见仁，智者见智。我们现在项目依旧是采用共享接口的方式，这样可以使得开发变得便捷，多个消费者不需要重复定义。</p>
+<p>下面是关于耦合和共享接口的一些讨论：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">https://github.com/spring-cloud/spring-cloud-netflix/issues/951</div><div class="line">https://github.com/spring-cloud/spring-cloud-netflix/issues/659</div><div class="line">https://github.com/spring-cloud/spring-cloud-netflix/issues/646</div><div class="line">https://jmnarloch.wordpress.com/2015/08/19/spring-cloud-designing-feign-client/</div></pre></td></tr></table></figure>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li><p>当接口定义中出现了实体类时，需要使用@RequestBody注解。多个实体类，则需要用一个大的vo对其进行包裹，要时刻记住，Feign接口最终是会转换成一次http请求。</p>
+</li>
+<li><p>接口定义中的注解和实现类中的注解要分别写一次，不能继承。</p>
+</li>
+<li><p>Feign调用一般配合eureka等注册中心使用，并且在客户端可以支持Hystrix机制，本文为了讲解共享接口这一设计，所以重心放在了Feign上，实际开发中，这些spring cloud的其他组件通常配套使用。</p>
+</li>
+<li><p>对http深入理解，在使用Feign时可以事半功倍。</p>
+</li>
+</ul>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+    <div class="jiathis_style">
+    <span class="jiathis_txt">分享到：</span>
+    <a class="jiathis_button_qzone">QQ空间</a>
+    <a class="jiathis_button_tsina">新浪微博</a>
+    <a class="jiathis_button_tqq">腾讯微博</a>
+    <a class="jiathis_button_weixin">微信</a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<style>
+    .jiathis_style div:first-child:not(.jiadiv_01) {
+        width: auto !important;
+        border: none !important;
+    }
+    .jiathis_style .jiadiv_01 {
+        margin: 10px 0;
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .jiathis_style .jiadiv_01 div:first-child {
+        display: none;
+    }
+    .jiathis_style .jiadiv_02 {
+        padding: 7px 0 !important;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle {
+        width: 85px;
+        border: none;
+        height: auto;
+        margin: 3px 10px;
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:hover {
+        border: none;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
+        margin-left: 0;
+    }
+    .jiathis_style .jtico:hover {
+        opacity: 1;
+    }
+    .jiathis_style .ckepopBottom,
+    .jiathis_style .centerBottom {
+        width: auto !important;
+        padding: 5px;
+        background: #f7f7f7;
+    }
+</style>
+
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    Re：从零开始的Spring Security OAuth2（一）
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2016/08/16/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Hello World</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a></p>
+                            <p class="item-title"><a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="title">一个DDD指导下的实体类设计案例</a></p>
+                            <p class="item-date"><time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/16/使用spring validation完成数据后端校验/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/16/使用spring validation完成数据后端校验/" class="title">使用spring validation完成数据后端校验</a></p>
+                            <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
+                            <p class="item-title"><a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/" class="title">Re：从零开始的Spring Security OAuth2（三）</a></p>
+                            <p class="item-date"><time datetime="2017-08-10T06:22:12.000Z" itemprop="datePublished">2017-08-10</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
+                            <p class="item-title"><a href="/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/" class="title">Re：从零开始的Spring Security OAuth2（二）</a></p>
+                            <p class="item-date"><time datetime="2017-08-09T06:58:52.000Z" itemprop="datePublished">2017-08-09</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
+                            <p class="item-title"><a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" class="title">Re：从零开始的Spring Security OAuth2（一）</a></p>
+                            <p class="item-date"><time datetime="2017-08-08T07:16:52.000Z" itemprop="datePublished">2017-08-08</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Spring/" style="font-size: 15px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 20px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 15px;">Validation</a> <a href="/tags/领域驱动设计/" style="font-size: 10px;">领域驱动设计</a>
+        </div>
+    </div>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 徐靖峰<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://lexburner.github.io/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/';
+        
+        this.page.identifier = '对于Spring Cloud Feign入门示例的一点思考';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+    
+        <script src="/vendor/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-share.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-video.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
