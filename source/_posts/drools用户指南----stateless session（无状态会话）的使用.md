@@ -1,5 +1,5 @@
 ---
-title: Hello World
+title: drools用户指南----stateless session（无状态会话）的使用
 date: 2017-04-11 12:51:59
 tags: 
 - 规则引擎
