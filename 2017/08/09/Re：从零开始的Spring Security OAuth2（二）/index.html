@@ -3,15 +3,23 @@
 <head>
     <meta charset="utf-8">
     
-    <title>徐靖峰|个人博客</title>
+    <title>Re：从零开始的Spring Security OAuth2（二） | 徐靖峰|个人博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta property="og:type" content="website">
-<meta property="og:title" content="徐靖峰|个人博客">
-<meta property="og:url" content="http://lexburner.github.io/index.html">
+    <meta name="description" content="本文开始从源码的层面，讲解一些Spring Security Oauth2的认证流程。本文较长，适合在空余时间段观看。且涉及了较多的源码，非关键性代码以…代替。 准备工作首先开启debug信息： 123logging:  level:    org.springframework: DEBUG 可以完整的看到内部的运转流程。 client模式稍微简单一些，使用client模式获取token htt">
+<meta name="keywords" content="Spring Security OAuth2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Re：从零开始的Spring Security OAuth2（二）">
+<meta property="og:url" content="http://lexburner.github.io/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/index.html">
 <meta property="og:site_name" content="徐靖峰|个人博客">
+<meta property="og:description" content="本文开始从源码的层面，讲解一些Spring Security Oauth2的认证流程。本文较长，适合在空余时间段观看。且涉及了较多的源码，非关键性代码以…代替。 准备工作首先开启debug信息： 123logging:  level:    org.springframework: DEBUG 可以完整的看到内部的运转流程。 client模式稍微简单一些，使用client模式获取token htt">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://img.blog.csdn.net/20170809145344042?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170809134129753?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-08-22T02:34:27.404Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="徐靖峰|个人博客">
+<meta name="twitter:title" content="Re：从零开始的Spring Security OAuth2（二）">
+<meta name="twitter:description" content="本文开始从源码的层面，讲解一些Spring Security Oauth2的认证流程。本文较长，适合在空余时间段观看。且涉及了较多的源码，非关键性代码以…代替。 准备工作首先开启debug信息： 123logging:  level:    org.springframework: DEBUG 可以完整的看到内部的运转流程。 client模式稍微简单一些，使用client模式获取token htt">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170809145344042?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
     
 
     
@@ -180,541 +188,15 @@
 </aside>
 
             
-            <section id="main">
-    <article id="post-一个DDD指导下的实体类设计案例" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-Re：从零开始的Spring Security OAuth2（二）" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
             <header class="article-header">
                 
     
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/08/21/一个DDD指导下的实体类设计案例/">一个DDD指导下的实体类设计案例</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/08/21/一个DDD指导下的实体类设计案例/">
-            <time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/领域驱动设计/">领域驱动设计</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            <p><h2 id="1-引子"><a href="#1-引子" class="headerlink" title="1 引子"></a>1 引子</h2><p>项目开发中的工具类代码总是随着项目发展逐渐变大，在公司诸多的公用代码中，笔者发现了一个简单的，也是经常被使用的类：BaseDomain，引起了我的思考。<br>在我们公司的开发习惯中，数据库实体类通常会继承一个叫做BaseDomain的类，这个类很简单，主要用来填充一些数据库实体公用的属性，它的设计如下：<br></p>
-            <p class="article-more-link">
-                <a href="/2017/08/21/一个DDD指导下的实体类设计案例/#more">查看更多</a>
-            </p>
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-    <div class="jiathis_style">
-    <span class="jiathis_txt">分享到：</span>
-    <a class="jiathis_button_qzone">QQ空间</a>
-    <a class="jiathis_button_tsina">新浪微博</a>
-    <a class="jiathis_button_tqq">腾讯微博</a>
-    <a class="jiathis_button_weixin">微信</a>
-    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
-    <a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
-<style>
-    .jiathis_style div:first-child:not(.jiadiv_01) {
-        width: auto !important;
-        border: none !important;
-    }
-    .jiathis_style .jiadiv_01 {
-        margin: 10px 0;
-        border-radius: 4px;
-        border: #e1e1e1 solid 1px;
-    }
-    .jiathis_style .jiadiv_01 div:first-child {
-        display: none;
-    }
-    .jiathis_style .jiadiv_02 {
-        padding: 7px 0 !important;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle {
-        width: 85px;
-        border: none;
-        height: auto;
-        margin: 3px 10px;
-        padding: 6px 10px;
-        border-radius: 4px;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:hover {
-        border: none;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
-        margin-left: 0;
-    }
-    .jiathis_style .jtico:hover {
-        opacity: 1;
-    }
-    .jiathis_style .ckepopBottom,
-    .jiathis_style .centerBottom {
-        width: auto !important;
-        padding: 5px;
-        background: #f7f7f7;
-    }
-</style>
-
-
-
-</div>
-
-            
-    
-        <a href="http://lexburner.github.io/2017/08/21/一个DDD指导下的实体类设计案例/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/21/一个DDD指导下的实体类设计案例/">评论</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-使用spring validation完成数据后端校验" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/08/16/使用spring validation完成数据后端校验/">使用spring validation完成数据后端校验</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/08/16/使用spring validation完成数据后端校验/">
-            <time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Spring/">Spring</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/Spring/">Spring</a>, <a class="tag-link" href="/tags/Validation/">Validation</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            <p><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>数据的校验是交互式网站一个不可或缺的功能，前端的js校验可以涵盖大部分的校验职责，如用户名唯一性，生日格式，邮箱格式校验等等常用的校验。但是为了避免用户绕过浏览器，使用http工具直接向后端请求一些违法数据，服务端的数据校验也是必要的，可以防止脏数据落到数据库中，如果数据库中出现一个非法的邮箱格式，也会让运维人员头疼不已。我在之前保险产品研发过程中，系统对数据校验要求比较严格且追求可变性及效率，曾使用drools作为规则引擎，兼任了校验的功能。而在一般的应用，可以使用本文将要介绍的validation来对数据进行校验。</p>
-<p>简述JSR303/JSR-349，hibernate validation，spring validation之间的关系。JSR303是一项标准,JSR-349是其的升级版本，添加了一些新特性，他们规定一些校验规范即校验注解，如@Null，@NotNull，@Pattern，他们位于javax.validation.constraints包下，只提供规范不提供实现。而hibernate validation是对这个规范的实践（不要将hibernate和数据库orm框架联系在一起），他提供了相应的实现，并增加了一些其他校验注解，如@Email，@Length，@Range等等，他们位于org.hibernate.validator.constraints包下。而万能的spring为了给开发者提供便捷，对hibernate validation进行了二次封装，显示校验validated bean时，你可以使用spring validation或者hibernate validation，而spring validation另一个特性，便是其在springmvc模块中添加了自动校验，并将校验信息封装进了特定的类中。这无疑便捷了我们的web开发。本文主要介绍在springmvc中自动校验的机制。</p></p>
-            <p class="article-more-link">
-                <a href="/2017/08/16/使用spring validation完成数据后端校验/#more">查看更多</a>
-            </p>
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-    <div class="jiathis_style">
-    <span class="jiathis_txt">分享到：</span>
-    <a class="jiathis_button_qzone">QQ空间</a>
-    <a class="jiathis_button_tsina">新浪微博</a>
-    <a class="jiathis_button_tqq">腾讯微博</a>
-    <a class="jiathis_button_weixin">微信</a>
-    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
-    <a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
-<style>
-    .jiathis_style div:first-child:not(.jiadiv_01) {
-        width: auto !important;
-        border: none !important;
-    }
-    .jiathis_style .jiadiv_01 {
-        margin: 10px 0;
-        border-radius: 4px;
-        border: #e1e1e1 solid 1px;
-    }
-    .jiathis_style .jiadiv_01 div:first-child {
-        display: none;
-    }
-    .jiathis_style .jiadiv_02 {
-        padding: 7px 0 !important;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle {
-        width: 85px;
-        border: none;
-        height: auto;
-        margin: 3px 10px;
-        padding: 6px 10px;
-        border-radius: 4px;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:hover {
-        border: none;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
-        margin-left: 0;
-    }
-    .jiathis_style .jtico:hover {
-        opacity: 1;
-    }
-    .jiathis_style .ckepopBottom,
-    .jiathis_style .centerBottom {
-        width: auto !important;
-        padding: 5px;
-        background: #f7f7f7;
-    }
-</style>
-
-
-
-</div>
-
-            
-    
-        <a href="http://lexburner.github.io/2017/08/16/使用spring validation完成数据后端校验/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/16/使用spring validation完成数据后端校验/">评论</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/08/16/hello-world/">Re：从零开始的Spring Security Oauth2（一）</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/08/16/hello-world/">
-            <time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Spring/">Spring</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/Spring/">Spring</a>, <a class="tag-link" href="/tags/Validation/">Validation</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-             
-           
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-    <div class="jiathis_style">
-    <span class="jiathis_txt">分享到：</span>
-    <a class="jiathis_button_qzone">QQ空间</a>
-    <a class="jiathis_button_tsina">新浪微博</a>
-    <a class="jiathis_button_tqq">腾讯微博</a>
-    <a class="jiathis_button_weixin">微信</a>
-    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
-    <a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
-<style>
-    .jiathis_style div:first-child:not(.jiadiv_01) {
-        width: auto !important;
-        border: none !important;
-    }
-    .jiathis_style .jiadiv_01 {
-        margin: 10px 0;
-        border-radius: 4px;
-        border: #e1e1e1 solid 1px;
-    }
-    .jiathis_style .jiadiv_01 div:first-child {
-        display: none;
-    }
-    .jiathis_style .jiadiv_02 {
-        padding: 7px 0 !important;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle {
-        width: 85px;
-        border: none;
-        height: auto;
-        margin: 3px 10px;
-        padding: 6px 10px;
-        border-radius: 4px;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:hover {
-        border: none;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
-        margin-left: 0;
-    }
-    .jiathis_style .jtico:hover {
-        opacity: 1;
-    }
-    .jiathis_style .ckepopBottom,
-    .jiathis_style .centerBottom {
-        width: auto !important;
-        padding: 5px;
-        background: #f7f7f7;
-    }
-</style>
-
-
-
-</div>
-
-            
-    
-        <a href="http://lexburner.github.io/2017/08/16/hello-world/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/16/hello-world/">评论</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-Re：从零开始的Spring Security OAuth2（三）" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/">Re：从零开始的Spring Security OAuth2（三）</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/">
-            <time datetime="2017-08-10T06:22:12.000Z" itemprop="datePublished">2017-08-10</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/Spring-Security-OAuth2/">Spring Security OAuth2</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-             <p>上一篇文章中我们介绍了获取token的流程，这一篇重点分析一下，携带token访问受限资源时，内部的工作流程。</p>
-<h2 id="EnableResourceServer与-EnableAuthorizationServer"><a href="#EnableResourceServer与-EnableAuthorizationServer" class="headerlink" title="@EnableResourceServer与@EnableAuthorizationServer"></a>@EnableResourceServer与@EnableAuthorizationServer</h2><p>还记得我们在第一节中就介绍过了OAuth2的两个核心概念，资源服务器与身份认证服务器。我们对两个注解进行配置的同时，到底触发了内部的什么相关配置呢？</p>
-<p>上一篇文章重点介绍的其实是与身份认证相关的流程，即如果获取token，而本节要分析的携带token访问受限资源，自然便是与@EnableResourceServer相关的资源服务器配置了。</p>
-<p>我们注意到其相关配置类是ResourceServerConfigurer，内部关联了ResourceServerSecurityConfigurer和HttpSecurity。前者与资源安全配置相关，后者与http安全配置相关。（类名比较类似，注意区分，以Adapter结尾的是适配器，以Configurer结尾的是配置器，以Builder结尾的是建造器，他们分别代表不同的设计模式，对设计模式有所了解可以更加方便理解其设计思路）</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ResourceServerConfigurerAdapter</span> <span class="keyword">implements</span> <span class="title">ResourceServerConfigurer</span> </span>&#123;</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(ResourceServerSecurityConfigurer resources &lt;<span class="number">1</span>&gt; )</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		http.authorizeRequests().anyRequest().authenticated();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><1> ResourceServerSecurityConfigurer显然便是我们分析的重点了。</1></p>
-<h2 id="ResourceServerSecurityConfigurer（了解）"><a href="#ResourceServerSecurityConfigurer（了解）" class="headerlink" title="ResourceServerSecurityConfigurer（了解）"></a>ResourceServerSecurityConfigurer（了解）</h2><p>其核心配置如下所示：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">	AuthenticationManager oauthAuthenticationManager = oauthAuthenticationManager(http);</div><div class="line">	resourcesServerFilter = <span class="keyword">new</span> OAuth2AuthenticationProcessingFilter();<span class="comment">//&lt;1&gt;</span></div><div class="line">	resourcesServerFilter.setAuthenticationEntryPoint(authenticationEntryPoint);</div><div class="line">	resourcesServerFilter.setAuthenticationManager(oauthAuthenticationManager);<span class="comment">//&lt;2&gt;</span></div><div class="line">	<span class="keyword">if</span> (eventPublisher != <span class="keyword">null</span>) &#123;</div><div class="line">		resourcesServerFilter.setAuthenticationEventPublisher(eventPublisher);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (tokenExtractor != <span class="keyword">null</span>) &#123;</div><div class="line">		resourcesServerFilter.setTokenExtractor(tokenExtractor);<span class="comment">//&lt;3&gt;</span></div><div class="line">	&#125;</div><div class="line">	resourcesServerFilter = postProcess(resourcesServerFilter);</div><div class="line">	resourcesServerFilter.setStateless(stateless);</div><div class="line"></div><div class="line">	<span class="comment">// @formatter:off</span></div><div class="line">	http</div><div class="line">		.authorizeRequests().expressionHandler(expressionHandler)</div><div class="line">	.and()</div><div class="line">		.addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)</div><div class="line">		.exceptionHandling()</div><div class="line">			.accessDeniedHandler(accessDeniedHandler)<span class="comment">//&lt;4&gt;</span></div><div class="line">			.authenticationEntryPoint(authenticationEntryPoint);</div><div class="line">	<span class="comment">// @formatter:on</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这段是整个oauth2与HttpSecurity相关的核心配置，其中有非常多的注意点，顺带的都强调一下：</p>
-<p><1> 创建OAuth2AuthenticationProcessingFilter，即下一节所要介绍的OAuth2核心过滤器。</1></p>
-<p><2> 为OAuth2AuthenticationProcessingFilter提供固定的AuthenticationManager即OAuth2AuthenticationManager，它并没有将OAuth2AuthenticationManager添加到spring的容器中，不然可能会影响spring security的普通认证流程（非oauth2请求），只有被OAuth2AuthenticationProcessingFilter拦截到的oauth2相关请求才被特殊的身份认证器处理。</2></p>
-<p><3> 设置了TokenExtractor默认的实现—-BearerTokenExtractor，这个类在下一节介绍。</3></p>
-<p><4> 相关的异常处理器，可以重写相关实现，达到自定义异常的目的。</4></p>
-<p>还记得我们在一开始的配置中配置了资源服务器，是它触发了相关的配置。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="meta">@EnableResourceServer</span></div><div class="line"><span class="keyword">protected</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ResourceServerConfiguration</span> <span class="keyword">extends</span> <span class="title">ResourceServerConfigurerAdapter</span> </span>&#123;&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="核心过滤器-OAuth2AuthenticationProcessingFilter（掌握）"><a href="#核心过滤器-OAuth2AuthenticationProcessingFilter（掌握）" class="headerlink" title="核心过滤器 OAuth2AuthenticationProcessingFilter（掌握）"></a>核心过滤器 OAuth2AuthenticationProcessingFilter（掌握）</h2><p>回顾一下我们之前是如何携带token访问受限资源的：<br><code>http://localhost:8080/order/1?access_token=950a7cc9-5a8a-42c9-a693-40e817b1a4b0</code><br>唯一的身份凭证，便是这个access_token，携带它进行访问，会进入OAuth2AuthenticationProcessingFilter之中，其核心代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doFilter</span><span class="params">(ServletRequest req, ServletResponse res, FilterChain chain)</span></span>&#123;</div><div class="line">	<span class="keyword">final</span> HttpServletRequest request = (HttpServletRequest) req;</div><div class="line">	<span class="keyword">final</span> HttpServletResponse response = (HttpServletResponse) res;</div><div class="line"></div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		<span class="comment">//从请求中取出身份信息，即access_token</span></div><div class="line">		Authentication authentication = tokenExtractor.extract(request);</div><div class="line">		</div><div class="line">		<span class="keyword">if</span> (authentication == <span class="keyword">null</span>) &#123;</div><div class="line">			...</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> &#123;</div><div class="line">			request.setAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE, authentication.getPrincipal());</div><div class="line">			<span class="keyword">if</span> (authentication <span class="keyword">instanceof</span> AbstractAuthenticationToken) &#123;</div><div class="line">				AbstractAuthenticationToken needsDetails = (AbstractAuthenticationToken) authentication;</div><div class="line">				needsDetails.setDetails(authenticationDetailsSource.buildDetails(request));</div><div class="line">			&#125;</div><div class="line">			<span class="comment">//认证身份</span></div><div class="line">			Authentication authResult = authenticationManager.authenticate(authentication);</div><div class="line">			...</div><div class="line">			eventPublisher.publishAuthenticationSuccess(authResult);</div><div class="line">			<span class="comment">//将身份信息绑定到SecurityContextHolder中</span></div><div class="line">			SecurityContextHolder.getContext().setAuthentication(authResult);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">catch</span> (OAuth2Exception failed) &#123;</div><div class="line">		...</div><div class="line">		<span class="keyword">return</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	chain.doFilter(request, response);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>整个过滤器便是oauth2身份鉴定的关键，在源码中，对这个类有一段如下的描述</p>
-<blockquote>
-<p>A pre-authentication filter for OAuth2 protected resources. Extracts an OAuth2 token from the incoming request and uses it to populate the Spring Security context with an {@link OAuth2Authentication} (if used in conjunction with an {@link OAuth2AuthenticationManager}).  OAuth2保护资源的预先认证过滤器。如果与OAuth2AuthenticationManager结合使用，则会从到来的请求之中提取一个OAuth2 token，之后使用OAuth2Authentication来填充Spring Security上下文。</p>
-</blockquote>
-<p>其中涉及到了两个关键的类TokenExtractor，AuthenticationManager。相信后者这个接口大家已经不陌生，但前面这个类之前还未出现在我们的视野中。</p>
-<h2 id="OAuth2的身份管理器–OAuth2AuthenticationManager（掌握）"><a href="#OAuth2的身份管理器–OAuth2AuthenticationManager（掌握）" class="headerlink" title="OAuth2的身份管理器–OAuth2AuthenticationManager（掌握）"></a>OAuth2的身份管理器–OAuth2AuthenticationManager（掌握）</h2><p>在之前的OAuth2核心过滤器中出现的AuthenticationManager其实在我们意料之中，携带access_token必定得经过身份认证，但是在我们debug进入其中后，发现了一个出乎意料的事，AuthenticationManager的实现类并不是我们在前面文章中聊到的常用实现类ProviderManager，而是OAuth2AuthenticationManager。</p>
-<p><img src="http://img.blog.csdn.net/20170810122532720?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="OAuth2AuthenticationManager"></p>
-<div align="center"><br>图1 新的AuthenticationManager实现类OAuth2AuthenticationManager<br></div>
-
-<p>回顾我们第一篇文章的配置，压根没有出现过这个OAuth2AuthenticationManager，并且它脱离了我们熟悉的认证流程（第二篇文章中的认证管理器UML图是一张经典的spring security结构类图），它直接重写了容器的顶级身份认证接口，内部维护了一个ClientDetailService和ResourceServerTokenServices，这两个核心类在 Re：从零开始的Spring Security Oauth2（二）有分析过。在ResourceServerSecurityConfigurer的小节中我们已经知晓了它是如何被框架自动配置的，这里要强调的是OAuth2AuthenticationManager是密切与token认证相关的，而不是与获取token密切相关的。</p>
-<p>其判别身份的关键代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Authentication <span class="title">authenticate</span><span class="params">(Authentication authentication)</span> <span class="keyword">throws</span> AuthenticationException </span>&#123;</div><div class="line">	...</div><div class="line">	String token = (String) authentication.getPrincipal();</div><div class="line">	<span class="comment">//最终还是借助tokenServices根据token加载身份信息</span></div><div class="line">	OAuth2Authentication auth = tokenServices.loadAuthentication(token);</div><div class="line">	...</div><div class="line"></div><div class="line">	checkClientDetails(auth);</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (authentication.getDetails() <span class="keyword">instanceof</span> OAuth2AuthenticationDetails) &#123;</div><div class="line">		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) authentication.getDetails();</div><div class="line">		...</div><div class="line">	&#125;</div><div class="line">	auth.setDetails(authentication.getDetails());</div><div class="line">	auth.setAuthenticated(<span class="keyword">true</span>);</div><div class="line">	<span class="keyword">return</span> auth;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>说到tokenServices这个密切与token相关的接口，这里要强调下，避免产生误解。tokenServices分为两类，一个是用在AuthenticationServer端，第二篇文章中介绍的</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AuthorizationServerTokenServices</span> </span>&#123;</div><div class="line">    <span class="comment">//创建token</span></div><div class="line">    <span class="function">OAuth2AccessToken <span class="title">createAccessToken</span><span class="params">(OAuth2Authentication authentication)</span> <span class="keyword">throws</span> AuthenticationException</span>;</div><div class="line">    <span class="comment">//刷新token</span></div><div class="line">    <span class="function">OAuth2AccessToken <span class="title">refreshAccessToken</span><span class="params">(String refreshToken, TokenRequest tokenRequest)</span></span></div><div class="line"><span class="function">            <span class="keyword">throws</span> AuthenticationException</span>;</div><div class="line">    <span class="comment">//获取token</span></div><div class="line">    <span class="function">OAuth2AccessToken <span class="title">getAccessToken</span><span class="params">(OAuth2Authentication authentication)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>而在ResourceServer端有自己的tokenServices接口：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ResourceServerTokenServices</span> </span>&#123;</div><div class="line">	<span class="comment">//根据accessToken加载客户端信息</span></div><div class="line">	<span class="function">OAuth2Authentication <span class="title">loadAuthentication</span><span class="params">(String accessToken)</span> <span class="keyword">throws</span> AuthenticationException, InvalidTokenException</span>;</div><div class="line"></div><div class="line">	<span class="comment">//根据accessToken获取完整的访问令牌详细信息。</span></div><div class="line">	<span class="function">OAuth2AccessToken <span class="title">readAccessToken</span><span class="params">(String accessToken)</span></span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>具体内部如何加载，和AuthorizationServer大同小异，只是从tokenStore中取出相应身份的流程有点区别，不再详细看实现类了。</p>
-<h2 id="TokenExtractor（了解）"><a href="#TokenExtractor（了解）" class="headerlink" title="TokenExtractor（了解）"></a>TokenExtractor（了解）</h2><p>这个接口只有一个实现类，而且代码非常简单</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BearerTokenExtractor</span> <span class="keyword">implements</span> <span class="title">TokenExtractor</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> Log logger = LogFactory.getLog(BearerTokenExtractor.class);</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> Authentication <span class="title">extract</span><span class="params">(HttpServletRequest request)</span> </span>&#123;</div><div class="line">		String tokenValue = extractToken(request);</div><div class="line">		<span class="keyword">if</span> (tokenValue != <span class="keyword">null</span>) &#123;</div><div class="line">			PreAuthenticatedAuthenticationToken authentication = <span class="keyword">new</span> PreAuthenticatedAuthenticationToken(tokenValue, <span class="string">""</span>);</div><div class="line">			<span class="keyword">return</span> authentication;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">protected</span> String <span class="title">extractToken</span><span class="params">(HttpServletRequest request)</span> </span>&#123;</div><div class="line">		<span class="comment">// first check the header...</span></div><div class="line">		String token = extractHeaderToken(request);</div><div class="line"></div><div class="line">		<span class="comment">// bearer type allows a request parameter as well</span></div><div class="line">		<span class="keyword">if</span> (token == <span class="keyword">null</span>) &#123;</div><div class="line">			...</div><div class="line">			<span class="comment">//从requestParameter中获取token</span></div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">return</span> token;</div><div class="line">	&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment">	 * Extract the OAuth bearer token from a header.</span></div><div class="line"><span class="comment">	 */</span></div><div class="line">	<span class="function"><span class="keyword">protected</span> String <span class="title">extractHeaderToken</span><span class="params">(HttpServletRequest request)</span> </span>&#123;</div><div class="line">		Enumeration&lt;String&gt; headers = request.getHeaders(<span class="string">"Authorization"</span>);</div><div class="line">		<span class="keyword">while</span> (headers.hasMoreElements()) &#123; <span class="comment">// typically there is only one (most servers enforce that)</span></div><div class="line">			...</div><div class="line">			<span class="comment">//从Header中获取token</span></div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>它的作用在于分离出请求中包含的token。也启示了我们可以使用多种方式携带token。<br>1 在Header中携带</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">http://localhost:8080/order/1</div><div class="line">Header：</div><div class="line">Authentication：Bearer f732723d-af7f-41bb-bd06-2636ab2be135</div></pre></td></tr></table></figure>
-<p>2 拼接在url中作为requestParam</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://localhost:8080/order/1?access_token=f732723d-af7f-41bb-bd06-2636ab2be135</div></pre></td></tr></table></figure>
-<p>3 在form表单中携带</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">http://localhost:8080/order/1</div><div class="line">form param：</div><div class="line">access_token=f732723d-af7f-41bb-bd06-2636ab2be135</div></pre></td></tr></table></figure>
-<h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><p>OAuth2在资源服务器端的异常处理不算特别完善，但基本够用，如果想要重写异常机制，可以直接替换掉相关的Handler，如权限相关的AccessDeniedHandler。具体的配置应该在@EnableResourceServer中被覆盖，这是适配器+配置器的好处。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到这儿，Spring Security OAuth2的整个内部流程就算是分析结束了。本系列的文章只能算是揭示一个大概的流程，重点还是介绍相关设计+接口，想要了解更多的细节，需要自己去翻看源码，研究各个实现类。在分析源码过程中总结出的一点经验，与君共勉：</p>
-<ol>
-<li>先掌握宏观，如研究UML类图，搞清楚关联</li>
-<li><p>分析顶级接口，设计是面向接口的，不重要的部分，具体实现类甚至都可以忽略</p>
-</li>
-<li><p>学会对比，如ResourceServer和AuthenticationServer是一种对称的设计，整个框架内部的类非常多，但分门别类的记忆，会加深记忆。如ResourceServerTokenServices ，AuthenticationServerTokenServices就一定是作用相关，但所属领域不同的两个接口</p>
-</li>
-<li><p>熟悉设计模式，spring中涉及了大量的设计模式，在框架的设计中也是遵循着设计模式的规范，如以Adapter结尾，便是运用了适配器模式；以Factory结尾，便是运用了适配器模式；Template结尾，便是运用了模板方法模式；Builder结尾，便是运用了建造者模式…</p>
-</li>
-<li><p>一点自己的理解：对源码的理解和灵感，这一切都建立自身的编码经验之上，自己遵循规范便能更好的理解别人同样遵守规范的代码。相对的，阅读好的源码，也能帮助我们自身提升编码规范。</p>
-</li>
-</ol>
-
-           
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-    <div class="jiathis_style">
-    <span class="jiathis_txt">分享到：</span>
-    <a class="jiathis_button_qzone">QQ空间</a>
-    <a class="jiathis_button_tsina">新浪微博</a>
-    <a class="jiathis_button_tqq">腾讯微博</a>
-    <a class="jiathis_button_weixin">微信</a>
-    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
-    <a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
-<style>
-    .jiathis_style div:first-child:not(.jiadiv_01) {
-        width: auto !important;
-        border: none !important;
-    }
-    .jiathis_style .jiadiv_01 {
-        margin: 10px 0;
-        border-radius: 4px;
-        border: #e1e1e1 solid 1px;
-    }
-    .jiathis_style .jiadiv_01 div:first-child {
-        display: none;
-    }
-    .jiathis_style .jiadiv_02 {
-        padding: 7px 0 !important;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle {
-        width: 85px;
-        border: none;
-        height: auto;
-        margin: 3px 10px;
-        padding: 6px 10px;
-        border-radius: 4px;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:hover {
-        border: none;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
-        margin-left: 0;
-    }
-    .jiathis_style .jtico:hover {
-        opacity: 1;
-    }
-    .jiathis_style .ckepopBottom,
-    .jiathis_style .centerBottom {
-        width: auto !important;
-        padding: 5px;
-        background: #f7f7f7;
-    }
-</style>
-
-
-
-</div>
-
-            
-    
-        <a href="http://lexburner.github.io/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/">评论</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-Re：从零开始的Spring Security OAuth2（二）" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/">Re：从零开始的Spring Security OAuth2（二）</a>
+        <h1 class="article-title" itemprop="name">
+            Re：从零开始的Spring Security OAuth2（二）
         </h1>
     
 
@@ -873,128 +355,41 @@
         </footer>
     </div>
     
-</article>
-
-
-
-    <article id="post-Re：从零开始的Spring Security OAuth2（一）" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
         
-        
-            <header class="article-header">
-                
+<nav id="article-nav">
     
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/">Re：从零开始的Spring Security OAuth2（一）</a>
-        </h1>
-    
-
+        <a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
                 
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/">
-            <time datetime="2017-08-08T07:16:52.000Z" itemprop="datePublished">2017-08-08</time>
+                    Re：从零开始的Spring Security OAuth2（三）
+                
+            </div>
         </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/Spring-Security-OAuth2/">Spring Security OAuth2</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            <p><p>##前言<br>今天来聊聊一个接口对接的场景，A厂家有一套HTTP接口需要提供给B厂家使用，由于是外网环境，所以需要有一套安全机制保障，这个时候oauth2就可以作为一个方案。</p>
-<p>关于oauth2，其实是一个规范，本文重点讲解spring对他进行的实现，如果你还不清楚授权服务器，资源服务器，认证授权等基础概念，可以移步<a href="http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html" target="_blank" rel="external">理解OAuth 2.0 - 阮一峰</a>，这是一篇对于oauth2很好的科普文章。 </p>
-<p>需要对spring security有一定的配置使用经验，用户认证这一块，spring security oauth2建立在spring security的基础之上。第一篇文章主要是讲解使用springboot搭建一个简易的授权，资源服务器，在文末会给出具体代码的github地址。后续文章会进行spring security oauth2的相关源码分析。java中的安全框架如shrio，已经有<a href="http://jinnianshilongnian.iteye.com/blog/2018936" target="_blank" rel="external">跟我学shiro - 开涛</a>，非常成体系地，深入浅出地讲解了apache的这个开源安全框架，但是spring security包括oauth2一直没有成体系的文章，学习它们大多依赖于较少的官方文档，理解一下基本的使用配置；通过零散的博客，了解一下他人的使用经验；打断点，分析内部的工作流程；看源码中的接口设计，以及注释，了解设计者的用意。spring的各个框架都运用了很多的设计模式，在学习源码的过程中，也大概了解了一些套路。spring也在必要的地方添加了适当的注释，避免了源码阅读者对于一些细节设计的理解产生偏差，让我更加感叹，spring不仅仅是一个工具框架，更像是一个艺术品。</p></p>
-            <p class="article-more-link">
-                <a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/#more">查看更多</a>
-            </p>
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-    <div class="jiathis_style">
-    <span class="jiathis_txt">分享到：</span>
-    <a class="jiathis_button_qzone">QQ空间</a>
-    <a class="jiathis_button_tsina">新浪微博</a>
-    <a class="jiathis_button_tqq">腾讯微博</a>
-    <a class="jiathis_button_weixin">微信</a>
-    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
-    <a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
-<style>
-    .jiathis_style div:first-child:not(.jiadiv_01) {
-        width: auto !important;
-        border: none !important;
-    }
-    .jiathis_style .jiadiv_01 {
-        margin: 10px 0;
-        border-radius: 4px;
-        border: #e1e1e1 solid 1px;
-    }
-    .jiathis_style .jiadiv_01 div:first-child {
-        display: none;
-    }
-    .jiathis_style .jiadiv_02 {
-        padding: 7px 0 !important;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle {
-        width: 85px;
-        border: none;
-        height: auto;
-        margin: 3px 10px;
-        padding: 6px 10px;
-        border-radius: 4px;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:hover {
-        border: none;
-    }
-    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
-        margin-left: 0;
-    }
-    .jiathis_style .jtico:hover {
-        opacity: 1;
-    }
-    .jiathis_style .ckepopBottom,
-    .jiathis_style .centerBottom {
-        width: auto !important;
-        padding: 5px;
-        background: #f7f7f7;
-    }
-</style>
-
-
-
-</div>
-
-            
     
-        <a href="http://lexburner.github.io/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/">评论</a>
     
+        <a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Re：从零开始的Spring Security OAuth2（一）</div>
+        </a>
+    
+</nav>
 
-        </footer>
-    </div>
+
     
 </article>
 
+
+    
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
 
 </section>
             
@@ -1150,11 +545,13 @@
     <script>
     var disqus_config = function () {
         
-        this.page.identifier = '';
+            this.page.url = 'http://lexburner.github.io/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/';
+        
+        this.page.identifier = 'Re：从零开始的Spring Security OAuth2（二）';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
-        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/count.js';
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
