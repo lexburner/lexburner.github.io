@@ -3,20 +3,24 @@
 <head>
     <meta charset="utf-8">
     
-    <title>drools用户指南----stateful session（有状态会话）的使用 | 徐靖峰|个人博客</title>
+    <title>Zuul性能测试 | 徐靖峰|个人博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="stateful session 有状态会话有状态会话长期存在，并允许随着时间的推移进行迭代更改。 有状态会话的一些常见用例包括但不限于：  监测半自动买入股票市场监控与分析。 诊断故障查找，医疗诊断 物流包裹跟踪和送货配置 合规验证市场交易的合法性。  与无状态会话相反，必须先调用dispose()方法，以确保没有内存泄漏，因为KieBase包含创建状态知识会话时的引用。 由于状态知识会话是最常">
-<meta name="keywords" content="规则引擎,drools">
+    <meta name="description" content="环境准备采用三台阿里云服务器作为测试10.19.52.8 部署网关应用-gateway10.19.52.9, 10.19.52.10 部署用于测试的业务系统 压测工具准备选用ab作为压力测试的工具，为了方便起见，直接将ab工具安装在10.19.52.8这台机测试命令如下：1ab -n 10000 -c 100 http://10.19.52.8:8080/hello/testOK?access_t">
+<meta name="keywords" content="Spring Cloud Zuul">
 <meta property="og:type" content="article">
-<meta property="og:title" content="drools用户指南----stateful session（有状态会话）的使用">
-<meta property="og:url" content="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/index.html">
+<meta property="og:title" content="Zuul性能测试">
+<meta property="og:url" content="http://lexburner.github.io/2017/04/08/Zuul性能测试/index.html">
 <meta property="og:site_name" content="徐靖峰|个人博客">
-<meta property="og:description" content="stateful session 有状态会话有状态会话长期存在，并允许随着时间的推移进行迭代更改。 有状态会话的一些常见用例包括但不限于：  监测半自动买入股票市场监控与分析。 诊断故障查找，医疗诊断 物流包裹跟踪和送货配置 合规验证市场交易的合法性。  与无状态会话相反，必须先调用dispose()方法，以确保没有内存泄漏，因为KieBase包含创建状态知识会话时的引用。 由于状态知识会话是最常">
+<meta property="og:description" content="环境准备采用三台阿里云服务器作为测试10.19.52.8 部署网关应用-gateway10.19.52.9, 10.19.52.10 部署用于测试的业务系统 压测工具准备选用ab作为压力测试的工具，为了方便起见，直接将ab工具安装在10.19.52.8这台机测试命令如下：1ab -n 10000 -c 100 http://10.19.52.8:8080/hello/testOK?access_t">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-08-22T06:05:22.304Z">
+<meta property="og:image" content="http://img.blog.csdn.net/20170408122814192?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170408145703703?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170408150216769?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-08-22T06:26:32.079Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="drools用户指南----stateful session（有状态会话）的使用">
-<meta name="twitter:description" content="stateful session 有状态会话有状态会话长期存在，并允许随着时间的推移进行迭代更改。 有状态会话的一些常见用例包括但不限于：  监测半自动买入股票市场监控与分析。 诊断故障查找，医疗诊断 物流包裹跟踪和送货配置 合规验证市场交易的合法性。  与无状态会话相反，必须先调用dispose()方法，以确保没有内存泄漏，因为KieBase包含创建状态知识会话时的引用。 由于状态知识会话是最常">
+<meta name="twitter:title" content="Zuul性能测试">
+<meta name="twitter:description" content="环境准备采用三台阿里云服务器作为测试10.19.52.8 部署网关应用-gateway10.19.52.9, 10.19.52.10 部署用于测试的业务系统 压测工具准备选用ab作为压力测试的工具，为了方便起见，直接将ab工具安装在10.19.52.8这台机测试命令如下：1ab -n 10000 -c 100 http://10.19.52.8:8080/hello/testOK?access_t">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170408122814192?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
     
 
     
@@ -185,7 +189,7 @@
 </aside>
 
             
-            <section id="main"><article id="post-drools用户指南----stateful session（有状态会话）的使用" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-Zuul性能测试" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -193,7 +197,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            drools用户指南----stateful session（有状态会话）的使用
+            Zuul性能测试
         </h1>
     
 
@@ -202,8 +206,8 @@
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/">
-            <time datetime="2017-04-11T04:37:22.000Z" itemprop="datePublished">2017-04-11</time>
+        <a href="/2017/04/08/Zuul性能测试/">
+            <time datetime="2017-04-08T07:27:52.000Z" itemprop="datePublished">2017-04-08</time>
         </a>
     </div>
 
@@ -211,13 +215,13 @@
                         
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/规则引擎/">规则引擎</a>
+        <a class="article-category-link" href="/categories/Spring-Cloud/">Spring Cloud</a>
     </div>
 
                         
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/drools/">drools</a>, <a class="tag-link" href="/tags/规则引擎/">规则引擎</a>
+        <a class="tag-link" href="/tags/Spring-Cloud-Zuul/">Spring Cloud Zuul</a>
     </div>
 
                     </div>
@@ -228,46 +232,39 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-             <h2 id="stateful-session-有状态会话"><a href="#stateful-session-有状态会话" class="headerlink" title="stateful session 有状态会话"></a>stateful session 有状态会话</h2><p>有状态会话长期存在，并允许随着时间的推移进行迭代更改。 有状态会话的一些常见用例包括但不限于：</p>
-<ol>
-<li>监测<br>半自动买入股票市场监控与分析。</li>
-<li>诊断<br>故障查找，医疗诊断</li>
-<li>物流<br>包裹跟踪和送货配置</li>
-<li>合规<br>验证市场交易的合法性。</li>
-</ol>
-<p>与无状态会话相反，必须先调用dispose()方法，以确保没有内存泄漏，因为KieBase包含创建状态知识会话时的引用。 由于状态知识会话是最常用的会话类型，所以它只是在KIE API中命名为KieSession。 KieSession还支持BatchExecutor接口，如StatelessKieSession，唯一的区别是FireAllRules命令在有状态会话结束时不被自动调用。</p>
-<p>我们举例说明了用于提高火灾报警器的监控用例。 只使用四个类，我们假设<code>Room</code>代表房子里的房间，每个<code>Room</code>都有一个喷头<code>Sprinkler</code>。 如果在房间里发生火灾，我们用一个<code>Fire</code>实例来表示,用<code>Alarm</code>代表警报 。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Room</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> String name</div><div class="line">    <span class="comment">// getter and setter methods here</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Sprinkler</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> Room room;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> on;</div><div class="line">    <span class="comment">// getter and setter methods here</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Fire</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> Room room;</div><div class="line">    <span class="comment">// getter and setter methods here</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Alarm</span> </span>&#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>在上一节无状态会话中介绍了插入和匹配数据的概念。 这个例子假设每个对象类型的都是单个实例被插入的，因此只使用了字面约束。 然而，房子有许多房间，因此<code>rules</code>必须表达实体类之间的关系，例如在某个房间内的喷洒器。 这最好通过使用绑定变量作为模式中的约束来完成。 这种“加入”过程产生了所谓的“cross products”，这在下一节中将会介绍。</p>
+             <h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>采用三台阿里云服务器作为测试<br>10.19.52.8 部署网关应用-gateway<br>10.19.52.9, 10.19.52.10 部署用于测试的业务系统<br><img src="http://img.blog.csdn.net/20170408122814192?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<h2 id="压测工具准备"><a href="#压测工具准备" class="headerlink" title="压测工具准备"></a>压测工具准备</h2><p>选用ab作为压力测试的工具，为了方便起见，直接将ab工具安装在10.19.52.8这台机<br>测试命令如下：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ab -n 10000 -c 100 http://10.19.52.8:8080/hello/testOK?access_token=e0345712-c30d-4bf8-ae61-8cae1ec38c52</div></pre></td></tr></table></figure></p>
+<p>其中－n表示请求数，－c表示并发数,上面一条命令也就意味着，100个用户并发对<code>http://10.19.52.8/hello/testOK</code>累计发送了10000次请求。</p>
+<h2 id="服务器-网关配置"><a href="#服务器-网关配置" class="headerlink" title="服务器,网关配置"></a>服务器,网关配置</h2><p>由于我们使用的tomcat容器，关于tomcat的一点知识总结如下：</p>
 <a id="more"></a>
-<p>当发生火灾时，会为该类别创建Fire类的实例，并将其插入到会话中。 该规则使用Fire对象的房间字段上的绑定来约束与当前关闭的房间的喷水灭火器的匹配。 当此规则触发并且执行结果时，喷头被打开。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"When there is a fire turn on the sprinkler"</span></div><div class="line">when</div><div class="line">    Fire($room : room)</div><div class="line">    $sprinkler : Sprinkler( room == $room, on == <span class="keyword">false</span> )</div><div class="line">then</div><div class="line">    modify( $sprinkler ) &#123; setOn( <span class="keyword">true</span> ) &#125;;</div><div class="line">    System.out.println( <span class="string">"Turn on the sprinkler for room "</span> + $room.getName() );</div><div class="line">end</div></pre></td></tr></table></figure>
-<p>而无状态会话使用标准Java语法来修改字段，在上述规则中，我们使用modify语句，它作为一种“with”语句。 它可以包含一系列逗号分隔的Java表达式，即对由modify语句的控制表达式选择的对象的setter的调用。 这将修改数据，并使引擎意识到这些更改，以便它可以再次对其进行推理。 这个过程被称为推理，对于有状态会话的工作至关重要。 无状态会话通常不使用推理，因此引擎不需要意识到数据的更改。 也可以通过使用顺序模式显式地关闭推理。</p>
-<p>到目前为止，我们有规则告诉我们匹配数据是否存在，但是当它不存在时呢？ 我们如何确定火已经熄灭了，即没有Fire对象呢？ 以前的约束是根据命题逻辑的句子，其中引擎限制个别的实例。 Drools还支持First Order Logic，允许您查看数据集。 当某个不存在时，关键字下的模式不匹配。 一旦这个房间的火灾消失，下面给出的规则会使喷水灭火。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"When the fire is gone turn off the sprinkler"</span></div><div class="line">when</div><div class="line">    $room : Room( )</div><div class="line">    $sprinkler : Sprinkler( room == $room, on == <span class="keyword">true</span> )</div><div class="line">    <span class="function">not <span class="title">Fire</span><span class="params">( room == $room )</span></span></div><div class="line"><span class="function">then</span></div><div class="line"><span class="function">    <span class="title">modify</span><span class="params">( $sprinkler )</span> </span>&#123; setOn( <span class="keyword">false</span> ) &#125;;</div><div class="line">    System.out.println( <span class="string">"Turn off the sprinkler for room "</span> + $room.getName() );</div><div class="line">end</div></pre></td></tr></table></figure>
-<p>每个<code>room</code>有一个喷水灭火器，<code>house</code>只有一个警报。 当发生火灾时，会创建一个<code>alrm</code>对象，而不管发生多少火灾，整个建筑物都只需要一个警报<code>alrm</code>。 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"Raise the alarm when we have one or more fires"</span></div><div class="line">when</div><div class="line">    <span class="function">exists <span class="title">Fire</span><span class="params">()</span></span></div><div class="line"><span class="function">then</span></div><div class="line"><span class="function">    <span class="title">insert</span><span class="params">( new Alarm()</span> )</span>;</div><div class="line">    System.out.println( <span class="string">"Raise the alarm"</span> );</div><div class="line">end</div></pre></td></tr></table></figure>
-<p>同样，当没有火灾时，我们想要删除警报，所以可以再次使用not关键字。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"Cancel the alarm when all the fires have gone"</span></div><div class="line">when</div><div class="line">    <span class="function">not <span class="title">Fire</span><span class="params">()</span></span></div><div class="line"><span class="function">    $alarm : <span class="title">Alarm</span><span class="params">()</span></span></div><div class="line"><span class="function">then</span></div><div class="line"><span class="function">    <span class="title">delete</span><span class="params">( $alarm )</span></span>;</div><div class="line">    System.out.println( <span class="string">"Cancel the alarm"</span> );</div><div class="line">end</div></pre></td></tr></table></figure>
-<p>最后，当应用程序首次启动并且在报警消除并且所有喷头已关闭后，都会打印Everything is ok。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"Status output when things are ok"</span></div><div class="line">when</div><div class="line">    <span class="function">not <span class="title">Alarm</span><span class="params">()</span></span></div><div class="line"><span class="function">    not <span class="title">Sprinkler</span><span class="params">( on == <span class="keyword">true</span> )</span> </span></div><div class="line"><span class="function">then</span></div><div class="line"><span class="function">    System.out.<span class="title">println</span><span class="params">( <span class="string">"Everything is ok"</span> )</span></span>;</div><div class="line">end</div></pre></td></tr></table></figure>
-<p>正如我们在无状态会话示例中所做的那样，上述规则应放在单个DRL文件中，并保存到Maven项目或其任何子文件夹的资源文件夹中。 如前所述，我们可以从KieContainer获得KieSession。 唯一的区别是，这次我们创建一个有状态会话，而之前我们创建的是一个无状态会话。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">KieServices kieServices = KieServices.Factory.get();</div><div class="line">KieContainer kContainer = kieServices.getKieClasspathContainer();</div><div class="line">KieSession ksession = kContainer.newKieSession();</div></pre></td></tr></table></figure>
-<p>创建会话后，现在可以随着时间的推移迭代地使用它。 创建和插入四个房间对象，每个房间的对应一个Sprinkler对象。 此时，规则引擎已经完成了所有的匹配，但并没有触发。 调用ksession.fireAllRules（）使得匹配的规则触发，但因为没有火灾，所以输出结果是Everything is ok。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">String[] names = <span class="keyword">new</span> String[]&#123;<span class="string">"kitchen"</span>, <span class="string">"bedroom"</span>, <span class="string">"office"</span>, <span class="string">"livingroom"</span>&#125;;</div><div class="line">Map&lt;String,Room&gt; name2room = <span class="keyword">new</span> HashMap&lt;String,Room&gt;();</div><div class="line"><span class="keyword">for</span>( String name: names )&#123;</div><div class="line">    Room room = <span class="keyword">new</span> Room( name );</div><div class="line">    name2room.put( name, room );</div><div class="line">    ksession.insert( room );</div><div class="line">    Sprinkler sprinkler = <span class="keyword">new</span> Sprinkler( room );</div><div class="line">    ksession.insert( sprinkler );</div><div class="line">&#125;</div><div class="line"></div><div class="line">ksession.fireAllRules();</div></pre></td></tr></table></figure>
 <blockquote>
-<p>Everything is ok</p>
+<p>Tomcat的最大并发数是可以配置的，实际运用中，最大并发数与硬件性能和CPU数量都有很大关系的。更好的硬件，更多的处理器都会使Tomcat支持更多的并发。<br>​<br>Tomcat 默认的HTTP实现是采用阻塞式的Socket通信，每个请求都需要创建一个线程处理，当一个进程有500个线程在跑的话，那性能已经是很低很低了。Tomcat默认配置的最大请求数是150，也就是说同时支持150个并发。具体能承载多少并发，需要看硬件的配置，CPU越多性能越高，分配给JVM的内存越多性能也就越高，但也会加重GC的负担。当某个应用拥有 250个以上并发的时候，应考虑应用服务器的集群。操作系统对于进程中的线程数有一定的限制：<br> Windows 每个进程中的线程数不允许超过 2000<br>Linux 每个进程中的线程数不允许超过 1000<br>在Java中每开启一个线程需要耗用1MB的JVM内存空间用于作为线程栈之用，此处也应考虑。</p>
 </blockquote>
-<p>我们现在创造两个Fire并插入它们， 随着发动机内部的火灾，一旦调用了fireAllRules（），报警器就会升高，并且相应的喷水灭火器打开。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Fire kitchenFire = <span class="keyword">new</span> Fire( name2room.get( <span class="string">"kitchen"</span> ) );</div><div class="line">Fire officeFire = <span class="keyword">new</span> Fire( name2room.get( <span class="string">"office"</span> ) );</div><div class="line">FactHandle kitchenFireHandle = ksession.insert( kitchenFire );</div><div class="line">FactHandle officeFireHandle = ksession.insert( officeFire );</div><div class="line"></div><div class="line">ksession.fireAllRules();</div></pre></td></tr></table></figure>
-<blockquote>
-<p>Raise the alarm<br>Turn on the sprinkler for room kitchen<br>Turn on the sprinkler for room office</p>
-</blockquote>
-<p>一段时间之后，火灾将熄灭，并且Fire实例被撤回。 这导致喷头关闭，报警被取消，最后再次打印Everything is ok。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ksession.delete( kitchenFireHandle );</div><div class="line">ksession.delete( officeFireHandle );</div><div class="line"></div><div class="line">ksession.fireAllRules();</div></pre></td></tr></table></figure>
-<blockquote>
-<p>Cancel the alarm<br>Turn off the sprinkler for room office<br>Turn off the sprinkler for room kitchen<br>Everything is ok</p>
-</blockquote>
+<p>所以我们修改配置tomcat的默认配置，如下：<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="attr">server:</span></div><div class="line"><span class="attr">  tomcat:</span></div><div class="line"><span class="attr">    accept-count:</span> <span class="number">1000</span> </div><div class="line"><span class="attr">    max-threads:</span> <span class="number">1000</span></div><div class="line"><span class="attr">    max-connections:</span> <span class="number">2000</span></div></pre></td></tr></table></figure></p>
+<p>无论是网关应用，还是用于测试的业务系统的tomcat，我们都需要如上配置，否则会引起木桶效应，整个调用流程会受到配置最差的应用的干扰。<br>zuul内部路由可以理解为使用一个线程池去发送路由请求，所以我们也需要扩大这个线程池的容量，配置如下：<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="attr">zuul:</span></div><div class="line"><span class="attr">  host:</span></div><div class="line"><span class="attr">    max-per-route-connections:</span> <span class="number">1000</span></div><div class="line"><span class="attr">    max-total-connections:</span> <span class="number">1000</span></div></pre></td></tr></table></figure></p>
+<h2 id="监控工具"><a href="#监控工具" class="headerlink" title="监控工具"></a>监控工具</h2><p>为了确保上述配置真正起作用，我们使用Java VisualVM这个工具监控这几台服务器上部署的tomcat的线程以及内存使用情况。<br>启动脚本加上如下参数，之后通过工具连接2099端口即可监控<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-Dcom.sun.management.jmxremote.port=2099 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Djava.rmi.server.hostname=10.19.52.8</div></pre></td></tr></table></figure></p>
+<h2 id="开始测试"><a href="#开始测试" class="headerlink" title="开始测试"></a>开始测试</h2><ul>
+<li>测试一<br>1.通过访问网关，由网关转发，应用端接口延迟200ms后返回一个字符串，模拟真实接口的业务处理延迟<br>2.300个线程并发请求，共计100000 次<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ab -n 100000 -c 300 http://10.19.52.8:8080/hello/testOK?access_token=e0345712-c30d-4bf8-ae61-8cae1ec38c52</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">Document Path:          /hello/testOK?access_token=e0345712-c30d-4bf8-ae61-8cae1ec38c52</div><div class="line">Document Length:        2 bytes</div><div class="line"></div><div class="line">Concurrency Level:      300</div><div class="line">Time taken for tests:   151.026 seconds</div><div class="line">Complete requests:      100000</div><div class="line">Failed requests:        0</div><div class="line">Write errors:           0</div><div class="line">Total transferred:      42200844 bytes</div><div class="line">HTML transferred:       200004 bytes</div><div class="line">**Requests per second:    662.14 [#/sec] (mean)**</div><div class="line">Time per request:       453.078 [ms] (mean)</div><div class="line">Time per request:       1.510 [ms] (mean, across all concurrent requests)</div><div class="line">Transfer rate:          272.88 [Kbytes/sec] received</div><div class="line"></div><div class="line">Connection Times (ms)</div><div class="line">              min  mean[+/-sd] median   max</div><div class="line">Connect:        0    5   7.0      2      98</div><div class="line">Processing:   206  447 478.7    230    3171</div><div class="line">Waiting:      197  445 478.7    227    3165</div><div class="line">Total:        206  451 478.8    236    3177</div><div class="line"></div><div class="line">Percentage of the requests served within a certain time (ms)</div><div class="line">  50%    236</div><div class="line">  66%    250</div><div class="line">  75%    273</div><div class="line">  80%    322</div><div class="line">  90%   1408</div><div class="line">  95%   1506</div><div class="line">  98%   1684</div><div class="line">  99%   1764</div><div class="line"> 100%   3177 (longest request)</div></pre></td></tr></table></figure>
+<p>测试二：<br>1.直接访问应用，应用端接口延迟200ms后返回一个字符串，模拟真实接口的业务处理延迟<br>2.300个线程并发请求，共计100000 次</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ab -n 100000 -c 300 http://10.19.52.9:9091/testOK</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">Server Hostname:        10.19.52.9</div><div class="line">Server Port:            9091</div><div class="line"></div><div class="line">Document Path:          /testOK</div><div class="line">Document Length:        2 bytes</div><div class="line"></div><div class="line">Concurrency Level:      300</div><div class="line">Time taken for tests:   69.003 seconds</div><div class="line">Complete requests:      100000</div><div class="line">Failed requests:        0</div><div class="line">Write errors:           0</div><div class="line">Total transferred:      13400000 bytes</div><div class="line">HTML transferred:       200000 bytes</div><div class="line">**Requests per second:    1449.21 [#/sec] (mean)**</div><div class="line">Time per request:       207.009 [ms] (mean)</div><div class="line">Time per request:       0.690 [ms] (mean, across all concurrent requests)</div><div class="line">Transfer rate:          189.64 [Kbytes/sec] received</div><div class="line"></div><div class="line">Connection Times (ms)</div><div class="line">              min  mean[+/-sd] median   max</div><div class="line">Connect:        0    0   0.8      0      10</div><div class="line">Processing:   200  206   7.7    202     286</div><div class="line">Waiting:      200  205   7.7    202     286</div><div class="line">Total:        201  206   7.9    203     295</div><div class="line"></div><div class="line">Percentage of the requests served within a certain time (ms)</div><div class="line">  50%    203</div><div class="line">  66%    205</div><div class="line">  75%    207</div><div class="line">  80%    209</div><div class="line">  90%    215</div><div class="line">  95%    220</div><div class="line">  98%    229</div><div class="line">  99%    240</div><div class="line"> 100%    295 (longest request)</div></pre></td></tr></table></figure>
+<p>经过网关路由之后的性能下降是不可避免的，在测试过程中，查看监控端的线程变化，如下图：</p>
+<p><img src="http://img.blog.csdn.net/20170408145703703?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<p>我们的配置的确产生了作用。</p>
+<p>我们再来分析一下上面测试结果的一个重要指标：Requests per second，我们的网关经过了鉴权之后，性能仍然可以达到600+每秒的响应，是完全可以接受的，峰值时内存情况，使用top指令，如下所示：<img src="http://img.blog.csdn.net/20170408150216769?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>ab测试命令也占用了一定的cpu使用率，总应用接近70%的cpu使用率，这估计也是单个tomcat实例的瓶颈了。因为我们的应用服务器会单独部署网关，并且可以在多个服务器上部署多个实例，所以这个结果可以接受。</p>
+<p>为了避免单次响应带来的偶然因素，我们重复进行测试一（更改为10000次请求，并发量200），看看Requests per second的变化。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">1. 799.45</div><div class="line">2. 818.86</div><div class="line">3. 838.67</div><div class="line">4. 833.90</div><div class="line">5. 973.65</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>有一些其他的数据没有整理到博客中，但是也顺便把结论写一下。</p>
+<p>这次的测试有几个注意点：</p>
+<ol>
+<li>是在应用服务器端模拟200ms的延时，因为实际请求不可能不伴随着耗时的业务操作，实际发现对ab的测试影响还是较大的，毕竟线程阻塞着，不延迟时request per second能达到2000，加了200ms延迟之后下降到1000+。</li>
+<li>模拟总请求数和线程数的变化会引起QPS/TPS的抖动，即使是在多核CPU的承受范围之内，也并不是说线程越多，QPS/TPS就越高，因为启动线程的开销，以及线程上下文切换的耗时，开辟线程带来的内存损耗都会影响性能。钱总说单个tomcat实例的并发度理论值200就可以接受了，经过参数调优后的tomcat使用zuul做网关能达到如上的测试结果，完全可以投入生产环境使用了。而tomcat默认的150线程，如果使用200的并发度测试就显然是“不公平的”。</li>
+<li>测试注意点有几个，例如ab部署在了api-gateway本机会影响性能，tomcat参数以及zuul参数应当尽可能放开，不让其默认配置影响测试。</li>
+</ol>
+<p>本文还有些遗漏的数据，后续会补上…</p>
 
            
         
@@ -332,7 +329,7 @@
 
             
     
-        <a href="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/">评论</a>
+        <a href="http://lexburner.github.io/2017/04/08/Zuul性能测试/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/04/08/Zuul性能测试/">评论</a>
     
 
         </footer>
@@ -341,19 +338,19 @@
         
 <nav id="article-nav">
     
-        <a href="/2017/04/11/drools用户指南----stateless session（无状态会话）的使用/" id="article-nav-newer" class="article-nav-link-wrap">
+        <a href="/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/" id="article-nav-newer" class="article-nav-link-wrap">
             <strong class="article-nav-caption">上一篇</strong>
             <div class="article-nav-title">
                 
-                    drools用户指南----stateless session（无状态会话）的使用
+                    drools用户指南----stateful session（有状态会话）的使用
                 
             </div>
         </a>
     
     
-        <a href="/2017/04/08/Zuul性能测试/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2016/08/16/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">Zuul性能测试</div>
+            <div class="article-nav-title">Hello World</div>
         </a>
     
 </nav>
@@ -544,9 +541,9 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/';
+            this.page.url = 'http://lexburner.github.io/2017/04/08/Zuul性能测试/';
         
-        this.page.identifier = 'drools用户指南----stateful session（有状态会话）的使用';
+        this.page.identifier = 'Zuul性能测试';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
