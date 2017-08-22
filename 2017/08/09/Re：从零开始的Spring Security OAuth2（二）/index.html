@@ -15,7 +15,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.blog.csdn.net/20170809145344042?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20170809134129753?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-08-22T02:34:27.404Z">
+<meta property="og:updated_time" content="2017-08-22T03:20:14.176Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Re：从零开始的Spring Security OAuth2（二）">
 <meta name="twitter:description" content="本文开始从源码的层面，讲解一些Spring Security Oauth2的认证流程。本文较长，适合在空余时间段观看。且涉及了较多的源码，非关键性代码以…代替。 准备工作首先开启debug信息： 123logging:  level:    org.springframework: DEBUG 可以完整的看到内部的运转流程。 client模式稍微简单一些，使用client模式获取token htt">
@@ -238,6 +238,7 @@
 <p>client模式稍微简单一些，使用client模式获取token<br> <code>http://localhost:8080/oauth/token?client_id=client_1&amp;client_secret=123456&amp;scope=select&amp;grant_type=client_credentials</code></p>
 <p>由于debug信息太多了，我简单按照顺序列了一下关键的几个类：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ClientCredentialsTokenEndpointFilter</div><div class="line">DaoAuthenticationProvider</div><div class="line">TokenEndpoint</div><div class="line">TokenGranter</div></pre></td></tr></table></figure>
+<a id="more"></a>
 <h2 id="EnableAuthorizationServer"><a href="#EnableAuthorizationServer" class="headerlink" title="@EnableAuthorizationServer"></a>@EnableAuthorizationServer</h2><p>上一篇博客中我们尝试使用了password模式和client模式，有一个比较关键的endpoint：/oauth/token。从这个入口开始分析，spring security oauth2内部是如何生成token的。获取token，与第一篇文章中的两个重要概念之一有关，也就是AuthorizationServer与ResourceServer中的AuthorizationServer。</p>
 <p>在之前的配置中</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="meta">@EnableAuthorizationServer</span></div><div class="line"><span class="keyword">protected</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthorizationServerConfiguration</span> <span class="keyword">extends</span> <span class="title">AuthorizationServerConfigurerAdapter</span> </span>&#123;&#125;</div></pre></td></tr></table></figure>
@@ -423,25 +424,6 @@
                     <li>
                         
                         <div class="item-thumbnail">
-                            <a href="/2017/08/16/使用spring validation完成数据后端校验/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
-                            <p class="item-title"><a href="/2017/08/16/使用spring validation完成数据后端校验/" class="title">使用spring validation完成数据后端校验</a></p>
-                            <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
                             <a href="/2017/08/16/hello-world/" class="thumbnail">
     
     
@@ -454,6 +436,25 @@
                         <div class="item-inner">
                             <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
                             <p class="item-title"><a href="/2017/08/16/hello-world/" class="title">Re：从零开始的Spring Security Oauth2（一）</a></p>
+                            <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/16/使用spring validation完成数据后端校验/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/16/使用spring validation完成数据后端校验/" class="title">使用spring validation完成数据后端校验</a></p>
                             <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
                         </div>
                     </li>

@@ -14,7 +14,7 @@
 <meta property="og:description" content="上一篇文章中我们介绍了获取token的流程，这一篇重点分析一下，携带token访问受限资源时，内部的工作流程。 @EnableResourceServer与@EnableAuthorizationServer还记得我们在第一节中就介绍过了OAuth2的两个核心概念，资源服务器与身份认证服务器。我们对两个注解进行配置的同时，到底触发了内部的什么相关配置呢？ 上一篇文章重点介绍的其实是与身份认证相关的">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.blog.csdn.net/20170810122532720?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-08-22T02:45:00.443Z">
+<meta property="og:updated_time" content="2017-08-22T03:19:56.160Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Re：从零开始的Spring Security OAuth2（三）">
 <meta name="twitter:description" content="上一篇文章中我们介绍了获取token的流程，这一篇重点分析一下，携带token访问受限资源时，内部的工作流程。 @EnableResourceServer与@EnableAuthorizationServer还记得我们在第一节中就介绍过了OAuth2的两个核心概念，资源服务器与身份认证服务器。我们对两个注解进行配置的同时，到底触发了内部的什么相关配置呢？ 上一篇文章重点介绍的其实是与身份认证相关的">
@@ -236,6 +236,7 @@
 <p>我们注意到其相关配置类是ResourceServerConfigurer，内部关联了ResourceServerSecurityConfigurer和HttpSecurity。前者与资源安全配置相关，后者与http安全配置相关。（类名比较类似，注意区分，以Adapter结尾的是适配器，以Configurer结尾的是配置器，以Builder结尾的是建造器，他们分别代表不同的设计模式，对设计模式有所了解可以更加方便理解其设计思路）</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ResourceServerConfigurerAdapter</span> <span class="keyword">implements</span> <span class="title">ResourceServerConfigurer</span> </span>&#123;</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(ResourceServerSecurityConfigurer resources &lt;<span class="number">1</span>&gt; )</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		http.authorizeRequests().anyRequest().authenticated();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p><1> ResourceServerSecurityConfigurer显然便是我们分析的重点了。</1></p>
+<a id="more"></a>
 <h2 id="ResourceServerSecurityConfigurer（了解）"><a href="#ResourceServerSecurityConfigurer（了解）" class="headerlink" title="ResourceServerSecurityConfigurer（了解）"></a>ResourceServerSecurityConfigurer（了解）</h2><p>其核心配置如下所示：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">	AuthenticationManager oauthAuthenticationManager = oauthAuthenticationManager(http);</div><div class="line">	resourcesServerFilter = <span class="keyword">new</span> OAuth2AuthenticationProcessingFilter();<span class="comment">//&lt;1&gt;</span></div><div class="line">	resourcesServerFilter.setAuthenticationEntryPoint(authenticationEntryPoint);</div><div class="line">	resourcesServerFilter.setAuthenticationManager(oauthAuthenticationManager);<span class="comment">//&lt;2&gt;</span></div><div class="line">	<span class="keyword">if</span> (eventPublisher != <span class="keyword">null</span>) &#123;</div><div class="line">		resourcesServerFilter.setAuthenticationEventPublisher(eventPublisher);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (tokenExtractor != <span class="keyword">null</span>) &#123;</div><div class="line">		resourcesServerFilter.setTokenExtractor(tokenExtractor);<span class="comment">//&lt;3&gt;</span></div><div class="line">	&#125;</div><div class="line">	resourcesServerFilter = postProcess(resourcesServerFilter);</div><div class="line">	resourcesServerFilter.setStateless(stateless);</div><div class="line"></div><div class="line">	<span class="comment">// @formatter:off</span></div><div class="line">	http</div><div class="line">		.authorizeRequests().expressionHandler(expressionHandler)</div><div class="line">	.and()</div><div class="line">		.addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)</div><div class="line">		.exceptionHandling()</div><div class="line">			.accessDeniedHandler(accessDeniedHandler)<span class="comment">//&lt;4&gt;</span></div><div class="line">			.authenticationEntryPoint(authenticationEntryPoint);</div><div class="line">	<span class="comment">// @formatter:on</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>这段是整个oauth2与HttpSecurity相关的核心配置，其中有非常多的注意点，顺带的都强调一下：</p>
@@ -357,11 +358,11 @@
         
 <nav id="article-nav">
     
-        <a href="/2017/08/16/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+        <a href="/2017/08/16/使用spring validation完成数据后端校验/" id="article-nav-newer" class="article-nav-link-wrap">
             <strong class="article-nav-caption">上一篇</strong>
             <div class="article-nav-title">
                 
-                    Re：从零开始的Spring Security Oauth2（一）
+                    使用spring validation完成数据后端校验
                 
             </div>
         </a>
@@ -422,25 +423,6 @@
                     <li>
                         
                         <div class="item-thumbnail">
-                            <a href="/2017/08/16/使用spring validation完成数据后端校验/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
-                            <p class="item-title"><a href="/2017/08/16/使用spring validation完成数据后端校验/" class="title">使用spring validation完成数据后端校验</a></p>
-                            <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
                             <a href="/2017/08/16/hello-world/" class="thumbnail">
     
     
@@ -453,6 +435,25 @@
                         <div class="item-inner">
                             <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
                             <p class="item-title"><a href="/2017/08/16/hello-world/" class="title">Re：从零开始的Spring Security Oauth2（一）</a></p>
+                            <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/16/使用spring validation完成数据后端校验/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/16/使用spring validation完成数据后端校验/" class="title">使用spring validation完成数据后端校验</a></p>
                             <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
                         </div>
                     </li>
