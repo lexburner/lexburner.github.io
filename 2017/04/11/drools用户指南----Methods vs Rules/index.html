@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>drools用户指南----Methods vs Rules | 徐靖峰|个人博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Methods vs Rules人们经常混淆方法和规则，初学者经常会问：“我如何理解规则的含义？“ 在最后一节之后，你会对规则的使用得心应手，答案也变得显而易见的，但在这之前，先让我们总结一下方法判断和规则的差异。 12345public void helloWorld(Person person) &amp;#123;    if ( person.getName().equals( &quot;Chuck&quot; )">
+<meta name="keywords" content="规则引擎,drools">
+<meta property="og:type" content="article">
+<meta property="og:title" content="drools用户指南----Methods vs Rules">
+<meta property="og:url" content="http://lexburner.github.io/2017/04/11/drools用户指南----Methods vs Rules/index.html">
+<meta property="og:site_name" content="徐靖峰|个人博客">
+<meta property="og:description" content="Methods vs Rules人们经常混淆方法和规则，初学者经常会问：“我如何理解规则的含义？“ 在最后一节之后，你会对规则的使用得心应手，答案也变得显而易见的，但在这之前，先让我们总结一下方法判断和规则的差异。 12345public void helloWorld(Person person) &amp;#123;    if ( person.getName().equals( &quot;Chuck&quot; )">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-08-22T06:10:20.570Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="drools用户指南----Methods vs Rules">
+<meta name="twitter:description" content="Methods vs Rules人们经常混淆方法和规则，初学者经常会问：“我如何理解规则的含义？“ 在最后一节之后，你会对规则的使用得心应手，答案也变得显而易见的，但在这之前，先让我们总结一下方法判断和规则的差异。 12345public void helloWorld(Person person) &amp;#123;    if ( person.getName().equals( &quot;Chuck&quot; )">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/open-sans/styles.css">
+    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/vendor/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/vendor/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">徐靖峰|个人博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="https://avatars2.githubusercontent.com/u/11485990?v=4&amp;s=460" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="https://avatars2.githubusercontent.com/u/11485990?v=4&amp;s=460" />
+            <h2 id="name">徐靖峰</h2>
+            <h3 id="title">JAVA Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Shanghai, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lexburner">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                15
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                12
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lexburner" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/wechat.png" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-drools用户指南----Methods vs Rules" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            drools用户指南----Methods vs Rules
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/04/11/drools用户指南----Methods vs Rules/">
+            <time datetime="2017-04-11T05:28:44.000Z" itemprop="datePublished">2017-04-11</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/规则引擎/">规则引擎</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/drools/">drools</a>, <a class="tag-link" href="/tags/规则引擎/">规则引擎</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <h2 id="Methods-vs-Rules"><a href="#Methods-vs-Rules" class="headerlink" title="Methods vs Rules"></a>Methods vs Rules</h2><p>人们经常混淆方法和规则，初学者经常会问：“我如何理解规则的含义？“ 在最后一节之后，你会对规则的使用得心应手，答案也变得显而易见的，但在这之前，先让我们总结一下方法判断和规则的差异。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">helloWorld</span><span class="params">(Person person)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> ( person.getName().equals( <span class="string">"Chuck"</span> ) ) &#123;</div><div class="line">        System.out.println( <span class="string">"Hello Chuck"</span> );</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>方法是被直接调用的</li>
+<li>需要传递具体的实例</li>
+<li>一个调用导致一次执行（One call results in a single execution）。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"Hello World"</span> when</div><div class="line">    Person( name == <span class="string">"Chuck"</span> )</div><div class="line">then</div><div class="line">    System.out.println( <span class="string">"Hello Chuck"</span> );</div><div class="line">end</div></pre></td></tr></table></figure>
+<ol>
+<li>只要将其插入引擎，就可以通过匹配任何数据执行规则。</li>
+<li>规则永远无法被直接调用，而只能触发</li>
+<li>无法将特定的实例传递给规则</li>
+<li>根据匹配，一个规则可能会触发一次或多次，或根本不被触发。</li>
+</ol>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+    <div class="jiathis_style">
+    <span class="jiathis_txt">分享到：</span>
+    <a class="jiathis_button_qzone">QQ空间</a>
+    <a class="jiathis_button_tsina">新浪微博</a>
+    <a class="jiathis_button_tqq">腾讯微博</a>
+    <a class="jiathis_button_weixin">微信</a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<style>
+    .jiathis_style div:first-child:not(.jiadiv_01) {
+        width: auto !important;
+        border: none !important;
+    }
+    .jiathis_style .jiadiv_01 {
+        margin: 10px 0;
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .jiathis_style .jiadiv_01 div:first-child {
+        display: none;
+    }
+    .jiathis_style .jiadiv_02 {
+        padding: 7px 0 !important;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle {
+        width: 85px;
+        border: none;
+        height: auto;
+        margin: 3px 10px;
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:hover {
+        border: none;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
+        margin-left: 0;
+    }
+    .jiathis_style .jtico:hover {
+        opacity: 1;
+    }
+    .jiathis_style .ckepopBottom,
+    .jiathis_style .centerBottom {
+        width: auto !important;
+        padding: 5px;
+        background: #f7f7f7;
+    }
+</style>
+
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/04/11/drools用户指南----Methods vs Rules/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/04/11/drools用户指南----Methods vs Rules/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/04/11/drools用户指南----Cross Products/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    drools用户指南----Cross Products
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/04/11/drools用户指南----stateless session（无状态会话）的使用/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Hello World</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a></p>
+                            <p class="item-title"><a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="title">一个DDD指导下的实体类设计案例</a></p>
+                            <p class="item-date"><time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/16/使用spring validation完成数据后端校验/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/16/使用spring validation完成数据后端校验/" class="title">使用spring validation完成数据后端校验</a></p>
+                            <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
+                            <p class="item-title"><a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/" class="title">Re：从零开始的Spring Security OAuth2（三）</a></p>
+                            <p class="item-date"><time datetime="2017-08-10T06:22:12.000Z" itemprop="datePublished">2017-08-10</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
+                            <p class="item-title"><a href="/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/" class="title">Re：从零开始的Spring Security OAuth2（二）</a></p>
+                            <p class="item-date"><time datetime="2017-08-09T06:58:52.000Z" itemprop="datePublished">2017-08-09</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
+                            <p class="item-title"><a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" class="title">Re：从零开始的Spring Security OAuth2（一）</a></p>
+                            <p class="item-date"><time datetime="2017-08-08T07:16:52.000Z" itemprop="datePublished">2017-08-08</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/DevOps/" style="font-size: 10px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 10px;">JAVA</a> <a href="/tags/Spring/" style="font-size: 16.67px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 16.67px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 13.33px;">Validation</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 20px;">drools</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/规则引擎/" style="font-size: 20px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 13.33px;">领域驱动设计</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://www.zhihu.com/people/xu-jing-feng-29/activities">我的知乎</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 徐靖峰<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://lexburner.github.io/2017/04/11/drools用户指南----Methods vs Rules/';
+        
+        this.page.identifier = 'drools用户指南----Methods vs Rules';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+    
+        <script src="/vendor/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-share.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-video.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
