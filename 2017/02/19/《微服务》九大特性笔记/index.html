@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《微服务》九大特性笔记 | 徐靖峰|个人博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="服务组件化组件，是一个可以独立更换和升级的单元。就像PC中的CPU、内存、显卡、硬盘一样，独立且可以更换升级而不影响其他单元。 在“微服务”架构中，需要我们对服务进行组件化分解。服务，是一种进程外的组件，它通过http等通信协议进行协作，而不是传统组件以嵌入的方式协同工作。服务都独立开发、部署，可以有效的避免一个服务的修改引起整个系统的重新部署。 打一个不恰当的比喻，如果我们的PC组件以服务的方式">
+<meta name="keywords" content="微服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《微服务》九大特性笔记">
+<meta property="og:url" content="http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/index.html">
+<meta property="og:site_name" content="徐靖峰|个人博客">
+<meta property="og:description" content="服务组件化组件，是一个可以独立更换和升级的单元。就像PC中的CPU、内存、显卡、硬盘一样，独立且可以更换升级而不影响其他单元。 在“微服务”架构中，需要我们对服务进行组件化分解。服务，是一种进程外的组件，它通过http等通信协议进行协作，而不是传统组件以嵌入的方式协同工作。服务都独立开发、部署，可以有效的避免一个服务的修改引起整个系统的重新部署。 打一个不恰当的比喻，如果我们的PC组件以服务的方式">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-08-22T07:52:39.139Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《微服务》九大特性笔记">
+<meta name="twitter:description" content="服务组件化组件，是一个可以独立更换和升级的单元。就像PC中的CPU、内存、显卡、硬盘一样，独立且可以更换升级而不影响其他单元。 在“微服务”架构中，需要我们对服务进行组件化分解。服务，是一种进程外的组件，它通过http等通信协议进行协作，而不是传统组件以嵌入的方式协同工作。服务都独立开发、部署，可以有效的避免一个服务的修改引起整个系统的重新部署。 打一个不恰当的比喻，如果我们的PC组件以服务的方式">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/open-sans/styles.css">
+    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/vendor/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/vendor/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">徐靖峰|个人博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="https://avatars2.githubusercontent.com/u/11485990?v=4&amp;s=460" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="https://avatars2.githubusercontent.com/u/11485990?v=4&amp;s=460" />
+            <h2 id="name">徐靖峰</h2>
+            <h3 id="title">JAVA Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Shanghai, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lexburner">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                32
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lexburner" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/wechat.png" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-《微服务》九大特性笔记" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《微服务》九大特性笔记
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/02/19/《微服务》九大特性笔记/">
+            <time datetime="2017-02-18T17:05:52.000Z" itemprop="datePublished">2017-02-19</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/架构设计/">架构设计</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/微服务/">微服务</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <h2 id="服务组件化"><a href="#服务组件化" class="headerlink" title="服务组件化"></a>服务组件化</h2><p>组件，是一个可以独立更换和升级的单元。就像PC中的CPU、内存、显卡、硬盘一样，独立且可以更换升级而不影响其他单元。</p>
+<p>在“微服务”架构中，需要我们对服务进行组件化分解。服务，是一种进程外的组件，它通过http等通信协议进行协作，而不是传统组件以嵌入的方式协同工作。服务都独立开发、部署，可以有效的避免一个服务的修改引起整个系统的重新部署。</p>
+<p>打一个不恰当的比喻，如果我们的PC组件以服务的方式构建，我们只维护主板和一些必要外设之后，计算能力通过一组外部服务实现，我们只需要告诉PC我们从哪个地址来获得计算能力，通过服务定义的计算接口来实现我们使用过程中的计算需求，从而实现CPU组件的服务化。这样我们原本复杂的PC服务得到了更轻量化的实现，我们甚至只需要更换服务地址就能升级我们PC的计算能力。</p>
+<h2 id="按业务组织团队"><a href="#按业务组织团队" class="headerlink" title="按业务组织团队"></a>按业务组织团队</h2><p>当我们开始决定如何划分“微服务”时，通常也意味着我们要开始对团队进行重新规划与组织。按以往的方式，我们往往会以技术的层面去划分多个不同的团队，比如：DBA团队、运维团队、后端团队、前端团队、设计师团队等等。若我们继续按这种方式组织团队来实施“微服务”架构开发时，当有一个有问题需要更改，可能是一个非常简单的变动，比如：对人物描述增加一个字段，这就需要从数据存储开始考虑一直到设计和前端，虽然大家的修改都非常小，但这会引起跨团队的时间和预算审批。</p>
+<p>在实施“微服务”架构时，需要采用不同的团队分割方法。由于每一个微服务都是针对特定业务的宽栈或是全栈实现，既要负责数据的持久化存储，又要负责用户的接口定义等各种跨专业领域的职能。因此，面对大型项目时候，对于微服务团队拆分更加建议按业务线的方式进行拆分，一方面可以有效减少服务内部修改所产生的内耗；另一方面，团队边界可以变得更为清晰。</p>
+<h2 id="做“产品”的态度"><a href="#做“产品”的态度" class="headerlink" title="做“产品”的态度"></a>做“产品”的态度</h2><p>实施“微服务”架构的团队中，每个小团队都应该以做产品的方式，对其产品的整个生命周期负责。而不是以项目的模式，以完成开发与交付并将成果交接给维护者为最终目标。</p>
+<p>开发团队通过了解服务在具体生产环境中的情况，可以增加他们对具体业务的理解，比如：很多时候一些业务中发生的特殊或异常情况，很可能产品经理都并不知晓，但细心的开发者很容易通过生产环境发现这些特殊的潜在问题或需求。</p>
+<p>所以，我们需要用做“产品”的态度来对待每一个“微服务”，持续关注服务的运作情况，并不断地分析帮助用户来提升业务功能。</p>
+<h2 id="智能端点与哑管道"><a href="#智能端点与哑管道" class="headerlink" title="智能端点与哑管道"></a>智能端点与哑管道</h2><p>在单体应用中，组件间直接通过函数调用的方式进行交互协作。而在“微服务”架构中，服务由于不在一个进程中，组件间的通信模式发生了改变，若仅仅将原本在进程内的方法调用改成RPC方式的调用，会导致微服务之间产生繁琐的通信，使得系统表现更为糟糕，所以，我们需要更粗粒度的通信协议。</p>
+<p>在“微服务”架构中，通常会使用这两个服务调用方式：</p>
+<p>第一种，使用HTTP协议的RESTful API或轻量级的消息发送协议，来实现信息传递与服务调用的触发。<br>第二种，通过在轻量级消息总线上传递消息，类似RabbitMQ等一些提供可靠异步交换的结构。</p>
+<blockquote>
+<p>在极度强调性能的情况下，有些团队会使用二进制的消息发送协议，例如：protobuf。即使是这样，这些系统仍然会呈现出“智能端点和哑管道”的特点，为了在易读性与高效性之间取得平衡。当然大多数Web应用或企业系统并不需要作出在这两者间做出选择，能够获得易读性就已经是一个极大的胜利了。<br>——Martin Fowler</p>
+</blockquote>
+<h2 id="去中心化治理"><a href="#去中心化治理" class="headerlink" title="去中心化治理"></a>去中心化治理</h2><p>当我们采用集中化的架构治理方案时，通常在技术平台上都会做同一的标准，但是每一种技术平台都有其短板，这会导致在碰到短板时，不得不花费大力气去解决，并且可能还是因为其底层原因解决的不是很好。</p>
+<p>在实施“微服务”架构时，通过采用轻量级的契约定义接口，使得我们对于服务本身的具体技术平台不再那么敏感，这样我们整个“微服务”架构的系统中的组件就能针对其不同的业务特点选择不同的技术平台，终于不会出现杀鸡用牛刀或是杀牛用指甲钳的尴尬处境了。</p>
+<blockquote>
+<p>不是每一个问题都是钉子，不是每一个解决方案都是锤子</p>
+</blockquote>
+<h2 id="去中心化管理数据"><a href="#去中心化管理数据" class="headerlink" title="去中心化管理数据"></a>去中心化管理数据</h2><p>我们在实施“微服务”架构时，都希望可以让每一个服务来管理其自有的数据库，这就是数据管理的去中心化。</p>
+<p>在去中心化过程中，我们除了将原数据库中的存储内容拆分到新的同平台的其他数据库实例中之外（如：把原本存储在MySQL中的表拆分后，存储多几个不同的MySQL实例中），也可以针对一些具有特殊结构或业务特性的数据存储到一些其他技术的数据库实例中（如：把日志信息存储到MongoDB中、把用户登录信息存储到Redis中）。</p>
+<p>虽然，数据管理的去中心化可以让数据管理更加细致化，通过采用更合适的技术来让数据存储和性能达到最优。但是，由于数据存储于不同的数据库实例中后，数据一致性也成为“微服务”架构中急需解决的问题之一。分布式事务的实现，本身难度就非常大，所以在“微服务”架构中，我们更强调在各服务之间进行“无事务”的调用，而对于数据一致性，只要求数据在最后的处理状态是一致的效果；若在过程中发现错误，通过补偿机制来进行处理，使得错误数据能够达到最终的一致性。</p>
+<h2 id="基础设施自动化"><a href="#基础设施自动化" class="headerlink" title="基础设施自动化"></a>基础设施自动化</h2><p>近年来云计算服务与容器化技术的不断成熟，运维基础设施的工作变得越来越不那么难了。但是，当我们实施“微服务”架构时，数据库、应用程序的个头虽然都变小了，但是因为拆分的原因，数量成倍的增长。这使得运维人员需要关注的内容也成倍的增长，并且操作性任务也会成倍的增长，这些问题若没有得到妥善的解决，必将成为运维人员的噩梦。</p>
+<p>所以，在“微服务”架构中，请务必从一开始就构建起“持续交付”平台来支撑整个实施过程，该平台需要两大内容，不可或缺：</p>
+<p>自动化测试：每次部署前的强心剂，尽可能的获得对正在运行软件的信心。<br>自动化部署：解放繁琐枯燥的重复操作以及对多环境的配置管理。</p>
+<h2 id="容错设计"><a href="#容错设计" class="headerlink" title="容错设计"></a>容错设计</h2><p>在单体应用中，一般不存在单个组件故障而其他还在运行的情况，通常是一挂全挂。而在“微服务”架构中，由于服务都运行在独立的进程中，所以是存在部分服务出现故障，而其他服务都正常运行的情况，比如：当正常运作的服务B调用到故障服务A时，因故障服务A没有返回，线程挂起开始等待，直到超时才能释放，而此时若触发服务B调用服务A的请求来自服务C，而服务C频繁调用服务B时，由于其依赖服务A，大量线程被挂起等待，最后导致服务A也不能正常服务，这时就会出现故障的蔓延。</p>
+<p>所以，在“微服务”架构中，快速的检测出故障源并尽可能的自动恢复服务是必须要被设计和考虑的。通常，我们都希望在每个服务中实现监控和日志记录的组件，比如：服务状态、断路器状态、吞吐量、网络延迟等关键数据的仪表盘等。</p>
+<h2 id="演进式设计"><a href="#演进式设计" class="headerlink" title="演进式设计"></a>演进式设计</h2><p>通过上面的几点特征，我们已经能够体会到，要实施一个完美的“微服务”架构，需要考虑的设计与成本并不小，对于没有足够经验的团队来说，甚至要比单体应用发付出更多的代价。</p>
+<p>所以，很多情况下，架构师们都会以演进的方式进行系统的构建，在初期系统以单体系统的方式来设计和实施，一方面系统体量初期并不会很大，构建和维护成本都不高。另一方面，初期的核心业务在后期通常也不会发生巨大的改变。随着系统的发展或者业务的需要，架构师们会将一些经常变动或是有一定时间效应的内容进行“微服务”处理，并逐渐地将原来在单体系统中多变的模块逐步拆分出来，而稳定不太变化的就形成了一个核心“微服务”存在于整个架构之中。</p>
+<p><em>原文由 程序猿DD-翟永超 创作</em><br>转载自<a href="http://blog.didispace.com/20160917-microservices-note/" target="_blank" rel="external">《微服务》九大特性笔记</a></p>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/02/20/聊聊IT行业应届生求职/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    聊聊IT行业应届生求职
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/02/14/ThreadLocal的最佳实践/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">ThreadLocal的最佳实践</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a></p>
+                            <p class="item-title"><a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="title">一个DDD指导下的实体类设计案例</a></p>
+                            <p class="item-date"><time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/16/使用spring validation完成数据后端校验/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/16/使用spring validation完成数据后端校验/" class="title">使用spring validation完成数据后端校验</a></p>
+                            <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
+                            <p class="item-title"><a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/" class="title">Re：从零开始的Spring Security OAuth2（三）</a></p>
+                            <p class="item-date"><time datetime="2017-08-10T06:22:12.000Z" itemprop="datePublished">2017-08-10</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
+                            <p class="item-title"><a href="/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/" class="title">Re：从零开始的Spring Security OAuth2（二）</a></p>
+                            <p class="item-date"><time datetime="2017-08-09T06:58:52.000Z" itemprop="datePublished">2017-08-09</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
+                            <p class="item-title"><a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" class="title">Re：从零开始的Spring Security OAuth2（一）</a></p>
+                            <p class="item-date"><time datetime="2017-08-08T07:16:52.000Z" itemprop="datePublished">2017-08-08</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 14px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 10px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://www.zhihu.com/people/xu-jing-feng-29/activities">我的知乎</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 徐靖峰<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/';
+        
+        this.page.identifier = '《微服务》九大特性笔记';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+    
+        <script src="/vendor/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-share.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-video.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

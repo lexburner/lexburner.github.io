@@ -146,11 +146,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                22
+                32
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                17
+                23
                 <span>标签</span>
             </div>
         </div>
@@ -429,7 +429,7 @@ window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMin
 
 
 
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-浅析项目中的并发" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -437,7 +437,7 @@ window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMin
                 
     
         <h1 itemprop="name">
-            <a class="article-title" href="/2016/08/16/hello-world/">Hello World</a>
+            <a class="article-title" href="/2017/02/22/浅析项目中的并发/">浅析项目中的并发</a>
         </h1>
     
 
@@ -446,8 +446,8 @@ window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMin
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2016/08/16/hello-world/">
-            <time datetime="2016-08-16T07:52:52.000Z" itemprop="datePublished">2016-08-16</time>
+        <a href="/2017/02/22/浅析项目中的并发/">
+            <time datetime="2017-02-22T03:31:52.000Z" itemprop="datePublished">2017-02-22</time>
         </a>
     </div>
 
@@ -455,13 +455,227 @@ window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMin
                         
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Spring/">Spring</a>
+        <a class="article-category-link" href="/categories/架构设计/">架构设计</a>
     </div>
 
                         
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/Spring/">Spring</a>, <a class="tag-link" href="/tags/Validation/">Validation</a>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>, <a class="tag-link" href="/tags/多线程/">多线程</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>控制并发的方法很多，我之前的两篇博客都有过介绍，从最基础的synchronized，juc中的lock，到数据库的行级锁，乐观锁，悲观锁，再到中间件级别的redis，zookeeper分布式锁。今天主要想讲的主题是“根据并发出现的具体业务场景，使用合理的控制并发手段”。</p>
+<h2 id="什么是并发"><a href="#什么是并发" class="headerlink" title="什么是并发"></a>什么是并发</h2><p>由一个大家都了解的例子引入我们今天的主题：并发</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo1</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> Integer count = <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        <span class="keyword">final</span> Demo1 demo1 = <span class="keyword">new</span> Demo1();</div><div class="line">        Executor executor = Executors.newFixedThreadPool(<span class="number">10</span>);</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</div><div class="line">            executor.execute(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    demo1.count++;</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            Thread.sleep(<span class="number">5000</span>);</div><div class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        System.out.println(<span class="string">"final count value:"</span>+demo1.count);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">console:</div><div class="line"><span class="keyword">final</span> count value:<span class="number">973</span></div></pre></td></tr></table></figure>
+<p>这个过程中，类变量count就是共享资源，而++操作并不是线程安全的，而多个线程去对count执行++操作，并没有happens-before原则保障执行的先后顺序，导致了最终结果并不是想要的1000</p></p>
+            <p class="article-more-link">
+                <a href="/2017/02/22/浅析项目中的并发/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/02/22/浅析项目中的并发/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/02/22/浅析项目中的并发/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-聊聊IT行业应届生求职" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/02/20/聊聊IT行业应届生求职/">聊聊IT行业应届生求职</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/02/20/聊聊IT行业应届生求职/">
+            <time datetime="2017-02-19T16:57:52.000Z" itemprop="datePublished">2017-02-20</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/技术杂谈/">技术杂谈</a>, <a class="tag-link" href="/tags/求职/">求职</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>回首大三下的暑假，那时候刚开始出来找实习，如今已经即将进入大四下学期，恍惚间，已经过去了8，9个月。写这篇文章的初衷就是想结合自己的经验给即将要出来找工作的应届生一些建议，想当初自己刚出来时，也得到过热心学长的教导，权当一种传递吧。</p>
+<h2 id="个人经历"><a href="#个人经历" class="headerlink" title="个人经历"></a>个人经历</h2><p>坐标上海，目前在一家IT软件公司从事电子商务，金融保险类的网站开发，主要使用的语言是JAVA。从任职的3-4个月起，开始担任项目小组长协同项目经理进行开发。期间由于技术总监常驻广州的原因，我兼任了上海分部这一块的面试工作，主要负责技术部分的面试（TMD工资却没涨T__T）。所以对广大来面试者的水平，以及公司想要的人才都有了更深的了解；有了面试经验后，一些观念也有了转变。</p>
+<h2 id="面试杂谈"><a href="#面试杂谈" class="headerlink" title="面试杂谈"></a>面试杂谈</h2><p>大四肯定很多人想出来找实习，但是又完全没有任何经验，这就很尴尬了，我先来说一些一定要注意的点。</p>
+<ul>
+<li>不要乱投简历，现在互联网上有很多培训机构，中介机构，打着招聘的牌子，背后却干着培训的勾当。通常是对一些基础不太好的同学进行技术面试，对他们的信心造成碾压，而后，提出培训后入职的建议。通常这类公司就是通过这种手段去拉人培训，招人根本不是初衷。所以，要问清楚公司的情况，有必要面试之前先去百度搜一搜公司的基本情况和评价。</li>
+<li>紧接着上面那点，可以通过一些业界信誉比较高的app或者网站去筛选公司。如BOSS直聘，拉钩，51job，前程无忧…特别是前面两个，是专门给程序员招聘使用的，针对性很强，对自己能力有了解的同学也可以量力而行，挑选适合自己的岗位。</li>
+<li>投简历之前搞清楚公司的性质。IT行业目前大方向就分为两类：软件公司，互联网公司。我当初刚进公司的时候甲方乙方都搞不清楚，大家可能一下子也不知道这两种公司性质有什么区别。可以参照知乎这个问题的讨论<a href="https://www.zhihu.com/question/20274106/answer/40996303，简单来说同样的能力：软件公司轻松，钱少；互联网公司累，钱多。软件公司中又有外企，民营，国资等划分，工作性质又分为外包，自营...外包又分为人力外包和项目外包...互联网公司一说，大家肯定都知道BAT，京东，谷歌...还有一个层面的划分就是，软件公司大多提供的是服务，互联网公司通常都有自己的产品，不过这么说不够严谨，权当个参考吧。" target="_blank" rel="external">https://www.zhihu.com/question/20274106/answer/40996303，简单来说同样的能力：软件公司轻松，钱少；互联网公司累，钱多。软件公司中又有外企，民营，国资等划分，工作性质又分为外包，自营...外包又分为人力外包和项目外包...互联网公司一说，大家肯定都知道BAT，京东，谷歌...还有一个层面的划分就是，软件公司大多提供的是服务，互联网公司通常都有自己的产品，不过这么说不够严谨，权当个参考吧。</a></li>
+</ul></p>
+            <p class="article-more-link">
+                <a href="/2017/02/20/聊聊IT行业应届生求职/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/02/20/聊聊IT行业应届生求职/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/02/20/聊聊IT行业应届生求职/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-《微服务》九大特性笔记" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/02/19/《微服务》九大特性笔记/">《微服务》九大特性笔记</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/02/19/《微服务》九大特性笔记/">
+            <time datetime="2017-02-18T17:05:52.000Z" itemprop="datePublished">2017-02-19</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/架构设计/">架构设计</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/微服务/">微服务</a>
     </div>
 
                     </div>
@@ -472,7 +686,37 @@ window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMin
         <div class="article-entry" itemprop="articleBody">
         
             
-             
+             <h2 id="服务组件化"><a href="#服务组件化" class="headerlink" title="服务组件化"></a>服务组件化</h2><p>组件，是一个可以独立更换和升级的单元。就像PC中的CPU、内存、显卡、硬盘一样，独立且可以更换升级而不影响其他单元。</p>
+<p>在“微服务”架构中，需要我们对服务进行组件化分解。服务，是一种进程外的组件，它通过http等通信协议进行协作，而不是传统组件以嵌入的方式协同工作。服务都独立开发、部署，可以有效的避免一个服务的修改引起整个系统的重新部署。</p>
+<p>打一个不恰当的比喻，如果我们的PC组件以服务的方式构建，我们只维护主板和一些必要外设之后，计算能力通过一组外部服务实现，我们只需要告诉PC我们从哪个地址来获得计算能力，通过服务定义的计算接口来实现我们使用过程中的计算需求，从而实现CPU组件的服务化。这样我们原本复杂的PC服务得到了更轻量化的实现，我们甚至只需要更换服务地址就能升级我们PC的计算能力。</p>
+<h2 id="按业务组织团队"><a href="#按业务组织团队" class="headerlink" title="按业务组织团队"></a>按业务组织团队</h2><p>当我们开始决定如何划分“微服务”时，通常也意味着我们要开始对团队进行重新规划与组织。按以往的方式，我们往往会以技术的层面去划分多个不同的团队，比如：DBA团队、运维团队、后端团队、前端团队、设计师团队等等。若我们继续按这种方式组织团队来实施“微服务”架构开发时，当有一个有问题需要更改，可能是一个非常简单的变动，比如：对人物描述增加一个字段，这就需要从数据存储开始考虑一直到设计和前端，虽然大家的修改都非常小，但这会引起跨团队的时间和预算审批。</p>
+<p>在实施“微服务”架构时，需要采用不同的团队分割方法。由于每一个微服务都是针对特定业务的宽栈或是全栈实现，既要负责数据的持久化存储，又要负责用户的接口定义等各种跨专业领域的职能。因此，面对大型项目时候，对于微服务团队拆分更加建议按业务线的方式进行拆分，一方面可以有效减少服务内部修改所产生的内耗；另一方面，团队边界可以变得更为清晰。</p>
+<h2 id="做“产品”的态度"><a href="#做“产品”的态度" class="headerlink" title="做“产品”的态度"></a>做“产品”的态度</h2><p>实施“微服务”架构的团队中，每个小团队都应该以做产品的方式，对其产品的整个生命周期负责。而不是以项目的模式，以完成开发与交付并将成果交接给维护者为最终目标。</p>
+<p>开发团队通过了解服务在具体生产环境中的情况，可以增加他们对具体业务的理解，比如：很多时候一些业务中发生的特殊或异常情况，很可能产品经理都并不知晓，但细心的开发者很容易通过生产环境发现这些特殊的潜在问题或需求。</p>
+<p>所以，我们需要用做“产品”的态度来对待每一个“微服务”，持续关注服务的运作情况，并不断地分析帮助用户来提升业务功能。</p>
+<h2 id="智能端点与哑管道"><a href="#智能端点与哑管道" class="headerlink" title="智能端点与哑管道"></a>智能端点与哑管道</h2><p>在单体应用中，组件间直接通过函数调用的方式进行交互协作。而在“微服务”架构中，服务由于不在一个进程中，组件间的通信模式发生了改变，若仅仅将原本在进程内的方法调用改成RPC方式的调用，会导致微服务之间产生繁琐的通信，使得系统表现更为糟糕，所以，我们需要更粗粒度的通信协议。</p>
+<p>在“微服务”架构中，通常会使用这两个服务调用方式：</p>
+<p>第一种，使用HTTP协议的RESTful API或轻量级的消息发送协议，来实现信息传递与服务调用的触发。<br>第二种，通过在轻量级消息总线上传递消息，类似RabbitMQ等一些提供可靠异步交换的结构。</p>
+<blockquote>
+<p>在极度强调性能的情况下，有些团队会使用二进制的消息发送协议，例如：protobuf。即使是这样，这些系统仍然会呈现出“智能端点和哑管道”的特点，为了在易读性与高效性之间取得平衡。当然大多数Web应用或企业系统并不需要作出在这两者间做出选择，能够获得易读性就已经是一个极大的胜利了。<br>——Martin Fowler</p>
+</blockquote>
+<h2 id="去中心化治理"><a href="#去中心化治理" class="headerlink" title="去中心化治理"></a>去中心化治理</h2><p>当我们采用集中化的架构治理方案时，通常在技术平台上都会做同一的标准，但是每一种技术平台都有其短板，这会导致在碰到短板时，不得不花费大力气去解决，并且可能还是因为其底层原因解决的不是很好。</p>
+<p>在实施“微服务”架构时，通过采用轻量级的契约定义接口，使得我们对于服务本身的具体技术平台不再那么敏感，这样我们整个“微服务”架构的系统中的组件就能针对其不同的业务特点选择不同的技术平台，终于不会出现杀鸡用牛刀或是杀牛用指甲钳的尴尬处境了。</p>
+<blockquote>
+<p>不是每一个问题都是钉子，不是每一个解决方案都是锤子</p>
+</blockquote>
+<h2 id="去中心化管理数据"><a href="#去中心化管理数据" class="headerlink" title="去中心化管理数据"></a>去中心化管理数据</h2><p>我们在实施“微服务”架构时，都希望可以让每一个服务来管理其自有的数据库，这就是数据管理的去中心化。</p>
+<p>在去中心化过程中，我们除了将原数据库中的存储内容拆分到新的同平台的其他数据库实例中之外（如：把原本存储在MySQL中的表拆分后，存储多几个不同的MySQL实例中），也可以针对一些具有特殊结构或业务特性的数据存储到一些其他技术的数据库实例中（如：把日志信息存储到MongoDB中、把用户登录信息存储到Redis中）。</p>
+<p>虽然，数据管理的去中心化可以让数据管理更加细致化，通过采用更合适的技术来让数据存储和性能达到最优。但是，由于数据存储于不同的数据库实例中后，数据一致性也成为“微服务”架构中急需解决的问题之一。分布式事务的实现，本身难度就非常大，所以在“微服务”架构中，我们更强调在各服务之间进行“无事务”的调用，而对于数据一致性，只要求数据在最后的处理状态是一致的效果；若在过程中发现错误，通过补偿机制来进行处理，使得错误数据能够达到最终的一致性。</p>
+<h2 id="基础设施自动化"><a href="#基础设施自动化" class="headerlink" title="基础设施自动化"></a>基础设施自动化</h2><p>近年来云计算服务与容器化技术的不断成熟，运维基础设施的工作变得越来越不那么难了。但是，当我们实施“微服务”架构时，数据库、应用程序的个头虽然都变小了，但是因为拆分的原因，数量成倍的增长。这使得运维人员需要关注的内容也成倍的增长，并且操作性任务也会成倍的增长，这些问题若没有得到妥善的解决，必将成为运维人员的噩梦。</p>
+<p>所以，在“微服务”架构中，请务必从一开始就构建起“持续交付”平台来支撑整个实施过程，该平台需要两大内容，不可或缺：</p>
+<p>自动化测试：每次部署前的强心剂，尽可能的获得对正在运行软件的信心。<br>自动化部署：解放繁琐枯燥的重复操作以及对多环境的配置管理。</p>
+<h2 id="容错设计"><a href="#容错设计" class="headerlink" title="容错设计"></a>容错设计</h2><p>在单体应用中，一般不存在单个组件故障而其他还在运行的情况，通常是一挂全挂。而在“微服务”架构中，由于服务都运行在独立的进程中，所以是存在部分服务出现故障，而其他服务都正常运行的情况，比如：当正常运作的服务B调用到故障服务A时，因故障服务A没有返回，线程挂起开始等待，直到超时才能释放，而此时若触发服务B调用服务A的请求来自服务C，而服务C频繁调用服务B时，由于其依赖服务A，大量线程被挂起等待，最后导致服务A也不能正常服务，这时就会出现故障的蔓延。</p>
+<p>所以，在“微服务”架构中，快速的检测出故障源并尽可能的自动恢复服务是必须要被设计和考虑的。通常，我们都希望在每个服务中实现监控和日志记录的组件，比如：服务状态、断路器状态、吞吐量、网络延迟等关键数据的仪表盘等。</p>
+<h2 id="演进式设计"><a href="#演进式设计" class="headerlink" title="演进式设计"></a>演进式设计</h2><p>通过上面的几点特征，我们已经能够体会到，要实施一个完美的“微服务”架构，需要考虑的设计与成本并不小，对于没有足够经验的团队来说，甚至要比单体应用发付出更多的代价。</p>
+<p>所以，很多情况下，架构师们都会以演进的方式进行系统的构建，在初期系统以单体系统的方式来设计和实施，一方面系统体量初期并不会很大，构建和维护成本都不高。另一方面，初期的核心业务在后期通常也不会发生巨大的改变。随着系统的发展或者业务的需要，架构师们会将一些经常变动或是有一定时间效应的内容进行“微服务”处理，并逐渐地将原来在单体系统中多变的模块逐步拆分出来，而稳定不太变化的就形成了一个核心“微服务”存在于整个架构之中。</p>
+<p><em>原文由 程序猿DD-翟永超 创作</em><br>转载自<a href="http://blog.didispace.com/20160917-microservices-note/" target="_blank" rel="external">《微服务》九大特性笔记</a></p>
+
            
         
         </div>
@@ -520,7 +764,654 @@ window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMin
 
             
     
-        <a href="http://lexburner.github.io/2016/08/16/hello-world/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2016/08/16/hello-world/">评论</a>
+        <a href="http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-ThreadLocal的最佳实践" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/02/14/ThreadLocal的最佳实践/">ThreadLocal的最佳实践</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/02/14/ThreadLocal的最佳实践/">
+            <time datetime="2017-02-14T09:38:52.000Z" itemprop="datePublished">2017-02-14</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>, <a class="tag-link" href="/tags/多线程/">多线程</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <p><code>SimpleDateFormat</code>众所周知是线程不安全的，多线程中如何保证线程安全又同时兼顾性能问题呢？那就是使用<code>ThreadLocal</code>维护<code>SimpleDateFormat</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleDateFormatThreadTest</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> <span class="keyword">volatile</span> AtomicInteger n = <span class="keyword">new</span> AtomicInteger(-<span class="number">1</span>);</div><div class="line"></div><div class="line">    <span class="keyword">static</span> ThreadLocal&lt;DateFormat&gt; sdf ;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> &#123;</div><div class="line">        sdf =<span class="keyword">new</span> ThreadLocal&lt;DateFormat&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">protected</span> DateFormat <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ParseException, InterruptedException </span>&#123;</div><div class="line"></div><div class="line">        Set&lt;String&gt; dateSet = <span class="keyword">new</span> ConcurrentHashSet&lt;&gt;();</div><div class="line">        Set&lt;Integer&gt; numberSet = <span class="keyword">new</span> ConcurrentHashSet&lt;&gt;();</div><div class="line"></div><div class="line">        Date[] dates = <span class="keyword">new</span> Date[<span class="number">1000</span>];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</div><div class="line">            dates[i] = sdf.get().parse(i + <span class="number">1000</span> + <span class="string">"-11-22"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        ExecutorService executorService = Executors.newFixedThreadPool(<span class="number">10</span>);</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</div><div class="line">            executorService.execute(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    <span class="keyword">int</span> number = n.incrementAndGet();</div><div class="line">                    String date = sdf.get().format(dates[number]);</div><div class="line">                    numberSet.add(number);</div><div class="line">                    dateSet.add(date);</div><div class="line">                    System.out.println(number+<span class="string">" "</span>+date);</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line">        executorService.shutdown();</div><div class="line">        Thread.sleep(<span class="number">5000</span>);</div><div class="line">        System.out.println(dateSet.size());</div><div class="line">        System.out.println(numberSet.size());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>实践证明sdf的parse（String to Date）有严重的线程安全问题，format（Date to String）有轻微的线程安全问题，虽然不太明显，但还是会出现问题，这和内部的实现有关。</p>
+<p>简单分析下使用ThreadLocal的好处，1000次转换操作，10个线程争抢执行，如果每次都去new 一个sdf，可见其效率之低，而使用ThreadLocal，是对每个线程维护一个sdf，所以最多就只会出现10个sdf，真正项目中，由于操作系统线程分片执行，所以线程不会非常的多，使用ThreadLocal的好处也就立竿见影了。</p>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/02/14/ThreadLocal的最佳实践/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/02/14/ThreadLocal的最佳实践/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-简单了解RPC实现原理" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/02/10/简单了解RPC实现原理/">简单了解RPC实现原理</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/02/10/简单了解RPC实现原理/">
+            <time datetime="2017-02-10T07:11:52.000Z" itemprop="datePublished">2017-02-10</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/架构设计/">架构设计</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/RPC/">RPC</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><p>时下很多企业应用更新换代到分布式，一篇文章了解什么是RPC。<br>原作者梁飞，在此记录下他非常简洁的rpc实现思路。</p></p>
+            <p class="article-more-link">
+                <a href="/2017/02/10/简单了解RPC实现原理/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/02/10/简单了解RPC实现原理/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/02/10/简单了解RPC实现原理/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-java trick--String.intern()" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/11/07/java trick--String.intern()/">java trick--String.intern()</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/11/07/java trick--String.intern()/">
+            <time datetime="2016-11-07T15:16:52.000Z" itemprop="datePublished">2016-11-07</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <p>《深入理解java虚拟机》第二版中对<code>String.intern()</code>方法的讲解中所举的例子非常有意思</p>
+<p>不了解String.intern()的朋友要理解他其实也很容易，它返回的是一个字符串在字符串常亮池中的引用。直接看下面的demo</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        String str1 = <span class="keyword">new</span> StringBuilder(<span class="string">"计算机"</span>).append(<span class="string">"软件"</span>).toString();</div><div class="line">        System.out.println(str1.intern() == str1);</div><div class="line"></div><div class="line">        String str2 = <span class="keyword">new</span> StringBuilder(<span class="string">"ja"</span>).append(<span class="string">"va"</span>).toString();</div><div class="line">        System.out.println(str2.intern() == str2);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>两者输出的结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">true</div><div class="line">false</div></pre></td></tr></table></figure>
+<p>我用的jdk版本为<code>Oracle JDK7u45</code>。简单来说，就是一个很奇怪的现象，为什么<code>java</code>这个字符串在类加载之前就已经加载到常量池了？</p>
+<p>我在知乎找到了具体的说明，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> sun.misc;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.PrintStream;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Version</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String launcher_name = <span class="string">"java"</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String java_version = <span class="string">"1.7.0_79"</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String java_runtime_name = <span class="string">"Java(TM) SE Runtime Environment"</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String java_runtime_version = <span class="string">"1.7.0_79-b15"</span>;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而HotSpot JVM的实现会在类加载时先调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">System</span></span>&#123;</div><div class="line">		...</div><div class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">initializeSystemClass</span><span class="params">()</span> </span>&#123;</div><div class="line">		...</div><div class="line">        sun.misc.Version.init();</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">	    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>原来是sun.misc.Version这个类在起作用。</p>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2016/11/07/java trick--String.intern()/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2016/11/07/java trick--String.intern()/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-java trick--intergerCache" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/11/07/java trick--intergerCache/">java trick--String.intern()</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/11/07/java trick--intergerCache/">
+            <time datetime="2016-11-07T15:00:52.000Z" itemprop="datePublished">2016-11-07</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <p>看一段代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Integer a=<span class="number">100</span>,b=<span class="number">100</span>,c=<span class="number">150</span>,d=<span class="number">150</span>;</div><div class="line">        System.out.println(a==b);</div><div class="line">        System.out.println(c==d);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码会输出什么？</p>
+<p>不加留意的人可能会理所当然的认为两个答案会是一致的，但结果却是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">true</div><div class="line">false</div></pre></td></tr></table></figure>
+<p>下面一个很好解释，因为自动拆装箱机制，比较的是两者的引用，而不是值，所以为false，那么为什么前者是同一个引用呢？</p>
+<p>来看看Integer这个类，首先是自动拆装箱会调用<code>valueOf()</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Integer <span class="title">valueOf</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">        <span class="keyword">assert</span> IntegerCache.high &gt;= <span class="number">127</span>;</div><div class="line">        <span class="keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)</div><div class="line">            <span class="keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Integer(i);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>这里并不是简单的返回<code>new Integer(i)</code> 而是判断了一下int的数值，Integer的存在一个缓存机制，默认用一个IntegerCache缓存了<code>[IntegerCache.low,IntegerCache.high]</code>的引用,其中IntegerCache这个内部类真正在做缓存</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">IntegerCache</span> </span>&#123;</div><div class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> low = -<span class="number">128</span>;</div><div class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> high;</div><div class="line">        <span class="keyword">static</span> <span class="keyword">final</span> Integer cache[];</div><div class="line"></div><div class="line">        <span class="keyword">static</span> &#123;</div><div class="line">            <span class="comment">// high value may be configured by property</span></div><div class="line">            <span class="keyword">int</span> h = <span class="number">127</span>;</div><div class="line">            String integerCacheHighPropValue =</div><div class="line">                sun.misc.VM.getSavedProperty(<span class="string">"java.lang.Integer.IntegerCache.high"</span>);</div><div class="line">            <span class="keyword">if</span> (integerCacheHighPropValue != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">int</span> i = parseInt(integerCacheHighPropValue);</div><div class="line">                i = Math.max(i, <span class="number">127</span>);</div><div class="line">                <span class="comment">// Maximum array size is Integer.MAX_VALUE</span></div><div class="line">                h = Math.min(i, Integer.MAX_VALUE - (-low) -<span class="number">1</span>);</div><div class="line">            &#125;</div><div class="line">            high = h;</div><div class="line"></div><div class="line">            cache = <span class="keyword">new</span> Integer[(high - low) + <span class="number">1</span>];</div><div class="line">            <span class="keyword">int</span> j = low;</div><div class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; cache.length; k++)</div><div class="line">                cache[k] = <span class="keyword">new</span> Integer(j++);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">private</span> <span class="title">IntegerCache</span><span class="params">()</span> </span>&#123;&#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>所以就出现了最开始的一个小trick</p>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2016/11/07/java trick--intergerCache/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2016/11/07/java trick--intergerCache/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-java trick--system.out.println" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/11/07/java trick--system.out.println/">java trick--String.intern()</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/11/07/java trick--system.out.println/">
+            <time datetime="2016-11-07T14:03:52.000Z" itemprop="datePublished">2016-11-07</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <p>多线程在使用<code>system.out.println</code>时要留一个有意思的地方</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Thread thread = <span class="keyword">new</span> MyThread();</div><div class="line">        thread.start();</div><div class="line">        System.out.println(<span class="string">"end"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">            i++;</div><div class="line">            System.out.println(i);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>主线程另起一个线程，然后在主线程最后打印一个<code>end</code>，猜猜看结果是什么？<code>end</code>会不会打印？<br><img src="http://img.blog.csdn.net/20161107224558403" alt="这里写图片描述"><br>主线程一直被Mythread占用<br>原因就在于<code>system.out.println</code>是一个同步方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment">     * Prints an integer and then terminate the line.  This method behaves as</span></div><div class="line"><span class="comment">     * though it invokes &lt;code&gt;&#123;<span class="doctag">@link</span> #print(int)&#125;&lt;/code&gt; and then</span></div><div class="line"><span class="comment">     * &lt;code&gt;&#123;<span class="doctag">@link</span> #println()&#125;&lt;/code&gt;.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * <span class="doctag">@param</span> x  The &lt;code&gt;int&lt;/code&gt; to be printed.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123;</div><div class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">            print(x);</div><div class="line">            newLine();</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2016/11/07/java trick--system.out.println/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2016/11/07/java trick--system.out.println/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-使用zkclient操作zookeeper的学习过程记录" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/08/16/使用zkclient操作zookeeper的学习过程记录/">使用zkclient操作zookeeper的学习过程记录</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/08/16/使用zkclient操作zookeeper的学习过程记录/">
+            <time datetime="2016-08-16T07:52:52.000Z" itemprop="datePublished">2016-08-16</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/zookeeper/">zookeeper</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近开发的分布式(使用motan)项目中使用zookeeper作为服务中心来提供注册服务(<code>@MotanService</code>)和发现服务(<code>@MotanRefer)</code>,虽然motan这个rpc框架对服务模块进行了很好的封装，但是以防以后会出现定制化的需求，以及对服务更好的监控，所以有必要了解一下zookeeper的基本知识和使用方法。关于zookeeper的知识点，网上很多的博客都已经介绍的很详尽了，我写这篇的博客的用意其实也就是将一些零散的却很精妙的博客整理出来，方便以后查阅。短篇以cp的方式，长篇的以url的方式。</p>
+<h2 id="zookeeper是什么？"><a href="#zookeeper是什么？" class="headerlink" title="zookeeper是什么？"></a>zookeeper是什么？</h2><blockquote>
+<p>ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务，是Google的Chubby一个开源的实现，是Hadoop和Hbase的重要组件。它是一个为分布式应用提供一致性服务的软件，提供的功能包括：配置维护、域名服务、分布式同步、组服务等。<br>ZooKeeper的目标就是封装好复杂易出错的关键服务，将简单易用的接口和性能高效、功能稳定的系统提供给用户。<br>ZooKeeper包含一个简单的原语集，提供Java和C的接口。 ZooKeeper代码版本中，提供了分布式独享锁、选举、队列的接口。</p>
+<p>—-百度百科</p>
+</blockquote>
+<p>一开始看的云里雾里的，幸好我之前搞过一点hadoop，对他的生态体系有所了解，这才大概知道他想说什么。提炼几个关键词，并且加入我后面学习的理解，总结一下就是–</p>
+<blockquote>
+<p>zookeeper是一个组件，需要安装客户端和服务端，一般用于解决分布式开发下的一些问题。化抽象为具体，你可以把整个zookeeper理解成一个树形数据结构，也可以理解为一个文件系统的结构，每个叶子节点都会携带一些信息(data)，并且也可能会携带一些操作(op)。分布式场景中，每一个客户端都可以访问到这些叶子节点，并且进行一些操作。我们所有使用zookeeper的场景几乎都是在CRUD某一个或者某些叶子节点，然后会触发对应的操作…即zookeeper本身可以理解为一个shareData。<br>—-来自于博主的口胡</p>
+</blockquote>
+<h2 id="zookeeper怎么学？"><a href="#zookeeper怎么学？" class="headerlink" title="zookeeper怎么学？"></a>zookeeper怎么学？</h2><p>学一个新的中间件的最好方法是先在脑子里面有一个想法：我为什么要学他，是想解决什么问题，他大概是个什么东西，我觉得打开思路的最好方式是看几篇博客(大多数情况你一开始看不懂，但是混个眼熟)，然后看视频，这里我自己是了解过了zookeeper原生的api之后看了<a href="http://www.jikexueyuan.com/course/zookeeper/" target="_blank" rel="external">极客学院</a>的视频</p></p>
+            <p class="article-more-link">
+                <a href="/2016/08/16/使用zkclient操作zookeeper的学习过程记录/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="http://lexburner.github.io/2016/08/16/使用zkclient操作zookeeper的学习过程记录/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2016/08/16/使用zkclient操作zookeeper的学习过程记录/">评论</a>
     
 
         </footer>
@@ -531,7 +1422,7 @@ window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMin
 
 
     <nav id="page-nav">
-        <a class="extend prev" rel="prev" href="/page/2/">&laquo; 上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+        <a class="extend prev" rel="prev" href="/page/2/">&laquo; 上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">下一页 &raquo;</a>
     </nav>
 </section>
             
@@ -647,7 +1538,7 @@ window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMin
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -656,7 +1547,7 @@ window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMin
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">1</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -665,7 +1556,7 @@ window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMin
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/DevOps/" style="font-size: 13.33px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/Spring/" style="font-size: 16.67px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 13.33px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 16.67px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 13.33px;">Validation</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 20px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/多线程/" style="font-size: 13.33px;">多线程</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/规则引擎/" style="font-size: 20px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 13.33px;">领域驱动设计</a>
+            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 14px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 10px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
         </div>
     </div>
 
