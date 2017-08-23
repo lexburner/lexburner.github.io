@@ -2213,6 +2213,12 @@ ol.toc {
   height: 150px;
   height: 150px;
 }
-#donate_guide img::first-child {
+#donate_guide img:first-child {
   margin-right: 20px;
+}
+#donate_guide span.donate-title {
+  display: inline-block;
+  width: 200px;
+  line-height: 1.5em;
+  height: 1.5em;
 }
