@@ -38,6 +38,9 @@
             <%- partial('comment/counter', { post: post }) %>
         </footer>
     </div>
+	<% if (!index && theme.donate && post.donate!=false){ %>
+		<%- partial('custom/donate') %>
+	<% } %>
     <% if (!index) { %>
         <%- partial('post/nav') %>
     <% } %>

@@ -54,6 +54,12 @@ comment:
 # Share
 share: default # options: jiathis, bdshare, addtoany, default
 
+#是否开启打赏功能
+donate: true
+#打赏文案
+donate_message: 大吉大利，今晚吃鸡。
+
+
 # Plugins
 plugins:
     lightgallery: true # options: true, false
