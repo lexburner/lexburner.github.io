@@ -15,7 +15,7 @@ customize:
         url: 
     profile:
         enabled: true # Whether to show profile bar
-        avatar: https://avatars2.githubusercontent.com/u/11485990?v=4&s=460
+        avatar: /css/images/avatar.png
         gravatar: # Gravatar email address, if you enable Gravatar, your avatar config will be overriden
         author: 徐靖峰
         author_title: JAVA Developer
