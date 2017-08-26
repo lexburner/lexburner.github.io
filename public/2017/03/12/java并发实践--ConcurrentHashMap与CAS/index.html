@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="徐靖峰|个人博客">
 <meta property="og:description" content="前言最近在做接口限流时涉及到了一个有意思问题，牵扯出了关于concurrentHashMap的一些用法，以及CAS的一些概念。限流算法很多，我主要就以最简单的计数器法来做引。先抽象化一下需求：统计每个接口访问的次数。一个接口对应一个url，也就是一个字符串，每调用一次对其进行加一处理。可能出现的问题主要有三个：  多线程访问，需要选择合适的并发容器 分布式下多个实例统计接口流量需要共享内存 流量统">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-08-26T10:12:35.241Z">
+<meta property="og:updated_time" content="2017-08-26T10:36:55.542Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java并发实践--ConcurrentHashMap与CAS">
 <meta name="twitter:description" content="前言最近在做接口限流时涉及到了一个有意思问题，牵扯出了关于concurrentHashMap的一些用法，以及CAS的一些概念。限流算法很多，我主要就以最简单的计数器法来做引。先抽象化一下需求：统计每个接口访问的次数。一个接口对应一个url，也就是一个字符串，每调用一次对其进行加一处理。可能出现的问题主要有三个：  多线程访问，需要选择合适的并发容器 分布式下多个实例统计接口流量需要共享内存 流量统">
@@ -270,7 +270,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/03/12/java并发实践--ConcurrentHashMap与CAS/" data-id="cj6t5dpcu001844v7idxas7wc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/03/12/java并发实践--ConcurrentHashMap与CAS/" data-id="cj6t6oeyr001bekv7iapx7vpr" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
