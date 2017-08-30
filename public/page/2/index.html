@@ -146,11 +146,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                34
+                35
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                24
+                25
                 <span>标签</span>
             </div>
         </div>
@@ -181,6 +181,146 @@
 
             
             <section id="main">
+    <article id="post-spring中的懒加载与事务--排坑记录" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/06/23/spring中的懒加载与事务--排坑记录/">spring中的懒加载与事务--排坑记录</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/06/23/spring中的懒加载与事务--排坑记录/">
+            <time datetime="2017-06-23T05:37:41.000Z" itemprop="datePublished">2017-06-23</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring/">Spring</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring/">Spring</a>, <a class="tag-link" href="/tags/事务/">事务</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><h2 id="案例描述"><a href="#案例描述" class="headerlink" title="案例描述"></a>案例描述</h2><p>本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。</p>
+<ol>
+<li>在新的线程中，访问某个持久化对象的懒加载属性。</li>
+<li>在quartz定时任务中，访问某个持久化对象的懒加载属性。</li>
+<li>在dubbo，motan一类rpc框架中，远程调用时服务端session关闭的问题。</li>
+</ol>
+<p>上面三个案例，其实核心都是一个问题，就是牵扯到spring对事务的管理，而懒加载这个技术，只是比较容易体现出事务出错的一个实践，主要用它来引发问题，进而对问题进行思考。</p></p>
+            <p class="article-more-link">
+                <a href="/2017/06/23/spring中的懒加载与事务--排坑记录/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/06/23/spring中的懒加载与事务--排坑记录/" data-id="cj6yiswuw001ie0udn9wltwru" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/06/23/spring中的懒加载与事务--排坑记录/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/06/23/spring中的懒加载与事务--排坑记录/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
     <article id="post-使用zipkin做分布式链路监控" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -255,7 +395,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/06/12/使用zipkin做分布式链路监控/" data-id="cj6t5dpdd002644v777o1duds" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/06/12/使用zipkin做分布式链路监控/" data-id="cj6yiswve0023e0ud6jtagjor" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -405,7 +545,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/05/02/JAVA程序员分级，你属于哪一级/" data-id="cj6t5dpb9000044v7bqqsa0bv" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/05/02/JAVA程序员分级，你属于哪一级/" data-id="cj6yiswsn0002e0udyu1z8xsb" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -545,7 +685,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----Cross Products/" data-id="cj6t5dpc7000o44v781413m6l" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----Cross Products/" data-id="cj6yiswtn000je0udyu7n9gac" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -692,7 +832,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----Methods vs Rules/" data-id="cj6t5dpc8000q44v7muggj94u" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----Methods vs Rules/" data-id="cj6yiswts000ne0ud0z142qh0" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -836,7 +976,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateless session（无状态会话）的使用/" data-id="cj6t5dpce000w44v7k7gmbypf" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateless session（无状态会话）的使用/" data-id="cj6yiswu2000we0uddk1ailvn" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -980,7 +1120,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/" data-id="cj6t5dpcc000u44v7vz80qg6z" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/" data-id="cj6yiswtz000ue0ud9hfi3krq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1117,7 +1257,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/08/Zuul性能测试/" data-id="cj6t5dpc5000j44v7rlhckazp" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/08/Zuul性能测试/" data-id="cj6yiswtk000ie0udolclpemm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1257,7 +1397,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/01/springcloud----Zuul动态路由/" data-id="cj6t5dpcw001b44v7k9tdopzq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/01/springcloud----Zuul动态路由/" data-id="cj6yiswut001fe0udh6wz2ojc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1425,7 +1565,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/03/18/分布式限流/" data-id="cj6t5dpdh002e44v7gqpnopox" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/03/18/分布式限流/" data-id="cj6yiswvo002ee0udni3x15x1" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1504,225 +1644,6 @@
 
 
 
-    <article id="post-DevOps的八荣八耻" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/03/14/DevOps的八荣八耻/">DevOps的八荣八耻</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/03/14/DevOps的八荣八耻/">
-            <time datetime="2017-03-13T16:43:52.000Z" itemprop="datePublished">2017-03-14</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/DevOps/">DevOps</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/DevOps/">DevOps</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-             <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>被群里的好友安利了一发，周日跑去参加了一个技术讲座《云上开发与运维最佳实践》，听完两个人的演讲之后才发现主题竟然是讲运维，好在有一个人干货不少，在此记录下所得。简单追溯了一下这个DevOps才发现并不是一个新的概念，早在2010年就能看到有相关的人在追捧这个概念了。DevOps 就是开发（Development）和运维（Operations）这两个领域的合并。（如果没错的话，DevOps还包括产品管理、QA、<em>winces</em> 甚至销售等领域）。这种理念和现如今流行的微服务架构以及分布式特性的相关理念不谋而合。这篇文章主要就是转载记录了当时又拍云运维总监的演讲稿。</p>
-<h2 id="DevOps的八荣八耻"><a href="#DevOps的八荣八耻" class="headerlink" title="DevOps的八荣八耻"></a>DevOps的八荣八耻</h2><p>DevOps这个思想提出来已经五六年了，一直都是呼声很高，落地很难，为什么呢？这可能与各个公司的业务情况和技术发展路线有或多或少的关系，比如说创业的最早技术合伙人是运维出身或者技术出身，但是水平不高，为了公司持续发展，引入新鲜血液时，就会存在技术的先进性跟解决遗留烂摊子的矛盾。又或者业务本身偏向于用户，导致技术被边缘化，产品又没有好的架构，限制了快速发展等；所以，DevOps的推进一定要自上而下，凭借挑战自我，颠覆传统的勇气才能去落实。</p>
-<h2 id="以可配置为荣，以硬编码为耻"><a href="#以可配置为荣，以硬编码为耻" class="headerlink" title="以可配置为荣，以硬编码为耻"></a>以可配置为荣，以硬编码为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/442859059ca8412b9ccc86005922f1e5_th.jpeg" alt="img"></p>
-<p>△ 以可配置为荣，以硬编码为耻</p>
-<p>hardcoding一时爽，真正要做改动时，需要定位代码，做出调整，甚至可能会破坏功能。以下可以说是配置的一个进化史</p>
-<p>• 本地配置,程序⽣生成 (txt/ini/cfg)<br>• 集中配置, 动态⽣生成(Yaml/Json)<br>• 环境变量量(代码⽆无侵⼊入&amp;语⾔言⽆无关性)<br>• 服务⾃自动发现,⾃自动注册(zookeeper/consul)</p>
-<h2 id="以互备为荣，以单点为耻"><a href="#以互备为荣，以单点为耻" class="headerlink" title="以互备为荣，以单点为耻"></a>以互备为荣，以单点为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/e1ff6885b5184119965586baf841fee4_th.jpeg" alt="img"></p>
-<p>　　△ 以互备为荣，以单点为耻</p>
-<p>互容互备一直是优良架构的设计重点。</p>
-<p>又拍云早期做架构设计，使用了LVS+Keeplived+VRRP做转换，这样可以方便负载均衡，动态升级，隔离故障。现在的又拍云第二代，已经在部分大节点使用OSPF和Quagga做等价路由的负载均衡和冗余保障。</p>
-<p>Nginx可以加Haproxy或LVS做负载均衡。MySQL可以做主从切换，或者是MMM的高可用成熟解决方案。我们的消息队列之前用rabbitmq做，现在主要是redis和kafka集群化，其中kafka已经迁到了Mesos容器平台里。</p>
-<p>服务的自动发现、注册，我们可以使用consul、etcd、doozer（Heroku公司产品），还有zookeeper。主要区别是算法不一样，zookeeper用的是paxos算法，而consul用的是raft算法。目前看来consul比较流行，因为consul的自动发现和自动注册更加容易使用。etcd主要是CoreOS在主推，CoreOS本身就是一个滚动发布的针对分布式部署的操作系统，大家可以去关注一下它。还有一个是hadoop和elk，大数据平台的可扩展性是标配，很容易互备。</p>
-<p>上面是举了一些常见互备的软件组件的造型，那我们如何是设计一个无单点的架构呢？主要掌握以下几点：</p>
-<p>1.无状态</p>
-<p>无状态意味着没有竞争，很容易做负载均衡，负载均衡的方式有很多种，F5，LVS，Haproxy，总能找到一种适合你的方式。</p>
-<p>2.无共享</p>
-<p>以前我们很喜欢用内存来保持临时信息，如进程间的交换，这种方式虽然效率很高，但是对程序的扩展性没什么好处，尤其是现在的互联网体量，光靠单机或者高性能机器是明显玩不转的。所以我们现在就需要使用类似消息队列的组件，把数据共享出去，利用多台机器把负载给承担下来。</p>
-<p>3.松耦合/异步处理</p>
-<p>以前我们用Gearman这样的任务框架。大家可以把任务丢进任务池里，生成多个消费者去取任务。当我的消费不够用时，可以平滑增加我的work资源，让他从更快的去拿任务。运维平台这边以python/celery的组合使用更多。</p>
-<p>4.分布式/集群协作</p>
-<p>像Hadoop这样的天生大数据/数据仓库解决方案，由于先前设计比较成熟，一般都是通过很多台机器扩容来实现map/reduce的扩展计算能力。</p>
-<h2 id="以随时重启为荣，以不能迁移为耻"><a href="#以随时重启为荣，以不能迁移为耻" class="headerlink" title="以随时重启为荣，以不能迁移为耻"></a>以随时重启为荣，以不能迁移为耻</h2><p><img src="http://img.mp.itc.cn/upload/20161101/f74832b01e78472e8507cbf089e3aa8d_th.jpeg" alt="img"></p>
-<p>△ 以随时重启为荣，以不能迁移为耻</p>
-<p>关于这个点，我们讲三个方面：</p>
-<p>1.Pet到Cow观念的转变</p>
-<p>以前我们说机器是pet，也就是宠物模式，然后花了几万块钱去买的服务器，当宝一般供奉。但事实上却并不是这样，任何电子设备、服务器只要一上线，便开始了一个衰老的过程，你根本不知道在运行过程中会发生什么事，比如说质量差的电容会老化爆浆，电子元器件在机房的恶劣环境里会加速损坏，这些变化都是我们无法参与控制的，所以无论我们怎么努力，都无法保障机器有多么的牢靠。</p>
-<p>谷歌指出的Cow模式就是指农场模式。就是要把机器发生故障当做常态，打个比方，比如说这头牛死了，那我就不要了，因为我有很多这样的牛，或者是再拉一头新的牛。这就是我们软件开发和运维需要做的转变，去适应这种变化。</p>
-<p>2.OpenStack虚拟机的编排</p>
-<p>虚拟化是个好东西，通过OpenStack我们很容易就可以做出一些存储或者迁移的操作，但是在实施的过程中，也是一波三折的。</p>
-<p>又拍云从2014年开始在内部推动OpenStack，当然我们也踩过OpenStack网络的坑，那时候我们用双千兆的卡做内网通讯，因为使用OpenStack实现虚拟化后，一切都变成了文件，在网络上传输的话，对网络的压力会非常大，结果就导致部分服务响应缓慢（因为本身就是实验性质，所以在硬件上没有足够投入，内测时也没有推广，所以影响不大）。</p>
-<p>2015年又拍云再上的OpenStack，全部都用双万兆的网卡做bonding，交换机也是做了端口聚合和堆叠。目前来说，只有云存储没有上线，其它云处理，云网络的使用还是能够满足要求。</p>
-<p>3.Docker的导入导出</p>
-<p>Docker是更轻量级的资源隔离和复用技术，从2016年开始，又拍云同时也在尝试使用Mesos/Docker来实现云处理的业务迁移。</p>
-<h2 id="以整体交付为荣，以部分交付为耻"><a href="#以整体交付为荣，以部分交付为耻" class="headerlink" title="以整体交付为荣，以部分交付为耻"></a>以整体交付为荣，以部分交付为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/64c1749dcf464204bf80d5e8024aad7f_th.jpeg" alt="img"></p>
-<p>　　△ 以整体交付为荣，以部分交付为耻</p>
-<p>以往开发运维要安装一个机器，首先要去申请采购，购买完了还要等待运输，在运输中要花去一天的时间，之后还需要配交换机和网络。在这个过程中你会发现，简单的给开发配台机器，光上架就涉及到运维的很多环节，更不要说系统安装，优化，软件配置等剩余工作了，所以大多数情况下你只能做到部分交付。</p>
-<p>要如何解决这些问题？通过OpenStack可以做到云计算、云网络、云存储这三块搭建完成之后，进行整体交付。</p>
-<p>根据一些经验总结，在整个云平台当中，云存储的坑最多，云计算、云网络相对来说比较成熟。现在云计算的硬件基本上是基于英特尔CPU的虚拟化技术来硬件指令穿透的，损耗大概2%～5%，这是可以接受的。至于云网络，刚才胡凯（B站运维总监）提到内网包转发效率，我做过一个测试，在OpenStack的内网中，如果MTU默认是1500，万兆网卡的转发率大概为6.7xxGbps。后来我在优化的过程中，也翻查一些文档，看到的数据是可以达到9.5xxGbps，通过不断的摸索，对比测试后发现，如果把内网的MTU搞成大包，如9000时，万兆网卡的存储量直接达到了9.72Gbps左右的。不过，这个MTU需要提前在宿主机上调整好，需要重启生效。所以，这个问题发现得越早越好，这样就可以做到统一调度，分配资源。</p>
-<p>Docker的好处是可以做到Build、Shipand Run，一气呵成。无论是对开发，测试，还是运维来说，Docker都是同一份Dockerfile清单，所以使用Docker在公司里的推动就很顺畅。虽然OpenStack也可以一站式交付，整体交付，使用时非常方便。但是对开发来说，他还是拿到一台机器，还是需要去安装软件环境，配置，上线，运行，除了得到机器快一些，对上线服务没有什么大的帮助，所以又拍云现在的Openstack集群一般对内申请开发测试用，外网生产环境还是以Docker容器化部署为主，这也是大家都喜闻乐见的方式，但前提是开发那边能够适应编写Dockerfile（目前是我在内部推动这种变革，如新的项目就强制要求用docker）。</p>
-<h2 id="以无状态为荣，以有状态为耻"><a href="#以无状态为荣，以有状态为耻" class="headerlink" title="以无状态为荣，以有状态为耻"></a>以无状态为荣，以有状态为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/687e9c56b5b742078e0c6b7b67ee0c06_th.jpeg" alt="img"></p>
-<p>　　△ 以无状态为荣，以有状态为耻</p>
-<p>有状态的服务真的很麻烦，无论是存在数据库、磁盘开销，还有各种锁等资源的竞争，横向扩展也很差，不能重启，也不能互备。所以，有姿态的服务对于扩展原则来说，就是一场恶梦。如果是说我们解决这个问题，那就要使用解耦和负载均衡的方法去解决问题。</p>
-<p>1.使用可靠的中间件</p>
-<p>中间件其实最早出现在金融公司、证券公司，后来随着互联网行业不断壮大以后，就用一些高可靠性的号称工业级的消息队列出现，如RabbitMQ，一出来以后，就把中间件拉下神坛。随着中间件民用化，互联网蓬勃发展，是可以把一些服务变成无状态，方便扩展。</p>
-<p>2.公共资源池</p>
-<p>我们可以通过各种云，容器云、弹性云，做计算单元的弹性扩展。</p>
-<p>3.能够被计算</p>
-<p>如果你不想存状态，那也可以被计算，比如说Ceph存储，它的创新在于每个数据块都是可计算出来的，这就类似无状态的，每次都算，反正现在的cpu都这么强悍了，所以，无状态是一个命题，在做架构的时候，你脑海里一定要有这个意念，然后再看你用什么样的方式开动脑筋，预先的跟开发，运维沟通好，把应用拆分成一种无状态的最佳组合。</p>
-<h2 id="以标准化为荣，以特殊化为耻"><a href="#以标准化为荣，以特殊化为耻" class="headerlink" title="以标准化为荣，以特殊化为耻"></a>以标准化为荣，以特殊化为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/99df354cd9514e6bb8da2f6a51bc5765_th.jpeg" alt="img"></p>
-<p>△ 以标准化为荣，以特殊化为耻</p>
-<p>在标准化方面，我们在这几个方面改良：</p>
-<p>1.统一输入输出</p>
-<p>统一入口是我加入又拍云后做的第一件事情，我们用一个统一的文本，到现在也在用，然后推送到所有的边缘，服务器上面的组件，要用到的参数，都能从配置里读出来。代码管理方面我们也使用git，git wiki，批量部署我们用ansible（早在2012年，我做了一些比较后，就在公司里推行ansible，看来还是很明智的决定）。</p>
-<p>2.统一的流程管理</p>
-<p>运维中使用python最多，所以我们使用了yaml和playbook。又拍云有自己的跳板机，通过VPN登陆，目前我们也在试用一个带有审计功能的堡垒机，可以把每个人的操作录制下来，然后再去回放观察，改进我们的工作流程。</p>
-<p>3.抽象底层设计和复用组件</p>
-<p>如果是开发者的话，就会写很多的复用函数，对于优秀的运维人员来说，也要有优秀的抽象业务的能力，也要去做一些重复工作的复用准备，如频繁的，繁琐易出错的手工操作抽象成若干运维的脚本化。</p>
-<p>最后是巧妙的利用虚拟化、容器服务、server-less微服务，这些服务是可以被备份，还原的，可以保持一个相对稳定的状态，我们要拒绝多的特殊管理操作。香农-信息熵理论里说，变量的不确定性越大，熵就越大，把它搞清楚所需要的信息量也就越大。理论上来说，如果是一个孤立的系统，他就会变得越来越乱。</p>
-<h2 id="以自动化工具为荣，以手动和人肉为耻"><a href="#以自动化工具为荣，以手动和人肉为耻" class="headerlink" title="以自动化工具为荣，以手动和人肉为耻"></a>以自动化工具为荣，以手动和人肉为耻</h2><p><img src="http://img.mp.itc.cn/upload/20161101/9f47211cf22444dbb17ca767872dfc61_th.jpeg" alt="img"></p>
-<p>　　△ 以自动化工具为荣，以手动和人肉为耻</p>
-<p>又拍云早期，用的是bash、sed、awk，因为我之前有搞嵌入式的背景和经验，对一个十几兆的嵌入式系统来说，上面是不可能有python/perl/nodejs等环境。所以我们把服务器批量安装，部署，上线，做成了嵌入式的系统后，只要点亮以后，运行一个硬件检测的程序，会把机器的CPU、内存、硬盘大小等都打印出来，供货商截图给我看，这个机器是否合格。合格的机器可以直接发到机房去，在机器到了机房通上网线以后会有一个ansibleplaybook的推动。</p>
-<p>自从用了这种方法以后，我们在公司里面基本上没有见到服务器，一般直接产线上检测通过后发到机房。然后又拍云的运维人员就可以连上去远程管理，在过去的三年里我们服务器平均每年翻了三倍，节点翻了六倍多，但是人手并没有增加。</p>
-<p>关于tgz、rpm、pkg的打包部署，我们用的是tgz的打包及docker镜像。优势在于，又拍云自有CDN网络，软件通过推动到CDN网络下可以加速下发。</p>
-<p>关于集成测试、自动测试的发布，像ELK集中日志的分析、大数据的分析，我们现在使用ELK以后，只要有基础的运维技术知识便可看懂，不需要高深的运维知识和脚本编辑知识，大多数人都可以完成这份工作，好处就是你多了好多眼睛帮你一起来发现问题，定位问题。</p>
-<p>最后是不要图形，不要交互，不要终端。一旦有了图形以后，很难实现自动化。原则就是，不要手工hack，最好是用程序生成程序的方式去完成这个步骤。</p>
-<h2 id="以无人值守为荣，以人工介入为耻"><a href="#以无人值守为荣，以人工介入为耻" class="headerlink" title="以无人值守为荣，以人工介入为耻"></a>以无人值守为荣，以人工介入为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/ecb1a9bc0f1e478dbfcd81f2b79d5c7e_th.jpeg" alt="img"></p>
-<p>　　△ 以无人值守为荣，以人工介入为耻</p>
-<p>运维部门要做的事情有三件：</p>
-<p>1.运维自动化</p>
-<p>要有一定的业务抽象能力，要有标准化的流程。没有好的自动化，就很难把运维的工作效率提升了，只要做好这些，就可以节省时间，从容应对业务增长。而且运维自动化的另一个好处就是运维不会因为人的喜怒哀乐而受到影响稳定性，比如说我今天心情不好，你让我装一台机器我还可以忍，你让我装十台一百台就不行了。但如果公司有了运维自动化的流程，这个事情就可以避免，因为谁做都一样。</p>
-<p>2.监控要常态</p>
-<p>2016年年初，又拍云特别成立大数据分析部门，我们把日志做了采样收集和过滤，通过大数据平台做日志的同构数据分析，重点关注4xx/5xx/2xx比例，响应时间分析如100毫秒、200毫秒、500毫秒，还有区域性的速率分布，讲真，这真是一个好东西。</p>
-<p>3.性能可视化</p>
-<p>数据的有效展示。现在ELK对我们的帮助很大，从监控图上来看相关的数据指标，一目了然。这里就不反复赘述了。</p>
-<h2 id="DevOps的本质"><a href="#DevOps的本质" class="headerlink" title="DevOps的本质"></a>DevOps的本质</h2><p>最后，我们谈一谈DevOps的本质。</p>
-<ol>
-<li><p>弹性</p>
-<p>像亚马逊推云时，那个单词叫elastic，意思是，你要能够扩展，如横向扩展；你要能负载均衡，如果你是基于openstack/docker资源池，你的资源就可以复用，可以编排回滚。比如说OpenStack有模板，我打一个镜像包，稍微重了一点，Docker的就轻一点，Docker可以做一个滚动发布，可以保留原来的程序、原来的容器，你可以做快速切换，这也是一种变化的弹性。</p>
-</li>
-<li><p>无关性</p>
-<p>如果是虚拟化资源，一切都可以在模板里面设置，可以把底层的硬件、系统、网络抚平差异，比如说不管物理磁盘是1T(市面上缺货)/4T/6T的盘，都可以划分100G容量，所以当把一切变成按需申请的服务，无论是开发还是运维，工作都会比较简单，因为它的无关性。</p>
-</li>
-<li><p>不可变的基础设施</p>
-<p>这个对传统运维可能是一种打击，因为基础镜像可能已经做的足够安全，足够完美，足够精干，不需要基础运维过多的人工参与。但我认为恰恰能帮助传统运维减轻工作量，反而有更多的精力去迎接虚拟化、容器化，SDN的挑战，掌握了新技能后，就可以随取随用。</p>
-</li>
-</ol>
-
-           
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://lexburner.github.io/2017/03/14/DevOps的八荣八耻/" data-id="cj6t5dpbr000944v79g3jbf8h" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://lexburner.github.io/2017/03/14/DevOps的八荣八耻/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/03/14/DevOps的八荣八耻/">评论</a>
-    
-
-        </footer>
-    </div>
-	
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">下一页 &raquo;</a>
     </nav>
@@ -1752,6 +1673,25 @@
                             <p class="item-category"><a class="article-category-link" href="/categories/JAVA/">JAVA</a></p>
                             <p class="item-title"><a href="/2017/08/26/XML与javabean的转换/" class="title">XML与javabean的转换</a></p>
                             <p class="item-date"><time datetime="2017-08-25T19:41:27.000Z" itemprop="datePublished">2017-08-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/25/一些需要普及的项目规范/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/25/一些需要普及的项目规范/" class="title">一些需要普及的项目规范</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T04:18:45.000Z" itemprop="datePublished">2017-08-25</time></p>
                         </div>
                     </li>
                 
@@ -1812,25 +1752,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a></p>
-                            <p class="item-title"><a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/" class="title">Re：从零开始的Spring Security OAuth2（三）</a></p>
-                            <p class="item-date"><time datetime="2017-08-10T06:22:12.000Z" itemprop="datePublished">2017-08-10</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -1840,7 +1761,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -1849,7 +1770,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -1858,7 +1779,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 14px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/XML/" style="font-size: 10px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 10px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
+            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 14px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/XML/" style="font-size: 10px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 12px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
         </div>
     </div>
 
