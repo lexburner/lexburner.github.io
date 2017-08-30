@@ -3,20 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>《微服务》九大特性笔记 | 徐靖峰|个人博客</title>
+    <title>XML与javabean的转换 | 徐靖峰|个人博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="服务组件化组件，是一个可以独立更换和升级的单元。就像PC中的CPU、内存、显卡、硬盘一样，独立且可以更换升级而不影响其他单元。 在“微服务”架构中，需要我们对服务进行组件化分解。服务，是一种进程外的组件，它通过http等通信协议进行协作，而不是传统组件以嵌入的方式协同工作。服务都独立开发、部署，可以有效的避免一个服务的修改引起整个系统的重新部署。 打一个不恰当的比喻，如果我们的PC组件以服务的方式">
-<meta name="keywords" content="微服务">
+    <meta name="description" content="XML可以说是一种被时代淘汰的数据传输格式，毕竟相比较JSON，其语法，表现形式，以及第三方类库的支持，都要略逊一筹，但最近在对接一些老接口时，主要还是以XML为主，而翻阅相关的文档以及博客，没看到很好的文章介绍如何使用xml进行数据传输，所以简单写下此文，做一下记录。内心多多少少还是会抵制对接如此老旧的接口，不过生活还是要继续。 Code First先上一段代码，展示一下如何封装，讲解放到后面">
+<meta name="keywords" content="XML">
 <meta property="og:type" content="article">
-<meta property="og:title" content="《微服务》九大特性笔记">
-<meta property="og:url" content="http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/index.html">
+<meta property="og:title" content="XML与javabean的转换">
+<meta property="og:url" content="http://lexburner.github.io/2017/08/26/XML与javabean的转换/index.html">
 <meta property="og:site_name" content="徐靖峰|个人博客">
-<meta property="og:description" content="服务组件化组件，是一个可以独立更换和升级的单元。就像PC中的CPU、内存、显卡、硬盘一样，独立且可以更换升级而不影响其他单元。 在“微服务”架构中，需要我们对服务进行组件化分解。服务，是一种进程外的组件，它通过http等通信协议进行协作，而不是传统组件以嵌入的方式协同工作。服务都独立开发、部署，可以有效的避免一个服务的修改引起整个系统的重新部署。 打一个不恰当的比喻，如果我们的PC组件以服务的方式">
+<meta property="og:description" content="XML可以说是一种被时代淘汰的数据传输格式，毕竟相比较JSON，其语法，表现形式，以及第三方类库的支持，都要略逊一筹，但最近在对接一些老接口时，主要还是以XML为主，而翻阅相关的文档以及博客，没看到很好的文章介绍如何使用xml进行数据传输，所以简单写下此文，做一下记录。内心多多少少还是会抵制对接如此老旧的接口，不过生活还是要继续。 Code First先上一段代码，展示一下如何封装，讲解放到后面">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-08-22T07:52:39.139Z">
+<meta property="og:updated_time" content="2017-08-30T04:20:27.164Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="《微服务》九大特性笔记">
-<meta name="twitter:description" content="服务组件化组件，是一个可以独立更换和升级的单元。就像PC中的CPU、内存、显卡、硬盘一样，独立且可以更换升级而不影响其他单元。 在“微服务”架构中，需要我们对服务进行组件化分解。服务，是一种进程外的组件，它通过http等通信协议进行协作，而不是传统组件以嵌入的方式协同工作。服务都独立开发、部署，可以有效的避免一个服务的修改引起整个系统的重新部署。 打一个不恰当的比喻，如果我们的PC组件以服务的方式">
+<meta name="twitter:title" content="XML与javabean的转换">
+<meta name="twitter:description" content="XML可以说是一种被时代淘汰的数据传输格式，毕竟相比较JSON，其语法，表现形式，以及第三方类库的支持，都要略逊一筹，但最近在对接一些老接口时，主要还是以XML为主，而翻阅相关的文档以及博客，没看到很好的文章介绍如何使用xml进行数据传输，所以简单写下此文，做一下记录。内心多多少少还是会抵制对接如此老旧的接口，不过生活还是要继续。 Code First先上一段代码，展示一下如何封装，讲解放到后面">
     
 
     
@@ -185,7 +185,7 @@
 </aside>
 
             
-            <section id="main"><article id="post-《微服务》九大特性笔记" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-XML与javabean的转换" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -193,7 +193,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            《微服务》九大特性笔记
+            XML与javabean的转换
         </h1>
     
 
@@ -202,8 +202,8 @@
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2017/02/19/《微服务》九大特性笔记/">
-            <time datetime="2017-02-18T17:05:52.000Z" itemprop="datePublished">2017-02-19</time>
+        <a href="/2017/08/26/XML与javabean的转换/">
+            <time datetime="2017-08-25T19:41:27.000Z" itemprop="datePublished">2017-08-26</time>
         </a>
     </div>
 
@@ -211,13 +211,13 @@
                         
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/架构设计/">架构设计</a>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
     </div>
 
                         
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/微服务/">微服务</a>
+        <a class="tag-link" href="/tags/XML/">XML</a>
     </div>
 
                     </div>
@@ -228,36 +228,48 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-             <h2 id="服务组件化"><a href="#服务组件化" class="headerlink" title="服务组件化"></a>服务组件化</h2><p>组件，是一个可以独立更换和升级的单元。就像PC中的CPU、内存、显卡、硬盘一样，独立且可以更换升级而不影响其他单元。</p>
-<p>在“微服务”架构中，需要我们对服务进行组件化分解。服务，是一种进程外的组件，它通过http等通信协议进行协作，而不是传统组件以嵌入的方式协同工作。服务都独立开发、部署，可以有效的避免一个服务的修改引起整个系统的重新部署。</p>
-<p>打一个不恰当的比喻，如果我们的PC组件以服务的方式构建，我们只维护主板和一些必要外设之后，计算能力通过一组外部服务实现，我们只需要告诉PC我们从哪个地址来获得计算能力，通过服务定义的计算接口来实现我们使用过程中的计算需求，从而实现CPU组件的服务化。这样我们原本复杂的PC服务得到了更轻量化的实现，我们甚至只需要更换服务地址就能升级我们PC的计算能力。</p>
-<h2 id="按业务组织团队"><a href="#按业务组织团队" class="headerlink" title="按业务组织团队"></a>按业务组织团队</h2><p>当我们开始决定如何划分“微服务”时，通常也意味着我们要开始对团队进行重新规划与组织。按以往的方式，我们往往会以技术的层面去划分多个不同的团队，比如：DBA团队、运维团队、后端团队、前端团队、设计师团队等等。若我们继续按这种方式组织团队来实施“微服务”架构开发时，当有一个有问题需要更改，可能是一个非常简单的变动，比如：对人物描述增加一个字段，这就需要从数据存储开始考虑一直到设计和前端，虽然大家的修改都非常小，但这会引起跨团队的时间和预算审批。</p>
-<p>在实施“微服务”架构时，需要采用不同的团队分割方法。由于每一个微服务都是针对特定业务的宽栈或是全栈实现，既要负责数据的持久化存储，又要负责用户的接口定义等各种跨专业领域的职能。因此，面对大型项目时候，对于微服务团队拆分更加建议按业务线的方式进行拆分，一方面可以有效减少服务内部修改所产生的内耗；另一方面，团队边界可以变得更为清晰。</p>
-<h2 id="做“产品”的态度"><a href="#做“产品”的态度" class="headerlink" title="做“产品”的态度"></a>做“产品”的态度</h2><p>实施“微服务”架构的团队中，每个小团队都应该以做产品的方式，对其产品的整个生命周期负责。而不是以项目的模式，以完成开发与交付并将成果交接给维护者为最终目标。</p>
-<p>开发团队通过了解服务在具体生产环境中的情况，可以增加他们对具体业务的理解，比如：很多时候一些业务中发生的特殊或异常情况，很可能产品经理都并不知晓，但细心的开发者很容易通过生产环境发现这些特殊的潜在问题或需求。</p>
-<p>所以，我们需要用做“产品”的态度来对待每一个“微服务”，持续关注服务的运作情况，并不断地分析帮助用户来提升业务功能。</p>
-<h2 id="智能端点与哑管道"><a href="#智能端点与哑管道" class="headerlink" title="智能端点与哑管道"></a>智能端点与哑管道</h2><p>在单体应用中，组件间直接通过函数调用的方式进行交互协作。而在“微服务”架构中，服务由于不在一个进程中，组件间的通信模式发生了改变，若仅仅将原本在进程内的方法调用改成RPC方式的调用，会导致微服务之间产生繁琐的通信，使得系统表现更为糟糕，所以，我们需要更粗粒度的通信协议。</p>
-<p>在“微服务”架构中，通常会使用这两个服务调用方式：</p>
-<p>第一种，使用HTTP协议的RESTful API或轻量级的消息发送协议，来实现信息传递与服务调用的触发。<br>第二种，通过在轻量级消息总线上传递消息，类似RabbitMQ等一些提供可靠异步交换的结构。</p>
-<blockquote>
-<p>在极度强调性能的情况下，有些团队会使用二进制的消息发送协议，例如：protobuf。即使是这样，这些系统仍然会呈现出“智能端点和哑管道”的特点，为了在易读性与高效性之间取得平衡。当然大多数Web应用或企业系统并不需要作出在这两者间做出选择，能够获得易读性就已经是一个极大的胜利了。<br>——Martin Fowler</p>
-</blockquote>
-<h2 id="去中心化治理"><a href="#去中心化治理" class="headerlink" title="去中心化治理"></a>去中心化治理</h2><p>当我们采用集中化的架构治理方案时，通常在技术平台上都会做同一的标准，但是每一种技术平台都有其短板，这会导致在碰到短板时，不得不花费大力气去解决，并且可能还是因为其底层原因解决的不是很好。</p>
-<p>在实施“微服务”架构时，通过采用轻量级的契约定义接口，使得我们对于服务本身的具体技术平台不再那么敏感，这样我们整个“微服务”架构的系统中的组件就能针对其不同的业务特点选择不同的技术平台，终于不会出现杀鸡用牛刀或是杀牛用指甲钳的尴尬处境了。</p>
-<blockquote>
-<p>不是每一个问题都是钉子，不是每一个解决方案都是锤子</p>
-</blockquote>
-<h2 id="去中心化管理数据"><a href="#去中心化管理数据" class="headerlink" title="去中心化管理数据"></a>去中心化管理数据</h2><p>我们在实施“微服务”架构时，都希望可以让每一个服务来管理其自有的数据库，这就是数据管理的去中心化。</p>
-<p>在去中心化过程中，我们除了将原数据库中的存储内容拆分到新的同平台的其他数据库实例中之外（如：把原本存储在MySQL中的表拆分后，存储多几个不同的MySQL实例中），也可以针对一些具有特殊结构或业务特性的数据存储到一些其他技术的数据库实例中（如：把日志信息存储到MongoDB中、把用户登录信息存储到Redis中）。</p>
-<p>虽然，数据管理的去中心化可以让数据管理更加细致化，通过采用更合适的技术来让数据存储和性能达到最优。但是，由于数据存储于不同的数据库实例中后，数据一致性也成为“微服务”架构中急需解决的问题之一。分布式事务的实现，本身难度就非常大，所以在“微服务”架构中，我们更强调在各服务之间进行“无事务”的调用，而对于数据一致性，只要求数据在最后的处理状态是一致的效果；若在过程中发现错误，通过补偿机制来进行处理，使得错误数据能够达到最终的一致性。</p>
-<h2 id="基础设施自动化"><a href="#基础设施自动化" class="headerlink" title="基础设施自动化"></a>基础设施自动化</h2><p>近年来云计算服务与容器化技术的不断成熟，运维基础设施的工作变得越来越不那么难了。但是，当我们实施“微服务”架构时，数据库、应用程序的个头虽然都变小了，但是因为拆分的原因，数量成倍的增长。这使得运维人员需要关注的内容也成倍的增长，并且操作性任务也会成倍的增长，这些问题若没有得到妥善的解决，必将成为运维人员的噩梦。</p>
-<p>所以，在“微服务”架构中，请务必从一开始就构建起“持续交付”平台来支撑整个实施过程，该平台需要两大内容，不可或缺：</p>
-<p>自动化测试：每次部署前的强心剂，尽可能的获得对正在运行软件的信心。<br>自动化部署：解放繁琐枯燥的重复操作以及对多环境的配置管理。</p>
-<h2 id="容错设计"><a href="#容错设计" class="headerlink" title="容错设计"></a>容错设计</h2><p>在单体应用中，一般不存在单个组件故障而其他还在运行的情况，通常是一挂全挂。而在“微服务”架构中，由于服务都运行在独立的进程中，所以是存在部分服务出现故障，而其他服务都正常运行的情况，比如：当正常运作的服务B调用到故障服务A时，因故障服务A没有返回，线程挂起开始等待，直到超时才能释放，而此时若触发服务B调用服务A的请求来自服务C，而服务C频繁调用服务B时，由于其依赖服务A，大量线程被挂起等待，最后导致服务A也不能正常服务，这时就会出现故障的蔓延。</p>
-<p>所以，在“微服务”架构中，快速的检测出故障源并尽可能的自动恢复服务是必须要被设计和考虑的。通常，我们都希望在每个服务中实现监控和日志记录的组件，比如：服务状态、断路器状态、吞吐量、网络延迟等关键数据的仪表盘等。</p>
-<h2 id="演进式设计"><a href="#演进式设计" class="headerlink" title="演进式设计"></a>演进式设计</h2><p>通过上面的几点特征，我们已经能够体会到，要实施一个完美的“微服务”架构，需要考虑的设计与成本并不小，对于没有足够经验的团队来说，甚至要比单体应用发付出更多的代价。</p>
-<p>所以，很多情况下，架构师们都会以演进的方式进行系统的构建，在初期系统以单体系统的方式来设计和实施，一方面系统体量初期并不会很大，构建和维护成本都不高。另一方面，初期的核心业务在后期通常也不会发生巨大的改变。随着系统的发展或者业务的需要，架构师们会将一些经常变动或是有一定时间效应的内容进行“微服务”处理，并逐渐地将原来在单体系统中多变的模块逐步拆分出来，而稳定不太变化的就形成了一个核心“微服务”存在于整个架构之中。</p>
-<p><em>原文由 程序猿DD-翟永超 创作</em><br>转载自<a href="http://blog.didispace.com/20160917-microservices-note/" target="_blank" rel="external">《微服务》九大特性笔记</a></p>
+             <p>XML可以说是一种被时代淘汰的数据传输格式，毕竟相比较JSON，其语法，表现形式，以及第三方类库的支持，都要略逊一筹，但最近在对接一些老接口时，主要还是以XML为主，而翻阅相关的文档以及博客，没看到很好的文章介绍如何使用xml进行数据传输，所以简单写下此文，做一下记录。内心多多少少还是会抵制对接如此老旧的接口，不过生活还是要继续。</p>
+<h2 id="Code-First"><a href="#Code-First" class="headerlink" title="Code First"></a>Code First</h2><p>先上一段代码，展示一下如何封装，讲解放到后面</p>
+<p>一个典型的对接方提供的XML如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">ORDER</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">ORDER_NO</span>&gt;</span>10086<span class="tag">&lt;/<span class="name">ORDER_NO</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">TOTAL_PRICE</span>&gt;</span>3.14<span class="tag">&lt;/<span class="name">TOTAL_PRICE</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">CREATE_TIME</span>&gt;</span>2017-08-26 03:39:30<span class="tag">&lt;/<span class="name">CREATE_TIME</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">ORDER_ITEMS</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">GOODS_NAME</span>&gt;</span>德芙<span class="tag">&lt;/<span class="name">GOODS_NAME</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">NUM</span>&gt;</span>3<span class="tag">&lt;/<span class="name">NUM</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">GOODS_NAME</span>&gt;</span>旺仔<span class="tag">&lt;/<span class="name">GOODS_NAME</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">NUM</span>&gt;</span>10<span class="tag">&lt;/<span class="name">NUM</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">ORDER_ITEMS</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">ORDER</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>而我们要对应的实体类，则应当如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@XmlRootElement</span>(name = <span class="string">"ORDER"</span>)<span class="comment">// &lt;1&gt;</span></div><div class="line"><span class="meta">@XmlAccessorType</span>(XmlAccessType.FIELD)<span class="comment">// &lt;1&gt;</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Order</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"ORDER_NO"</span>)<span class="comment">// &lt;1&gt;</span></div><div class="line">    <span class="keyword">private</span> String orderNo;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"TOTAL_PRICE"</span>)</div><div class="line">    <span class="keyword">private</span> BigDecimal totalPrice;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"CREATE_TIME"</span>)</div><div class="line">    <span class="meta">@XmlJavaTypeAdapter</span>(DateAdapter.class) <span class="comment">// &lt;2&gt;</span></div><div class="line">    <span class="keyword">private</span> Date createTime;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElementWrapper</span>(name = <span class="string">"ORDER_ITEMS"</span>) <span class="comment">// &lt;3&gt;</span></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"ORDER_ITEM"</span>)</div><div class="line">    <span class="keyword">private</span> List&lt;OrderItem&gt; orderItems;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@XmlAccessorType</span>(XmlAccessType.FIELD)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderItem</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"GOODS_NAME"</span>)</div><div class="line">    <span class="keyword">private</span> String goodsName;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"NUM"</span>)</div><div class="line">    <span class="keyword">private</span> Integer num;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我举的这个示例基本包含一般情况下所有可能出现的需求</p>
+<p><1> 常用注解XmlRootElement，XmlAccessorType，XmlElement</1></p>
+<p><2> 日期转换的适配器注解</2></p>
+<p><3> 如何在XML中设置集合</3></p>
+<p>在介绍这三点之前，先给出转换的工具类</p>
+<a id="more"></a>
+<h2 id="转换工具类"><a href="#转换工具类" class="headerlink" title="转换工具类"></a>转换工具类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XML</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">toXmlString</span><span class="params">(Object obj)</span> </span>&#123;</div><div class="line">        String result;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            JAXBContext context = JAXBContext.newInstance(obj.getClass());</div><div class="line">            Marshaller marshaller = context.createMarshaller();</div><div class="line">            StringWriter writer = <span class="keyword">new</span> StringWriter();</div><div class="line">            marshaller.marshal(obj, writer);</div><div class="line">            result = writer.toString();</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">T <span class="title">parseObject</span><span class="params">(String input, Class&lt;T&gt; claaz)</span> </span>&#123;</div><div class="line">        Object result;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            JAXBContext context = JAXBContext.newInstance(claaz);</div><div class="line">            Unmarshaller unmarshaller = context.createUnmarshaller();</div><div class="line">            result = unmarshaller.unmarshal(<span class="keyword">new</span> StringReader(input));</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> (T) result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>JSON工具类中，笔者习惯于使用fastjson，所以干脆连同工具类类名命名和方法命名都按照了它的风格，只有两个方法。</p>
+<h2 id="注解的介绍"><a href="#注解的介绍" class="headerlink" title="注解的介绍"></a>注解的介绍</h2><p>给实体类加上注解，再使用工具类，就可以实现实体和XML的相互转换了。那么前面提到的三个注意点中的相关注解分别代表了什么含义呢？</p>
+<ul>
+<li><p>@XmlRootElement</p>
+<p>作用域：类</p>
+<p>代表一个XML对象的根节点，常使用name属性来可以指定生成XML之后的具体名称</p>
+</li>
+<li><p>@XmlElement</p>
+<p>作用域：字段，方法，参数（不常用）</p>
+<p>代表一个XML对象的普通界点信息，常使用name属性来指定生成XML之后的具体名称。需要注意与@XmlAccessorType搭配使用时，有一些注意点，见下</p>
+</li>
+<li><p>@XmlAccessorType</p>
+<p>作用域：类，包（不常用）</p>
+<p>告诉解析器，在解析XML时要如何获取类的字段属性，有4个枚举类型：</p>
+<p>| 枚举类型                            | 访问方式                            |<br>| ——————————- | ——————————- |<br>| XmlAccessType.FIELD             | 成员变量                            |<br>| XmlAccessType.PROPERTY          | public getter,setter            |<br>| XmlAccessType.PUBLIC_MEMBER（默认） | public getter,setter+public成员变量 |<br>| XmlAccessType.NONE              | 必须显示指定@XmlElement               |</p>
+<p>我们上述的例子中，使用的方式是在类上配置@XmlAccessorType(XmlAccessType.FIELD)，基于成员变量访问属性，并且，在每一个成员变量之上都显示指定了name=xxx；而如果配置@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)即默认配置，则你需要将@XmlElement注解写在getter方法上,笔者比较习惯例子中的写法。需要注意点的一点是，如果@XmlAccessorType与@XmlElement的配置不对应，很容易触发自动的转换方式，会导致某个节点出现两次的异常。</p>
+</li>
+<li><p>@XmlJavaTypeAdapter</p>
+<p>作用域：字段,方法,类,包,参数（前三者常用）</p>
+<p>java内置的xml日期转换类不能满足我们的需求（可以动手试试看默认日期的格式是什么），以及遇到自定义的类，需要配置转换器，就可以使用这个注解，@XmlJavaTypeAdapter注解接收一个自定义的Adapter，需要继承自<code>XmlAdapter&lt;ValueType,BoundType&gt;</code>抽象类，一个常用的日期转化适配器如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DateAdapter</span> <span class="keyword">extends</span> <span class="title">XmlAdapter</span>&lt;<span class="title">String</span>, <span class="title">Date</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> ThreadLocal&lt;DateFormat&gt; sdf ;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> &#123;</div><div class="line">        sdf =<span class="keyword">new</span> ThreadLocal&lt;DateFormat&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">protected</span> DateFormat <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd hh:mm:ss"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Date <span class="title">unmarshal</span><span class="params">(String v)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        <span class="keyword">return</span> sdf.get().parse(v);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">marshal</span><span class="params">(Date v)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        <span class="keyword">return</span> sdf.get().format(v);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用Adapter的弊端也很明显，一个适配器只能对应一个日期的格式，在实际开发中我们往往会将日期区分成天维度的日期和秒维度的日期，不能像大多数JSON那样拥有灵活的注解，如果有读者有想到好的解决方案，欢迎跟我沟通。涉及到日期格式转化，时刻不要忘记SimpleDateFormat线程不安全这一点。</p>
+</li>
+<li><p>@XmlElementWrapper</p>
+<p>XML中表示集合时，在最外层通常会有一个Xxxs或者XxxList这样的标签，可以通过@XmlElementWrapper实现，其中name就代表额外添加的包裹信息是什么,如上文的OrderItems。</p>
+</li>
+</ul>
+<h2 id="一些其他的转换工具类"><a href="#一些其他的转换工具类" class="headerlink" title="一些其他的转换工具类"></a>一些其他的转换工具类</h2><p>我们主要任务是实现XML字符串和javabean之间转换，不是解析XML，所以dom4j一类的类库不用考虑。熟悉spring的人会了解到一点，spring其实已经封装了xml转换相关的类，即<code>org.springframework.oxm.jaxb.Jaxb2Marshaller</code>这个类，他的顶层接口是<code>org.springframework.oxm.Marshaller</code>和<code>org.springframework.oxm.UnMarshaller</code>。而在java规范中，也存在同名的接口：<code>javax.xml.bind.Marshaller</code>,<code>javax.xml.bind.UnMarshaller</code>，这点在使用中需要注意下。笔者的建议是，这种数据格式转换操作，应当尽量引入最少的依赖。所以使用javax的类库下的相关方法进行封装。上述的工具类，仅仅只需要引入javax包，即可使用了。非常方便、</p>
 
            
         
@@ -269,7 +281,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/" data-id="cj6yiswv8001ve0ud0azmc3x5" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/08/26/XML与javabean的转换/" data-id="cj6yiswtv000pe0udgitmgco9" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -337,7 +349,7 @@
 
             
     
-        <a href="http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/">评论</a>
+        <a href="http://lexburner.github.io/2017/08/26/XML与javabean的转换/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/26/XML与javabean的转换/">评论</a>
     
 
         </footer>
@@ -378,19 +390,10 @@
         
 <nav id="article-nav">
     
-        <a href="/2017/02/20/聊聊IT行业应届生求职/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    聊聊IT行业应届生求职
-                
-            </div>
-        </a>
     
-    
-        <a href="/2017/02/14/ThreadLocal的最佳实践/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2017/08/25/一些需要普及的项目规范/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">ThreadLocal的最佳实践</div>
+            <div class="article-nav-title">一些需要普及的项目规范</div>
         </a>
     
 </nav>
@@ -589,9 +592,9 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'http://lexburner.github.io/2017/02/19/《微服务》九大特性笔记/';
+            this.page.url = 'http://lexburner.github.io/2017/08/26/XML与javabean的转换/';
         
-        this.page.identifier = '《微服务》九大特性笔记';
+        this.page.identifier = 'XML与javabean的转换';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
