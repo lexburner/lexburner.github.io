@@ -146,7 +146,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                35
+                36
                 <span>文章</span>
             </div>
             <div class="article-info-block">
@@ -181,6 +181,146 @@
 
             
             <section id="main">
+    <article id="post-Re：从零开始的领域驱动设计" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/07/28/Re：从零开始的领域驱动设计/">Re：从零开始的领域驱动设计</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/07/28/Re：从零开始的领域驱动设计/">
+            <time datetime="2017-07-28T05:15:46.000Z" itemprop="datePublished">2017-07-28</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/领域驱动设计/">领域驱动设计</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><p>[TOC]</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>领域驱动的火爆程度不用我赘述，但是即便其如此得耳熟能详，但大多数人对其的认识，还只是停留在知道它的缩写是DDD，知道它是一种软件思想，或者知道它和微服务有千丝万缕的关系。Eric Evans对DDD的诠释是那么地惜字如金，而我所认识的领域驱动设计的专家又都是行业中的资深前辈，他们擅长于对软件设计进行高屋建瓴的论述，如果没有丰富的互联网从业经验，是不能从他们的分享中获取太多的营养的，可以用曲高和寡来形容。1000个互联网从业者，100个懂微服务，10个人懂领域驱动设计。</p>
+<p>可能有很多和我一样的读者，在得知DDD如此火爆之后，尝试去读了开山之作《领域驱动设计——软件核心复杂性应对之道》，翻看了几张之后，晦涩的语句，不明所以的专业术语，加上翻译导致的语句流畅性，可以说观看体验并不是很好，特别是对于开发经验不是很多的读者。我总结了一下，为何这本书难以理解：</p>
+<ol>
+<li>没有阅读软件设计丛书的习惯，更多人偏向于阅读偏应用层面的书籍，“talk is cheap，show me the code”往往更符合大多数人的习惯。<br>2.没有太多的开发经验支撑。没有踩过坑，就不会意识到设计的重要性，无法产生共情。<br>3.年代有些久远，这本书写于2004年，书中很多软件设计的反例，在当时是非常流行的，但是在现在已经基本绝迹了。大师之所以为大师，是因为其能跨越时代的限制，预见未来的问题，这也是为什么DDD在十几年前就被提出，却在微服务逐渐流行的现阶段才被大家重视。</li>
+</ol>
+<p>诚然如标题所示，本文是领域驱动设计的一个入门文章，或者更多的是一个个人理解的笔记，笔者也正在学习DDD的路上，可能会有很多的疏漏。如有理解有偏颇的地方，还望各位指摘。</p></p>
+            <p class="article-more-link">
+                <a href="/2017/07/28/Re：从零开始的领域驱动设计/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/07/28/Re：从零开始的领域驱动设计/" data-id="cj6zrzx4r0008n0udkck6ttqj" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/07/28/Re：从零开始的领域驱动设计/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/07/28/Re：从零开始的领域驱动设计/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
     <article id="post-spring中的懒加载与事务--排坑记录" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -242,7 +382,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/06/23/spring中的懒加载与事务--排坑记录/" data-id="cj6yiswuw001ie0udn9wltwru" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/06/23/spring中的懒加载与事务--排坑记录/" data-id="cj6zrzx5y0016n0uddf7g901t" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -395,7 +535,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/06/12/使用zipkin做分布式链路监控/" data-id="cj6yiswve0023e0ud6jtagjor" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/06/12/使用zipkin做分布式链路监控/" data-id="cj6zrzx6t0025n0udvjg6pqrc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -545,7 +685,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/05/02/JAVA程序员分级，你属于哪一级/" data-id="cj6yiswsn0002e0udyu1z8xsb" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/05/02/JAVA程序员分级，你属于哪一级/" data-id="cj6zrzx5u0011n0udrn6kzh5i" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -685,7 +825,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----Cross Products/" data-id="cj6yiswtn000je0udyu7n9gac" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----Cross Products/" data-id="cj6zrzx59000hn0udhyh6g2vy" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -832,7 +972,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----Methods vs Rules/" data-id="cj6yiswts000ne0ud0z142qh0" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----Methods vs Rules/" data-id="cj6zrzx5h000nn0uds9354u94" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -976,7 +1116,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateless session（无状态会话）的使用/" data-id="cj6yiswu2000we0uddk1ailvn" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateless session（无状态会话）的使用/" data-id="cj6zrzx5p000vn0udikwow54g" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1120,7 +1260,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/" data-id="cj6yiswtz000ue0ud9hfi3krq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/" data-id="cj6zrzx5j000pn0udxskrus32" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1257,7 +1397,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/08/Zuul性能测试/" data-id="cj6yiswtk000ie0udolclpemm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/08/Zuul性能测试/" data-id="cj6zrzx55000en0ud0mihija4" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1397,7 +1537,7 @@
 
 </div>
 
-    <a data-url="http://lexburner.github.io/2017/04/01/springcloud----Zuul动态路由/" data-id="cj6yiswut001fe0udh6wz2ojc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://lexburner.github.io/2017/04/01/springcloud----Zuul动态路由/" data-id="cj6zrzx63001en0uddfc9fpih" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1476,174 +1616,6 @@
 
 
 
-    <article id="post-分布式限流" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/03/18/分布式限流/">分布式限流</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/03/18/分布式限流/">
-            <time datetime="2017-03-18T05:52:00.000Z" itemprop="datePublished">2017-03-18</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/架构设计/">架构设计</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/lua/">lua</a>, <a class="tag-link" href="/tags/redis/">redis</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-             <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近正在为本科论文的事感到心烦，一方面是在调研期间，发现大部分的本科论文都是以MVC为架构，如果是使用了java作为开发语言则又是千篇一律的在使用SSH，二方面是自己想就微服务，分布式方面写一篇论文，讲述一些技术点的实现，和一些中间件的使用，看到如八股文般的模板格式..不免让人望文生怯。退一步，投入模板化ssh-web项目的怀抱，落入俗套，可以省去自己不少时间，因为在外实习，琐事并不少；进一步，需要投入大量时间精力去研究，而且不成体系，没有论文参考。</p>
-<p>突然觉得写博客，比写论文爽多了，可以写自己想写的，记录自己最真实的想法。可能会逐渐将之前博客维护的自己的一些想法，纳入到本科论文中去。</p>
-<h2 id="经典限流算法"><a href="#经典限流算法" class="headerlink" title="经典限流算法"></a>经典限流算法</h2><p>说回正题，补上之前分布式限流的实现。先介绍一些现有的限流方案。</p>
-<p>核心的算法主要就是四种：<br>A类：计数器法，滑动窗口法<br>B类：令牌桶法，漏桶法</p>
-<p>这里的四种算法通常都是在应用级别讨论的，这里不重复介绍这四种算法的实现思路了，只不过我人为的将他们分成了A，B两类。</p>
-<ul>
-<li><p>A类算法，是否决式限流。即如果系统设定限流方案是1分钟允许100次调用，那么真实请求1分钟调用200次的话，意味着超出的100次调用，得到的是空结果或者调用频繁异常。</p>
-</li>
-<li><p>B类算法，是阻塞式限流。即如果系统设定限流方案是1分钟允许100次调用，那么真实请求1分钟调用200次的话，意味着超出的100次调用，会均匀安排到下一分钟返回。（当然B类算法，也可以立即返回失败，也可以达到否决式限流的效果）</p>
-</li>
-</ul>
-<p>B类算法，如Guava包提供的RateLimiter，内部其实就是一个阻塞队列，达到阻塞限流的效果。然后分布式场景下，有一些思路悄悄的发生了变化。多个模块之间不能保证相互阻塞，共享的变量也不在一片内存空间中。为了使用阻塞限流的算法，我们不得不将统计流量放到redis一类的共享内存中，如果操作是一系列复合的操作，我们还不能使用redis自带的CAS操作(CAS操作只能保证单个操作的原子性)或者使用中间件级别的队列来阻塞操作，显示加分布式锁的开销又是非常的巨大。最终选择放弃阻塞式限流，而在分布式场景下，仅仅使用redis+lua脚本的方式来达到分布式-否决式限流的效果。redis执行lua脚本是一个单线程的行为，所以不需要显示加锁，这可以说避免了加锁导致的线程切换开销。</p>
-<h2 id="锁的演变"><a href="#锁的演变" class="headerlink" title="锁的演变"></a>锁的演变</h2><p>下面记录一下这个设计的演变过程。</p>
-<ul>
-<li>单体式应用中显示加锁<br>首先还是回到单体应用中对共享变量进行+1的例子。<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">Integer count = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="comment">//sychronized锁</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">synchronizedIncrement</span><span class="params">()</span></span>&#123;</div><div class="line">       count++;</div><div class="line">   &#125;</div><div class="line"></div><div class="line"><span class="comment">//juc中的lock</span></div><div class="line">Lock lock = <span class="keyword">new</span> ReentrantLock();</div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">incrementByLock</span><span class="params">()</span></span>&#123;</div><div class="line">       lock.lock();</div><div class="line">       <span class="keyword">try</span>&#123;</div><div class="line">           count++;</div><div class="line">       &#125;<span class="keyword">finally</span> &#123;</div><div class="line">           lock.unlock();</div><div class="line">       &#125;</div><div class="line"></div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>用synchronized或者lock同步的方式进行统计，当单位时间内到达限定次数后否决执行。限制：单体应用下有效，分布式场景失效，显示加锁，开销大。</p>
-<ul>
-<li>单体式应用中CAS操作</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> AtomicInteger atomicInteger = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">increamt</span><span class="params">()</span></span>&#123;</div><div class="line">	atomicInteger.incrementAndGet();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>虽然没有显示加锁，但是CAS操作有一定的局限性，限流中不仅要对计数器进行+1，而且还要记录时间段，所以复合操作，还是无法避免加锁。</p>
-<ul>
-<li>分布式应用中显示加锁</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">RedisDistributeLock lock = <span class="keyword">new</span> RedisDistributeLock();</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">incrementByLock</span><span class="params">()</span></span>&#123;</div><div class="line">  lock.lock();</div><div class="line">  <span class="keyword">try</span>&#123;</div><div class="line">  	count++;</div><div class="line">  &#125;<span class="keyword">finally</span> &#123;</div><div class="line"> 	 lock.unlock();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>分布式阻塞锁的实现，可以参考我之前的博客。虽然能达到多个模块之间的同步，但还是开销过大。不得已时才会考虑使用。</p>
-<ul>
-<li>redis+lua脚本限流（最终方案）</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">local key = KEYS[1] --限流KEY（一秒一个）</div><div class="line">local limit = tonumber(ARGV[1])        --限流大小</div><div class="line">local current = tonumber(redis.call(&apos;get&apos;, key) or &quot;0&quot;)</div><div class="line">if current + 1 &gt; limit then --如果超出限流大小</div><div class="line">    redis.call(&quot;INCRBY&quot;, key,&quot;1&quot;) -- 如果不需要统计真是访问量可以不加这行</div><div class="line">    return 0</div><div class="line">else  --请求数+1，并设置2秒过期</div><div class="line">    redis.call(&quot;INCRBY&quot;, key,&quot;1&quot;)</div><div class="line">    if tonumber(ARGV[2]) &gt; -1 then</div><div class="line">        redis.call(&quot;expire&quot;, key,tonumber(ARGV[2])) --时间窗口最大时间后销毁键</div><div class="line">    end</div><div class="line">    return 1</div><div class="line">end</div></pre></td></tr></table></figure>
-<p>lua脚本返回值比较奇怪，用java客户端接受返回值，只能使用Long，没有去深究。这个脚本只需要传入key（url+时间戳/预设时间窗口大小），便可以实现限流。<br>这里也贴下java中配套的工具类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div></pre></td><td class="code"><pre><div class="line">package sinosoftgz.apiGateway.utils;</div><div class="line"></div><div class="line">import org.springframework.data.redis.core.RedisTemplate;</div><div class="line">import org.springframework.data.redis.core.script.RedisScript;</div><div class="line">import org.springframework.util.Assert;</div><div class="line"></div><div class="line">import java.util.Arrays;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Created by xujingfeng on 2017/3/13.</div><div class="line"> * &lt;p&gt;</div><div class="line"> * 基于redis lua脚本的线程安全的计数器限流方案</div><div class="line"> * &lt;/p&gt;</div><div class="line"> */</div><div class="line">public class RedisRateLimiter &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 限流访问的url</div><div class="line">     */</div><div class="line">    private String url;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 单位时间的大小,最大值为 Long.MAX_VALUE - 1,以秒为单位</div><div class="line">     */</div><div class="line">    final Long timeUnit;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 单位时间窗口内允许的访问次数</div><div class="line">     */</div><div class="line">    final Integer limit;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 需要传入一个lua script,莫名其妙redisTemplate返回值永远是个Long</div><div class="line">     */</div><div class="line">    private RedisScript&lt;Long&gt; redisScript;</div><div class="line"></div><div class="line">    private RedisTemplate redisTemplate;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 配置键是否会过期，</div><div class="line">     * true：可以用来做接口流量统计，用定时器去删除</div><div class="line">     * false：过期自动删除，时间窗口过小的话会导致键过多</div><div class="line">     */</div><div class="line">    private boolean isDurable = false;</div><div class="line"></div><div class="line">    public void setRedisScript(RedisScript&lt;Long&gt; redisScript) &#123;</div><div class="line">        this.redisScript = redisScript;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setRedisTemplate(RedisTemplate redisTemplate) &#123;</div><div class="line">        this.redisTemplate = redisTemplate;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public String getUrl() &#123;</div><div class="line">        return url;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setUrl(String url) &#123;</div><div class="line">        this.url = url;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean isDurable() &#123;</div><div class="line">        return isDurable;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setDurable(boolean durable) &#123;</div><div class="line">        isDurable = durable;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public RedisRateLimiter(Integer limit, Long timeUnit) &#123;</div><div class="line">        this.timeUnit = timeUnit;</div><div class="line">        Assert.isTrue(timeUnit &lt; Long.MAX_VALUE - 1);</div><div class="line">        this.limit = limit;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public RedisRateLimiter(Integer limit, Long timeUnit, boolean isDurable) &#123;</div><div class="line">        this(limit, timeUnit);</div><div class="line">        this.isDurable = isDurable;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean acquire() &#123;</div><div class="line">        return this.acquire(this.url);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean acquire(String url) &#123;</div><div class="line">        StringBuffer key = new StringBuffer();</div><div class="line">        key.append(&quot;rateLimiter&quot;).append(&quot;:&quot;)</div><div class="line">                .append(url).append(&quot;:&quot;)</div><div class="line">                .append(System.currentTimeMillis() / 1000 / timeUnit);</div><div class="line">        Integer expire = limit + 1;</div><div class="line">        String convertExpire = isDurable ? &quot;-1&quot; : expire.toString();</div><div class="line">        return redisTemplate.execute(redisScript, Arrays.asList(key.toString()), limit.toString(), convertExpire).equals(1l);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>由此可以见，分布式场景下，一个小小的统计次数的需求，如果真想在分布式下做到最完善，需要花很大的精力。</p>
-
-           
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://lexburner.github.io/2017/03/18/分布式限流/" data-id="cj6yiswvo002ee0udni3x15x1" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://lexburner.github.io/2017/03/18/分布式限流/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/03/18/分布式限流/">评论</a>
-    
-
-        </footer>
-    </div>
-	
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">下一页 &raquo;</a>
     </nav>
@@ -1656,6 +1628,25 @@
         <h3 class="widget-title">最新文章</h3>
         <div class="widget">
             <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="title">解析Spring中的ResponseBody和RequestBody</a></p>
+                            <p class="item-date"><time datetime="2017-08-30T04:44:21.000Z" itemprop="datePublished">2017-08-30</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -1733,25 +1724,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2017/08/16/使用spring validation完成数据后端校验/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
-                            <p class="item-title"><a href="/2017/08/16/使用spring validation完成数据后端校验/" class="title">使用spring validation完成数据后端校验</a></p>
-                            <p class="item-date"><time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -1761,7 +1733,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -1770,7 +1742,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -1779,7 +1751,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 14px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/XML/" style="font-size: 10px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 12px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
+            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 16px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/XML/" style="font-size: 10px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 12px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
         </div>
     </div>
 
