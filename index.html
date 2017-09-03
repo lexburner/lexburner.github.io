@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>徐靖峰|个人博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta property="og:type" content="website">
+<meta property="og:title" content="徐靖峰|个人博客">
+<meta property="og:url" content="http://lexburner.github.io/index.html">
+<meta property="og:site_name" content="徐靖峰|个人博客">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="徐靖峰|个人博客">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/open-sans/styles.css">
+    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/vendor/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/vendor/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">徐靖峰|个人博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">徐靖峰</h2>
+            <h3 id="title">JAVA Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Shanghai, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lexburner">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                36
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                25
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lexburner" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/wechat.png" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main">
+    <article id="post-解析Spring中的ResponseBody和RequestBody" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/">解析Spring中的ResponseBody和RequestBody</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/">
+            <time datetime="2017-08-30T04:44:21.000Z" itemprop="datePublished">2017-08-30</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring/">Spring</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring/">Spring</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <p>spring，restful，前后端分离这些关键词都是大家耳熟能详的关键词了，一般spring常常需要与前端、第三方使用JSON，XML等形式进行交互，你也一定不会对@RequestBody和@ResponseBody这两个注解感到陌生。</p>
+<h2 id="ResponseBody的使用"><a href="#ResponseBody的使用" class="headerlink" title="@ResponseBody的使用"></a>@ResponseBody的使用</h2><p>由于@ResponseBody和@RequestBody的内部实现是同样的原理（封装请求和封装响应），所以本文以@ResponseBody为主要入手点，理解清楚任何一者，都可以同时掌握另一者。</p>
+<p>如果想要从spring获得一个json形式返回值，操作起来是非常容易的。首先定义一个实体类:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Book</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> Integer id;</div><div class="line">    <span class="keyword">private</span> String bookName;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接着定义一个后端端点：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookController</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@GetMapping</span>(value = <span class="string">"/book/&#123;bookId&#125;"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> Book <span class="title">getBook</span><span class="params">(@PathVariable(<span class="string">"bookId"</span>)</span> Integer bookId) </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Book(bookId, <span class="string">"book"</span> + bookId);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在RestController中，相当于给所有的xxxMapping端点都添加了@ResponseBody注解，不返回视图，只返回数据。使用http工具访问这个后端端点<code>localhost:8080/book/2</code>，便可以得到如下的响应：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"id"</span>: <span class="number">2</span>,</div><div class="line">    <span class="attr">"bookName"</span>: <span class="string">"book2"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这是一个最简单的返回JSON对象的使用示例了，相信这样的代码很多人在项目中都写过。</p>
+<h2 id="添加XML解析"><a href="#添加XML解析" class="headerlink" title="添加XML解析"></a>添加XML解析</h2><p>如果我们需要将Book对象以XML的形式返回，该如何操作呢？这也很简单，给Book对象添加@XmlRootElement注解，让spring内部能够解析XML对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@XmlRootElement</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Book</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> Integer id;</div><div class="line">    <span class="keyword">private</span> String bookName;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在我们未对web层的BookController做任何改动之前，尝试访问<code>localhost:8080/book/2</code>时，会发现得到的结果仍然是前面的JSON对象。这也能够理解，因为Book对象如今既可以被解析为XML，也可以被解析为JSON，我们隐隐察觉这背后有一定的解析顺序关系，但不着急，先看看如何让RestController返回XML解析结果。</p>
+<p>方法1 http客户端指定接收的返回结果类型</p>
+<p>http协议中，可以给请求头添加Accept属性，笔者常用的http客户端是idea自带的Test RESTful Web Service以及chrome的插件Postman。简单的调试，前者基本可以满足我们大多数的需求，而这里为了给大家更直观的体验，笔者使用了Postman。以code形式展示：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">GET</span> <span class="string">/book/2</span> HTTP/1.1</div><div class="line"><span class="attribute">Host</span>: localhost:8080</div><div class="line"><span class="attribute">Accept</span>: application/xml</div></pre></td></tr></table></figure>
+<p>响应内容如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">book</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">bookName</span>&gt;</span>book2<span class="tag">&lt;/<span class="name">bookName</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>2<span class="tag">&lt;/<span class="name">id</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">book</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>方法2 在RestController后端端点中指定返回类型</p>
+<p>修改后的RestController如下所示</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookController</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@GetMapping</span>(value = <span class="string">"/book/&#123;bookId&#125;"</span>, produces = &#123;<span class="string">"application/xml"</span>&#125;)</div><div class="line">    <span class="function"><span class="keyword">public</span> Book <span class="title">getBook</span><span class="params">(@PathVariable(<span class="string">"bookId"</span>)</span> Integer bookId) </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Book(bookId, <span class="string">"book"</span> + bookId);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>此时即使将请求中的<code>Accept: application/xml</code>去除，依旧可以返回上述的XML结果。</p>
+<p>通常情况下，我们的服务端返回的形式一般是固定的，即限定了是JSON，XML中的一种，不建议依赖于客户端添加Accept的信息，而是在服务端限定produces类型。</p>
+<h2 id="详解Accpect与produces"><a href="#详解Accpect与produces" class="headerlink" title="详解Accpect与produces"></a>详解Accpect与produces</h2><p>Accpect包含在http协议的请求头中，其本身代表着客户端发起请求时，期望返回的响应结果的媒体类型。如果服务端可能返回多个媒体类型，则可以通过Accpect指定具体的类型。</p>
+<p>produces是Spring为我们提供的注解参数，代表着服务端能够支持返回的媒体类型，我们注意到produces后跟随的是一个数组类型，也就意味着服务端支持多种媒体类型的响应。</p>
+<p>在上一节中，我们未显示指定produces值时，其实就隐式的表明，支持XML形式，JSON形式的媒体类型响应。从实验结果，我们也可以看出，当请求未指定Accpect，响应未指定produces时，具体采用何种形式返回是有Spring控制的。在接口交互时，最良好的对接方式，当然是客户端指定Accpect，服务端指定produces，这样可以避免模棱两可的请求响应，避免出现意想不到的对接结果。</p>
+<h2 id="详解ContentType与consumes"><a href="#详解ContentType与consumes" class="headerlink" title="详解ContentType与consumes"></a>详解ContentType与consumes</h2><p>恰恰和Accpect&amp;produces相反，这两个参数是与用于限制请求的。理解了前两者的含义，这两个参数可以举一反三理解清楚。</p>
+<p>ContentType包含在http协议的请求头中，其本身代表着客户端发起请求时，告知服务端自己的请求媒体类型是什么。</p>
+<p>consumes是Spring为我们提供的注解参数，代表着服务端能够支持处理的请求媒体类型，同样是一个数组，意味着服务端支持多种媒体类型的请求。一般而言，consumes与produces对请求响应媒体类型起到的限制作用，我们给他一个专有名词：窄化。</p>
+<h2 id="http请求响应媒体类型一览"><a href="#http请求响应媒体类型一览" class="headerlink" title="http请求响应媒体类型一览"></a>http请求响应媒体类型一览</h2><p>上面描述的4个属性：Accpect与produces，ContentType与consumes究竟有哪些类型与之对应呢？我只将常用的一些列举了出来：</p>
+<table>
+<thead>
+<tr>
+<th>媒体类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>text/html</td>
+<td>HTML格式</td>
+</tr>
+<tr>
+<td>text/plain</td>
+<td>纯文本格式</td>
+</tr>
+<tr>
+<td>text/xml, application/xml</td>
+<td>XML数据格式</td>
+</tr>
+<tr>
+<td>application/json</td>
+<td>JSON数据格式</td>
+</tr>
+<tr>
+<td>image/gif</td>
+<td>gif图片格式</td>
+</tr>
+<tr>
+<td>image/png</td>
+<td>png图片格式</td>
+</tr>
+<tr>
+<td>application/octet-stream</td>
+<td>二进制流数据</td>
+</tr>
+<tr>
+<td>application/ x-www-form-urlencoded</td>
+<td>form表单数据</td>
+</tr>
+<tr>
+<td>multipart/form-data</td>
+<td>含文件的form表单</td>
+</tr>
+</tbody>
+</table>
+<p>其中有几个类型值得一说，web开发中我们常用的提交表单操作，其默认的媒体类型就是application/ x-www-form-urlencoded，而当表单中包含文件时，大家估计都踩过坑，需要将enctype=multipart/form-data设置在form参数中。text/html也就是常见的网页了，json与xml常用于数据交互，其他不再赘述。</p>
+<p>而在JAVA中，提供了MediaType这样的抽象，来与http的媒体类型进行对应。‘/’之前的名词，如text，application被称为类型（type），‘/’之后被称为子类型(subType)。</p>
+<h2 id="详解HttpMessageConverter"><a href="#详解HttpMessageConverter" class="headerlink" title="详解HttpMessageConverter"></a>详解HttpMessageConverter</h2><p>我们想要搞懂Spring到底如何完成众多实体类等复杂类型的数据转换以及与媒体类型的对应，就必须要搞懂HttpMessageConverter这个顶级接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">HttpMessageConverter</span>&lt;<span class="title">T</span>&gt; </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">canRead</span><span class="params">(Class&lt;?&gt; var1, MediaType var2)</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">canWrite</span><span class="params">(Class&lt;?&gt; var1, MediaType var2)</span></span>;</div><div class="line"></div><div class="line">    <span class="function">List&lt;MediaType&gt; <span class="title">getSupportedMediaTypes</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="function">T <span class="title">read</span><span class="params">(Class&lt;? extends T&gt; var1, HttpInputMessage var2)</span> <span class="keyword">throws</span> IOException, HttpMessageNotReadableException</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">write</span><span class="params">(T var1, MediaType var2, HttpOutputMessage var3)</span> <span class="keyword">throws</span> IOException, HttpMessageNotWritableException</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>大致能看出Spring的处理思路。下面的流程图可以更好方便我们的理解：</p>
+<p><img src="/css/images/post/httpMessageConveter.png" alt="HttpMessageConverter运转流程"></p>
+<p>对于添加了@RequestBody和@ResponseBody注解的后端端点，都会经历由HttpMessageConverter进行的数据转换的过程。而在Spring启动之初，就已经有一些默认的转换器被注册了。通过在<code>RequestResponseBodyMethodProcessor</code> 中打断点，我们可以获取到一个converters列表：</p>
+<p><img src="/css/images/post/converters.png" alt="内置转换器列表"></p>
+<p>源码方面不做过多的解读，有兴趣的朋友可以研究一下<code>RequestResponseBodyMethodProcessor</code> 中的handleReturnValue方法，包含了转换的核心实现。</p>
+<h2 id="自定义HttpMessageConverter"><a href="#自定义HttpMessageConverter" class="headerlink" title="自定义HttpMessageConverter"></a>自定义HttpMessageConverter</h2><p>前面已经提及了消息转换器是通过判断媒体类型来调用响应的转换类的，不禁引发了我们的思考，如果我们遇到了不常用的MediaType，或者自定义的MediaType，又想要使用Spring的@RequestBody，@ResponseBody注解，该如何添加代码呢？下面我们通过自定义一个HttpMessageConverter来了解Spring内部的转换过程。</p>
+<p>先定义我们的需求，自定一个MediaType：application/toString，当返回一个带有@ResponseBody注解的实体类时，将该实体类的ToString作为响应内容。</p>
+<p>1 首先重写Book的ToString方法，方便后期效果展示</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="string">"~~~Book&#123;"</span> +</div><div class="line">            <span class="string">"id="</span> + id +</div><div class="line">            <span class="string">", bookName='"</span> + bookName + <span class="string">'\''</span> +</div><div class="line">            <span class="string">"&#125;~~~"</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>2 编写自定义的消息转换器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ToStringHttpMessageConverter</span> <span class="keyword">extends</span> <span class="title">AbstractHttpMessageConverter</span>&lt;<span class="title">Object</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ToStringHttpMessageConverter</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(<span class="keyword">new</span> MediaType(<span class="string">"application"</span>, <span class="string">"toString"</span>, Charset.forName(<span class="string">"UTF-8"</span>)));<span class="comment">// &lt;1&gt;</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">supports</span><span class="params">(Class&lt;?&gt; clazz)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//从请求体封装数据 对应RequestBody 用String接收</span></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> Object <span class="title">readInternal</span><span class="params">(Class&lt;?&gt; clazz, HttpInputMessage inputMessage)</span> <span class="keyword">throws</span> IOException, HttpMessageNotReadableException </span>&#123;</div><div class="line">        <span class="keyword">return</span> StreamUtils.copyToString(inputMessage.getBody(), Charset.forName(<span class="string">"UTF-8"</span>));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//从响应体封装数据 对应ResponseBody</span></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">writeInternal</span><span class="params">(Object o, HttpOutputMessage outputMessage)</span> <span class="keyword">throws</span> IOException, HttpMessageNotWritableException </span>&#123;</div><div class="line">        String result = o.toString();<span class="comment">//&lt;2&gt;</span></div><div class="line">        outputMessage.getBody().write(result.getBytes());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><1> 此处指定了支持的媒体类型</1></p>
+<p><2> 调用类的ToString方法，将结果写入到输出流中</2></p>
+<p>3 配置自定义的消息转换器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebMvcConfig</span> <span class="keyword">extends</span> <span class="title">WebMvcConfigurerAdapter</span></span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configureMessageConverters</span><span class="params">(List&lt;HttpMessageConverter&lt;?&gt;&gt; converters)</span> </span>&#123;</div><div class="line">        converters.add(<span class="keyword">new</span> ToStringHttpMessageConverter());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>4 配置后端端点，指定生产类型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookController</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@GetMapping</span>(value = <span class="string">"/book/&#123;bookId&#125;"</span>,produces = &#123;<span class="string">"application/toString"</span>,<span class="string">"application/json"</span>,<span class="string">"application/xml"</span>&#125;)</div><div class="line">    <span class="function"><span class="keyword">public</span> Book <span class="title">getBook</span><span class="params">(@PathVariable(<span class="string">"bookId"</span>)</span> Integer bookId) </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Book(bookId, <span class="string">"book"</span> + bookId);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>此处只是为了演示，添加了三个生产类型，我们的后端端点可以支持输出三种类型，而具体输出哪一者，则依赖客户端的Accept指定。</p>
+<p>5 客户端请求</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">GET</span> <span class="string">/book/2</span> HTTP/1.1</div><div class="line"><span class="attribute">Host</span>: localhost:8080</div><div class="line"><span class="attribute">Accept</span>: application/toString</div></pre></td></tr></table></figure>
+<p>响应结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">​~~~Book&#123;id=2, bookName=&apos;book2&apos;&#125;~~~</div></pre></td></tr></table></figure>
+<p>此时，你可以任意指定Accept的类型，即可获得不同形式的Book返回结果，可以是application/toString，application/json，application/xml，都会对应各自的HttpMessageConverter。</p>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/30/解析Spring中的ResponseBody和RequestBody/" data-id="cj6zrzx7k0031n0udi8y0qr1s" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/30/解析Spring中的ResponseBody和RequestBody/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/30/解析Spring中的ResponseBody和RequestBody/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
+    <article id="post-XML与javabean的转换" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/26/XML与javabean的转换/">XML与javabean的转换</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/26/XML与javabean的转换/">
+            <time datetime="2017-08-25T19:41:27.000Z" itemprop="datePublished">2017-08-26</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/XML/">XML</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><p>XML可以说是一种被时代淘汰的数据传输格式，毕竟相比较JSON，其语法，表现形式，以及第三方类库的支持，都要略逊一筹，但最近在对接一些老接口时，主要还是以XML为主，而翻阅相关的文档以及博客，没看到很好的文章介绍如何使用xml进行数据传输，所以简单写下此文，做一下记录。内心多多少少还是会抵制对接如此老旧的接口，不过生活还是要继续。</p>
+<h2 id="Code-First"><a href="#Code-First" class="headerlink" title="Code First"></a>Code First</h2><p>先上一段代码，展示一下如何封装，讲解放到后面</p>
+<p>一个典型的对接方提供的XML如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">ORDER</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">ORDER_NO</span>&gt;</span>10086<span class="tag">&lt;/<span class="name">ORDER_NO</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">TOTAL_PRICE</span>&gt;</span>3.14<span class="tag">&lt;/<span class="name">TOTAL_PRICE</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">CREATE_TIME</span>&gt;</span>2017-08-26 03:39:30<span class="tag">&lt;/<span class="name">CREATE_TIME</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">ORDER_ITEMS</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">GOODS_NAME</span>&gt;</span>德芙<span class="tag">&lt;/<span class="name">GOODS_NAME</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">NUM</span>&gt;</span>3<span class="tag">&lt;/<span class="name">NUM</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">GOODS_NAME</span>&gt;</span>旺仔<span class="tag">&lt;/<span class="name">GOODS_NAME</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">NUM</span>&gt;</span>10<span class="tag">&lt;/<span class="name">NUM</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">ORDER_ITEMS</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">ORDER</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>而我们要对应的实体类，则应当如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@XmlRootElement</span>(name = <span class="string">"ORDER"</span>)<span class="comment">// &lt;1&gt;</span></div><div class="line"><span class="meta">@XmlAccessorType</span>(XmlAccessType.FIELD)<span class="comment">// &lt;1&gt;</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Order</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"ORDER_NO"</span>)<span class="comment">// &lt;1&gt;</span></div><div class="line">    <span class="keyword">private</span> String orderNo;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"TOTAL_PRICE"</span>)</div><div class="line">    <span class="keyword">private</span> BigDecimal totalPrice;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"CREATE_TIME"</span>)</div><div class="line">    <span class="meta">@XmlJavaTypeAdapter</span>(DateAdapter.class) <span class="comment">// &lt;2&gt;</span></div><div class="line">    <span class="keyword">private</span> Date createTime;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElementWrapper</span>(name = <span class="string">"ORDER_ITEMS"</span>) <span class="comment">// &lt;3&gt;</span></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"ORDER_ITEM"</span>)</div><div class="line">    <span class="keyword">private</span> List&lt;OrderItem&gt; orderItems;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@XmlAccessorType</span>(XmlAccessType.FIELD)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderItem</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"GOODS_NAME"</span>)</div><div class="line">    <span class="keyword">private</span> String goodsName;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"NUM"</span>)</div><div class="line">    <span class="keyword">private</span> Integer num;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我举的这个示例基本包含一般情况下所有可能出现的需求</p>
+<p><1> 常用注解XmlRootElement，XmlAccessorType，XmlElement</1></p>
+<p><2> 日期转换的适配器注解</2></p>
+<p><3> 如何在XML中设置集合</3></p>
+<p>在介绍这三点之前，先给出转换的工具类</p></p>
+            <p class="article-more-link">
+                <a href="/2017/08/26/XML与javabean的转换/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/26/XML与javabean的转换/" data-id="cj6zrzx5e000jn0udl5nti204" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/26/XML与javabean的转换/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/26/XML与javabean的转换/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
+    <article id="post-一些需要普及的项目规范" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/25/一些需要普及的项目规范/">一些需要普及的项目规范</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/25/一些需要普及的项目规范/">
+            <time datetime="2017-08-25T04:18:45.000Z" itemprop="datePublished">2017-08-25</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/代码规范/">代码规范</a>, <a class="tag-link" href="/tags/技术杂谈/">技术杂谈</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>好的开发规范不仅能够使得项目变得易维护，易升级。一些通用的规范可以参考《阿里巴巴java开发手册》<br>本文档主要针对我们项目内部正在使用的框架提出一些开发规范，欢迎补充</p>
+<h2 id="包结构规范"><a href="#包结构规范" class="headerlink" title="包结构规范"></a>包结构规范</h2><p>以短信邮件项目（mail-sms）为例，介绍包结构命名规范。</p></p>
+            <p class="article-more-link">
+                <a href="/2017/08/25/一些需要普及的项目规范/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/25/一些需要普及的项目规范/" data-id="cj6zrzx6f001un0udmersasom" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/25/一些需要普及的项目规范/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/25/一些需要普及的项目规范/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
+    <article id="post-博客搬家" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+	
+		<a href="/2017/08/22/博客搬家/" itemprop="url">
+            <img src="/css/images/banner/1.jpg" class="article-banner" />
+        </a>
+	
+
+
+
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/22/博客搬家/">博客搬家</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/22/博客搬家/">
+            <time datetime="2017-08-22T08:38:44.000Z" itemprop="datePublished">2017-08-22</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a>
+    </div>
+
+                        
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <p>陆陆续续，写博客已经写了有4年多了，之前一直在CSDN维护博客（<a href="http://blog.csdn.net/u013815546" target="_blank" rel="external">博客旧址</a>），最近有了点空余时间，使用hexo搭了这个博客，的确比CSDN清爽多了，首先感谢@程序猿DD推荐的icarus模板，国人开发的一个hexo模板，插件支持可能不是很完善，但是样式非常让人喜欢。</p>
+<p>作为一个前端弱渣，搭建博客的过程还是遇到了不少的困难。原先是打算直接使用github个人主页作为博客地址，hexo对git有很好的支持，源代码和博客静态页面都托管在了github，master分支放静态页面，hexo分支放源文件。可惜的是国内坑爹的网速,github.io的访问速度不尽如人意（github.com倒还好），于是在宇泽学妹@ntzyz的帮助下，搞了github的hook，本地提交到github时，代理服务器自动向master分支拉取页面，同时设置反向代理和https。由于hexo是静态文件搭建的博客，这种方式可以说是非常合适的。所以，国内的朋友浏览本博客可以直接访问<a href="https://www.cnkirito.moe" target="_blank" rel="external">https://www.cnkirito.moe</a>，如果有国外代理的朋友可以直接访问我的github个人主页<a href="https://lexburner.github.io">https://lexburner.github.io</a>。</p>
+<p>目前博客功能还不算完善，缺少评论，分享，和一些小插件，以后逐渐完善，不过不影响主要功能。以后这儿就作为我主要更新博客的地方了！</p>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/22/博客搬家/" data-id="cj6zrzx74002hn0uda4qla80m" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/22/博客搬家/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/22/博客搬家/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
+    <article id="post-一个DDD指导下的实体类设计案例" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/21/一个DDD指导下的实体类设计案例/">一个DDD指导下的实体类设计案例</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/21/一个DDD指导下的实体类设计案例/">
+            <time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/领域驱动设计/">领域驱动设计</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><h2 id="1-引子"><a href="#1-引子" class="headerlink" title="1 引子"></a>1 引子</h2><p>项目开发中的工具类代码总是随着项目发展逐渐变大，在公司诸多的公用代码中，笔者发现了一个简单的，也是经常被使用的类：BaseDomain，引起了我的思考。<br>在我们公司的开发习惯中，数据库实体类通常会继承一个叫做BaseDomain的类，这个类很简单，主要用来填充一些数据库实体公用的属性，它的设计如下：<br></p>
+            <p class="article-more-link">
+                <a href="/2017/08/21/一个DDD指导下的实体类设计案例/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/21/一个DDD指导下的实体类设计案例/" data-id="cj6zrzx69001mn0udlwykeahk" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/21/一个DDD指导下的实体类设计案例/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/21/一个DDD指导下的实体类设计案例/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
+    <article id="post-使用spring validation完成数据后端校验" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/16/使用spring validation完成数据后端校验/">使用spring validation完成数据后端校验</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/16/使用spring validation完成数据后端校验/">
+            <time datetime="2017-08-16T07:52:52.000Z" itemprop="datePublished">2017-08-16</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring/">Spring</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring/">Spring</a>, <a class="tag-link" href="/tags/Validation/">Validation</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>数据的校验是交互式网站一个不可或缺的功能，前端的js校验可以涵盖大部分的校验职责，如用户名唯一性，生日格式，邮箱格式校验等等常用的校验。但是为了避免用户绕过浏览器，使用http工具直接向后端请求一些违法数据，服务端的数据校验也是必要的，可以防止脏数据落到数据库中，如果数据库中出现一个非法的邮箱格式，也会让运维人员头疼不已。我在之前保险产品研发过程中，系统对数据校验要求比较严格且追求可变性及效率，曾使用drools作为规则引擎，兼任了校验的功能。而在一般的应用，可以使用本文将要介绍的validation来对数据进行校验。</p>
+<p>简述JSR303/JSR-349，hibernate validation，spring validation之间的关系。JSR303是一项标准,JSR-349是其的升级版本，添加了一些新特性，他们规定一些校验规范即校验注解，如@Null，@NotNull，@Pattern，他们位于javax.validation.constraints包下，只提供规范不提供实现。而hibernate validation是对这个规范的实践（不要将hibernate和数据库orm框架联系在一起），他提供了相应的实现，并增加了一些其他校验注解，如@Email，@Length，@Range等等，他们位于org.hibernate.validator.constraints包下。而万能的spring为了给开发者提供便捷，对hibernate validation进行了二次封装，显示校验validated bean时，你可以使用spring validation或者hibernate validation，而spring validation另一个特性，便是其在springmvc模块中添加了自动校验，并将校验信息封装进了特定的类中。这无疑便捷了我们的web开发。本文主要介绍在springmvc中自动校验的机制。</p></p>
+            <p class="article-more-link">
+                <a href="/2017/08/16/使用spring validation完成数据后端校验/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/16/使用spring validation完成数据后端校验/" data-id="cj6zrzx71002dn0ud8b015jck" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/16/使用spring validation完成数据后端校验/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/16/使用spring validation完成数据后端校验/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
+    <article id="post-Re：从零开始的Spring Security OAuth2（三）" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/">Re：从零开始的Spring Security OAuth2（三）</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/">
+            <time datetime="2017-08-10T06:22:12.000Z" itemprop="datePublished">2017-08-10</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring-Security-OAuth2/">Spring Security OAuth2</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><p>上一篇文章中我们介绍了获取token的流程，这一篇重点分析一下，携带token访问受限资源时，内部的工作流程。</p>
+<h2 id="EnableResourceServer与-EnableAuthorizationServer"><a href="#EnableResourceServer与-EnableAuthorizationServer" class="headerlink" title="@EnableResourceServer与@EnableAuthorizationServer"></a>@EnableResourceServer与@EnableAuthorizationServer</h2><p>还记得我们在第一节中就介绍过了OAuth2的两个核心概念，资源服务器与身份认证服务器。我们对两个注解进行配置的同时，到底触发了内部的什么相关配置呢？</p>
+<p>上一篇文章重点介绍的其实是与身份认证相关的流程，即如果获取token，而本节要分析的携带token访问受限资源，自然便是与@EnableResourceServer相关的资源服务器配置了。</p>
+<p>我们注意到其相关配置类是ResourceServerConfigurer，内部关联了ResourceServerSecurityConfigurer和HttpSecurity。前者与资源安全配置相关，后者与http安全配置相关。（类名比较类似，注意区分，以Adapter结尾的是适配器，以Configurer结尾的是配置器，以Builder结尾的是建造器，他们分别代表不同的设计模式，对设计模式有所了解可以更加方便理解其设计思路）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ResourceServerConfigurerAdapter</span> <span class="keyword">implements</span> <span class="title">ResourceServerConfigurer</span> </span>&#123;</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(ResourceServerSecurityConfigurer resources &lt;<span class="number">1</span>&gt; )</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		http.authorizeRequests().anyRequest().authenticated();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><1> ResourceServerSecurityConfigurer显然便是我们分析的重点了。</1></p></p>
+            <p class="article-more-link">
+                <a href="/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/" data-id="cj6zrzx400002n0udib2cx603" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/10/Re：从零开始的Spring Security OAuth2（三）/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
+    <article id="post-Re：从零开始的Spring Security OAuth2（二）" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/">Re：从零开始的Spring Security OAuth2（二）</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/">
+            <time datetime="2017-08-09T06:58:52.000Z" itemprop="datePublished">2017-08-09</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring-Security-OAuth2/">Spring Security OAuth2</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><p>本文开始从源码的层面，讲解一些Spring Security Oauth2的认证流程。本文较长，适合在空余时间段观看。且涉及了较多的源码，非关键性代码以…代替。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>首先开启debug信息：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="attr">logging:</span></div><div class="line"><span class="attr">  level:</span></div><div class="line">    <span class="string">org.springframework:</span> <span class="string">DEBUG</span></div></pre></td></tr></table></figure>
+<p>可以完整的看到内部的运转流程。</p>
+<p>client模式稍微简单一些，使用client模式获取token<br> <code>http://localhost:8080/oauth/token?client_id=client_1&amp;client_secret=123456&amp;scope=select&amp;grant_type=client_credentials</code></p>
+<p>由于debug信息太多了，我简单按照顺序列了一下关键的几个类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ClientCredentialsTokenEndpointFilter</div><div class="line">DaoAuthenticationProvider</div><div class="line">TokenEndpoint</div><div class="line">TokenGranter</div></pre></td></tr></table></figure></p>
+            <p class="article-more-link">
+                <a href="/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/" data-id="cj6zrzx4j0007n0udj5mi8nqi" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/09/Re：从零开始的Spring Security OAuth2（二）/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
+    <article id="post-Re：从零开始的Spring Security OAuth2（一）" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/">Re：从零开始的Spring Security OAuth2（一）</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/">
+            <time datetime="2017-08-08T07:16:52.000Z" itemprop="datePublished">2017-08-08</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring-Security-OAuth2/">Spring Security OAuth2</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><p>##前言<br>今天来聊聊一个接口对接的场景，A厂家有一套HTTP接口需要提供给B厂家使用，由于是外网环境，所以需要有一套安全机制保障，这个时候oauth2就可以作为一个方案。</p>
+<p>关于oauth2，其实是一个规范，本文重点讲解spring对他进行的实现，如果你还不清楚授权服务器，资源服务器，认证授权等基础概念，可以移步<a href="http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html" target="_blank" rel="external">理解OAuth 2.0 - 阮一峰</a>，这是一篇对于oauth2很好的科普文章。 </p>
+<p>需要对spring security有一定的配置使用经验，用户认证这一块，spring security oauth2建立在spring security的基础之上。第一篇文章主要是讲解使用springboot搭建一个简易的授权，资源服务器，在文末会给出具体代码的github地址。后续文章会进行spring security oauth2的相关源码分析。java中的安全框架如shrio，已经有<a href="http://jinnianshilongnian.iteye.com/blog/2018936" target="_blank" rel="external">跟我学shiro - 开涛</a>，非常成体系地，深入浅出地讲解了apache的这个开源安全框架，但是spring security包括oauth2一直没有成体系的文章，学习它们大多依赖于较少的官方文档，理解一下基本的使用配置；通过零散的博客，了解一下他人的使用经验；打断点，分析内部的工作流程；看源码中的接口设计，以及注释，了解设计者的用意。spring的各个框架都运用了很多的设计模式，在学习源码的过程中，也大概了解了一些套路。spring也在必要的地方添加了适当的注释，避免了源码阅读者对于一些细节设计的理解产生偏差，让我更加感叹，spring不仅仅是一个工具框架，更像是一个艺术品。</p></p>
+            <p class="article-more-link">
+                <a href="/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/" data-id="cj6zrzx4g0006n0ud3ejjmh76" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/08/Re：从零开始的Spring Security OAuth2（一）/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
+    <article id="post-对于Spring Cloud Feign入门示例的一点思考" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/">对于Spring Cloud Feign入门示例的一点思考</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/">
+            <time datetime="2017-08-03T09:40:16.000Z" itemprop="datePublished">2017-08-03</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring-Cloud/">Spring Cloud</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring-Cloud/">Spring Cloud</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><h2 id="Spring-Cloud-Feign"><a href="#Spring-Cloud-Feign" class="headerlink" title="Spring Cloud Feign"></a>Spring Cloud Feign</h2><p>Spring Cloud Feign是一套基于Netflix Feign实现的声明式服务调用客户端。它使得编写Web服务客户端变得更加简单。我们只需要通过创建接口并用注解来配置它既可完成对Web服务接口的绑定。它具备可插拔的注解支持，包括Feign注解、JAX-RS注解。它也支持可插拔的编码器和解码器。Spring Cloud Feign还扩展了对Spring MVC注解的支持，同时还整合了Ribbon和Eureka来提供均衡负载的HTTP客户端实现。</p>
+<p>分布式应用早在十几年前就开始出现，各自的应用运行在各自的tomcat，jboss一类的容器中，他们之间的相互调用变成了一种远程调用，而实现远程调用的方式很多。按照协议划分，可以有RPC，Webservice，http。不同的框架也对他们有了各自的实现，如dubbo(x)，motan就都是RPC框架，本文所要讲解的Feign便可以理解为一种http框架，用于分布式服务之间通过Http进行接口交互。说他是框架，有点过了，可以理解为一个http工具，只不过在spring cloud全家桶的体系中，它比httpclient，okhttp，retrofit这些http工具都要强大的多。</p>
+<h2 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h2><p>先用一个简单的例子，看看如何在项目中使用Feign。示例项目使用maven多module构建，采用springcloud的Dalston.SR1版本</p></p>
+            <p class="article-more-link">
+                <a href="/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/" data-id="cj6zrzx78002pn0udyjhq4r8m" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/03/对于Spring Cloud Feign入门示例的一点思考/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+    
+</article>
+
+
+
+    <nav id="page-nav">
+        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">下一页 &raquo;</a>
+    </nav>
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="title">解析Spring中的ResponseBody和RequestBody</a></p>
+                            <p class="item-date"><time datetime="2017-08-30T04:44:21.000Z" itemprop="datePublished">2017-08-30</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/26/XML与javabean的转换/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/JAVA/">JAVA</a></p>
+                            <p class="item-title"><a href="/2017/08/26/XML与javabean的转换/" class="title">XML与javabean的转换</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T19:41:27.000Z" itemprop="datePublished">2017-08-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/25/一些需要普及的项目规范/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/25/一些需要普及的项目规范/" class="title">一些需要普及的项目规范</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T04:18:45.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/22/博客搬家/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/css/images/banner/1.jpg)" alt="博客搬家" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/22/博客搬家/" class="title">博客搬家</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T08:38:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a></p>
+                            <p class="item-title"><a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="title">一个DDD指导下的实体类设计案例</a></p>
+                            <p class="item-date"><time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 16px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/XML/" style="font-size: 10px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 12px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://www.zhihu.com/people/xu-jing-feng-29/activities">我的知乎</a>
+                    </li>
+                
+                    <li>
+                        <a href="https://ntzyz.io/">namespace_ntzyz</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://blog.didispace.com/">程序猿DD|博客</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 徐靖峰<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+        this.page.identifier = '';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/count.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+    
+        <script src="/vendor/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-share.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-video.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

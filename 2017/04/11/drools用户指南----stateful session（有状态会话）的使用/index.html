@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>drools用户指南----stateful session（有状态会话）的使用 | 徐靖峰|个人博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="stateful session 有状态会话有状态会话长期存在，并允许随着时间的推移进行迭代更改。 有状态会话的一些常见用例包括但不限于：  监测半自动买入股票市场监控与分析。 诊断故障查找，医疗诊断 物流包裹跟踪和送货配置 合规验证市场交易的合法性。  与无状态会话相反，必须先调用dispose()方法，以确保没有内存泄漏，因为KieBase包含创建状态知识会话时的引用。 由于状态知识会话是最常">
+<meta name="keywords" content="规则引擎,drools">
+<meta property="og:type" content="article">
+<meta property="og:title" content="drools用户指南----stateful session（有状态会话）的使用">
+<meta property="og:url" content="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/index.html">
+<meta property="og:site_name" content="徐靖峰|个人博客">
+<meta property="og:description" content="stateful session 有状态会话有状态会话长期存在，并允许随着时间的推移进行迭代更改。 有状态会话的一些常见用例包括但不限于：  监测半自动买入股票市场监控与分析。 诊断故障查找，医疗诊断 物流包裹跟踪和送货配置 合规验证市场交易的合法性。  与无状态会话相反，必须先调用dispose()方法，以确保没有内存泄漏，因为KieBase包含创建状态知识会话时的引用。 由于状态知识会话是最常">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-08-22T06:05:22.304Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="drools用户指南----stateful session（有状态会话）的使用">
+<meta name="twitter:description" content="stateful session 有状态会话有状态会话长期存在，并允许随着时间的推移进行迭代更改。 有状态会话的一些常见用例包括但不限于：  监测半自动买入股票市场监控与分析。 诊断故障查找，医疗诊断 物流包裹跟踪和送货配置 合规验证市场交易的合法性。  与无状态会话相反，必须先调用dispose()方法，以确保没有内存泄漏，因为KieBase包含创建状态知识会话时的引用。 由于状态知识会话是最常">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/open-sans/styles.css">
+    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/vendor/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/vendor/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">徐靖峰|个人博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">徐靖峰</h2>
+            <h3 id="title">JAVA Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Shanghai, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lexburner">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                36
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                25
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lexburner" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/wechat.png" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-drools用户指南----stateful session（有状态会话）的使用" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            drools用户指南----stateful session（有状态会话）的使用
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/">
+            <time datetime="2017-04-11T04:37:22.000Z" itemprop="datePublished">2017-04-11</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/规则引擎/">规则引擎</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/drools/">drools</a>, <a class="tag-link" href="/tags/规则引擎/">规则引擎</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <h2 id="stateful-session-有状态会话"><a href="#stateful-session-有状态会话" class="headerlink" title="stateful session 有状态会话"></a>stateful session 有状态会话</h2><p>有状态会话长期存在，并允许随着时间的推移进行迭代更改。 有状态会话的一些常见用例包括但不限于：</p>
+<ol>
+<li>监测<br>半自动买入股票市场监控与分析。</li>
+<li>诊断<br>故障查找，医疗诊断</li>
+<li>物流<br>包裹跟踪和送货配置</li>
+<li>合规<br>验证市场交易的合法性。</li>
+</ol>
+<p>与无状态会话相反，必须先调用dispose()方法，以确保没有内存泄漏，因为KieBase包含创建状态知识会话时的引用。 由于状态知识会话是最常用的会话类型，所以它只是在KIE API中命名为KieSession。 KieSession还支持BatchExecutor接口，如StatelessKieSession，唯一的区别是FireAllRules命令在有状态会话结束时不被自动调用。</p>
+<p>我们举例说明了用于提高火灾报警器的监控用例。 只使用四个类，我们假设<code>Room</code>代表房子里的房间，每个<code>Room</code>都有一个喷头<code>Sprinkler</code>。 如果在房间里发生火灾，我们用一个<code>Fire</code>实例来表示,用<code>Alarm</code>代表警报 。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Room</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> String name</div><div class="line">    <span class="comment">// getter and setter methods here</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Sprinkler</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> Room room;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> on;</div><div class="line">    <span class="comment">// getter and setter methods here</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Fire</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> Room room;</div><div class="line">    <span class="comment">// getter and setter methods here</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Alarm</span> </span>&#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在上一节无状态会话中介绍了插入和匹配数据的概念。 这个例子假设每个对象类型的都是单个实例被插入的，因此只使用了字面约束。 然而，房子有许多房间，因此<code>rules</code>必须表达实体类之间的关系，例如在某个房间内的喷洒器。 这最好通过使用绑定变量作为模式中的约束来完成。 这种“加入”过程产生了所谓的“cross products”，这在下一节中将会介绍。</p>
+<a id="more"></a>
+<p>当发生火灾时，会为该类别创建Fire类的实例，并将其插入到会话中。 该规则使用Fire对象的房间字段上的绑定来约束与当前关闭的房间的喷水灭火器的匹配。 当此规则触发并且执行结果时，喷头被打开。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"When there is a fire turn on the sprinkler"</span></div><div class="line">when</div><div class="line">    Fire($room : room)</div><div class="line">    $sprinkler : Sprinkler( room == $room, on == <span class="keyword">false</span> )</div><div class="line">then</div><div class="line">    modify( $sprinkler ) &#123; setOn( <span class="keyword">true</span> ) &#125;;</div><div class="line">    System.out.println( <span class="string">"Turn on the sprinkler for room "</span> + $room.getName() );</div><div class="line">end</div></pre></td></tr></table></figure>
+<p>而无状态会话使用标准Java语法来修改字段，在上述规则中，我们使用modify语句，它作为一种“with”语句。 它可以包含一系列逗号分隔的Java表达式，即对由modify语句的控制表达式选择的对象的setter的调用。 这将修改数据，并使引擎意识到这些更改，以便它可以再次对其进行推理。 这个过程被称为推理，对于有状态会话的工作至关重要。 无状态会话通常不使用推理，因此引擎不需要意识到数据的更改。 也可以通过使用顺序模式显式地关闭推理。</p>
+<p>到目前为止，我们有规则告诉我们匹配数据是否存在，但是当它不存在时呢？ 我们如何确定火已经熄灭了，即没有Fire对象呢？ 以前的约束是根据命题逻辑的句子，其中引擎限制个别的实例。 Drools还支持First Order Logic，允许您查看数据集。 当某个不存在时，关键字下的模式不匹配。 一旦这个房间的火灾消失，下面给出的规则会使喷水灭火。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"When the fire is gone turn off the sprinkler"</span></div><div class="line">when</div><div class="line">    $room : Room( )</div><div class="line">    $sprinkler : Sprinkler( room == $room, on == <span class="keyword">true</span> )</div><div class="line">    <span class="function">not <span class="title">Fire</span><span class="params">( room == $room )</span></span></div><div class="line"><span class="function">then</span></div><div class="line"><span class="function">    <span class="title">modify</span><span class="params">( $sprinkler )</span> </span>&#123; setOn( <span class="keyword">false</span> ) &#125;;</div><div class="line">    System.out.println( <span class="string">"Turn off the sprinkler for room "</span> + $room.getName() );</div><div class="line">end</div></pre></td></tr></table></figure>
+<p>每个<code>room</code>有一个喷水灭火器，<code>house</code>只有一个警报。 当发生火灾时，会创建一个<code>alrm</code>对象，而不管发生多少火灾，整个建筑物都只需要一个警报<code>alrm</code>。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"Raise the alarm when we have one or more fires"</span></div><div class="line">when</div><div class="line">    <span class="function">exists <span class="title">Fire</span><span class="params">()</span></span></div><div class="line"><span class="function">then</span></div><div class="line"><span class="function">    <span class="title">insert</span><span class="params">( new Alarm()</span> )</span>;</div><div class="line">    System.out.println( <span class="string">"Raise the alarm"</span> );</div><div class="line">end</div></pre></td></tr></table></figure>
+<p>同样，当没有火灾时，我们想要删除警报，所以可以再次使用not关键字。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"Cancel the alarm when all the fires have gone"</span></div><div class="line">when</div><div class="line">    <span class="function">not <span class="title">Fire</span><span class="params">()</span></span></div><div class="line"><span class="function">    $alarm : <span class="title">Alarm</span><span class="params">()</span></span></div><div class="line"><span class="function">then</span></div><div class="line"><span class="function">    <span class="title">delete</span><span class="params">( $alarm )</span></span>;</div><div class="line">    System.out.println( <span class="string">"Cancel the alarm"</span> );</div><div class="line">end</div></pre></td></tr></table></figure>
+<p>最后，当应用程序首次启动并且在报警消除并且所有喷头已关闭后，都会打印Everything is ok。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">rule <span class="string">"Status output when things are ok"</span></div><div class="line">when</div><div class="line">    <span class="function">not <span class="title">Alarm</span><span class="params">()</span></span></div><div class="line"><span class="function">    not <span class="title">Sprinkler</span><span class="params">( on == <span class="keyword">true</span> )</span> </span></div><div class="line"><span class="function">then</span></div><div class="line"><span class="function">    System.out.<span class="title">println</span><span class="params">( <span class="string">"Everything is ok"</span> )</span></span>;</div><div class="line">end</div></pre></td></tr></table></figure>
+<p>正如我们在无状态会话示例中所做的那样，上述规则应放在单个DRL文件中，并保存到Maven项目或其任何子文件夹的资源文件夹中。 如前所述，我们可以从KieContainer获得KieSession。 唯一的区别是，这次我们创建一个有状态会话，而之前我们创建的是一个无状态会话。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">KieServices kieServices = KieServices.Factory.get();</div><div class="line">KieContainer kContainer = kieServices.getKieClasspathContainer();</div><div class="line">KieSession ksession = kContainer.newKieSession();</div></pre></td></tr></table></figure>
+<p>创建会话后，现在可以随着时间的推移迭代地使用它。 创建和插入四个房间对象，每个房间的对应一个Sprinkler对象。 此时，规则引擎已经完成了所有的匹配，但并没有触发。 调用ksession.fireAllRules（）使得匹配的规则触发，但因为没有火灾，所以输出结果是Everything is ok。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">String[] names = <span class="keyword">new</span> String[]&#123;<span class="string">"kitchen"</span>, <span class="string">"bedroom"</span>, <span class="string">"office"</span>, <span class="string">"livingroom"</span>&#125;;</div><div class="line">Map&lt;String,Room&gt; name2room = <span class="keyword">new</span> HashMap&lt;String,Room&gt;();</div><div class="line"><span class="keyword">for</span>( String name: names )&#123;</div><div class="line">    Room room = <span class="keyword">new</span> Room( name );</div><div class="line">    name2room.put( name, room );</div><div class="line">    ksession.insert( room );</div><div class="line">    Sprinkler sprinkler = <span class="keyword">new</span> Sprinkler( room );</div><div class="line">    ksession.insert( sprinkler );</div><div class="line">&#125;</div><div class="line"></div><div class="line">ksession.fireAllRules();</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Everything is ok</p>
+</blockquote>
+<p>我们现在创造两个Fire并插入它们， 随着发动机内部的火灾，一旦调用了fireAllRules（），报警器就会升高，并且相应的喷水灭火器打开。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Fire kitchenFire = <span class="keyword">new</span> Fire( name2room.get( <span class="string">"kitchen"</span> ) );</div><div class="line">Fire officeFire = <span class="keyword">new</span> Fire( name2room.get( <span class="string">"office"</span> ) );</div><div class="line">FactHandle kitchenFireHandle = ksession.insert( kitchenFire );</div><div class="line">FactHandle officeFireHandle = ksession.insert( officeFire );</div><div class="line"></div><div class="line">ksession.fireAllRules();</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Raise the alarm<br>Turn on the sprinkler for room kitchen<br>Turn on the sprinkler for room office</p>
+</blockquote>
+<p>一段时间之后，火灾将熄灭，并且Fire实例被撤回。 这导致喷头关闭，报警被取消，最后再次打印Everything is ok。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ksession.delete( kitchenFireHandle );</div><div class="line">ksession.delete( officeFireHandle );</div><div class="line"></div><div class="line">ksession.fireAllRules();</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Cancel the alarm<br>Turn off the sprinkler for room office<br>Turn off the sprinkler for room kitchen<br>Everything is ok</p>
+</blockquote>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/" data-id="cj6zrzx5j000pn0udxskrus32" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+		<! -- 添加捐赠图标 -->
+<div class ="post-donate">
+    <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+		   大吉大利，今晚吃鸡。
+        </span>
+        <br>
+      </div>  
+	<div id="donate_guide" class="donate_bar center hidden" >
+		<div>
+			<span class="donate-title">支付宝</span>
+			<span class="donate-title">微信</span>
+		</div>
+		<div>
+			<!-- 支付宝打赏图案 -->
+			<img src="/css/images/alipay.png"  alt="支付宝打赏"> 
+			<!-- 微信打赏图案 -->
+			<img src="/css/images/wechatpay.png" alt="微信打赏">  
+		</div>
+    </div>
+	<script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function(){
+			$('#donate_board').addClass('hidden');
+			$('#donate_guide').removeClass('hidden');
+		}
+	</script>
+</div>
+<! -- 添加捐赠图标 -->
+	
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/04/11/drools用户指南----stateless session（无状态会话）的使用/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    drools用户指南----stateless session（无状态会话）的使用
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/04/08/Zuul性能测试/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Zuul性能测试</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="title">解析Spring中的ResponseBody和RequestBody</a></p>
+                            <p class="item-date"><time datetime="2017-08-30T04:44:21.000Z" itemprop="datePublished">2017-08-30</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/26/XML与javabean的转换/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/JAVA/">JAVA</a></p>
+                            <p class="item-title"><a href="/2017/08/26/XML与javabean的转换/" class="title">XML与javabean的转换</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T19:41:27.000Z" itemprop="datePublished">2017-08-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/25/一些需要普及的项目规范/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/25/一些需要普及的项目规范/" class="title">一些需要普及的项目规范</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T04:18:45.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/22/博客搬家/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/css/images/banner/1.jpg)" alt="博客搬家" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/22/博客搬家/" class="title">博客搬家</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T08:38:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a></p>
+                            <p class="item-title"><a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="title">一个DDD指导下的实体类设计案例</a></p>
+                            <p class="item-date"><time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 16px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/XML/" style="font-size: 10px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 12px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://www.zhihu.com/people/xu-jing-feng-29/activities">我的知乎</a>
+                    </li>
+                
+                    <li>
+                        <a href="https://ntzyz.io/">namespace_ntzyz</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://blog.didispace.com/">程序猿DD|博客</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 徐靖峰<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://lexburner.github.io/2017/04/11/drools用户指南----stateful session（有状态会话）的使用/';
+        
+        this.page.identifier = 'drools用户指南----stateful session（有状态会话）的使用';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+    
+        <script src="/vendor/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-share.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-video.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

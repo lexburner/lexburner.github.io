@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>XML与javabean的转换 | 徐靖峰|个人博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="XML可以说是一种被时代淘汰的数据传输格式，毕竟相比较JSON，其语法，表现形式，以及第三方类库的支持，都要略逊一筹，但最近在对接一些老接口时，主要还是以XML为主，而翻阅相关的文档以及博客，没看到很好的文章介绍如何使用xml进行数据传输，所以简单写下此文，做一下记录。内心多多少少还是会抵制对接如此老旧的接口，不过生活还是要继续。 Code First先上一段代码，展示一下如何封装，讲解放到后面">
+<meta name="keywords" content="XML">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XML与javabean的转换">
+<meta property="og:url" content="http://lexburner.github.io/2017/08/26/XML与javabean的转换/index.html">
+<meta property="og:site_name" content="徐靖峰|个人博客">
+<meta property="og:description" content="XML可以说是一种被时代淘汰的数据传输格式，毕竟相比较JSON，其语法，表现形式，以及第三方类库的支持，都要略逊一筹，但最近在对接一些老接口时，主要还是以XML为主，而翻阅相关的文档以及博客，没看到很好的文章介绍如何使用xml进行数据传输，所以简单写下此文，做一下记录。内心多多少少还是会抵制对接如此老旧的接口，不过生活还是要继续。 Code First先上一段代码，展示一下如何封装，讲解放到后面">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-08-30T04:20:27.164Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="XML与javabean的转换">
+<meta name="twitter:description" content="XML可以说是一种被时代淘汰的数据传输格式，毕竟相比较JSON，其语法，表现形式，以及第三方类库的支持，都要略逊一筹，但最近在对接一些老接口时，主要还是以XML为主，而翻阅相关的文档以及博客，没看到很好的文章介绍如何使用xml进行数据传输，所以简单写下此文，做一下记录。内心多多少少还是会抵制对接如此老旧的接口，不过生活还是要继续。 Code First先上一段代码，展示一下如何封装，讲解放到后面">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/open-sans/styles.css">
+    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/vendor/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/vendor/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">徐靖峰|个人博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">徐靖峰</h2>
+            <h3 id="title">JAVA Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Shanghai, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lexburner">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                36
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                25
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lexburner" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/wechat.png" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-XML与javabean的转换" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            XML与javabean的转换
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/26/XML与javabean的转换/">
+            <time datetime="2017-08-25T19:41:27.000Z" itemprop="datePublished">2017-08-26</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/XML/">XML</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <p>XML可以说是一种被时代淘汰的数据传输格式，毕竟相比较JSON，其语法，表现形式，以及第三方类库的支持，都要略逊一筹，但最近在对接一些老接口时，主要还是以XML为主，而翻阅相关的文档以及博客，没看到很好的文章介绍如何使用xml进行数据传输，所以简单写下此文，做一下记录。内心多多少少还是会抵制对接如此老旧的接口，不过生活还是要继续。</p>
+<h2 id="Code-First"><a href="#Code-First" class="headerlink" title="Code First"></a>Code First</h2><p>先上一段代码，展示一下如何封装，讲解放到后面</p>
+<p>一个典型的对接方提供的XML如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">ORDER</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">ORDER_NO</span>&gt;</span>10086<span class="tag">&lt;/<span class="name">ORDER_NO</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">TOTAL_PRICE</span>&gt;</span>3.14<span class="tag">&lt;/<span class="name">TOTAL_PRICE</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">CREATE_TIME</span>&gt;</span>2017-08-26 03:39:30<span class="tag">&lt;/<span class="name">CREATE_TIME</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">ORDER_ITEMS</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">GOODS_NAME</span>&gt;</span>德芙<span class="tag">&lt;/<span class="name">GOODS_NAME</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">NUM</span>&gt;</span>3<span class="tag">&lt;/<span class="name">NUM</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">GOODS_NAME</span>&gt;</span>旺仔<span class="tag">&lt;/<span class="name">GOODS_NAME</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">NUM</span>&gt;</span>10<span class="tag">&lt;/<span class="name">NUM</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">ORDER_ITEM</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">ORDER_ITEMS</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">ORDER</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>而我们要对应的实体类，则应当如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@XmlRootElement</span>(name = <span class="string">"ORDER"</span>)<span class="comment">// &lt;1&gt;</span></div><div class="line"><span class="meta">@XmlAccessorType</span>(XmlAccessType.FIELD)<span class="comment">// &lt;1&gt;</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Order</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"ORDER_NO"</span>)<span class="comment">// &lt;1&gt;</span></div><div class="line">    <span class="keyword">private</span> String orderNo;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"TOTAL_PRICE"</span>)</div><div class="line">    <span class="keyword">private</span> BigDecimal totalPrice;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"CREATE_TIME"</span>)</div><div class="line">    <span class="meta">@XmlJavaTypeAdapter</span>(DateAdapter.class) <span class="comment">// &lt;2&gt;</span></div><div class="line">    <span class="keyword">private</span> Date createTime;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElementWrapper</span>(name = <span class="string">"ORDER_ITEMS"</span>) <span class="comment">// &lt;3&gt;</span></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"ORDER_ITEM"</span>)</div><div class="line">    <span class="keyword">private</span> List&lt;OrderItem&gt; orderItems;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@XmlAccessorType</span>(XmlAccessType.FIELD)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderItem</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"GOODS_NAME"</span>)</div><div class="line">    <span class="keyword">private</span> String goodsName;</div><div class="line"></div><div class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"NUM"</span>)</div><div class="line">    <span class="keyword">private</span> Integer num;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我举的这个示例基本包含一般情况下所有可能出现的需求</p>
+<p><1> 常用注解XmlRootElement，XmlAccessorType，XmlElement</1></p>
+<p><2> 日期转换的适配器注解</2></p>
+<p><3> 如何在XML中设置集合</3></p>
+<p>在介绍这三点之前，先给出转换的工具类</p>
+<a id="more"></a>
+<h2 id="转换工具类"><a href="#转换工具类" class="headerlink" title="转换工具类"></a>转换工具类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XML</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">toXmlString</span><span class="params">(Object obj)</span> </span>&#123;</div><div class="line">        String result;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            JAXBContext context = JAXBContext.newInstance(obj.getClass());</div><div class="line">            Marshaller marshaller = context.createMarshaller();</div><div class="line">            StringWriter writer = <span class="keyword">new</span> StringWriter();</div><div class="line">            marshaller.marshal(obj, writer);</div><div class="line">            result = writer.toString();</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">T <span class="title">parseObject</span><span class="params">(String input, Class&lt;T&gt; claaz)</span> </span>&#123;</div><div class="line">        Object result;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            JAXBContext context = JAXBContext.newInstance(claaz);</div><div class="line">            Unmarshaller unmarshaller = context.createUnmarshaller();</div><div class="line">            result = unmarshaller.unmarshal(<span class="keyword">new</span> StringReader(input));</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> (T) result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>JSON工具类中，笔者习惯于使用fastjson，所以干脆连同工具类类名命名和方法命名都按照了它的风格，只有两个方法。</p>
+<h2 id="注解的介绍"><a href="#注解的介绍" class="headerlink" title="注解的介绍"></a>注解的介绍</h2><p>给实体类加上注解，再使用工具类，就可以实现实体和XML的相互转换了。那么前面提到的三个注意点中的相关注解分别代表了什么含义呢？</p>
+<ul>
+<li><p>@XmlRootElement</p>
+<p>作用域：类</p>
+<p>代表一个XML对象的根节点，常使用name属性来可以指定生成XML之后的具体名称</p>
+</li>
+<li><p>@XmlElement</p>
+<p>作用域：字段，方法，参数（不常用）</p>
+<p>代表一个XML对象的普通界点信息，常使用name属性来指定生成XML之后的具体名称。需要注意与@XmlAccessorType搭配使用时，有一些注意点，见下</p>
+</li>
+<li><p>@XmlAccessorType</p>
+<p>作用域：类，包（不常用）</p>
+<p>告诉解析器，在解析XML时要如何获取类的字段属性，有4个枚举类型：</p>
+<p>| 枚举类型                            | 访问方式                            |<br>| ——————————- | ——————————- |<br>| XmlAccessType.FIELD             | 成员变量                            |<br>| XmlAccessType.PROPERTY          | public getter,setter            |<br>| XmlAccessType.PUBLIC_MEMBER（默认） | public getter,setter+public成员变量 |<br>| XmlAccessType.NONE              | 必须显示指定@XmlElement               |</p>
+<p>我们上述的例子中，使用的方式是在类上配置@XmlAccessorType(XmlAccessType.FIELD)，基于成员变量访问属性，并且，在每一个成员变量之上都显示指定了name=xxx；而如果配置@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)即默认配置，则你需要将@XmlElement注解写在getter方法上,笔者比较习惯例子中的写法。需要注意点的一点是，如果@XmlAccessorType与@XmlElement的配置不对应，很容易触发自动的转换方式，会导致某个节点出现两次的异常。</p>
+</li>
+<li><p>@XmlJavaTypeAdapter</p>
+<p>作用域：字段,方法,类,包,参数（前三者常用）</p>
+<p>java内置的xml日期转换类不能满足我们的需求（可以动手试试看默认日期的格式是什么），以及遇到自定义的类，需要配置转换器，就可以使用这个注解，@XmlJavaTypeAdapter注解接收一个自定义的Adapter，需要继承自<code>XmlAdapter&lt;ValueType,BoundType&gt;</code>抽象类，一个常用的日期转化适配器如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DateAdapter</span> <span class="keyword">extends</span> <span class="title">XmlAdapter</span>&lt;<span class="title">String</span>, <span class="title">Date</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> ThreadLocal&lt;DateFormat&gt; sdf ;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> &#123;</div><div class="line">        sdf =<span class="keyword">new</span> ThreadLocal&lt;DateFormat&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">protected</span> DateFormat <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd hh:mm:ss"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Date <span class="title">unmarshal</span><span class="params">(String v)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        <span class="keyword">return</span> sdf.get().parse(v);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">marshal</span><span class="params">(Date v)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        <span class="keyword">return</span> sdf.get().format(v);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用Adapter的弊端也很明显，一个适配器只能对应一个日期的格式，在实际开发中我们往往会将日期区分成天维度的日期和秒维度的日期，不能像大多数JSON那样拥有灵活的注解，如果有读者有想到好的解决方案，欢迎跟我沟通。涉及到日期格式转化，时刻不要忘记SimpleDateFormat线程不安全这一点。</p>
+</li>
+<li><p>@XmlElementWrapper</p>
+<p>XML中表示集合时，在最外层通常会有一个Xxxs或者XxxList这样的标签，可以通过@XmlElementWrapper实现，其中name就代表额外添加的包裹信息是什么,如上文的OrderItems。</p>
+</li>
+</ul>
+<h2 id="一些其他的转换工具类"><a href="#一些其他的转换工具类" class="headerlink" title="一些其他的转换工具类"></a>一些其他的转换工具类</h2><p>我们主要任务是实现XML字符串和javabean之间转换，不是解析XML，所以dom4j一类的类库不用考虑。熟悉spring的人会了解到一点，spring其实已经封装了xml转换相关的类，即<code>org.springframework.oxm.jaxb.Jaxb2Marshaller</code>这个类，他的顶层接口是<code>org.springframework.oxm.Marshaller</code>和<code>org.springframework.oxm.UnMarshaller</code>。而在java规范中，也存在同名的接口：<code>javax.xml.bind.Marshaller</code>,<code>javax.xml.bind.UnMarshaller</code>，这点在使用中需要注意下。笔者的建议是，这种数据格式转换操作，应当尽量引入最少的依赖。所以使用javax的类库下的相关方法进行封装。上述的工具类，仅仅只需要引入javax包，即可使用了。非常方便、</p>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/08/26/XML与javabean的转换/" data-id="cj6zrzx5e000jn0udl5nti204" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/08/26/XML与javabean的转换/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/08/26/XML与javabean的转换/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+		<! -- 添加捐赠图标 -->
+<div class ="post-donate">
+    <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+		   大吉大利，今晚吃鸡。
+        </span>
+        <br>
+      </div>  
+	<div id="donate_guide" class="donate_bar center hidden" >
+		<div>
+			<span class="donate-title">支付宝</span>
+			<span class="donate-title">微信</span>
+		</div>
+		<div>
+			<!-- 支付宝打赏图案 -->
+			<img src="/css/images/alipay.png"  alt="支付宝打赏"> 
+			<!-- 微信打赏图案 -->
+			<img src="/css/images/wechatpay.png" alt="微信打赏">  
+		</div>
+    </div>
+	<script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function(){
+			$('#donate_board').addClass('hidden');
+			$('#donate_guide').removeClass('hidden');
+		}
+	</script>
+</div>
+<! -- 添加捐赠图标 -->
+	
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    解析Spring中的ResponseBody和RequestBody
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/08/25/一些需要普及的项目规范/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">一些需要普及的项目规范</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="title">解析Spring中的ResponseBody和RequestBody</a></p>
+                            <p class="item-date"><time datetime="2017-08-30T04:44:21.000Z" itemprop="datePublished">2017-08-30</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/26/XML与javabean的转换/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/JAVA/">JAVA</a></p>
+                            <p class="item-title"><a href="/2017/08/26/XML与javabean的转换/" class="title">XML与javabean的转换</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T19:41:27.000Z" itemprop="datePublished">2017-08-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/25/一些需要普及的项目规范/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/25/一些需要普及的项目规范/" class="title">一些需要普及的项目规范</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T04:18:45.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/22/博客搬家/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/css/images/banner/1.jpg)" alt="博客搬家" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/22/博客搬家/" class="title">博客搬家</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T08:38:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a></p>
+                            <p class="item-title"><a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="title">一个DDD指导下的实体类设计案例</a></p>
+                            <p class="item-date"><time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 16px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/XML/" style="font-size: 10px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 12px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://www.zhihu.com/people/xu-jing-feng-29/activities">我的知乎</a>
+                    </li>
+                
+                    <li>
+                        <a href="https://ntzyz.io/">namespace_ntzyz</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://blog.didispace.com/">程序猿DD|博客</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 徐靖峰<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://lexburner.github.io/2017/08/26/XML与javabean的转换/';
+        
+        this.page.identifier = 'XML与javabean的转换';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+    
+        <script src="/vendor/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-share.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-video.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

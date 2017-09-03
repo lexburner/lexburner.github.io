@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>springcloud----Zuul动态路由 | 徐靖峰|个人博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="前言Zuul 是Netflix 提供的一个开源组件,致力于在云平台上提供动态路由，监控，弹性，安全等边缘服务的框架。也有很多公司使用它来作为网关的重要组成部分，碰巧今年公司的架构组决定自研一个网关产品，集动态路由，动态权限，限流配额等功能为一体，为其他部门的项目提供统一的外网调用管理，最终形成产品(这方面阿里其实已经有成熟的网关产品了，但是不太适用于个性化的配置，也没有集成权限和限流降级)。 不过">
+<meta name="keywords" content="Spring Cloud Zuul">
+<meta property="og:type" content="article">
+<meta property="og:title" content="springcloud----Zuul动态路由">
+<meta property="og:url" content="http://lexburner.github.io/2017/04/01/springcloud----Zuul动态路由/index.html">
+<meta property="og:site_name" content="徐靖峰|个人博客">
+<meta property="og:description" content="前言Zuul 是Netflix 提供的一个开源组件,致力于在云平台上提供动态路由，监控，弹性，安全等边缘服务的框架。也有很多公司使用它来作为网关的重要组成部分，碰巧今年公司的架构组决定自研一个网关产品，集动态路由，动态权限，限流配额等功能为一体，为其他部门的项目提供统一的外网调用管理，最终形成产品(这方面阿里其实已经有成熟的网关产品了，但是不太适用于个性化的配置，也没有集成权限和限流降级)。 不过">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://img.blog.csdn.net/20170401101904656?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170401103146894?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170401111650676?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170401115214231?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-08-22T06:34:10.169Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="springcloud----Zuul动态路由">
+<meta name="twitter:description" content="前言Zuul 是Netflix 提供的一个开源组件,致力于在云平台上提供动态路由，监控，弹性，安全等边缘服务的框架。也有很多公司使用它来作为网关的重要组成部分，碰巧今年公司的架构组决定自研一个网关产品，集动态路由，动态权限，限流配额等功能为一体，为其他部门的项目提供统一的外网调用管理，最终形成产品(这方面阿里其实已经有成熟的网关产品了，但是不太适用于个性化的配置，也没有集成权限和限流降级)。 不过">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170401101904656?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/open-sans/styles.css">
+    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/vendor/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/vendor/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">徐靖峰|个人博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">徐靖峰</h2>
+            <h3 id="title">JAVA Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Shanghai, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lexburner">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                36
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                25
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lexburner" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/wechat.png" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-springcloud----Zuul动态路由" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            springcloud----Zuul动态路由
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/04/01/springcloud----Zuul动态路由/">
+            <time datetime="2017-04-01T06:11:52.000Z" itemprop="datePublished">2017-04-01</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring-Cloud/">Spring Cloud</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring-Cloud-Zuul/">Spring Cloud Zuul</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Zuul 是Netflix 提供的一个开源组件,致力于在云平台上提供动态路由，监控，弹性，安全等边缘服务的框架。也有很多公司使用它来作为网关的重要组成部分，碰巧今年公司的架构组决定自研一个网关产品，集动态路由，动态权限，限流配额等功能为一体，为其他部门的项目提供统一的外网调用管理，最终形成产品(这方面阿里其实已经有成熟的网关产品了，但是不太适用于个性化的配置，也没有集成权限和限流降级)。</p>
+<p>不过这里并不想介绍整个网关的架构，而是想着重于讨论其中的一个关键点，并且也是经常在交流群中听人说起的：动态路由怎么做？</p>
+<p>再阐释什么是动态路由之前，需要介绍一下架构的设计。</p>
+<h2 id="传统互联网架构图"><a href="#传统互联网架构图" class="headerlink" title="传统互联网架构图"></a>传统互联网架构图</h2><p><img src="http://img.blog.csdn.net/20170401101904656?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>上图是没有网关参与的一个最典型的互联网架构(本文中统一使用book代表应用实例，即真正提供服务的一个业务系统)</p>
+<h2 id="加入eureka的架构图"><a href="#加入eureka的架构图" class="headerlink" title="加入eureka的架构图"></a>加入eureka的架构图</h2><p><img src="http://img.blog.csdn.net/20170401103146894?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>book注册到eureka注册中心中，zuul本身也连接着同一个eureka，可以拉取book众多实例的列表。服务中心的注册发现一直是值得推崇的一种方式，但是不适用与网关产品。因为我们的网关是面向众多的<strong>其他部门</strong>的<strong>已有</strong>或是<strong>异构架构</strong>的系统，不应该强求其他系统都使用eureka，这样是有侵入性的设计。</p>
+<h2 id="最终架构图"><a href="#最终架构图" class="headerlink" title="最终架构图"></a>最终架构图</h2><p><img src="http://img.blog.csdn.net/20170401111650676?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>要强调的一点是，gateway最终也会部署多个实例，达到分布式的效果，在架构图中没有画出，请大家自行脑补。</p>
+<p>本博客的示例使用最后一章架构图为例，带来动态路由的实现方式，会有具体的代码。</p>
+<a id="more"></a>
+<h2 id="动态路由"><a href="#动态路由" class="headerlink" title="动态路由"></a>动态路由</h2><p>动态路由需要达到可持久化配置，动态刷新的效果。如架构图所示，不仅要能满足从spring的配置文件properties加载路由信息，还需要从数据库加载我们的配置。另外一点是，路由信息在容器启动时就已经加载进入了内存，我们希望配置完成后，实施发布，动态刷新内存中的路由信息，达到不停机维护路由信息的效果。</p>
+<h2 id="zuul–HelloWorldDemo"><a href="#zuul–HelloWorldDemo" class="headerlink" title="zuul–HelloWorldDemo"></a>zuul–HelloWorldDemo</h2><p>项目结构<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.sinosoft<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zuul-gateway-demo<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">packaging</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"></div><div class="line">   <span class="tag">&lt;<span class="name">parent</span>&gt;</span></div><div class="line">       <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">       <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">       <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5.2.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">   <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></div><div class="line"></div><div class="line">   <span class="tag">&lt;<span class="name">modules</span>&gt;</span></div><div class="line">       <span class="tag">&lt;<span class="name">module</span>&gt;</span>gateway<span class="tag">&lt;/<span class="name">module</span>&gt;</span></div><div class="line">       <span class="tag">&lt;<span class="name">module</span>&gt;</span>book<span class="tag">&lt;/<span class="name">module</span>&gt;</span></div><div class="line">   <span class="tag">&lt;/<span class="name">modules</span>&gt;</span></div><div class="line"></div><div class="line">   <span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></div><div class="line">       <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></div><div class="line">           <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">               <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">               <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">               <span class="tag">&lt;<span class="name">version</span>&gt;</span>Camden.SR6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">               <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></div><div class="line">               <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></div><div class="line">           <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">       <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></div><div class="line">   <span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>tip：springboot-1.5.2对应的springcloud的版本需要使用Camden.SR6，一开始想专门写这个demo时，只替换了springboot的版本1.4.0-&gt;1.5.2，结果启动就报错了，最后发现是版本不兼容的锅。</p>
+<p>gateway项目：<br>启动类：<code>GatewayApplication.java</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@EnableZuulProxy</span></div><div class="line"><span class="meta">@SpringBootApplication</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GatewayApplication</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SpringApplication.run(GatewayApplication.class, args);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>配置：<code>application.properties</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">#配置在配置文件中的路由信息</div><div class="line">zuul.routes.books.url=http://localhost:8090</div><div class="line">zuul.routes.books.path=/books/**</div><div class="line">#不使用注册中心,会带来侵入性</div><div class="line">ribbon.eureka.enabled=false</div><div class="line">#网关端口</div><div class="line">server.port=8080</div></pre></td></tr></table></figure>
+<p>book项目：<br>启动类：<code>BookApplication.java</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="meta">@SpringBootApplication</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookApplication</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/available"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">available</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"Spring in Action"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="string">"Spring in Action"</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/checked-out"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">checkedOut</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"Spring Boot in Action"</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SpringApplication.run(BookApplication.class, args);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>配置类：<code>application.properties</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">server.port=8090</div></pre></td></tr></table></figure>
+<p>测试访问：<a href="http://localhost:8080/books/available" target="_blank" rel="external">http://localhost:8080/books/available</a></p>
+<p>上述demo是一个简单的<strong>静态路由</strong>，简单看下源码，zuul是怎么做到转发，路由的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="meta">@EnableConfigurationProperties</span>(&#123; ZuulProperties.class &#125;)</div><div class="line"><span class="meta">@ConditionalOnClass</span>(ZuulServlet.class)</div><div class="line"><span class="meta">@Import</span>(ServerPropertiesAutoConfiguration.class)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ZuulConfiguration</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	<span class="comment">//zuul的配置文件,对应了application.properties中的配置信息</span></div><div class="line">	<span class="keyword">protected</span> ZuulProperties zuulProperties;</div><div class="line"></div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	<span class="keyword">protected</span> ServerProperties server;</div><div class="line"></div><div class="line">	<span class="meta">@Autowired</span>(required = <span class="keyword">false</span>)</div><div class="line">	<span class="keyword">private</span> ErrorController errorController;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> HasFeatures <span class="title">zuulFeature</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> HasFeatures.namedFeature(<span class="string">"Zuul (Simple)"</span>, ZuulConfiguration.class);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//核心类，路由定位器，最最重要</span></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="meta">@ConditionalOnMissingBean</span>(RouteLocator.class)</div><div class="line">	<span class="function"><span class="keyword">public</span> RouteLocator <span class="title">routeLocator</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="comment">//默认配置的实现是SimpleRouteLocator.class</span></div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> SimpleRouteLocator(<span class="keyword">this</span>.server.getServletPrefix(),</div><div class="line">				<span class="keyword">this</span>.zuulProperties);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//zuul的控制器，负责处理链路调用</span></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> ZuulController <span class="title">zuulController</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> ZuulController();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//MVC HandlerMapping that maps incoming request paths to remote services.</span></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> ZuulHandlerMapping <span class="title">zuulHandlerMapping</span><span class="params">(RouteLocator routes)</span> </span>&#123;</div><div class="line">		ZuulHandlerMapping mapping = <span class="keyword">new</span> ZuulHandlerMapping(routes, zuulController());</div><div class="line">		mapping.setErrorController(<span class="keyword">this</span>.errorController);</div><div class="line">		<span class="keyword">return</span> mapping;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//注册了一个路由刷新监听器，默认实现是ZuulRefreshListener.class，这个是我们动态路由的关键</span></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> ApplicationListener&lt;ApplicationEvent&gt; <span class="title">zuulRefreshRoutesListener</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> ZuulRefreshListener();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="meta">@ConditionalOnMissingBean</span>(name = <span class="string">"zuulServlet"</span>)</div><div class="line">	<span class="function"><span class="keyword">public</span> ServletRegistrationBean <span class="title">zuulServlet</span><span class="params">()</span> </span>&#123;</div><div class="line">		ServletRegistrationBean servlet = <span class="keyword">new</span> ServletRegistrationBean(<span class="keyword">new</span> ZuulServlet(),</div><div class="line">				<span class="keyword">this</span>.zuulProperties.getServletPattern());</div><div class="line">		<span class="comment">// The whole point of exposing this servlet is to provide a route that doesn't</span></div><div class="line">		<span class="comment">// buffer requests.</span></div><div class="line">		servlet.addInitParameter(<span class="string">"buffer-requests"</span>, <span class="string">"false"</span>);</div><div class="line">		<span class="keyword">return</span> servlet;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// pre filters</span></div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> ServletDetectionFilter <span class="title">servletDetectionFilter</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> ServletDetectionFilter();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> FormBodyWrapperFilter <span class="title">formBodyWrapperFilter</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> FormBodyWrapperFilter();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> DebugFilter <span class="title">debugFilter</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> DebugFilter();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> Servlet30WrapperFilter <span class="title">servlet30WrapperFilter</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> Servlet30WrapperFilter();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// post filters</span></div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> SendResponseFilter <span class="title">sendResponseFilter</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> SendResponseFilter();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> SendErrorFilter <span class="title">sendErrorFilter</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> SendErrorFilter();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> SendForwardFilter <span class="title">sendForwardFilter</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> SendForwardFilter();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Configuration</span></div><div class="line">	<span class="keyword">protected</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ZuulFilterConfiguration</span> </span>&#123;</div><div class="line"></div><div class="line">		<span class="meta">@Autowired</span></div><div class="line">		<span class="keyword">private</span> Map&lt;String, ZuulFilter&gt; filters;</div><div class="line"></div><div class="line">		<span class="meta">@Bean</span></div><div class="line">		<span class="function"><span class="keyword">public</span> ZuulFilterInitializer <span class="title">zuulFilterInitializer</span><span class="params">()</span> </span>&#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">new</span> ZuulFilterInitializer(<span class="keyword">this</span>.filters);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//上面提到的路由刷新监听器</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ZuulRefreshListener</span></span></div><div class="line"><span class="class">			<span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">ApplicationEvent</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">		<span class="meta">@Autowired</span></div><div class="line">		<span class="keyword">private</span> ZuulHandlerMapping zuulHandlerMapping;</div><div class="line"></div><div class="line">		<span class="keyword">private</span> HeartbeatMonitor heartbeatMonitor = <span class="keyword">new</span> HeartbeatMonitor();</div><div class="line"></div><div class="line">		<span class="meta">@Override</span></div><div class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(ApplicationEvent event)</span> </span>&#123;</div><div class="line">			<span class="keyword">if</span> (event <span class="keyword">instanceof</span> ContextRefreshedEvent</div><div class="line">					|| event <span class="keyword">instanceof</span> RefreshScopeRefreshedEvent</div><div class="line">					|| event <span class="keyword">instanceof</span> RoutesRefreshedEvent) &#123;</div><div class="line">				<span class="comment">//设置为脏,下一次匹配到路径时，如果发现为脏，则会去刷新路由信息</span></div><div class="line">				<span class="keyword">this</span>.zuulHandlerMapping.setDirty(<span class="keyword">true</span>);</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">else</span> <span class="keyword">if</span> (event <span class="keyword">instanceof</span> HeartbeatEvent) &#123;</div><div class="line">				<span class="keyword">if</span> (<span class="keyword">this</span>.heartbeatMonitor.update(((HeartbeatEvent) event).getValue())) &#123;</div><div class="line">					<span class="keyword">this</span>.zuulHandlerMapping.setDirty(<span class="keyword">true</span>);</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们要解决动态路由的难题，第一步就得理解路由定位器的作用。<br><img src="http://img.blog.csdn.net/20170401115214231?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>很失望，因为从接口关系来看，spring考虑到了路由刷新的需求，但是默认实现的SimpleRouteLocator没有实现RefreshableRouteLocator接口，看来我们只能借鉴DiscoveryClientRouteLocator去改造SimpleRouteLocator使其具备刷新能力。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RefreshableRouteLocator</span> <span class="keyword">extends</span> <span class="title">RouteLocator</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">refresh</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>DiscoveryClientRouteLocator比SimpleRouteLocator多了两个功能，第一是从DiscoveryClient（如Eureka）发现路由信息，之前的架构图已经给大家解释清楚了，我们不想使用eureka这种侵入式的网关模块，所以忽略它，第二是实现了RefreshableRouteLocator接口，能够实现动态刷新。<br>对SimpleRouteLocator.class的源码加一些注释，方便大家阅读：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleRouteLocator</span> <span class="keyword">implements</span> <span class="title">RouteLocator</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="comment">//配置文件中的路由信息配置</span></div><div class="line">	<span class="keyword">private</span> ZuulProperties properties;</div><div class="line">	<span class="comment">//路径正则配置器,即作用于path:/books/**</span></div><div class="line">	<span class="keyword">private</span> PathMatcher pathMatcher = <span class="keyword">new</span> AntPathMatcher();</div><div class="line"></div><div class="line">	<span class="keyword">private</span> String dispatcherServletPath = <span class="string">"/"</span>;</div><div class="line">	<span class="keyword">private</span> String zuulServletPath;</div><div class="line"></div><div class="line">	<span class="keyword">private</span> AtomicReference&lt;Map&lt;String, ZuulRoute&gt;&gt; routes = <span class="keyword">new</span> AtomicReference&lt;&gt;();</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">SimpleRouteLocator</span><span class="params">(String servletPath, ZuulProperties properties)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.properties = properties;</div><div class="line">		<span class="keyword">if</span> (servletPath != <span class="keyword">null</span> &amp;&amp; StringUtils.hasText(servletPath)) &#123;</div><div class="line">			<span class="keyword">this</span>.dispatcherServletPath = servletPath;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">this</span>.zuulServletPath = properties.getServletPath();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//路由定位器和其他组件的交互，是最终把定位的Routes以list的方式提供出去,核心实现</span></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> List&lt;Route&gt; <span class="title">getRoutes</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">if</span> (<span class="keyword">this</span>.routes.get() == <span class="keyword">null</span>) &#123;</div><div class="line">			<span class="keyword">this</span>.routes.set(locateRoutes());</div><div class="line">		&#125;</div><div class="line">		List&lt;Route&gt; values = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">		<span class="keyword">for</span> (String url : <span class="keyword">this</span>.routes.get().keySet()) &#123;</div><div class="line">			ZuulRoute route = <span class="keyword">this</span>.routes.get().get(url);</div><div class="line">			String path = route.getPath();</div><div class="line">			values.add(getRoute(route, path));</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> values;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> Collection&lt;String&gt; <span class="title">getIgnoredPaths</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.properties.getIgnoredPatterns();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//这个方法在网关产品中也很重要，可以根据实际路径匹配到Route来进行业务逻辑的操作，进行一些加工</span></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> Route <span class="title">getMatchingRoute</span><span class="params">(<span class="keyword">final</span> String path)</span> </span>&#123;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (log.isDebugEnabled()) &#123;</div><div class="line">			log.debug(<span class="string">"Finding route for path: "</span> + path);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (<span class="keyword">this</span>.routes.get() == <span class="keyword">null</span>) &#123;</div><div class="line">			<span class="keyword">this</span>.routes.set(locateRoutes());</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (log.isDebugEnabled()) &#123;</div><div class="line">			log.debug(<span class="string">"servletPath="</span> + <span class="keyword">this</span>.dispatcherServletPath);</div><div class="line">			log.debug(<span class="string">"zuulServletPath="</span> + <span class="keyword">this</span>.zuulServletPath);</div><div class="line">			log.debug(<span class="string">"RequestUtils.isDispatcherServletRequest()="</span></div><div class="line">					+ RequestUtils.isDispatcherServletRequest());</div><div class="line">			log.debug(<span class="string">"RequestUtils.isZuulServletRequest()="</span></div><div class="line">					+ RequestUtils.isZuulServletRequest());</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		String adjustedPath = adjustPath(path);</div><div class="line"></div><div class="line">		ZuulRoute route = <span class="keyword">null</span>;</div><div class="line">		<span class="keyword">if</span> (!matchesIgnoredPatterns(adjustedPath)) &#123;</div><div class="line">			<span class="keyword">for</span> (Entry&lt;String, ZuulRoute&gt; entry : <span class="keyword">this</span>.routes.get().entrySet()) &#123;</div><div class="line">				String pattern = entry.getKey();</div><div class="line">				log.debug(<span class="string">"Matching pattern:"</span> + pattern);</div><div class="line">				<span class="keyword">if</span> (<span class="keyword">this</span>.pathMatcher.match(pattern, adjustedPath)) &#123;</div><div class="line">					route = entry.getValue();</div><div class="line">					<span class="keyword">break</span>;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span> (log.isDebugEnabled()) &#123;</div><div class="line">			log.debug(<span class="string">"route matched="</span> + route);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">return</span> getRoute(route, adjustedPath);</div><div class="line"></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">private</span> Route <span class="title">getRoute</span><span class="params">(ZuulRoute route, String path)</span> </span>&#123;</div><div class="line">		<span class="keyword">if</span> (route == <span class="keyword">null</span>) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		String targetPath = path;</div><div class="line">		String prefix = <span class="keyword">this</span>.properties.getPrefix();</div><div class="line">		<span class="keyword">if</span> (path.startsWith(prefix) &amp;&amp; <span class="keyword">this</span>.properties.isStripPrefix()) &#123;</div><div class="line">			targetPath = path.substring(prefix.length());</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span> (route.isStripPrefix()) &#123;</div><div class="line">			<span class="keyword">int</span> index = route.getPath().indexOf(<span class="string">"*"</span>) - <span class="number">1</span>;</div><div class="line">			<span class="keyword">if</span> (index &gt; <span class="number">0</span>) &#123;</div><div class="line">				String routePrefix = route.getPath().substring(<span class="number">0</span>, index);</div><div class="line">				targetPath = targetPath.replaceFirst(routePrefix, <span class="string">""</span>);</div><div class="line">				prefix = prefix + routePrefix;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		Boolean retryable = <span class="keyword">this</span>.properties.getRetryable();</div><div class="line">		<span class="keyword">if</span> (route.getRetryable() != <span class="keyword">null</span>) &#123;</div><div class="line">			retryable = route.getRetryable();</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> Route(route.getId(), targetPath, route.getLocation(), prefix,</div><div class="line">				retryable,</div><div class="line">				route.isCustomSensitiveHeaders() ? route.getSensitiveHeaders() : <span class="keyword">null</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//注意这个类并没有实现refresh接口，但是却提供了一个protected级别的方法,旨在让子类不需要重复维护一个private AtomicReference&lt;Map&lt;String, ZuulRoute&gt;&gt; routes = new AtomicReference&lt;&gt;();也可以达到刷新的效果</span></div><div class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doRefresh</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.routes.set(locateRoutes());</div><div class="line">	&#125;</div><div class="line"></div><div class="line"></div><div class="line">	<span class="comment">//具体就是在这儿定位路由信息的，我们之后从数据库加载路由信息，主要也是从这儿改写</span></div><div class="line">	<span class="comment">/**</span></div><div class="line"><span class="comment">	 * Compute a map of path pattern to route. The default is just a static map from the</span></div><div class="line"><span class="comment">	 * &#123;<span class="doctag">@link</span> ZuulProperties&#125;, but subclasses can add dynamic calculations.</span></div><div class="line"><span class="comment">	 */</span></div><div class="line">	<span class="function"><span class="keyword">protected</span> Map&lt;String, ZuulRoute&gt; <span class="title">locateRoutes</span><span class="params">()</span> </span>&#123;</div><div class="line">		LinkedHashMap&lt;String, ZuulRoute&gt; routesMap = <span class="keyword">new</span> LinkedHashMap&lt;String, ZuulRoute&gt;();</div><div class="line">		<span class="keyword">for</span> (ZuulRoute route : <span class="keyword">this</span>.properties.getRoutes().values()) &#123;</div><div class="line">			routesMap.put(route.getPath(), route);</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> routesMap;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">matchesIgnoredPatterns</span><span class="params">(String path)</span> </span>&#123;</div><div class="line">		<span class="keyword">for</span> (String pattern : <span class="keyword">this</span>.properties.getIgnoredPatterns()) &#123;</div><div class="line">			log.debug(<span class="string">"Matching ignored pattern:"</span> + pattern);</div><div class="line">			<span class="keyword">if</span> (<span class="keyword">this</span>.pathMatcher.match(pattern, path)) &#123;</div><div class="line">				log.debug(<span class="string">"Path "</span> + path + <span class="string">" matches ignored pattern "</span> + pattern);</div><div class="line">				<span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">private</span> String <span class="title">adjustPath</span><span class="params">(<span class="keyword">final</span> String path)</span> </span>&#123;</div><div class="line">		String adjustedPath = path;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (RequestUtils.isDispatcherServletRequest()</div><div class="line">				&amp;&amp; StringUtils.hasText(<span class="keyword">this</span>.dispatcherServletPath)) &#123;</div><div class="line">			<span class="keyword">if</span> (!<span class="keyword">this</span>.dispatcherServletPath.equals(<span class="string">"/"</span>)) &#123;</div><div class="line">				adjustedPath = path.substring(<span class="keyword">this</span>.dispatcherServletPath.length());</div><div class="line">				log.debug(<span class="string">"Stripped dispatcherServletPath"</span>);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (RequestUtils.isZuulServletRequest()) &#123;</div><div class="line">			<span class="keyword">if</span> (StringUtils.hasText(<span class="keyword">this</span>.zuulServletPath)</div><div class="line">					&amp;&amp; !<span class="keyword">this</span>.zuulServletPath.equals(<span class="string">"/"</span>)) &#123;</div><div class="line">				adjustedPath = path.substring(<span class="keyword">this</span>.zuulServletPath.length());</div><div class="line">				log.debug(<span class="string">"Stripped zuulServletPath"</span>);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> &#123;</div><div class="line">			<span class="comment">// do nothing</span></div><div class="line">		&#125;</div><div class="line"></div><div class="line">		log.debug(<span class="string">"adjustedPath="</span> + path);</div><div class="line">		<span class="keyword">return</span> adjustedPath;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>重写过后的自定义路由定位器如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomRouteLocator</span> <span class="keyword">extends</span> <span class="title">SimpleRouteLocator</span> <span class="keyword">implements</span> <span class="title">RefreshableRouteLocator</span></span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> Logger logger = LoggerFactory.getLogger(CustomRouteLocator.class);</div><div class="line"></div><div class="line">    <span class="keyword">private</span> JdbcTemplate jdbcTemplate;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> ZuulProperties properties;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setJdbcTemplate</span><span class="params">(JdbcTemplate jdbcTemplate)</span></span>&#123;</div><div class="line">        <span class="keyword">this</span>.jdbcTemplate = jdbcTemplate;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CustomRouteLocator</span><span class="params">(String servletPath, ZuulProperties properties)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(servletPath, properties);</div><div class="line">        <span class="keyword">this</span>.properties = properties;</div><div class="line">        logger.info(<span class="string">"servletPath:&#123;&#125;"</span>,servletPath);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//父类已经提供了这个方法，这里写出来只是为了说明这一个方法很重要！！！</span></div><div class="line"><span class="comment">//    @Override</span></div><div class="line"><span class="comment">//    protected void doRefresh() &#123;</span></div><div class="line"><span class="comment">//        super.doRefresh();</span></div><div class="line"><span class="comment">//    &#125;</span></div><div class="line"></div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">refresh</span><span class="params">()</span> </span>&#123;</div><div class="line">        doRefresh();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> Map&lt;String, ZuulRoute&gt; <span class="title">locateRoutes</span><span class="params">()</span> </span>&#123;</div><div class="line">        LinkedHashMap&lt;String, ZuulRoute&gt; routesMap = <span class="keyword">new</span> LinkedHashMap&lt;String, ZuulRoute&gt;();</div><div class="line">        <span class="comment">//从application.properties中加载路由信息</span></div><div class="line">        routesMap.putAll(<span class="keyword">super</span>.locateRoutes());</div><div class="line">        <span class="comment">//从db中加载路由信息</span></div><div class="line">        routesMap.putAll(locateRoutesFromDB());</div><div class="line">        <span class="comment">//优化一下配置</span></div><div class="line">        LinkedHashMap&lt;String, ZuulRoute&gt; values = <span class="keyword">new</span> LinkedHashMap&lt;&gt;();</div><div class="line">        <span class="keyword">for</span> (Map.Entry&lt;String, ZuulRoute&gt; entry : routesMap.entrySet()) &#123;</div><div class="line">            String path = entry.getKey();</div><div class="line">            <span class="comment">// Prepend with slash if not already present.</span></div><div class="line">            <span class="keyword">if</span> (!path.startsWith(<span class="string">"/"</span>)) &#123;</div><div class="line">                path = <span class="string">"/"</span> + path;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">if</span> (StringUtils.hasText(<span class="keyword">this</span>.properties.getPrefix())) &#123;</div><div class="line">                path = <span class="keyword">this</span>.properties.getPrefix() + path;</div><div class="line">                <span class="keyword">if</span> (!path.startsWith(<span class="string">"/"</span>)) &#123;</div><div class="line">                    path = <span class="string">"/"</span> + path;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            values.put(path, entry.getValue());</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> values;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> Map&lt;String, ZuulRoute&gt; <span class="title">locateRoutesFromDB</span><span class="params">()</span></span>&#123;</div><div class="line">        Map&lt;String, ZuulRoute&gt; routes = <span class="keyword">new</span> LinkedHashMap&lt;&gt;();</div><div class="line">        List&lt;ZuulRouteVO&gt; results = jdbcTemplate.query(<span class="string">"select * from gateway_api_define where enabled = true "</span>,<span class="keyword">new</span> BeanPropertyRowMapper&lt;&gt;(ZuulRouteVO.class));</div><div class="line">        <span class="keyword">for</span> (ZuulRouteVO result : results) &#123;</div><div class="line">            <span class="keyword">if</span>(org.apache.commons.lang3.StringUtils.isBlank(result.getPath()) || org.apache.commons.lang3.StringUtils.isBlank(result.getUrl()) )&#123;</div><div class="line">                <span class="keyword">continue</span>;</div><div class="line">            &#125;</div><div class="line">            ZuulRoute zuulRoute = <span class="keyword">new</span> ZuulRoute();</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                org.springframework.beans.BeanUtils.copyProperties(result,zuulRoute);</div><div class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">                logger.error(<span class="string">"=============load zuul route info from db with error=============="</span>,e);</div><div class="line">            &#125;</div><div class="line">            routes.put(zuulRoute.getPath(),zuulRoute);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> routes;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ZuulRouteVO</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line"><span class="comment">         * The ID of the route (the same as its map key by default).</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        <span class="keyword">private</span> String id;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line"><span class="comment">         * The path (pattern) for the route, e.g. /foo/**.</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        <span class="keyword">private</span> String path;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line"><span class="comment">         * The service ID (if any) to map to this route. You can specify a physical URL or</span></div><div class="line"><span class="comment">         * a service, but not both.</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        <span class="keyword">private</span> String serviceId;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line"><span class="comment">         * A full physical URL to map to the route. An alternative is to use a service ID</span></div><div class="line"><span class="comment">         * and service discovery to find the physical address.</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        <span class="keyword">private</span> String url;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line"><span class="comment">         * Flag to determine whether the prefix for this route (the path, minus pattern</span></div><div class="line"><span class="comment">         * patcher) should be stripped before forwarding.</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> stripPrefix = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line"><span class="comment">         * Flag to indicate that this route should be retryable (if supported). Generally</span></div><div class="line"><span class="comment">         * retry requires a service ID and ribbon.</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        <span class="keyword">private</span> Boolean retryable;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> Boolean enabled;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> id;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.id = id;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getPath</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> path;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPath</span><span class="params">(String path)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.path = path;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getServiceId</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> serviceId;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setServiceId</span><span class="params">(String serviceId)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.serviceId = serviceId;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getUrl</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> url;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUrl</span><span class="params">(String url)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.url = url;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isStripPrefix</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> stripPrefix;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setStripPrefix</span><span class="params">(<span class="keyword">boolean</span> stripPrefix)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.stripPrefix = stripPrefix;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> Boolean <span class="title">getRetryable</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> retryable;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setRetryable</span><span class="params">(Boolean retryable)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.retryable = retryable;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> Boolean <span class="title">getEnabled</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> enabled;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEnabled</span><span class="params">(Boolean enabled)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.enabled = enabled;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>配置这个自定义的路由定位器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomZuulConfig</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    ZuulProperties zuulProperties;</div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    ServerProperties server;</div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    JdbcTemplate jdbcTemplate;</div><div class="line"></div><div class="line">    <span class="meta">@Bean</span></div><div class="line">    <span class="function"><span class="keyword">public</span> CustomRouteLocator <span class="title">routeLocator</span><span class="params">()</span> </span>&#123;</div><div class="line">        CustomRouteLocator routeLocator = <span class="keyword">new</span> CustomRouteLocator(<span class="keyword">this</span>.server.getServletPrefix(), <span class="keyword">this</span>.zuulProperties);</div><div class="line">        routeLocator.setJdbcTemplate(jdbcTemplate);</div><div class="line">        <span class="keyword">return</span> routeLocator;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>现在容器启动时，就可以从数据库和配置文件中一起加载路由信息了，离动态路由还差最后一步，就是实时刷新，前面已经说过了，默认的ZuulConfigure已经配置了事件监听器，我们只需要发送一个事件就可以实现刷新了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RefreshRouteService</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    ApplicationEventPublisher publisher;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    RouteLocator routeLocator;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">refreshRoute</span><span class="params">()</span> </span>&#123;</div><div class="line">        RoutesRefreshedEvent routesRefreshedEvent = <span class="keyword">new</span> RoutesRefreshedEvent(routeLocator);</div><div class="line">        publisher.publishEvent(routesRefreshedEvent);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>具体的刷新流程其实就是从数据库重新加载了一遍，有人可能会问，为什么不自己是手动重新加载Locator.dorefresh？非要用事件去刷新。这牵扯到内部的zuul内部组件的工作流程，不仅仅是Locator本身的一个变量，具体想要了解的还得去看源码。</p>
+<p>到这儿我们就实现了动态路由了，所以的实例代码和建表语句我会放到github上，下载的时候记得给我star   QAQ </p>
+<p><a href="https://github.com/lexburner/zuul-gateway-demo" target="_blank" rel="external">github地址</a></p>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/04/01/springcloud----Zuul动态路由/" data-id="cj6zrzx63001en0uddfc9fpih" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/04/01/springcloud----Zuul动态路由/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/04/01/springcloud----Zuul动态路由/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+		<! -- 添加捐赠图标 -->
+<div class ="post-donate">
+    <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+		   大吉大利，今晚吃鸡。
+        </span>
+        <br>
+      </div>  
+	<div id="donate_guide" class="donate_bar center hidden" >
+		<div>
+			<span class="donate-title">支付宝</span>
+			<span class="donate-title">微信</span>
+		</div>
+		<div>
+			<!-- 支付宝打赏图案 -->
+			<img src="/css/images/alipay.png"  alt="支付宝打赏"> 
+			<!-- 微信打赏图案 -->
+			<img src="/css/images/wechatpay.png" alt="微信打赏">  
+		</div>
+    </div>
+	<script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function(){
+			$('#donate_board').addClass('hidden');
+			$('#donate_guide').removeClass('hidden');
+		}
+	</script>
+</div>
+<! -- 添加捐赠图标 -->
+	
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/04/08/Zuul性能测试/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    Zuul性能测试
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/03/18/分布式限流/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">分布式限流</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="title">解析Spring中的ResponseBody和RequestBody</a></p>
+                            <p class="item-date"><time datetime="2017-08-30T04:44:21.000Z" itemprop="datePublished">2017-08-30</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/26/XML与javabean的转换/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/JAVA/">JAVA</a></p>
+                            <p class="item-title"><a href="/2017/08/26/XML与javabean的转换/" class="title">XML与javabean的转换</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T19:41:27.000Z" itemprop="datePublished">2017-08-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/25/一些需要普及的项目规范/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/25/一些需要普及的项目规范/" class="title">一些需要普及的项目规范</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T04:18:45.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/22/博客搬家/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/css/images/banner/1.jpg)" alt="博客搬家" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/22/博客搬家/" class="title">博客搬家</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T08:38:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a></p>
+                            <p class="item-title"><a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="title">一个DDD指导下的实体类设计案例</a></p>
+                            <p class="item-date"><time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 16px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/XML/" style="font-size: 10px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 12px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://www.zhihu.com/people/xu-jing-feng-29/activities">我的知乎</a>
+                    </li>
+                
+                    <li>
+                        <a href="https://ntzyz.io/">namespace_ntzyz</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://blog.didispace.com/">程序猿DD|博客</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 徐靖峰<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://lexburner.github.io/2017/04/01/springcloud----Zuul动态路由/';
+        
+        this.page.identifier = 'springcloud----Zuul动态路由';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+    
+        <script src="/vendor/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-share.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-video.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>浅析项目中的并发 | 徐靖峰|个人博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="前言控制并发的方法很多，我之前的两篇博客都有过介绍，从最基础的synchronized，juc中的lock，到数据库的行级锁，乐观锁，悲观锁，再到中间件级别的redis，zookeeper分布式锁。今天主要想讲的主题是“根据并发出现的具体业务场景，使用合理的控制并发手段”。 什么是并发由一个大家都了解的例子引入我们今天的主题：并发 123456789101112131415161718192021">
+<meta name="keywords" content="JAVA,多线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅析项目中的并发">
+<meta property="og:url" content="http://lexburner.github.io/2017/02/22/浅析项目中的并发/index.html">
+<meta property="og:site_name" content="徐靖峰|个人博客">
+<meta property="og:description" content="前言控制并发的方法很多，我之前的两篇博客都有过介绍，从最基础的synchronized，juc中的lock，到数据库的行级锁，乐观锁，悲观锁，再到中间件级别的redis，zookeeper分布式锁。今天主要想讲的主题是“根据并发出现的具体业务场景，使用合理的控制并发手段”。 什么是并发由一个大家都了解的例子引入我们今天的主题：并发 123456789101112131415161718192021">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-08-22T07:46:51.708Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅析项目中的并发">
+<meta name="twitter:description" content="前言控制并发的方法很多，我之前的两篇博客都有过介绍，从最基础的synchronized，juc中的lock，到数据库的行级锁，乐观锁，悲观锁，再到中间件级别的redis，zookeeper分布式锁。今天主要想讲的主题是“根据并发出现的具体业务场景，使用合理的控制并发手段”。 什么是并发由一个大家都了解的例子引入我们今天的主题：并发 123456789101112131415161718192021">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/open-sans/styles.css">
+    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/vendor/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/vendor/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">徐靖峰|个人博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">徐靖峰</h2>
+            <h3 id="title">JAVA Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Shanghai, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lexburner">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                36
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                25
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lexburner" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/wechat.png" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-浅析项目中的并发" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            浅析项目中的并发
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/02/22/浅析项目中的并发/">
+            <time datetime="2017-02-22T03:31:52.000Z" itemprop="datePublished">2017-02-22</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/架构设计/">架构设计</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>, <a class="tag-link" href="/tags/多线程/">多线程</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+             <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>控制并发的方法很多，我之前的两篇博客都有过介绍，从最基础的synchronized，juc中的lock，到数据库的行级锁，乐观锁，悲观锁，再到中间件级别的redis，zookeeper分布式锁。今天主要想讲的主题是“根据并发出现的具体业务场景，使用合理的控制并发手段”。</p>
+<h2 id="什么是并发"><a href="#什么是并发" class="headerlink" title="什么是并发"></a>什么是并发</h2><p>由一个大家都了解的例子引入我们今天的主题：并发</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo1</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> Integer count = <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        <span class="keyword">final</span> Demo1 demo1 = <span class="keyword">new</span> Demo1();</div><div class="line">        Executor executor = Executors.newFixedThreadPool(<span class="number">10</span>);</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</div><div class="line">            executor.execute(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    demo1.count++;</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            Thread.sleep(<span class="number">5000</span>);</div><div class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        System.out.println(<span class="string">"final count value:"</span>+demo1.count);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">console:</div><div class="line"><span class="keyword">final</span> count value:<span class="number">973</span></div></pre></td></tr></table></figure>
+<p>这个过程中，类变量count就是共享资源，而++操作并不是线程安全的，而多个线程去对count执行++操作，并没有happens-before原则保障执行的先后顺序，导致了最终结果并不是想要的1000</p>
+<a id="more"></a>
+<p>下面，我们把并发中的共享资源从类变量转移到数据库中。<br>先来看看使用框架的情况，以JPA为例（充血模型）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Component</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo2</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    TestNumDao testNumDao;</div><div class="line"></div><div class="line">    <span class="meta">@Transactional</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</div><div class="line">        TestNum testNum = testNumDao.findOne(<span class="string">"1"</span>);</div><div class="line">        testNum.setCount(testNum.getCount()+<span class="number">1</span>);</div><div class="line">        testNumDao.save(testNum);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line">controller:</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">    Demo2 demo2;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"test"</span>)</div><div class="line">    <span class="meta">@ResponseBody</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">test</span><span class="params">()</span></span>&#123;</div><div class="line">        Executor executor = Executors.newFixedThreadPool(<span class="number">10</span>);</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</div><div class="line">            executor.execute(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    demo2.test();</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="string">"test"</span>;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>数据库的记录</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>344</td>
+</tr>
+</tbody>
+</table>
+<p>初窥门径的程序员会认为事务最基本的ACID中便包含了原子性，但是事务的原子性和今天所讲的并发中的原子操作仅仅是名词上有点类似。而有点经验的程序员都能知道这中间发生了什么（下面细说），这只是暴露了项目中并发问题的冰山一角。</p>
+<p>改成直接用sql如何呢（贫血模型）？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RequestMapping</span>(<span class="string">"testSql"</span>)</div><div class="line">    <span class="meta">@ResponseBody</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">testSql</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line">        <span class="keyword">final</span> CountDownLatch countDownLatch = <span class="keyword">new</span> CountDownLatch(<span class="number">1000</span>);</div><div class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</div><div class="line">        Executor executor = Executors.newFixedThreadPool(<span class="number">10</span>);</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</div><div class="line">            executor.execute(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    jdbcTemplate.execute(<span class="string">"update test_num set count = count + 1 where id = '1'"</span>);</div><div class="line">                    countDownLatch.countDown();</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line">        countDownLatch.await();</div><div class="line">        <span class="keyword">long</span> costTime =System.currentTimeMillis() - start;</div><div class="line">        System.out.println(<span class="string">"共花费："</span>+costTime+<span class="string">" s"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="string">"testSql"</span>;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>数据库结果： count ： 1000 达到了预期效果<br>这个例子我顺便记录了耗时,控制台打印:共花费：113 ms<br>简单对比一下二，三两个例子，都是想对数据库的count进行+1操作，唯一的区别就是，后者的+1计算发生在数据库，而前者的计算依赖于事先查出来的值，并且计算发生在程序的内存中。而现在大部分的ORM框架的兴起，导致了写第二种代码的程序员变多，不注意并发的话，就会出现问题。下面我们来看看具体的业务场景。</p>
+<h2 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景"></a>业务场景</h2><ol>
+<li>修改个人信息</li>
+<li>修改商品信息</li>
+<li>扣除账户余额，扣减库存</li>
+</ol>
+<h2 id="业务场景分析"><a href="#业务场景分析" class="headerlink" title="业务场景分析"></a>业务场景分析</h2><p>第一个场景，互联网如此众多的用户修改个人信息，这算不算并发？答案是：算也不算。<br>算，从程序员角度来看，每一个用户请求进来，都是调用的同一个修改入口，具体一点，就是映射到controller层的同一个requestMapping，所以一定是并发的。<br>不算，虽然程序是并发的，但是从用户角度来分析，每个人只可以修改自己的信息，所以，不同用户的操作其实是隔离的，所以不算“并发”。这也是为什么很多开发者，在日常开发中一直不注意并发控制，却也没有发生太大问题的原因，大多数初级程序员开发的还都是CRM，OA，CMS系统。</p>
+<p>回到我们的并发，第一种业务场景，是可以使用如上模式的，对于一条用户数据的修改，我们允许程序员读取数据到内存中，内存计算修改（耗时操作），提交更改，提交事务。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//Transaction start</span></div><div class="line">User user = userDao.findById(<span class="string">"1"</span>);</div><div class="line">user.setName(<span class="string">"newName"</span>);</div><div class="line">user.setAge(user.getAge()+<span class="number">1</span>);</div><div class="line">...<span class="comment">//其他耗时操作</span></div><div class="line">userDao.save(user);</div><div class="line"><span class="comment">//Transaction commit</span></div></pre></td></tr></table></figure>
+<p>这个场景变现为：几乎不存在并发，不需要控制，场景乐观。</p>
+<p>为了严谨，也可以选择控制并发，但我觉得这需要交给写这段代码的同事，让他自由发挥。第二个场景已经有所不同了，同样是修改一个记录，但是系统中可能有多个操作员来维护，此时，商品数据表现为一个共享数据，所以存在微弱的并发，通常表现为数据的脏读，例如操作员A，B同时对一个商品信息维护，我们希望只能有一个操作员修改成功，另外一个操作员得到错误提示（该商品信息已经发生变化），否则，两个人都以为自己修改成功了，但是其实只有一个人完成了操作，另一个人的操作被覆盖了。</p>
+<p>这个场景表现为：存在并发，需要控制，允许失败，场景乐观。</p>
+<p>通常我建议这种场景使用乐观锁，即在商品属性添加一个<code>version</code>字段标记修改的版本，这样两个操作员拿到同一个版本号，第一个操作员修改成功后版本号变化，另一个操作员的修改就会失败了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Goods</span></span>&#123;</div><div class="line">	<span class="meta">@Version</span></div><div class="line">	<span class="keyword">int</span> version;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//Transaction start</span></div><div class="line"><span class="keyword">try</span>&#123;</div><div class="line">	Goods goods = goodsDao.findById(<span class="string">"1"</span>);</div><div class="line">	goods.setName(<span class="string">"newName"</span>);</div><div class="line">	goods.setPrice(goods.getPrice()+<span class="number">100.00</span>);</div><div class="line">	...<span class="comment">//其他耗时操作</span></div><div class="line">	goodsDao.save(goods);</div><div class="line">&#125;<span class="keyword">catch</span>(org.hibernate.StaleObjectStateException e)&#123;</div><div class="line">	<span class="comment">//返回给前台</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//Transaction commit</span></div></pre></td></tr></table></figure>
+<p>springdata配合jpa可以自动捕获version异常，也可以自动手动对比。</p>
+<p>第三个场景<br>这个场景表现为：存在频繁的并发，需要控制，不允许失败，场景悲观。</p>
+<p><strong>强调一下，本例不应该使用在项目中，只是为了举例而设置的一个场景，因为这种贫血模型无法满足复杂的业务场景，而且依靠单机事务来保证一致性，并发性能和可扩展性能不好。</strong></p>
+<p>一个秒杀场景，大量请求在短时间涌入，是不可能像第二种场景一样，100个并发请求，一个成功，其他99个全部异常的。</p>
+<p>设计方案应该达到的效果是：有足够库存时，允许并发，库存到0时，之后的请求全部失败；有足够金额时，允许并发，金额不够支付时立刻告知余额不足。</p>
+<p>可以利用数据库的行级锁，<br><code>update set balance = balance - money where userId = ? and balance &gt;= money;</code><br><code>update stock = stock - number where goodsId = ? and stock &gt;= number ;</code>  然后在后台 查看返回值是否影响行数为1，判断请求是否成功，利用数据库保证并发。</p>
+<p>需要补充一点，我这里所讲的秒杀，并不是指双11那种级别的秒杀，那需要多层架构去控制并发，前端拦截，负载均衡….不能仅仅依赖于数据库的，会导致严重的性能问题。为了留一下一个直观的感受，这里对比一下oracle，mysql的两个主流存储引擎：innodb，myisam的性能问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">oracle:</div><div class="line">10000个线程共计1000000次并发请求：共花费：101017 ms =&gt;101s</div><div class="line">innodb:</div><div class="line">10000个线程共计1000000次并发请求：共花费：550330 ms =&gt;550s</div><div class="line">myisam:</div><div class="line">10000个线程共计1000000次并发请求：共花费：75802 ms =&gt;75s</div></pre></td></tr></table></figure></p>
+<p>可见，如果真正有大量请求到达数据库，光是依靠数据库解决并发是不现实的，所以仅仅只用数据库来做保障而不是完全依赖。需要根据业务场景选择合适的控制并发手段。</p>
+<h2 id="后续，待补充"><a href="#后续，待补充" class="headerlink" title="后续，待补充"></a>后续，待补充</h2><p>分布式锁控制并发…<br>浅析队列在并发场景中的地位…</p>
+
+           
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lexburner.github.io/2017/02/22/浅析项目中的并发/" data-id="cj6zrzx7a002tn0ud902z44yc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lexburner.github.io/2017/02/22/浅析项目中的并发/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lexburner.github.io/2017/02/22/浅析项目中的并发/">评论</a>
+    
+
+        </footer>
+    </div>
+	
+		<! -- 添加捐赠图标 -->
+<div class ="post-donate">
+    <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+		   大吉大利，今晚吃鸡。
+        </span>
+        <br>
+      </div>  
+	<div id="donate_guide" class="donate_bar center hidden" >
+		<div>
+			<span class="donate-title">支付宝</span>
+			<span class="donate-title">微信</span>
+		</div>
+		<div>
+			<!-- 支付宝打赏图案 -->
+			<img src="/css/images/alipay.png"  alt="支付宝打赏"> 
+			<!-- 微信打赏图案 -->
+			<img src="/css/images/wechatpay.png" alt="微信打赏">  
+		</div>
+    </div>
+	<script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function(){
+			$('#donate_board').addClass('hidden');
+			$('#donate_guide').removeClass('hidden');
+		}
+	</script>
+</div>
+<! -- 添加捐赠图标 -->
+	
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/02/24/浅析java内存模型（JMM）/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    浅析java内存模型（JMM）
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/02/20/聊聊IT行业应届生求职/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">聊聊IT行业应届生求职</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+</section>
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring/">Spring</a></p>
+                            <p class="item-title"><a href="/2017/08/30/解析Spring中的ResponseBody和RequestBody/" class="title">解析Spring中的ResponseBody和RequestBody</a></p>
+                            <p class="item-date"><time datetime="2017-08-30T04:44:21.000Z" itemprop="datePublished">2017-08-30</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/26/XML与javabean的转换/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/JAVA/">JAVA</a></p>
+                            <p class="item-title"><a href="/2017/08/26/XML与javabean的转换/" class="title">XML与javabean的转换</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T19:41:27.000Z" itemprop="datePublished">2017-08-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/25/一些需要普及的项目规范/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/25/一些需要普及的项目规范/" class="title">一些需要普及的项目规范</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T04:18:45.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/22/博客搬家/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/css/images/banner/1.jpg)" alt="博客搬家" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/2017/08/22/博客搬家/" class="title">博客搬家</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T08:38:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/领域驱动设计/">领域驱动设计</a></p>
+                            <p class="item-title"><a href="/2017/08/21/一个DDD指导下的实体类设计案例/" class="title">一个DDD指导下的实体类设计案例</a></p>
+                            <p class="item-date"><time datetime="2017-08-21T07:59:52.000Z" itemprop="datePublished">2017-08-21</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/DevOps/" style="font-size: 12px;">DevOps</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/RPC/" style="font-size: 10px;">RPC</a> <a href="/tags/Spring/" style="font-size: 16px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 10px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 12px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 14px;">Spring Security OAuth2</a> <a href="/tags/Validation/" style="font-size: 12px;">Validation</a> <a href="/tags/XML/" style="font-size: 10px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 16px;">drools</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/微服务/" style="font-size: 10px;">微服务</a> <a href="/tags/技术杂谈/" style="font-size: 12px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/规则引擎/" style="font-size: 16px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 12px;">领域驱动设计</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://www.zhihu.com/people/xu-jing-feng-29/activities">我的知乎</a>
+                    </li>
+                
+                    <li>
+                        <a href="https://ntzyz.io/">namespace_ntzyz</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://blog.didispace.com/">程序猿DD|博客</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 徐靖峰<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://lexburner.github.io/2017/02/22/浅析项目中的并发/';
+        
+        this.page.identifier = '浅析项目中的并发';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+    
+        <script src="/vendor/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-share.min.js"></script>
+        <script src="/vendor/lightgallery/js/lg-video.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
