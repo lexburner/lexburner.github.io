@@ -55,9 +55,9 @@ public class CookieController {
 Session Info:	不存在session，设置browser=chrome
 ```
 
-既没有session，也没有cookie，并且根据我们将browser=chrome已经设置到了session中。
+既没有session，也没有cookie，我们将browser=chrome设置到session中。
 
-再次访问同样的地址，控制台输出如下：
+再次访问同样的端点，控制台输出如下：
 
 ```
 Session Info:	存在session，browser=chrome
@@ -83,7 +83,7 @@ Session Info:	存在session，browser=360
 Cookie Info:	JSESSIONID : 320C21A645A160C4843D076204DA2F40
 ```
 
-为什么要再次使用另一个浏览器访问呢？先卖个关子，我们最起码可以得出结论，不同浏览器，访问是隔离的，甚至重新打开同一个浏览器，JSESSIONID也是不同的。
+为什么要再次使用另一个浏览器访问呢？先卖个关子，我们最起码可以得出结论，不同浏览器，访问是隔离的，甚至重新打开同一个浏览器，JSESSIONID也是不同的。另外可以尝试把保存session的操作注视掉，则可以发现Response中就不会返回JSESSIONID了，即这是一次无状态的请求。
 
 ## 安全问题
 
@@ -91,7 +91,7 @@ Cookie Info:	JSESSIONID : 320C21A645A160C4843D076204DA2F40
 
 还记得上一节的代码示例中，我们使用了两个浏览器：
 
-- chrome浏览器访问时，JSESSIONID为4CD1D96E04FC390EA6C60E8C40A636AF，后端session记录的值为：browser=chrome
+- chrome浏览器访问时，JSESSIONID为4CD1D96E04FC390EA6C60E8C40A636AF，后端session记录的值为：browser=chrome。
 - 360浏览器访问时，JSESSIONID为320C21A645A160C4843D076204DA2F40,后端session记录的值为：browser=360。
 
 我们使用chrome插件Edit this Cookie，将chrome浏览器中的JSESSIONID修改为360浏览器中的值
