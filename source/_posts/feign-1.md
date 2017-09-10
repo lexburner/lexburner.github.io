@@ -151,9 +151,6 @@ public interface UserApi {
 ```java
 @FeignClient("user")
 public interface UserApi {
-
-    @RequestMapping(value = "/user/{userId}",method = RequestMethod.GET)
-    String findById(@PathVariable("userId") String userId);
   
     @RequestMapping(value = "/user/{email}",method = RequestMethod.GET)
     String findByEmail(@PathVariable("email") String email);
@@ -175,7 +172,7 @@ public interface UserApi {
 public interface BookApi {
 
     @RequestMapping(value = "/order/history",method = RequestMethod.POST)
-    Page<List<Orders>> queryOrderHistory(@RequestParam QueryVO queryVO);
+    Page<List<Orders>> queryOrderHistory(@RequestBody QueryVO queryVO);
 
 }
 ```
