@@ -27,7 +27,7 @@ customize:
     favicon: # path to favicon
     social_links:
         github: https://github.com/lexburner
-        wechat: /css/images/wechat.png
+        wechat: /css/images/kirito_wechat.jpg
     social_link_tooltip: true # enable the social link tooltip, options: true, false
 
 # Widgets
