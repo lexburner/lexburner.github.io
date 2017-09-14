@@ -11,7 +11,7 @@ categories:
 
 
 ## 案例描述
-本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。
+本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，描述常见的使用场景，以及如何规避他们，给出具体的代码。
 1. 在新的线程中，访问某个持久化对象的懒加载属性。
 2. 在quartz定时任务中，访问某个持久化对象的懒加载属性。
 3. 在dubbo，motan一类rpc框架中，远程调用时服务端session关闭的问题。
@@ -73,17 +73,6 @@ controller层，不是简简单单的调用，而是在新的线程中调用。�
 启动项目后，访问`localhost:8080/testNormalGetOne`报错如下：
 ```java
 Exception in thread "Thread-6" org.hibernate.LazyInitializationException: could not initialize proxy - no Session
-	at org.hibernate.proxy.AbstractLazyInitializer.initialize(AbstractLazyInitializer.java:148)
-	at org.hibernate.proxy.AbstractLazyInitializer.getImplementation(AbstractLazyInitializer.java:266)
-	at org.hibernate.proxy.pojo.javassist.JavassistLazyInitializer.invoke(JavassistLazyInitializer.java:68)
-	at com.example.transaction.entity.Student_$$_jvste17_0.getName(Student_$$_jvste17_0.java)
-	at com.example.transaction.service.StudentService.testNormalGetOne(StudentService.java:71)
-	at com.example.transaction.service.StudentService$$FastClassBySpringCGLIB$$f8048714.invoke(<generated>)
-	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:204)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:651)
-	at com.example.transaction.service.StudentService$$EnhancerBySpringCGLIB$$a6640151.testNormalGetOne(<generated>)
-	at com.example.transaction.controller.StudentController$1.run(StudentController.java:71)
-	at java.lang.Thread.run(Thread.java:745)
 ```
 
 ## 问题分析
