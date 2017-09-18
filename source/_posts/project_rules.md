@@ -20,22 +20,6 @@ categories: 技术杂谈
 短信邮件项目主要包含短信，邮件两个子模块
 
 【强制】 **包分层--通用**
-一般每个项目都包含下面六个模块，还有一些各自扩展的模块
-
-| api            | api-impl | app  | admin | web  | model |
-| -------------- | -------- | ---- | ----- | ---- | ----- |
-| api接口定义，用于暴露服务 | api接口实现  | 应用   | 后台页面  | 前台页面 | 实体    |
-
-关于项目结构的介绍可以参考《项目结构说明.md》,他们的包分层应当统一
-
-| 模块       | 包                        |
-| -------- | ------------------------ |
-| api      | sinosoftgz.message.api   |
-| api-impl | sinosoftgz.message.api   |
-| admin    | sinosoftgz.message.admin |
-| model    | sinosoftgz.message.model |
-| web      | sinosoftgz.message.web   |
-| app      | sinosoftgz.message.app   |
 
 格式如下：公司名.模块名.层次名
 包名应当尽量使用能够概括模块总体含义,单词义,单数,不包含特殊字符的单词
@@ -111,7 +95,7 @@ service和controller以及其他业务模块相关的包相隔太远，或者干
 ## 数据库规范
 【强制】必要的地方必须添加索引，如唯一索引，以及作为条件查询的列
 【强制】生产环境，uat环境，不允许使用`jpa.hibernate.ddl-auto: create`自动建表，每次ddl的修改需要保留脚本，统一管理
-【强制】业务数据不能使用deleteBy...而要使用逻辑删除setDelete(true),查询时，findByxxxAndisDelete(xxx,false)
+【强制】业务数据不能使用deleteBy...而要使用逻辑删除setDeleteFlag(true),查询时，findByxxxAndDeleteFlag(xxx,false)
 
 
 ## ORM规范
@@ -169,7 +153,7 @@ public Page<GatewayApiDefine> findAll(GatewayApiDefine gatewayApiDefine,Pageable
 
 ## 禁止使用魔鬼数字
 
-【模型层与业务层】
+【模型层与业务层】【强制】
 一些固定业务含义的代码可以使用枚举类型，或者final static常量表示，在设值时，不能直接使用不具备业务含义的数值。
 【正例】：使用final static常量: 
 ```java
@@ -228,34 +212,34 @@ mailMessage.setCustom(true);
 【正例】：也可以使用枚举类型避免魔鬼数字
 
 ```java
-	protected String productType;
+protected String productType;
 
-    protected String productName;
+protected String productName;
 
-    @Enumerated(EnumType.STRING)
-    protected ConsumerTypeEnum consumerType;
+@Enumerated(EnumType.STRING)
+protected ConsumerTypeEnum consumerType;
 
-    @Enumerated(EnumType.STRING)
-    protected PolicyTypeEnum policyType;
+@Enumerated(EnumType.STRING)
+protected PolicyTypeEnum policyType;
 
-    @Enumerated(EnumType.STRING)
-    protected ReceiverEnum receiver;
-    public enum ConsumerTypeEnum {
-        PERSONAL, ORGANIZATION;
-    
-        public String getLabel() {
-        switch (this) {
-        	case PERSONAL:
-        		return "个人";
-        	case ORGANIZATION:
-        		return "团体";
-        	default:
-        		return "";
-        }
-      }
+@Enumerated(EnumType.STRING)
+protected ReceiverEnum receiver;
+public enum ConsumerTypeEnum {
+  PERSONAL, ORGANIZATION;
+
+  public String getLabel() {
+    switch (this) {
+      case PERSONAL:
+        return "个人";
+      case ORGANIZATION:
+        return "团体";
+      default:
+        return "";
     }
+  }
+}
 ```
-【视图层】
+【视图层】【推荐】
 例如，页面迭代select的option，不应该在view层判断，而应该在后台传入map在前台迭代
 【正例】：
 ```java

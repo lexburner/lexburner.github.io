@@ -32,6 +32,8 @@ categories:
 
 由于token缓存在了Redis中，我们首先介绍Redis的发布订阅机制。
 
+<!-- more -->
+
 ## Redis中的Pub与Sub
 
 redis不仅仅具备缓存的功能，它还拥有一个channel机制，我们可以使用Redis来进行发布订阅。上述的token流程我们简化一下，省略保存到redis的那一环，直接介绍如何通知其他应用刷新token。
@@ -248,5 +250,5 @@ public class ActivemqPubSubConfig {
 
 ## 总结
 
-本文浅显的减少了Redis，ActiveMQ的PubSub特性，这是我理解的分布式场景下的事件驱动的使用。事件驱动是一种思想，PubSub是一种模式，Redis，ActiveMQ是一种应用，落到实处，便可以是本文介绍的token这个小小的业务实现。但是注意，使用Redis，ActiveMQ理解事件驱动可以，但是不能等同事件驱动，事件驱动还有很多其他场景下体现，笔者功力不够，无法一一介绍，怕人误解，特此强调一下。
+本文介绍了Redis，ActiveMQ的PubSub特性，这是我理解的分布式场景下的事件驱动的使用。事件驱动是一种思想，PubSub是一种模式，Redis，ActiveMQ是一种应用，落到实处，便可以是本文介绍的token这个小小的业务实现。但是注意，使用Redis，ActiveMQ理解事件驱动可以，但是不能等同事件驱动，事件驱动还有很多其他场景下体现，笔者功力不够，无法一一介绍，怕人误解，特此强调一下。
 
