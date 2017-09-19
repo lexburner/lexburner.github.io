@@ -11,6 +11,8 @@ categories:
 
 较为简单或者体量较小的技术，完全可以参考着demo直接上手，但系统的学习一门技术则不然。以我的认知，一般的文档大致有两种风格：Architecture First和Code First。前者致力于让读者先了解整体的架构，方便我们对自己的认知有一个宏观的把控，而后者以特定的demo配合讲解，可以让读者在解决问题的过程中顺便掌握一门技术。关注过我博客或者公众号的朋友会发现，我之前介绍技术的文章，大多数是Code First，提出一个需求，介绍一个思路，解决一个问题，分析一下源码，大多如此。而学习一个体系的技术，我推荐Architecture First，正如本文标题所言，这篇文章是我Spring Security系列的第一篇，主要是根据Spring Security文档选择性~~翻译~~整理而成的一个架构概览，配合自己的一些注释方便大家理解。写作本系列文章时，参考版本为Spring Security 4.2.3.RELEASE。
 
+[TOC]
+
 # 1 核心组件
 
 这一节主要介绍一些在Spring Security中常见且核心的Java类，它们之间的依赖，构建起了整个框架。想要理解整个架构，最起码得对这些类眼熟。
@@ -191,6 +193,62 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 
 到这里，如果不纠结于AuthenticationProvider的实现细节以及安全相关的过滤器，认证相关的核心类其实都已经介绍完毕了：身份信息的存放容器SecurityContextHolder，身份信息的抽象Authentication，身份认证器AuthenticationManager及其认证流程。姑且在这里做一个分隔线。下面来介绍下AuthenticationProvider接口的具体实现。
 
-### DaoAuthenticationProvider
+### 1.4 DaoAuthenticationProvider
 
-AuthenticationProvider最最最常用的一个实现便是DaoAuthenticationProvider。顾名思义，Dao正是数据访问层的缩写，也暗示了这个身份认证器的实现思路。
+AuthenticationProvider最最最常用的一个实现便是DaoAuthenticationProvider。顾名思义，Dao正是数据访问层的缩写，也暗示了这个身份认证器的实现思路。由于本文是一个Overview，姑且只给出其UML类图：
+
+![DaoAuthenticationProvider UML](http://ov0zuistv.bkt.clouddn.com/QQ%E5%9B%BE%E7%89%8720170919204228.png)
+
+按照我们最直观的思路，怎么去认证一个用户呢？用户前台提交了用户名和密码，而数据库中保存了用户名和密码，认证便是负责比对同一个用户名，提交的密码和保存的密码是否相同便是了。在Spring Security中。提交的用户名和密码，被封装成了UsernamePasswordAuthenticationToken，而根据用户名加载用户的任务则是交给了UserDetailsService，在DaoAuthenticationProvider中，对应的方法便是retrieveUser，虽然有两个参数，但是retrieveUser只有第一个参数起主要作用，返回一个UserDetails。还需要完成UsernamePasswordAuthenticationToken和UserDetails密码的比对，这便是交给additionalAuthenticationChecks方法完成的，如果这个void方法没有抛异常，则认为比对成功。比对密码的过程，用到了PasswordEncoder和SaltSource，密码加密和盐的概念相信不用我赘述了，它们为保障安全而设计，都是比较基础的概念。
+
+如果你已经被这些概念搞得晕头转向了，不妨这么理解DaoAuthenticationProvider：它获取用户提交的用户名和密码，比对其正确性，如果正确，返回一个数据库中的用户信息（假设用户信息被保存在数据库中）。
+
+### 1.5 UserDetails与UserDetailsService
+
+上面不断提到了UserDetails这个接口，它代表了最详细的用户信息，这个接口涵盖了一些必要的用户信息字段，具体的实现类对它进行了扩展。
+
+```java
+public interface UserDetails extends Serializable {
+
+   Collection<? extends GrantedAuthority> getAuthorities();
+
+   String getPassword();
+
+   String getUsername();
+
+   boolean isAccountNonExpired();
+
+   boolean isAccountNonLocked();
+
+   boolean isCredentialsNonExpired();
+
+   boolean isEnabled();
+}
+```
+
+它和Authentication接口很类似，比如它们都拥有username，authorities，区分他们也是本文的重点内容之一。Authentication的getCredentials()与UserDetails中的getPassword()需要被区分对待，前者是用户提交的密码凭证，后者是用户正确的密码，认证器其实就是对这两者的比对。Authentication中的getAuthorities()实际是由UserDetails的getAuthorities()传递而形成的。还记得Authentication接口中的getUserDetails()方法吗？其中的UserDetails用户详细信息便是经过了AuthenticationProvider之后被填充的。
+
+```java
+public interface UserDetailsService {
+   UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+}
+```
+
+UserDetailsService和AuthenticationProvider两者的职责常常被人们搞混，关于他们的问题在文档的FAQ和issues中屡见不鲜。记住一点即可，敲黑板！！！UserDetailsService只负责从特定的地方（通常是数据库）加载用户信息，仅此而已，记住这一点，可以避免走很多弯路。UserDetailsService常见的实现类有JdbcDaoImpl，InMemoryUserDetailsManager，前者从数据库加载用户，后者从内存中加载用户，也可以自己实现UserDetailsService，通常这更加灵活。
+
+### 1.6 架构概览图
+
+为了更加形象的理解上述我介绍的这些核心类，附上一张按照我的理解，所画出Spring Security的一张非典型的UML图
+
+![架构概览图](http://ov0zuistv.bkt.clouddn.com/spring%20security%E6%9E%B6%E6%9E%84%E6%A6%82%E8%A7%88.png)
+
+如果对Spring Security的这些概念感到理解不能，不用担心，因为这是Architecture First导致的必然结果，先过个眼熟。后续的文章会秉持Code First的理念，陆续详细地讲解这些实现类的使用场景，源码分析，以及最基本的：如何配置Spring Security，在后面的文章中可以不时翻看这篇文章，找到具体的类在整个架构中所处的位置，这也是本篇文章的定位。另外，一些Spring Security的过滤器还未囊括在架构概览中，如将表单信息包装成UsernamePasswordAuthenticationToken的过滤器，考虑到这些虽然也是架构的一部分，但是真正重写他们的可能性较小，所以打算放到后面的章节讲解。
+
+
+
+
+
+
+
+
+
