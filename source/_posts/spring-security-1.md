@@ -1,6 +1,6 @@
 ---
 title: Spring Security(一)--Architecture Overview
-date: 2017-09-19 09:12:55
+date: 2017-09-19 20:12:55
 tags:
 - Spring Security
 categories:
@@ -36,6 +36,8 @@ String username = principal.toString();
 ```
 
 getAuthentication()返回了认证信息，再次getPrincipal()返回了身份信息，UserDetails便是Spring对身份信息封装的一个接口。Authentication和UserDetails的介绍在下面的小节具体讲解，本节重要的内容是介绍SecurityContextHolder这个容器。
+
+<!-- more -->
 
 ### 1.2 Authentication
 
@@ -240,7 +242,7 @@ UserDetailsService和AuthenticationProvider两者的职责常常被人们搞混�
 
 为了更加形象的理解上述我介绍的这些核心类，附上一张按照我的理解，所画出Spring Security的一张非典型的UML图
 
-![架构概览图](http://ov0zuistv.bkt.clouddn.com/spring%20security%E6%9E%B6%E6%9E%84%E6%A6%82%E8%A7%88.png)
+![架构概览图](http://ov0zuistv.bkt.clouddn.com/spring%20security%20architecture.png)
 
 如果对Spring Security的这些概念感到理解不能，不用担心，因为这是Architecture First导致的必然结果，先过个眼熟。后续的文章会秉持Code First的理念，陆续详细地讲解这些实现类的使用场景，源码分析，以及最基本的：如何配置Spring Security，在后面的文章中可以不时翻看这篇文章，找到具体的类在整个架构中所处的位置，这也是本篇文章的定位。另外，一些Spring Security的过滤器还未囊括在架构概览中，如将表单信息包装成UsernamePasswordAuthenticationToken的过滤器，考虑到这些虽然也是架构的一部分，但是真正重写他们的可能性较小，所以打算放到后面的章节讲解。
 
