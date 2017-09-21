@@ -1,5 +1,5 @@
 ---
-title: 一些需要普及的项目规范
+title: sinosoft代码规范
 date: 2017-08-25 12:18:45
 tags: 
 - 代码规范
@@ -8,27 +8,48 @@ categories: 技术杂谈
 ---
 
 ## 介绍
-好的开发规范不仅能够使得项目变得易维护，易升级。一些通用的规范可以参考《阿里巴巴java开发手册》
-本文档主要针对我们项目内部正在使用的框架提出一些开发规范，欢迎补充
+本文档主要针对我们项目内部正在使用的框架，以及代码审查发现的一些共性问题提出一些开发规范。
 
 ## 包结构规范
 
-以短信邮件项目（mail-sms）为例，介绍包结构命名规范。
-
-<!-- more -->![项目目录结构](/css/images/post/package1.png)
-
-短信邮件项目主要包含短信，邮件两个子模块
-
-【强制】 **包分层--通用**
+1	包命名【强制】 
 
 格式如下：公司名.模块名.层次名
 包名应当尽量使用能够概括模块总体含义,单词义,单数,不包含特殊字符的单词
 【正例】: `sinosoftgz.message.admin`
 【反例】: `sinosoftgz.mailsms.admin` `sinosoftgz.mail.sms.admin`
 
-【推荐】**包分层--业务**
+2	包结构【推荐】
 当项目模块的职责较为复杂，且考虑到以后拓展的情况下，单个模块依旧包含着很多小的业务模块时，应当优先按照业务区分包名
+
+【反例】:
+
+```java
+    sinosoftgz.message.admin
+        config
+            模块公用Config.java
+        service
+            模块公用Service.java
+            Mail私有Service.java
+            MailTemplateService.java
+            MailMessageService.java
+            Sms私有Service.java
+            SmsTemplateService.java
+            SmsMessageService.java
+        web
+            模块公用Controller.java
+            IndexController.java
+            Mail私有Controller.java
+            MailTemplateController.java
+            MailMessageController.java
+            Sms私有Controller.java
+            SmsTemplateController.java
+            SmsMessageController.java
+        MailSmsAdminApp.java
+```
+
 【正例】: 
+
 ```java
     sinosoftgz.message.admin
         config
@@ -62,46 +83,156 @@ categories: 技术杂谈
                 SmsMessageController.java
         MessageAdminApp.java
 ```
-【反例】:
-```java
-    sinosoftgz.message.admin
-        config
-            模块公用Config.java
-        service
-            模块公用Service.java
-            mail
-                Mail私有Service.java
-                MailTemplateService.java
-                MailMessageService.java
-            sms
-                Sms私有Service.java
-                SmsTemplateService.java
-                SmsMessageService.java
-        web
-            模块公用Controller.java
-            IndexController.java
-            mail
-                Mail私有Controller.java
-                MailTemplateController.java
-                MailMessageController.java
-            sms
-                Sms私有Controller.java
-                SmsTemplateController.java
-                SmsMessageController.java
-        MailSmsAdminApp.java
-```
 service和controller以及其他业务模块相关的包相隔太远，或者干脆全部丢到一个包内，单纯用前缀区分，会形成臃肿，充血的包结构。如果是项目结构较为单一，可以仅仅使用前缀区分；如果是项目中业务模块有明显的区分条件，应当单独作为一个包，用包名代表业务模块的含义。
 
+## 领域模型规范
+
+### javabean规范
+
+1	驼峰命名法【强制】
+
+2	布尔类型规范【强制】
+【说明】所有的布尔类型不允许以is开头，否则会导致部分序列化，hibernate框架出现解析异常。
+【反例】
+原来项目的BaseDomain中标记逻辑删除的字段,在部分场景下会出现问题
+
+```java
+    @Column(name = "is_delete")
+    private Boolean isDelete = false;
+    
+    public Boolean getIsDelete() {
+            return isDelete;
+        }
+    
+    public void setIsDelete(Boolean isDelete) {
+        if(deleteFlag)
+            this.deleteDate = new Date();
+        this.isDelete = isDelete;
+    }
+```
+
+tips: 使用intellij idea的快捷键（for eclipse）alt+shift+r，
+或者菜单栏Refactor->Rename，可以重构字段名称
+【正例】
+
+```java
+    @Column(name = "is_delete")
+    private Boolean deleteFlag = false;
+```
+
+3	装箱类型优于原生类型【推荐】
+在业务代码中，更加推荐使用装箱类型Integer Double Boolean...
+【说明】在未设值的情况下，基础类型具有默认值，而装箱类型为null
+以Boolean类型为例，如果使用boolean，那么在未复制时，无法得知其到底是被赋值成了false，
+还是未赋值
+
+## 容易忽视的细节
+
+1	运算溢出【强制】
+
+【反例】Integer a = Integer b * Integer c;
+
+【正例】Long a =  Integer b * Integer c;(强转)
+
+整数相乘可能会溢出，需要使用Long接收
+
+2	Double类型的精度问题【强制】
+
+Double不能用于商业计算，使用BigDecimal代替
+
+3	BigDecimal规范【强制】
+
+【反例】
+
+```java
+BigDecimal totalMoney = new BigDecimal("100.42");
+BigDecimal averageMoney = totalMoney.divide(new BigDecimal("22"));
+```
+【正例】 
+
+```java
+BigDecimal totalMoney = new BigDecimal("100.42");
+BigDecimal averageMoney = totalMoney.divide(new BigDecimal("22"),3);
+```
+
+业务实体类中的与金额相关的变量统一使用BigDecimal,四则运算采用BigDecimal的相关api进行。
+做**除法**时需要额外注意保留精度的问题，否则可能会报异常，并且不易被测试出
+
+4	equals规范【强制】
+
+【反例】
+
+```
+Integer a = 2333;
+Integer b = 2333;
+System.out.println(a == b);//fasle
+Integer a = 2;
+Integer b = 2;
+System.out.println(a == b);//true
+```
+
+【正例】
+
+```java
+a.equals(b)
+```
+
+要注意正确的不叫，谨慎使用==，它比较的是引用
+
+## 常用的领域模型
+
+首先理解各个常用的领域模型的含义：
+
+| 领域模型 | 全称                   | 中文含义   |
+| ---- | -------------------- | ------ |
+| DO   | Domain Object        | 领域对象   |
+| DTO  | Data Transfer Object | 数据传输对象 |
+| VO   | View Object          | 视图对象   |
+
+对于View Object，PO等等其他一些的对象不在此做要求，只说明一下常用的几个
+DO就是我们最常用的数据库持久对象，是OOP对于现实中的抽象，一般使用orm框架映射到数据库
+DTO这一层，目前我们的项目还没有投入使用，即将考虑投入使用，理论上来说，两个微服务模块是严禁共享数据库的
+所以A模块要查询B模块的数据，需要使用B模块app层暴露出来的api来查询，其中B模块返回的实体，不能是直接从数据库中
+查询出来的DO，而应该是DO转换而成的DTO。以及其他服务服务用语传输的变量，都叫做DTO
+VO就是常存在于视图层模板渲染使用的实体类
+
+【推荐】领域模型命名规范
+【说明】由于DO这一层大家已经养成了习惯，不做要求了。DTO有些特殊，他常常与业务的传输对象相关，而不限于以DTO结尾，如xxxQuery也可以是DTO对象。VO对象推荐以VO结尾。注意：不要命名为Vo,Dto。
+
 ## 数据库规范
-【强制】必要的地方必须添加索引，如唯一索引，以及作为条件查询的列
-【强制】生产环境，uat环境，不允许使用`jpa.hibernate.ddl-auto: create`自动建表，每次ddl的修改需要保留脚本，统一管理
-【强制】业务数据不能使用deleteBy...而要使用逻辑删除setDeleteFlag(true),查询时，findByxxxAndDeleteFlag(xxx,false)
+1	必要的地方必须添加索引，如唯一索引，如作为条件查询的列【强制】
+2	生产环境，uat环境，不允许使用`jpa.hibernate.ddl-auto: create`自动建表，每次ddl的修改需要保留脚本，统一管理【强制】
+3	业务数据不能使用deleteBy...而要使用逻辑删除setDeleteFlag(true),查询时，findByxxxAndDeleteFlag(xxx,false)【强制】
+
+4	如有可替代方案，则禁止使用存储过程和触发器【强制】
 
 
 ## ORM规范
 
 【强制】条件查询超过三个参数的，使用`criteriaQuery`，`predicates` 而不能使用springdata的findBy
+
+【反例】
+
+```java
+public Page<GatewayApiDefine> findAll(GatewayApiDefine gatewayApiDefine,Pageable pageable){
+        if(Lang.isEmpty(gatewayApiDefine.getRole())){
+            gatewayApiDefine.setRole("");
+        }
+        if(Lang.isEmpty(gatewayApiDefine.getApiName())){
+            gatewayApiDefine.setApiName("");
+        }
+        if(Lang.isEmpty(gatewayApiDefine.getEnabled())){
+            return gatewayApiDefineDao.findByRoleLikeAndApiNameLikeOrderByLastUpdatedDesc("%"+gatewayApiDefine.getRole()+"%","%"+gatewayApiDefine.getApiName()+"%",pageable);
+        }else{
+            return gatewayApiDefineDao.findByRoleLikeAndApiNameLikeAndEnabledOrderByLastUpdatedDesc("%"+gatewayApiDefine.getRole()+"%","%"+gatewayApiDefine.getApiName()+"%",gatewayApiDefine.getEnabled(),pageable);
+        }
+    }
+```
+
+在Dao层定义了大量的findBy方法，在Service写了过多的if else判断，导致业务逻辑不清晰
+
 【正例】
+
 ```java
 public Page<MailTemplateConfig> findAll(MailTemplateConfig mailTemplateConfig, Pageable pageable) {
         Specification querySpecification = (Specification<MailTemplateConfig>) (root, criteriaQuery, criteriaBuilder) -> {
@@ -131,31 +262,51 @@ public Page<MailTemplateConfig> findAll(MailTemplateConfig mailTemplateConfig, P
         return mailTemplateConfigRepos.findAll(querySpecification, pageable);
     }
 ```
-【说明】条件查询是admin模块不可避免的一个业务功能，使用`criteriaQuery`可以轻松的添加条件，使得代码容易维护，他也可以进行分页，排序，连表操作，充分发挥jpa面向对象的特性，使得业务开发变得快捷。
+条件查询是admin模块不可避免的一个业务功能，使用`criteriaQuery`可以轻松的添加条件，使得代码容易维护，他也可以进行分页，排序，连表操作，充分发挥jpa面向对象的特性，使得业务开发变得快捷。
+
+## 数据结构
+
+1	Map中迭代过程中删除数据使用迭代器完成
+
 【反例】
 
-```java
-public Page<GatewayApiDefine> findAll(GatewayApiDefine gatewayApiDefine,Pageable pageable){
-        if(Lang.isEmpty(gatewayApiDefine.getRole())){
-            gatewayApiDefine.setRole("");
-        }
-        if(Lang.isEmpty(gatewayApiDefine.getApiName())){
-            gatewayApiDefine.setApiName("");
-        }
-        if(Lang.isEmpty(gatewayApiDefine.getEnabled())){
-            return gatewayApiDefineDao.findByRoleLikeAndApiNameLikeOrderByLastUpdatedDesc("%"+gatewayApiDefine.getRole()+"%","%"+gatewayApiDefine.getApiName()+"%",pageable);
-        }else{
-            return gatewayApiDefineDao.findByRoleLikeAndApiNameLikeAndEnabledOrderByLastUpdatedDesc("%"+gatewayApiDefine.getRole()+"%","%"+gatewayApiDefine.getApiName()+"%",gatewayApiDefine.getEnabled(),pageable);
-        }
-    }
 ```
-【说明】在Dao层定义了大量的findBy方法，在Service写了过多的if else判断，导致业务逻辑不清晰
+itering...
+map.remove(..)
+```
 
-## 禁止使用魔鬼数字
+【正例】
+
+```
+itering...
+iterator.remove(..)
+```
+
+## 禁止使用魔法数字
 
 【模型层与业务层】【强制】
 一些固定业务含义的代码可以使用枚举类型，或者final static常量表示，在设值时，不能直接使用不具备业务含义的数值。
+
+【反例】
+
+```java
+//实体类定义
+/**
+  * 发送设置标志 (1：立即发送 2：预设时间发送 )
+  */
+@Column(columnDefinition = "varchar(1) comment '发送设置标志'")
+protected String sendFlag;
+//业务代码赋值使用
+MailMessage mailMessage = new MailMessage();
+mailMessage.setSendSuccessFlag("1");
+mailMessage.setValidStatus("0");
+mailMessage.setCustom(true);
+```
+
+
+
 【正例】：使用final static常量: 
+
 ```java
 //实体类定义
 	/**
@@ -193,23 +344,9 @@ mailMessage.setSendSuccessFlag(MailMessage.SEND_WAIT);
 mailMessage.setValidStatus(MailMessage.VALID_WAIT);
 mailMessage.setCustom(true);
 ```
-【反例】
-```java
-//实体类定义
-/**
-  * 发送设置标志 (1：立即发送 2：预设时间发送 )
-  */
-@Column(columnDefinition = "varchar(1) comment '发送设置标志'")
-protected String sendFlag;
-//业务代码赋值使用
-MailMessage mailMessage = new MailMessage();
-mailMessage.setSendSuccessFlag("1");
-mailMessage.setValidStatus("0");
-mailMessage.setCustom(true);
-```
-【说明】魔鬼数字不能使代码一眼能够看明白到底赋的是什么值，并且，实体类发生变化后，可能会导致赋值错误，与预期赋值不符合且错误不容易被发现。
+【说明】魔法数字不能使代码一眼能够看明白到底赋的是什么值，并且，实体类发生变化后，可能会导致赋值错误，与预期赋值不符合且错误不容易被发现。
 
-【正例】：也可以使用枚举类型避免魔鬼数字
+【正例】：也可以使用枚举类型避免魔法数字
 
 ```java
 protected String productType;
@@ -263,13 +400,13 @@ model.put("typeMap",typeMap);
 		selected="selected"</#if> value="5">核保通知</option>
 </select>
 ```
-【说明】：否则修改后台代码后，前端页面也要修改，设计模式的原则，应当是修改一处，其他全部变化。且 1，2...,5的含义可能会变化，不能从页面得知value和option的含义是否对应。
+【说明】：否则修改后台代码后，前端页面也要修改，设计原则应当是修改一处，其他全部变化。且 1，2...,5的含义可能会变化，不能从页面得知value和option的含义是否对应。
 
 ## 并发注意事项
 
 项目中会出现很多并发问题，要做到根据业务选择合适的并发解决方案，避免线程安全问题
 
-【强制】simpleDateFormat有并发问题，不能作为static类变量
+1	simpleDateFormat有并发问题，不能作为static类变量【强制】
 【反例】：
 这是我在某个项目模块中，发现的一段代码
 ```java
@@ -307,7 +444,7 @@ public class ConcurrentDateUtil {
 }
 ```
 
-【推荐】名称唯一性校验出现的线程安全问题
+2	名称唯一性校验出现的线程安全问题【推荐】
 各个项目的admin模块在需求中经常会出现要求名称不能重复，即唯一性问题。通常在前台做ajax校验，后台使用`select count(1) from table_name where name=?`的方式查询数据库。这么做无可厚非，但是在极端的情况下，会出现并发问题。两个线程同时插入一条相同的name，如果没有做并发控制，会导致出现脏数据。如果仅仅是后台系统，那么没有必要加锁去避免，只需要对数据库加上唯一索引，并且再web层或者service层捕获数据异常即可。
 【正例】：
 
@@ -340,22 +477,52 @@ public class MailTemplate extends AbstractTemplate {
             ajaxResponseVo.setStatusCode(AjaxResponseVo.STATUS_CODE_ERROR);
             ajaxResponseVo.setMessage("模板名称已经存在");
             ajaxResponseVo.setCallbackType(null);
-            logger.error(ce.getMessage());
+            logger.error(ce);
         } catch (Exception e) {
             ajaxResponseVo.setStatusCode(AjaxResponseVo.STATUS_CODE_ERROR);
             ajaxResponseVo.setMessage("操作失败!");
             ajaxResponseVo.setCallbackType(null);
-            logger.error(e.getMessage(), e);
+            logger.error(e);
         }
         return ajaxResponseVo;
     }
 ```
 
-【说明】关于其他一些并发问题,如分布式锁，CAS，不仅仅是一篇文档能够讲解清楚的，需要对开发有很深的理解，我还记录了一些并发问题，仅供参考：[http://blog.csdn.net/u013815546/article/details/56481842](http://blog.csdn.net/u013815546/article/details/56481842%20%E6%B5%85%E6%9E%90%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84%E5%B9%B6%E5%8F%91)
+【说明】关于其他一些并发问题,如分布式锁，CAS，不仅仅是一篇文档能够讲解清楚的，需要对开发有很深的理解。
+
+3	余额扣减，库存扣减，积分发放等敏感并发操作【强制】
+
+这一块通常交给有经验的开发来完成，但所有人都需要注意。原则是事务保障，幂等保障等等设计原则。
+
+【反例】
+
+```java
+//Transaction start
+User user = UserDao.findById("1");
+user.setBalance(user.getBalance()+100.00);
+...//其他耗时操作
+UserDao.save(user);
+//Transaction commit
+```
+
+【正例】
+
+```java
+//Transaction start
+lock...
+User user = UserDao.findById("1");
+user.setBalance(user.getBalance()+100.00);
+...//其他耗时操作
+UserDao.save(user);
+release lock...
+//Transaction commit
+```
+
+并发场景必须加锁，根据业务场景决定到底加什么锁，sychronized，ReentrantLock，version乐观锁，for update悲观锁（不推荐），redis，zookeeper实现的分布式锁等等。
 
 ## moton使用注意事项
 
-【注意】包的扫描
+1	包的扫描【注意】
 
 每个模块都要扫描自身的项目结构
 ```yaml
@@ -402,7 +569,7 @@ motan:
   zookeeper-host: localhost:2181
 ```
 
-【注意】motan跨模块传输实体类时懒加载失效
+2	motan跨模块传输实体类时懒加载失效【注意】
 遇到的时候注意一下，由于jpa，hibernate懒加载的问题，因为其内部使用动态代理去实现的懒加载，导致懒加载对象无法被正确的跨模块传输，此时需要进行深拷贝。
 【正例】：
 
@@ -487,7 +654,7 @@ motan:
 ```
 
 ## 公用常量规范
-【强制】模块常量
+1	模块常量【强制】
 模块自身公用的常量放置于模块的Constants 类中，以final static的方式声明
 ```java
 public class Constants {
@@ -556,7 +723,7 @@ Constants类在一个限界上下文只能有一个，一个限界上下文包�
 
 在Constants类中使用静态内部类尽量细化到常量的归属，不要散放
 
-【强制】项目常量
+2	项目常量【强制】
 项目公用的常量放置于util模块的GlobalContants类中，以内部类和final static的方式声明
 
 ```java
@@ -582,71 +749,51 @@ public abstract class GlobalContants {
 }
 ```
 
-## 领域模型规范
+## 日志规范
 
-### javabean规范
-（一些像驼峰命名法之类通用的规范就不说了，强调一些可能会犯错的规范）
-【强制】BigDecimal规范
-【说明】业务实体类中的与金额相关的变量统一使用BigDecimal,四则运算采用BigDecimal的相关api进行，
-做除法时需要额外注意保留精度的问题，否则可能会报异常，并且不易被测试出
-【正例】 
-```java
-    BigDecimal totalMoney = new BigDecimal("100.42");
-    BigDecimal averageMoney = totalMoney.divide(new BigDecimal("22"),2);
-```
+1 打印日志时不允许拼接字符串【强制】
 
-【强制】布尔类型规范
-【说明】所有的布尔类型不允许以is开头，否则会导致部分序列化，hibernate框架出现解析异常。
-【反例】
-原来项目的BaseDomain中标记逻辑删除的字段,在部分场景下会出现问题
-```java
-    @Column(name = "is_delete")
-    private Boolean isDelete = false;
-    
-    public Boolean getIsDelete() {
-            return isDelete;
-        }
-    
-    public void setIsDelete(Boolean isDelete) {
-        if(deleteFlag)
-            this.deleteDate = new Date();
-        this.isDelete = isDelete;
-    }
-```
+【反例】log.debug ( "Load No." + i + " object, " + object );
 
-tips: 使用intellij idea的快捷键（for eclipse）alt+shift+r，
-或者菜单栏Refactor->Rename，可以重构字段名称
-【正例】
-```java
-    @Column(name = "is_delete")
-    private Boolean deleteFlag = false;
-```
+【正例】log.debug( "Load No.{} object, {}" , i , object );
 
-【推荐】装箱类型优于原生类型
-在业务代码中，更加推荐使用装箱类型Integer Double Boolean...
-【说明】在未设值的情况下，原生类型具有默认值，而装箱类型为null
-以Boolean类型为例，如果使用boolean，那么在未复制时，无法得知其到底是被赋值成了false，
-还是为赋值
+字符串的计算是在编译期，日志级别如果是INFO，就等于在浪费机器的性能，无谓的字符串拼接。
 
-## 其他常用的领域模型
-首先理解各个常用的领域模型的含义：
+2 预防空指针【强制】
 
-| 领域模型 | 全称                   | 中文含义   |
-| ---- | -------------------- | ------ |
-| DO   | Domain Object        | 领域对象   |
-| DTO  | Data Transfer Object | 数据传输对象 |
-| VO   | View Object          | 视图对象   |
+【反例】log.debug( "Load student(id={}), name: {}" , id , student.getName() );
 
-对于View Object，PO等等其他一些的对象不在此做要求，只说明一下常用的几个
-DO就是我们最常用的数据库持久对象，是OOP对于现实中的抽象，一般使用orm框架映射到数据库
-DTO这一层，目前我们的项目还没有投入使用，即将考虑投入使用，理论上来说，两个微服务模块是严禁共享数据库的
-所以A模块要查询B模块的数据，需要使用B模块app层暴露出来的api来查询，其中B模块返回的实体，不能是直接从数据库中
-查询出来的DO，而应该是DO转换而成的DTO。以及其他服务服务用语传输的变量，都叫做DTO
-VO就是常存在于视图层模板渲染使用的实体类
+【正例】log.debug( "Load student(id={}), student: {}" , id , student );
 
-tips：DO最特殊的一点在于，它拥有主键，而DTO不应该包含数据库的主键
+不要在日志中调用对象的方法获取值，除非确保该对象肯定不为 null，否则很有可能会因为日志的问题而导致应用产生空指针异常。实现需要打印日志的实体类的toString方法或者使用JSON.toString
 
-【推荐】领域模型命名规范
-【说明】由于DO这一层大家已经养成了习惯，不做要求了。DTO有些特殊，他常常与业务的传输对象相关，而不限于
-以DTO结尾，如xxxQuery也可以是DTO对象。VO对象推荐以VO结尾。注意：不要命名为Vo,Dto。
+3 输出异常信息
+
+【反例】log.error(e.getMessage,e);        log.error("邮件发送失败，接收人姓名：{} ，e : {}", username, e);
+
+【正例】log.error("邮件发送失败，接收人姓名：{}", username, e);
+
+e包含了全部的异常堆栈信息，是e.getMessage的父集，出现异常一定要保证输出堆栈信息。并且要保证exception作为log的重载方法的最后一个参数。
+
+4 Logger声明规范
+
+【正例】Logger logger = LoggerFactory.getLogger(Student.class);
+
+保证某个类的字节码作为日志跟踪标识，方便定位日志的出处。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
