@@ -10,7 +10,66 @@ categories: 技术杂谈
 ## 介绍
 本文档主要针对我们项目内部正在使用的框架，以及代码审查发现的一些共性问题提出一些开发规范。
 
-## 包结构规范
+### JavaBean规范
+
+1	驼峰命名法【强制】
+
+2	布尔类型规范【强制】
+【说明】所有的布尔类型不允许以is开头，否则会导致部分序列化，hibernate框架出现解析异常。
+【反例】
+原来项目的BaseDomain中标记逻辑删除的字段,在部分场景下会出现问题
+
+```java
+    @Column(name = "is_delete")
+    private Boolean isDelete = false;
+    
+    public Boolean getIsDelete() {
+            return isDelete;
+        }
+    
+    public void setIsDelete(Boolean isDelete) {
+        if(deleteFlag)
+            this.deleteDate = new Date();
+        this.isDelete = isDelete;
+    }
+```
+
+tips: 使用intellij idea的快捷键（for eclipse）alt+shift+r，
+或者菜单栏Refactor->Rename，可以重构字段名称
+【正例】
+
+```java
+    @Column(name = "is_delete")
+    private Boolean deleteFlag = false;
+```
+
+3	装箱类型优于原生类型【推荐】
+在业务代码中，更加推荐使用装箱类型Integer Double Boolean...
+【说明】在未设值的情况下，基础类型具有默认值，而装箱类型为null
+以Boolean类型为例，如果使用boolean，那么在未复制时，无法得知其到底是被赋值成了false，
+还是未赋值
+
+### 领域模型规范
+
+首先理解各个常用的领域模型的含义：
+
+| 领域模型 | 全称                   | 中文含义   |
+| ---- | -------------------- | ------ |
+| DO   | Domain Object        | 领域对象   |
+| DTO  | Data Transfer Object | 数据传输对象 |
+| VO   | View Object          | 视图对象   |
+
+对于View Object，PO等等其他一些的对象不在此做要求，只说明一下常用的几个
+DO就是我们最常用的数据库持久对象，是OOP对于现实中的抽象，一般使用orm框架映射到数据库
+DTO这一层，目前我们的项目还没有投入使用，即将考虑投入使用，理论上来说，两个微服务模块是严禁共享数据库的
+所以A模块要查询B模块的数据，需要使用B模块app层暴露出来的api来查询，其中B模块返回的实体，不能是直接从数据库中
+查询出来的DO，而应该是DO转换而成的DTO。以及其他服务服务用语传输的变量，都叫做DTO
+VO就是常存在于视图层模板渲染使用的实体类
+
+【推荐】领域模型命名规范
+【说明】由于DO这一层大家已经养成了习惯，不做要求了。DTO有些特殊，他常常与业务的传输对象相关，而不限于以DTO结尾，如xxxQuery也可以是DTO对象。VO对象推荐以VO结尾。注意：不要命名为Vo,Dto。
+
+### 包结构规范
 
 1	包命名【强制】 
 
@@ -85,67 +144,6 @@ categories: 技术杂谈
 ```
 service和controller以及其他业务模块相关的包相隔太远，或者干脆全部丢到一个包内，单纯用前缀区分，会形成臃肿，充血的包结构。如果是项目结构较为单一，可以仅仅使用前缀区分；如果是项目中业务模块有明显的区分条件，应当单独作为一个包，用包名代表业务模块的含义。
 
-## 领域模型规范
-
-### JavaBean规范
-
-1	驼峰命名法【强制】
-
-2	布尔类型规范【强制】
-【说明】所有的布尔类型不允许以is开头，否则会导致部分序列化，hibernate框架出现解析异常。
-【反例】
-原来项目的BaseDomain中标记逻辑删除的字段,在部分场景下会出现问题
-
-```java
-    @Column(name = "is_delete")
-    private Boolean isDelete = false;
-    
-    public Boolean getIsDelete() {
-            return isDelete;
-        }
-    
-    public void setIsDelete(Boolean isDelete) {
-        if(deleteFlag)
-            this.deleteDate = new Date();
-        this.isDelete = isDelete;
-    }
-```
-
-tips: 使用intellij idea的快捷键（for eclipse）alt+shift+r，
-或者菜单栏Refactor->Rename，可以重构字段名称
-【正例】
-
-```java
-    @Column(name = "is_delete")
-    private Boolean deleteFlag = false;
-```
-
-3	装箱类型优于原生类型【推荐】
-在业务代码中，更加推荐使用装箱类型Integer Double Boolean...
-【说明】在未设值的情况下，基础类型具有默认值，而装箱类型为null
-以Boolean类型为例，如果使用boolean，那么在未复制时，无法得知其到底是被赋值成了false，
-还是未赋值
-
-### 领域模型规范
-
-首先理解各个常用的领域模型的含义：
-
-| 领域模型 | 全称                   | 中文含义   |
-| ---- | -------------------- | ------ |
-| DO   | Domain Object        | 领域对象   |
-| DTO  | Data Transfer Object | 数据传输对象 |
-| VO   | View Object          | 视图对象   |
-
-对于View Object，PO等等其他一些的对象不在此做要求，只说明一下常用的几个
-DO就是我们最常用的数据库持久对象，是OOP对于现实中的抽象，一般使用orm框架映射到数据库
-DTO这一层，目前我们的项目还没有投入使用，即将考虑投入使用，理论上来说，两个微服务模块是严禁共享数据库的
-所以A模块要查询B模块的数据，需要使用B模块app层暴露出来的api来查询，其中B模块返回的实体，不能是直接从数据库中
-查询出来的DO，而应该是DO转换而成的DTO。以及其他服务服务用语传输的变量，都叫做DTO
-VO就是常存在于视图层模板渲染使用的实体类
-
-【推荐】领域模型命名规范
-【说明】由于DO这一层大家已经养成了习惯，不做要求了。DTO有些特殊，他常常与业务的传输对象相关，而不限于以DTO结尾，如xxxQuery也可以是DTO对象。VO对象推荐以VO结尾。注意：不要命名为Vo,Dto。
-
 ## 容易忽视的细节
 
 1	运算溢出【强制】
@@ -200,11 +198,44 @@ a.equals(b)
 要注意正确的比较方法，谨慎使用==，它比较的是引用
 
 ## 数据库规范
-1	必要的地方必须添加索引，如唯一索引，如作为条件查询的列【强制】
+1	必要的地方必须添加索引，如唯一索引，作为条件查询的列【强制】
+
+不添加索引，会造成全表扫描，浪费性能。
+
 2	生产环境，uat环境，不允许使用`jpa.hibernate.ddl-auto: create`自动建表，每次ddl的修改需要保留脚本，统一管理【强制】
 3	业务数据不能使用deleteBy...而要使用逻辑删除setDeleteFlag(true),查询时，findByxxxAndDeleteFlag(xxx,false)【强制】
 
 4	如有可替代方案，则禁止使用存储过程和触发器【强制】
+
+5	字段的长度和类型需要按照实际含义定制【推荐】
+
+【反例】
+
+```java
+@Entity
+class Person{
+	private String name;
+	private Integer age;
+}
+```
+
+【正例】
+
+```java
+@Entity
+class Person{
+  	@Column(columnDefinition = "varchar(50)")
+	private String name;
+    @Column(columnDefinition = "int(3)")
+	private Integer age;
+}
+```
+
+明确字段的长度和类型可以迫使开发者去思考字段所处的业务场景，在性能上，字段长度也可以加强索引的性能。
+
+6	使用外键不要使用数据库层面的约束【强制】
+
+不便于数据迁移，统一在应用层控制关联。
 
 
 ## ORM规范
@@ -266,25 +297,36 @@ public Page<MailTemplateConfig> findAll(MailTemplateConfig mailTemplateConfig, P
 
 ## 数据结构
 
-1	Map中迭代过程中删除数据使用迭代器完成
+1	集合中迭代过程中增删数据使用迭代器完成
 
 【反例】
 
-```
-itering...
-map.remove(..)
+```java
+List<String> a = new ArrayList<String>();
+a.add("1"); 
+a.add("2"); 
+for (String temp : a) { 
+  if("1".equals(temp)){ 
+	a.remove(temp); 
+  } 
+}
 ```
 
 【正例】
 
-```
-itering...
-iterator.remove(..)
+```java
+Iterator<String> it = a.iterator(); 
+while(it.hasNext()){ 
+  String temp = it.next(); 
+  if(("1".equals(temp)){ 
+    it.remove(); 
+  } 
+}
 ```
 
-2	hashCode和equals重写
+2	hashCode和equals重写规范【强制】
 
-作为Map键值，Set值的实体类，务必重写hashCode与equals方法。重写时务必做到以下几点
+作为Map键值，Set值的实体类，务必重写hashCode与equals方法，可参考《effective java》。重写时务必做到以下几点
 
 - **自反性**:  x.equals(x) 一定是true
 - **对null**:  x.equals(null) 一定是false
@@ -312,8 +354,6 @@ mailMessage.setSendSuccessFlag("1");
 mailMessage.setValidStatus("0");
 mailMessage.setCustom(true);
 ```
-
-
 
 【正例】：使用final static常量: 
 
@@ -410,9 +450,9 @@ model.put("typeMap",typeMap);
 		selected="selected"</#if> value="5">核保通知</option>
 </select>
 ```
-【说明】：否则修改后台代码后，前端页面也要修改，设计原则应当是修改一处，其他全部变化。且 1，2...,5的含义可能会变化，不能从页面得知value和option的含义是否对应。
+否则修改后台代码后，前端页面也要修改，设计原则应当是修改一处，其他全部变化。且 1，2...,5的含义可能会变化，不能从页面得知value和option的含义是否对应。
 
-## 并发注意事项
+## 并发处理
 
 项目中会出现很多并发问题，要做到根据业务选择合适的并发解决方案，避免线程安全问题
 
