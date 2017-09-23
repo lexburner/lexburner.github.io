@@ -1,5 +1,5 @@
 ---
-title: 从Feign使用注意点到RESUFUL接口设计规范
+title: 从Feign使用注意点到RESTFUL接口设计规范
 date: 2017-09-09 14:43:28
 tags: Spring Cloud
 categories: Spring Cloud
