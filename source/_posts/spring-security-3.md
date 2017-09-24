@@ -69,7 +69,162 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   - [HttpServletRequest.html#login(java.lang.String, java.lang.String)](https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html#login(java.lang.String,%20java.lang.String))
   - [HttpServletRequest.html#logout()](https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html#logout())
 
-### 3.2 解读@EnableWebSecurity
+### 3.2 @EnableWebSecurity
 
-我们自己定义的配置类WebSecurityConfig加上了@EnableWebSecurity注解，同时继承了WebSecurityConfigurerAdapter。你可能会在想谁的作用大一点，先给出结论：毫无疑问@EnableWebSecurity起到决定性的配置作用，他其实是个组合注解，背后SpringBoot做了非常多的配置。
+我们自己定义的配置类WebSecurityConfig加上了@EnableWebSecurity注解，同时继承了WebSecurityConfigurerAdapter。你可能会在想谁的作用大一点，毫无疑问@EnableWebSecurity起到决定性的配置作用，它其实是个组合注解。
+
+```java
+@Import({ WebSecurityConfiguration.class, // <2>
+      SpringWebMvcImportSelector.class }) // <1>
+@EnableGlobalAuthentication // <3>
+@Configuration
+public @interface EnableWebSecurity {
+   boolean debug() default false;
+}
+```
+
+@Import是springboot提供的用于引入外部的配置的注解，可以理解为：@EnableWebSecurity注解激活了@Import注解中包含的配置类。
+
+<1> `SpringWebMvcImportSelector`的作用是判断当前的环境是否包含springmvc，因为spring security可以在非spring环境下使用，为了避免DispatcherServlet的重复配置，所以使用了这个注解来区分。
+
+<2> `WebSecurityConfiguration`顾名思义，是用来配置web安全的，下面的小节会详细介绍。
+
+<3> `@EnableGlobalAuthentication`注解的源码如下：
+
+```java
+@Import(AuthenticationConfiguration.class)
+@Configuration
+public @interface EnableGlobalAuthentication {
+}
+```
+
+注意点同样在@Import之中，它实际上激活了AuthenticationConfiguration这样的一个配置类，用来配置认证相关的核心类。
+
+也就是说：@EnableWebSecurity完成的工作便是加载了WebSecurityConfiguration，AuthenticationConfiguration这两个核心配置类，也就此将spring security的职责划分为了配置安全信息，配置认证信息两部分。
+
+#### WebSecurityConfiguration
+
+在这个配置类中，有一个非常重要的配置。
+
+```java
+@Configuration
+public class WebSecurityConfiguration {
+
+	//DEFAULT_FILTER_NAME = "springSecurityFilterChain"
+	@Bean(name = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME)
+    public Filter springSecurityFilterChain() throws Exception {
+    	...
+    }
+   
+ }   
+```
+
+在未使用springboot之前，大多数人都应该对“springSecurityFilterChain”这个名词不会陌生，他是spring security的核心过滤器，是整个认证的入口。在曾经的XML配置中，想要启用spring security，需要在web.xml中进行如下配置：
+
+```xml
+	<!-- Spring Security -->
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+```
+
+而在springboot集成之后，这样的XML被java配置取代。WebSecurityConfiguration中完成了声明springSecurityFilterChain的作用，并且最终交给DelegatingFilterProxy这个代理类，负责拦截请求（注意DelegatingFilterProxy这个类不是spring security包中的，而是存在于web包中，spring使用了代理模式来实现安全过滤的解耦）。
+
+#### AuthenticationConfiguration
+
+```java
+@Configuration
+@Import(ObjectPostProcessorConfiguration.class)
+public class AuthenticationConfiguration {
+
+  	@Bean
+	public AuthenticationManagerBuilder authenticationManagerBuilder(
+			ObjectPostProcessor<Object> objectPostProcessor) {
+		return new AuthenticationManagerBuilder(objectPostProcessor);
+	}
+  
+  	public AuthenticationManager getAuthenticationManager() throws Exception {
+    	...
+    }
+
+}
+```
+
+AuthenticationConfiguration的主要任务，便是负责生成全局的身份认证管理者AuthenticationManager。还记得在《Spring Security(一)--Architecture Overview》中，介绍了Spring Security的认证体系，AuthenticationManager便是最核心的身份认证管理器。
+
+### 3.3 WebSecurityConfigurerAdapter 
+
+适配器模式在spring中被广泛的使用，在配置中使用Adapter的好处便是，我们可以选择性的配置想要修改的那一部分配置，而不用覆盖其他不相关的配置。WebSecurityConfigurerAdapter中我们可以选择自己想要修改的内容，来进行重写，而其提供了三个configure重载方法，是我们主要关心的：
+
+![WebSecurityConfigurerAdapter中的configure](http://ov0zuistv.bkt.clouddn.com/QQ%E5%9B%BE%E7%89%8720170924215436.png)
+
+由参数就可以知道，分别是对AuthenticationManagerBuilder，WebSecurity，HttpSecurity进行个性化的配置。
+
+#### HttpSecurity常用配置
+
+```java
+@Configuration
+@EnableWebSecurity
+public class CustomWebSecurityConfig extends WebSecurityConfigurerAdapter {
+  
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+                .antMatchers("/resources/**", "/signup", "/about").permitAll()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')")
+                .anyRequest().authenticated()
+                .and()
+            .formLogin()
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .failureForwardUrl("/login?error")
+                .loginPage("/login")
+                .permitAll()
+                .and()
+            .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/index")
+                .permitAll()
+                .and()
+            .httpBasic()
+                .disable();
+    }
+}
+```
+
+上述是一个使用Java Configuration配置HttpSecurity的典型配置，其中http作为根开始配置，每一个and()对应了一个模块的配置（等同于xml配置中的结束标签），并且and()返回了HttpSecurity本身，于是可以连续进行配置。他们配置的含义也非常容易通过变量本身来推测，
+
+- authorizeRequests()配置路径拦截，表明路径访问所对应的权限，角色，认证信息。
+- formLogin()对应表单认证相关的配置
+- logout()对应了注销相关的配置
+- httpBasic()可以配置basic登录
+- etc
+
+他们分别代表了http请求相关的安全配置，这些配置项无一例外的返回了Configurer类，而所有的http相关配置可以通过查看HttpSecurity的类图得知：
+
+![http://ov0zuistv.bkt.clouddn.com/QQ%E5%9B%BE%E7%89%8720170924223252.png](http://ov0zuistv.bkt.clouddn.com/QQ%E5%9B%BE%E7%89%8720170924223252.png)
+
+需要对http协议有一定的了解才能完全掌握所有的配置，不过，springboot和spring security的自动配置已经足够使用了。其中每一项Configurer（e.g.FormLoginConfigurer,CsrfConfigurer）都可以理解为HttpConfigurer的一个细化配置项。
+
+#### WebSecurityBuilder与AuthenticationManagerBuilder
+
+
+
+
+
+
+
+
+
+
+
+
 
