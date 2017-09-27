@@ -7,7 +7,7 @@ categories:
 - Spring Security
 ---
 
-上一篇文章《Spring Security(二)--Guides》，通过Spring Security的配置项了解了Spring Security是如何保护我们的应用的，本篇文章对上一次的配置做一个讲解。
+上一篇文章《Spring Security(二)--Guides》，通过Spring Security的配置项了解了Spring Security是如何保护我们的应用的，本篇文章对上一次的配置做一个分析。
 
 [TOC]
 
@@ -104,7 +104,7 @@ public @interface EnableGlobalAuthentication {
 
 #### WebSecurityConfiguration
 
-在这个配置类中，有一个非常重要的配置。
+在这个配置类中，有一个非常重要的Bean被注册了。
 
 ```java
 @Configuration
@@ -208,19 +208,64 @@ public class CustomWebSecurityConfig extends WebSecurityConfigurerAdapter {
 - httpBasic()可以配置basic登录
 - etc
 
-他们分别代表了http请求相关的安全配置，这些配置项无一例外的返回了Configurer类，而所有的http相关配置可以通过查看HttpSecurity的类图得知：
+他们分别代表了http请求相关的安全配置，这些配置项无一例外的返回了Configurer类，而所有的http相关配置可以通过查看HttpSecurity的主要方法得知：
 
 ![http://ov0zuistv.bkt.clouddn.com/QQ%E5%9B%BE%E7%89%8720170924223252.png](http://ov0zuistv.bkt.clouddn.com/QQ%E5%9B%BE%E7%89%8720170924223252.png)
 
-需要对http协议有一定的了解才能完全掌握所有的配置，不过，springboot和spring security的自动配置已经足够使用了。其中每一项Configurer（e.g.FormLoginConfigurer,CsrfConfigurer）都可以理解为HttpConfigurer的一个细化配置项。
+需要对http协议有一定的了解才能完全掌握所有的配置，不过，springboot和spring security的自动配置已经足够使用了。其中每一项Configurer（e.g.FormLoginConfigurer,CsrfConfigurer）都是HttpConfigurer的细化配置项。
 
-#### WebSecurityBuilder与AuthenticationManagerBuilder
+#### WebSecurityBuilder
 
+```java
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web
+            .ignoring()
+            .antMatchers("/resources/**");
+    }
+}
+```
 
+以笔者的经验，这个配置中并不会出现太多的配置信息。
 
+#### AuthenticationManagerBuilder
 
+```java
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+            .inMemoryAuthentication()
+            .withUser("admin").password("admin").roles("USER");
+    }
+}
+```
 
+想要在WebSecurityConfigurerAdapter中进行认证相关的配置，可以使用configure(AuthenticationManagerBuilder auth)暴露一个AuthenticationManager的建造器：AuthenticationManagerBuilder 。如上所示，我们便完成了内存中用户的配置。
 
+细心的朋友会发现，在前面的文章中我们配置内存中的用户时，似乎不是这么配置的，而是：
+
+```java
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+            .inMemoryAuthentication()
+                .withUser("admin").password("admin").roles("USER");
+    }
+}
+```
+
+如果你的应用只有唯一一个WebSecurityConfigurerAdapter，那么他们之间的差距可以被忽略，从方法名可以看出两者的区别：使用@Autowired注入的AuthenticationManagerBuilder是全局的身份认证器，作用域可以跨越多个WebSecurityConfigurerAdapter，以及影响到基于Method的安全控制；而 `protected configure()`的方式则类似于一个匿名内部类，它的作用域局限于一个WebSecurityConfigurerAdapter内部。关于这一点的区别，可以参考我曾经提出的issue[spring-security#issues4571](https://github.com/spring-projects/spring-security/issues/4571)。官方文档中，也给出了配置多个WebSecurityConfigurerAdapter的场景以及demo，将在该系列的后续文章中解读。
 
 
 
