@@ -10,7 +10,8 @@
                     <div class="article-meta">
                         <%- partial('post/date', { class_name: 'article-date', date_format: null }) %>
                         <%- partial('post/category') %>
-                        <%- partial('post/tag') %>
+                        <!-- 不显示标签 -->
+                        <!-- <%- partial('post/tag') %> -->
                     </div>
                 <% } %>
             </header>
@@ -47,6 +48,3 @@
 	
 </article>
 
-<% if (!index) { %>
-    <%- partial('comment/index') %>
-<% } %>

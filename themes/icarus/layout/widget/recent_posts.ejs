@@ -6,9 +6,10 @@
                 <% site.posts.sort('date', -1).limit(5).each(function(post) { %>
                     <li>
                         <% if(theme.customize.thumbnail == true) { %>
-                        <div class="item-thumbnail">
+                        <!-- 去除图片 -->
+                        <!-- <div class="item-thumbnail">
                             <%- partial('common/thumbnail.ejs', {post: post}) %>
-                        </div>
+                        </div> -->
                         <% } %>
                         <div class="item-inner">
                             <p class="item-category"><%- list_categories(post.categories, {show_count: false, depth:2, class: 'article-category', style: 'none', separator: '<i class="fa fa-angle-right"></i>'}) %></p>
