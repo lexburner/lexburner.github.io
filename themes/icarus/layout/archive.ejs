@@ -14,6 +14,7 @@
             <div class="content">
                 <%- partial('common/post/title', { post: post, index: true, class_name: 'timeline-article-title' }) %>
                 <div class="article-meta">
+                    <%- partial('common/post/type', { post: post }) %>
                     <%- partial('common/post/date', { post: post, class_name: 'article-date', date_format: null }) %>
                     <%- partial('common/post/category', { post: post }) %>
                     <%- partial('common/post/tag', { post: post }) %>
