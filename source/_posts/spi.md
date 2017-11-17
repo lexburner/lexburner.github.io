@@ -208,9 +208,7 @@ ServiceLoader是`java.util`提供的用于加载固定类路径下文件的一�
 
 > `DriverManager` 类的方法 `getConnection` 和 `getDrivers` 已经得到提高以支持 Java Standard Edition [Service Provider](http://tool.oschina.net/uploads/apidocs/technotes/guides/jar/jar.html#Service%20Provider) 机制。 JDBC 4.0 Drivers 必须包括 `META-INF/services/java.sql.Driver` 文件。此文件包含 `java.sql.Driver` 的 JDBC 驱动程序实现的名称。例如，要加载 `my.sql.Driver` 类，`META-INF/services/java.sql.Driver` 文件需要包含下面的条目：
 >
-> ```
->  my.sql.Driver
-> ```
+>  **my.sql.Driver**
 >
 > 应用程序不再需要使用 `Class.forName()` 显式地加载 JDBC 驱动程序。当前使用 `Class.forName()` 加载 JDBC 驱动程序的现有程序将在不作修改的情况下继续工作。
 
@@ -241,4 +239,4 @@ public Void run() {
 
 SPI不仅仅是为厂商指定的标准，同样也为框架扩展提供了一个思路。框架可以预留出SPI接口，这样可以在不侵入代码的前提下，通过增删依赖来扩展框架。前提是，框架得预留出核心接口，也就是本例中interface模块中类似的接口，剩下的适配工作便留给了开发者。
 
-例如我的上一篇文章中介绍的motan中Filter的扩展，便是采用了SPI机制，熟悉这个设定之后再回头去了解一些框架的SPI扩展就不会太陌生了。
+例如我的上一篇文章 https://www.cnkirito.moe/2017/11/07/spring-cloud-sleuth/ 中介绍的motan中Filter的扩展，便是采用了SPI机制，熟悉这个设定之后再回头去了解一些框架的SPI扩展就不会太陌生了。
