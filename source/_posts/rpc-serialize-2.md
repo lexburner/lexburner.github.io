@@ -2,9 +2,8 @@
 title: 深入理解RPC之序列化篇--总结篇
 date: 2017-12-11 22:58:54
 tags: 
-- JAVA
 - RPC
-categories: JAVA
+categories: RPC
 ---
 
 上一篇[《深入理解RPC之序列化篇--Kryo》](https://www.cnkirito.moe/2017/11/28/kryo-1/),介绍了序列化的基础概念，并且详细介绍了Kryo的一系列特性，在这一篇中，简略的介绍其他常用的序列化器，并对它们进行一些比较。序列化篇仅仅由Kryo篇和总结篇构成可能有点突兀，等待后续有时间会补充详细的探讨。
@@ -121,7 +120,7 @@ java.math.BigDecimal=com.caucho.hessian.io.StringValueSerializer
 java.math.BigDecimal=com.caucho.hessian.io.BigDecimalDeserializer
 ```
 
-##Protostuff实现
+##  Protostuff实现
 
 ```java
 public class ProtostuffSerialization implements Serialization {

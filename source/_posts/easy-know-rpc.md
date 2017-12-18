@@ -3,8 +3,7 @@ title: 简单了解RPC实现原理
 date: 2017-02-10 15:11:52
 tags: 
 - RPC
-categories: 
-- 架构设计
+categories: RPC
 ---
 
 
