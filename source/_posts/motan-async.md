@@ -1,6 +1,6 @@
 ---
 title: Motan中使用异步RPC接口
-date: 2017-10-01 22:44:34
+date: 2017-12-27 21:34:34
 tags:
 - RPC
 - motan
@@ -145,8 +145,8 @@ public interface DemoApi {
 安装插件后，可以借助它生成一个和 DemoApi 关联的异步接口 DemoApiAsync 。
 
 ```java
-public interface MotanDemoServiceAsync extends MotanDemoService {
-  ResponseFuture helloAsync(String name);
+public interface DemoApiAsync extends DemoApi {
+  ResponseFuture randomDemoAsync(String id);
 }
 ```
 

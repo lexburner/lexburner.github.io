@@ -1,5 +1,5 @@
 ---
-title: @Transactional注解使用注意点
+title: Transactional注解使用注意点
 date: 2017-02-14 16:51:52
 tags: 
 - Spring
