@@ -67,7 +67,7 @@ DTO这一层，目前我们的项目还没有投入使用，即将考虑投入�
 VO就是常存在于视图层模板渲染使用的实体类
 
 【推荐】领域模型命名规范
-【说明】由于DO这一层大家已经养成了习惯，不做要求了。DTO有些特殊，他常常与业务的传输对象相关，而不限于以DTO结尾，如xxxQuery也可以是DTO对象。VO对象推荐以VO结尾。注意：不要命名为Vo,Dto。
+【说明】由于 DO 这一层大家已经养成了习惯，不做要求了。DTO有些特殊，他常常与业务的传输对象相关，而不限于以 Dto 结尾，如xxxQuery也可以是DTO对象。VO对象推荐以Vo结尾
 
 ### 包结构规范
 
@@ -831,11 +831,342 @@ e包含了全部的异常堆栈信息，是e.getMessage的父集，出现异常�
 
 保证某个类的字节码作为日志跟踪标识，方便定位日志的出处。
 
+## 2018-02-27 补充规范
+
+## 日志规范
+
+1 与外部对接接口的返回报文需要使用 Info 级别打印，以便于跟踪接口信息
+
+【正例】log.info("供应商接口返回报文:{}",JSON.toString(venderDto));
+
+2 内部接口的关键参数需要使用 Info 级别打印，如下单时的订单号，下单人信息，订单金额等关键信息。
+
+3 一般方法为了方便排查问题，建议打上必要的日志
+
+## 编码细节
+
+1 session，request，response 等 http 生命周期的对象不应该传入 service 层
+
+原因：不便于单元测试；不便于 service 重用
+
+2 注意判空
+
+```java
+String memberName = (String) request.getSession().getAttribute(GlobalContants.SESSION_MEMBER_NAME);
+if(Lang.isE)
+userService.getByName(memberName); 
+
+List<UserDto> users =  userApi.findByStatus(String status);
+if()
+for(UserDto user:users){
+    
+}
+```
+
+如果确定不为空，可以不判断；对于不确定的情况一定要做空判断
+
+3 motan 的重试次数
+
+所有的操作分为 CRUD，查询--一般可以设置 2 次重试，增删改不可以重试，除非保证幂等。
+
+全局配置设置重试次数应当为 0 次。
+
+```
+ProtocolConfigBean.setRetries(0);//protocol级别
+@MotanService(retries = 2)//注意!服务端配置是无效的
+@MotanReferer(retries = 2)//有效 referer 级别
+```
+
+motan 中的配置覆盖优先级：method > referer > basic referer > protocol
+
+可以修改单个 service 的重试次数
+
+4 XxxProperties 类代替 @Value
+
+@Value 容器加载顺序的导致空值的 bug，使用 @ConfigurationProperties 实现 Properties 类更加面向对象
+
+5 RedisTemplate 和 StringRedisTemplate 的使用细节
+
+RedisTemplate.put("hello","world");
+
+StringRedisTemplate.get("hello").equals("world") == false
+
+6 及时清理不再使用的代码，可以在系统回归之后的节点或者合并到主干的节点删除注释掉的代码
+
+## 软件设计原则与微服务设计原则
+
+1 接口设计应当符合聚合根模式
+
+orderMain 主订单包含 List<orderItem> 订单项，包含 List<subOrder> 子订单 等等项
+
+设计 Api 时，只能存在一个 orderMainApi ，而不能存在 orderItemApi 和 subOrderApi。
+
+其他模块如何获取订单项 orderItem 的数据？只能通过访问 orderMain ，从中获取 orderItem。
+
+不同服务之间进行远程调用，只能访问对方的聚合根对象。
+
+2 面向对象，函数式，设计模式等编程范式
+
+面向对象：继承，封装，多态
+
+函数式：lamba，streamAPI
+
+设计模式：单例模式，工厂模式，适配器模式，模板方法模式
+
+多范式编程与最小表达力原则
+
+3 DTO 的意义
+
+dto 应该存在于 api 层，不应该存在于 model 层，model 只应该对本模块的 service 可见，web 不可见，其他模块不可见。使用 DTO 解耦模块之间的依赖。
+
+4 Api 层的注释要全
+
+5 ApiImpl 层的意义
+
+仅仅作为转换，不添加任何业务逻辑。ApiImpl 层不应该出现 DO 对象。
+
+6 Stub 的意义Facede
+
+对于外部接口的调用，使用 Stub 作为外部接口的包装，在本模块的 service 类中需要调用外部 API 时，则应当调用 Stub。Stub 代表着远程接口在本地的代理。
+
+7 DevOps 八荣八耻
+
+以可配置为荣，以硬编码为耻
+
+以互备为荣，以单点为耻
+
+以随时重启为荣，以不能迁移为耻
+
+以整体交付为荣，以部分交付为耻
+
+以无状态为荣，以有状态为耻
+
+以标准化为荣，以特殊化为耻
+
+以自动化工具为荣，以手动和人肉为耻
+
+以无人值守为荣，以人工介入为耻
+
+8 领域驱动设计与微服务设计
+
+**实体（Entity）和值对象（Value Object）的区分**
+
+实体具有生命周期，需要继承 BaseDomain；值对象没有生命周期，只起到修饰作用。
+
+举例：Protocol 协议下包含 List<ProtocolProduct> 协议商品, ProtocolProduct 协议商品包含 List<ProtocolProductPicture> 商品轮播图。
+
+此时 Protocol 是聚合根也是实体，List<ProtocolProduct> 介于实体和值对象之间，需要视需求而定，而 ProtocolProductPicture 则必然是值对象属性。
+
+对于实体的删除使用逻辑删除，对于值对象的删除使用物理删除。
+
+**数据库操作使用充血模型而不是贫血模型**
+
+代码见 ProtocolService，查询使用 Specification 模式，曾经强调过，在公会礼包和协议采购已经在实践。具体表现：Repository 层应该为空实现。update = find + 持久化对象的内存操作 + save
+
+**微服务设计**
+
+确定领域的限界上下文，微服务的边界。微服务架构是一件好事，逼着大家关注设计软件的合理性，如果原来在单体式架构中领域分析、面向对象设计做不好，换成微服务会把这个问题成倍的放大。微服务架构首先要关注的不是RPC/ServiceDiscovery/Circuit Breaker这些概念，也不是Eureka/Docker/SpringCloud/Zipkin这些技术框架，而是服务的边界、职责划分，划分错误就会陷入大量的服务间的相互调用和分布式事务中，这种情况微服务带来的不是便利而是麻烦。
+
+## 线程池注意事项
+
+1 如果在每个方法中实例化线程池，那么要在方法结束时 shutdown 线程池，否则会导致内存溢出，导致服务器崩溃。
+
+@Service
+
+public class SomeService {
+
+​    
+
+​    public void concurrentExecute() {
+
+​        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+​        executorService.execute(new Runnable() {
+
+​            @Override
+
+​            public void run() {
+
+​                System.out.println("executed...");
+
+​            }
+
+​        });
+
+​        executorService.shutdown();// 否则 executorService 永远不会被回收
+
+​    }
+
+}
+
+2 线程池嵌套使用可能会导致死锁
+
+@Service
+
+```
+public class SomeService {
+    
+    public void concurrentExecute() {
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                //复用了一个线程池，会导致子任务卡死其他的主任务
+                executorService.execute(new Runnable() {
+                    @Override
+                    public voud run() {
+                        //doSomething...
+                    }
+                })
+            }
+        });
+        executorService.shutdown();
+    }
 
 
+}
+```
 
+3【强制】线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，
+这样的处理方式让写的同学更加明确线程池的运行规则，规避资源耗尽的风险。
 
+我下面整理了一些 线程池 相关的知识点
 
+## Executors
+
+Executors是一个线程池框架，其最终还是通过new ThreadPoolExecutor的方式创建的线程池。Executors提供了几个工厂方法。但这几种都不应该在生产中直接使用
+
+### newSingleThreadExecutor
+
+创建一个单线程的线程池。这个线程池只有一个线程在工作，也就是相当于单线程串行执行所有任务。如果这个唯一的线程因为异常结束，那么会有一个新的线程来替代它。
+此线程池保证所有任务的执行顺序按照任务的提交顺序执行。
+
+```
+new ThreadPoolExecutor(1, 1,0L,TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>());
+```
+
+### newFixedThreadPool
+
+创建固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池的最大大小。
+线程池的大小一旦达到最大值就会保持不变，如果某个线程因为执行异常而结束，那么线程池会补充一个新线程。
+
+```
+new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+```
+
+### newCachedThreadPool
+
+创建一个可缓存的线程池。如果线程池的大小超过了处理任务所需要的线程，
+那么就会回收部分空闲（60秒不执行任务）的线程，当任务数增加时，此线程池又可以智能的添加新线程来处理任务。
+此线程池不会对线程池大小做限制，线程池大小完全依赖于操作系统（或者说JVM）能够创建的最大线程大小。
+
+```
+new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,new SynchronousQueue<Runnable>());
+```
+
+### ThreadPoolExecutor
+
+再看看如何使用ThreadPoolExecutor创建线程池，我们需要理解各个构造方法的参数：
+
+```
+    public ThreadPoolExecutor(int corePoolSize,
+                              int maximumPoolSize,
+                              long keepAliveTime,
+                              TimeUnit unit,
+                              BlockingQueue<Runnable> workQueue,
+                              ThreadFactory threadFactory,
+                              RejectedExecutionHandler handler) 
+```
+
+corePoolSize - 线程池核心池的大小。
+maximumPoolSize - 线程池的最大线程数。
+keepAliveTime - 当线程数大于核心时，此为终止前多余的空闲线程等待新任务的最长时间。
+unit - keepAliveTime 的时间单位。
+workQueue - 用来储存等待执行任务的队列。
+threadFactory - 线程工厂。
+handler - 拒绝策略。
+
+#### 关注点1 线程池大小
+
+线程池有两个线程数的设置，一个为核心池线程数，一个为最大线程数。
+在创建了线程池后，默认情况下，线程池中并没有任何线程，等到有任务来才创建线程去执行任务，除非调用了prestartAllCoreThreads()或者prestartCoreThread()方法
+当创建的线程数等于 corePoolSize 时，会加入设置的阻塞队列。当队列满时，会创建线程执行任务直到线程池中的数量等于maximumPoolSize。
+
+#### 关注点2 适当的阻塞队列
+
+java.lang.IllegalStateException: Queue full
+方法 抛出异常 返回特殊值 一直阻塞 超时退出
+插入方法 add(e) offer(e) put(e) offer(e,time,unit)
+移除方法 remove() poll() take() poll(time,unit)
+检查方法 element() peek() 不可用 不可用
+
+ArrayBlockingQueue ：一个由数组结构组成的有界阻塞队列。
+LinkedBlockingQueue ：一个由链表结构组成的有界阻塞队列。
+PriorityBlockingQueue ：一个支持优先级排序的无界阻塞队列。
+DelayQueue： 一个使用优先级队列实现的无界阻塞队列。
+SynchronousQueue： 一个不存储元素的阻塞队列。
+LinkedTransferQueue： 一个由链表结构组成的无界阻塞队列。
+LinkedBlockingDeque： 一个由链表结构组成的双向阻塞队列。
+
+#### 关注点3 明确拒绝策略
+
+ThreadPoolExecutor.AbortPolicy: 丢弃任务并抛出RejectedExecutionException异常。 (默认)
+ThreadPoolExecutor.DiscardPolicy：也是丢弃任务，但是不抛出异常。
+ThreadPoolExecutor.DiscardOldestPolicy：丢弃队列最前面的任务，然后重新尝试执行任务（重复此过程）
+ThreadPoolExecutor.CallerRunsPolicy：由调用线程处理该任务
+
+说明：Executors 各个方法的弊端：
+1）newFixedThreadPool 和 newSingleThreadExecutor:
+主要问题是堆积的请求处理队列可能会耗费非常大的内存，甚至 OOM。
+2）newCachedThreadPool 和 newScheduledThreadPool:
+主要问题是线程数最大数是 Integer.MAX_VALUE，可能会创建数量非常多的线程，甚至 OOM。
+
+## 
+
+我推荐的创建线程池的方式：
+
+1 new ThreadPoolExecutor(全参构造) 自己控制
+
+corePoolSize - 线程池核心池的大小。
+
+maximumPoolSize - 线程池的最大线程数。
+
+keepAliveTime - 当线程数大于核心时，此为终止前多余的空闲线程等待新任务的最长时间。
+
+unit - keepAliveTime 的时间单位。
+
+workQueue - 用来储存等待执行任务的队列。
+
+threadFactory - 线程工厂。
+
+handler - 拒绝策略。
+
+2 使用Spring提供的线程池（强烈推荐）
+
+```
+@Bean
+public ThreadPoolTaskExecutor someBizThreadPool(){
+    ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+    threadPoolTaskExecutor.setCorePoolSize(10);
+    threadPoolTaskExecutor.setMaxPoolSize(100);
+    threadPoolTaskExecutor.setQueueCapacity(200);
+    threadPoolTaskExecutor.setKeepAliveSeconds(60);
+    threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+    return threadPoolTaskExecutor;
+}
+```
+
+运行规则如下：
+
+如果此时线程池中的数量小于corePoolSize，即使线程池中的线程都处于空闲状态，也要创建新的线程来处理被添加的任务。
+
+如果此时线程池中的数量等于 corePoolSize，但是缓冲队列 workQueue未满，那么任务被放入缓冲队列。
+
+如果此时线程池中的数量大于corePoolSize，缓冲队列workQueue满，并且线程池中的数量小于maxPoolSize，建新的线程来处理被添加的任务。
+
+如果此时线程池中的数量大于corePoolSize，缓冲队列workQueue满，并且线程池中的数量等于maxPoolSize，那么通过handler所指定的策略来处理此任务。也就是：处理任务的优先级为：核心线程corePoolSize、任务队列workQueue、最大线程 maximumPoolSize，如果三者都满了，使用handler处理被拒绝的任务（抛出异常）。
+
+当线程池中的线程数量大于corePoolSize时，如果某线程空闲时间超过keepAliveTime，线程将被终止。这样，线程池可以动态的调整池中的线程数。
 
 
 
