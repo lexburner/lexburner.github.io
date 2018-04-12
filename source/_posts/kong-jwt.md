@@ -131,11 +131,13 @@ curl http://localhost:8000/hello/hi -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLC
 
 ### 补充
 
-1. Kong 支持修改默认生成的 key（对应 Jwt 中的 iss），和 secret
+1. 可以指定生成的 key（对应 Jwt 中的 iss），和 secret
 
 ```shell
 curl -X POST http://localhost:8001/consumers/kirito/jwt --data "secret=YmxvYiBkYXRh" --data "key=kirito"
 ```
+
+如果想要修改 secret 和 key，经过目前笔者的尝试后，似乎只能够先删除，后新增。
 
 2. Jwt 也可以作为 QueryString 参数携带在 get 请求中
 
