@@ -1,6 +1,6 @@
 ---
-title: JSON Web Token - 在Web应用间安全地传递信息
-date: 2018-04-14 22:57:45
+title: 八幅漫画理解使用JSON Web Token设计单点登录系统
+date: 2018-04-16 22:57:45
 tags:
 - JWT
 categories:
@@ -11,6 +11,12 @@ type: 2
 > 转载自：http://blog.leapoahead.com/2015/09/06/understanding-jwt/
 >
 > 作者：John Wu
+
+###博主前言
+
+这篇转载的文章和上一篇《JSON Web Token - 在Web应用间安全地传递信息》文章均为转载，是我个人在研究 jwt 时浏览下来发现的两篇质量比较高的文章，所以分享给大家。个人对于 jwt 使用场景的理解，包括微信公众号留言中的提问，我都会在下一篇文章中来聊一聊。实际上使用 jwt 设计单点登录系统存在诸多的问题，很多有经验的工程师比较抵制用 jwt 做会话和所谓的单点登录系统，但不妨碍大家作为一个知识点去学习。
+
+以下是原文
 
 上次在[《JSON Web Token - 在Web应用间安全地传递信息》](https://www.cnkirito.moe/2018/04/14/jwt-learn/)中我提到了JSON Web Token可以用来设计单点登录系统。我尝试用八幅漫画先让大家理解如何设计正常的用户认证系统，然后再延伸到单点登录系统。
 
