@@ -8,9 +8,12 @@
                 <%- partial('post/title', { class_name: 'article-title' }) %>
                 <% if (post.layout != 'page') { %>
                     <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        <%- partial('post/type', { post: post }) %>
                         <%- partial('post/date', { class_name: 'article-date', date_format: null }) %>
                         <%- partial('post/category') %>
-                        <%- partial('post/tag') %>
+                        <!-- 不显示标签 -->
+                        <!-- <%- partial('post/tag') %> -->
                     </div>
                 <% } %>
             </header>

@@ -85,7 +85,7 @@ donate_message: 大吉大利，今晚吃鸡。
 plugins:
     lightgallery: true # options: true, false
     justified-gallery: true # options: true, false
-    google_analytics: # enter the tracking ID for your Google Analytics
+    google_analytics: UA-118574570-1
     google_site_verification: # enter Google site verification code
     baidu_analytics: # enter Baidu Analytics hash key
 
