@@ -6,7 +6,6 @@
                 <% site.posts.sort('date', -1).limit(5).each(function(post) { %>
                     <li>
                         <% if(theme.customize.thumbnail == true) { %>
-                        <!-- 去除图片 -->
                         <!-- <div class="item-thumbnail">
                             <%- partial('common/thumbnail.ejs', {post: post}) %>
                         </div> -->
