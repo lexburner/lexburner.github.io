@@ -12,7 +12,7 @@ categories:
 前端时间将一个集成了 spring-security-oauth2 的旧项目改造了一番，将 springboot 升级成了 springboot 2.0，众所周知 springboot 2.0 依赖的是 spring5，并且许多相关的依赖都发生了较大的改动，与本文相关的改动罗列如下，有兴趣的同学可以看看：[Spring Security 5.0 New Features](https://docs.spring.io/spring-security/site/docs/5.0.4.RELEASE/reference/htmlsingle/#new) ，增强了 oauth2 集成的功能以及和一个比较有意思的改动—重构了密码编码器的实现（Password Encoding，由于大多数 PasswordEncoder 相关的算法是 hash 算法，所以本文将 PasswordEncoder 翻译成‘密码编码器’和并非‘密码加密器’）官方称之为
 
 [Modernized Password Encoding](https://docs.spring.io/spring-security/site/docs/5.0.4.RELEASE/reference/htmlsingle/#core-services-password-encoding) — 现代化的密码编码方式
-
+<!-- more -->
 另外，springboot2.0 的自动配置也做了一些调整，其中也有几点和 spring-security 相关，戳这里看所有细节 [springboot2.0 迁移指南](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide)
 
 一开始，我仅仅修改了依赖，将

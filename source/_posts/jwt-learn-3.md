@@ -8,7 +8,7 @@ categories:
 ---
 
 经过前面两篇文章《[JSON Web Token - 在Web应用间安全地传递信息](https://www.cnkirito.moe/2018/04/14/jwt-learn/)》《[八幅漫画理解使用JSON Web Token设计单点登录系统](https://www.cnkirito.moe/2018/04/14/jwt-learn-2/)》的科普，相信大家应该已经知道了 JWT 协议是什么了。至少看到
-
+<!-- more -->
 ```
 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJxaWFubWlJZCI6InFtMTAzNTNzaEQiLCJpc3MiOiJhcHBfcW0xMDM1M3NoRCIsInBsYXRmb3JtIjoiYXBwIn0.cMNwyDTFVYMLL4e7ts50GFHTvlSJLDpePtHXzu7z9j4
 ```

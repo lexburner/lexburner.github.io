@@ -8,6 +8,7 @@ categories:
 ---
 
 SpringSecurityFilterChain 作为 SpringSecurity 的核心过滤器链在整个认证授权过程中起着举足轻重的地位，每个请求到来，都会经过该过滤器链，前文[《Spring Security(四)--核心过滤器源码分析》](https://www.cnkirito.moe/spring-security-4/) 中我们分析了 SpringSecurityFilterChain 的构成，但还有很多疑问可能没有解开：
+<!-- more -->
 
 1. 这个 SpringSecurityFilterChain 是怎么注册到 web 环境中的？
 2. 有读者发出这样的疑问：”SpringSecurityFilterChain 的实现类到底是什么，我知道它是一个 Filter，但是在很多配置类中看到了 BeanName=SpringSecurityFilterChain 相关的类，比如 DelegatingFilterProxy，FilterChainProxy，SecurityFilterChain，他们的的名称实在太相似了，到底哪个才是真正的实现，SpringSecurity 又为什么要这么设计？“

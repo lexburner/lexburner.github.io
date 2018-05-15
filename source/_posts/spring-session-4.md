@@ -9,7 +9,7 @@ categories:
 ---
 
 去年我曾经写过几篇和 Spring Session 相关的文章，从一个未接触过 Spring Session 的初学者视角介绍了 Spring Session 如何上手，如果你未接触过 Spring Session，推荐先阅读下「从零开始学习Spring Session」系列（https://www.cnkirito.moe/categories/Spring-Session/） Spring Session 主要解决了分布式场景下 Session 的共享问题，本文将从 Spring Session 的源码出发，来讨论一些 Session 设计的细节。
-
+<!-- more -->
 ### Spring Session 数据结构解读
 
 想象一个场景，现在一到面试题呈现在你面前，让你从零开始设计一个 Session 存储方案，你会怎么回答？

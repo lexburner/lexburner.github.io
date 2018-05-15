@@ -9,7 +9,7 @@ categories:
 ---
 
 上一篇文章使用 Kong 完成了负载均衡的配置，本文介绍下在此基础上如何集成 jwt 插件来保护内部服务的安全。前置知识点：Jwt 基础概念。推荐阅读：
-
+<!-- more -->
 通俗易懂地介绍 Jwt https://blog.leapoahead.com/2015/09/06/understanding-jwt/
 
 Jwt 的官网 https://jwt.io/

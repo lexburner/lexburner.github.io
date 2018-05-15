@@ -11,7 +11,7 @@ categories:
 ### 概述
 
 Docker 强大的原因之一在于多个 Docker 容器之间的互相连接。涉及到连接，就引出了网络通信的几种模式。Docker 默认提供了 5 种网络驱动模式。
-
+<!-- more -->
 - bridge:	默认的网络驱动模式。如果不指定驱动程序，bridge 便会作为默认的网络驱动模式。当应用程序运行在需要通信的独立容器(standalone containers)中时，通常会选择 bridge 模式。
 - host：移除容器和 Docker 宿主机之间的网络隔离，并直接使用主机的网络。host 模式仅适用于 Docker 17.06+。
 - overlay：overlay 网络将多个 Docker 守护进程连接在一起，并使集群服务能够相互通信。您还可以使用 overlay 网络来实现 swarm 集群和独立容器之间的通信，或者不同 Docker 守护进程上的两个独立容器之间的通信。该策略实现了在这些容器之间进行操作系统级别路由的需求。

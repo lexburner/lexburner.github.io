@@ -11,7 +11,7 @@ categories:
 使用 Kong **Community** Edition（社区版 v1.3.0）来搭建一个负载均衡器，由于 Kong 是基于 Openresty 的，而 Openresty 又是 Nginx 的二次封装，所有很多配置项和 Nginx 类似。
 
 来看一个较为典型的 Nginx 负载均衡配置
-
+<!-- more -->
 ```nginx
 upstream hello {
 	server localhost:3000 weight=100;

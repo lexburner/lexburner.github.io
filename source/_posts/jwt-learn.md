@@ -15,7 +15,7 @@ type: 2
 JSON Web Token（JWT）是一个非常轻巧的[规范](https://tools.ietf.org/html/draft-ietf-oauth-json-web-token-32)。这个规范允许我们使用JWT在用户和服务器之间传递安全可靠的信息。
 
 让我们来假想一下一个场景。在A用户关注了B用户的时候，系统发邮件给B用户，并且附有一个链接“点此关注A用户”。链接的地址可以是这样的
-
+<!-- more -->
 ```
 https://your.awesome-app.com/make-friend/?from_user=B&target_user=A
 ```

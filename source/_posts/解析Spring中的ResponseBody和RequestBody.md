@@ -6,7 +6,7 @@ categories: Spring
 ---
 
 spring，restful，前后端分离这些关键词都是大家耳熟能详的关键词了，一般spring常常需要与前端、第三方使用JSON，XML等形式进行交互，你也一定不会对@RequestBody和@ResponseBody这两个注解感到陌生。
-
+<!-- more -->
 ## @ResponseBody的使用
 
 由于@ResponseBody和@RequestBody的内部实现是同样的原理（封装请求和封装响应），所以本文以@ResponseBody为主要入手点，理解清楚任何一者，都可以同时掌握另一者。
