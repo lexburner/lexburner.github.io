@@ -29,6 +29,7 @@ customize:
     social_links:
         github: https://github.com/lexburner
         wechat: /css/images/kirito_wechat.jpg
+        rss: /atom.xml
     social_link_tooltip: true # enable the social link tooltip, options: true, false
 
 # Widgets
@@ -88,6 +89,7 @@ plugins:
     google_analytics: UA-118574570-1
     google_site_verification: # enter Google site verification code
     baidu_analytics: # enter Baidu Analytics hash key
+
 
 # Miscellaneous
 miscellaneous:

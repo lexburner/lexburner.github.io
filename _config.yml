@@ -75,6 +75,15 @@ pagination_dir: page
 ## Themes: https://hexo.io/themes/
 theme: icarus
 
+#RSS订阅
+plugin:
+- hexo-generator-feed
+#Feed Atom
+feed:
+type: atom
+path: atom.xml
+limit: 20
+
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:

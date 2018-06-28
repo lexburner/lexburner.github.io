@@ -15,7 +15,7 @@ categories:
 
 在比赛之前我个人对 netty 的认识也仅仅停留在了解的层面，在之前解读 RPC 原理的系列文章中涉及到 netty 传输时曾了解过一二，基本可以算零基础使用 netty 参赛，所以我会更多地站在一个小白的视角来阐述自己的优化历程，一步步地提高 qps，也不会绕开那些自己踩过的坑以及负优化。另一方面，由于自己对 netty 的理解并不是很深，所以文中如果出现错误，敬请谅解，欢迎指正。
 
-###Dubbo Mesh 是什么？
+### Dubbo Mesh 是什么？
 
 为了照顾那些不太了解这次比赛内容的读者，我先花少量的篇幅介绍下这次阿里举办的天池中间件大赛到底比的是个什么东西，那就不得不先介绍下 Dubbo Mesh 这个概念。
 
@@ -43,7 +43,7 @@ categories:
 
 这样一个跨语言的简易 dubbo mesh 便呈现在大家面前了，从 consumer 发出的 http 协议，最终成功调用到了使用 java 语言编写的 dubbo 服务。这中间如何优化，如何使用各种黑科技成就了一场非常有趣的比赛。博主所有的优化都不是一蹴而就的，都是一天天的提交试出来的，所以恰好可以使用时间线顺序叙述自己的改造历程。
 
-###优化历程
+### 优化历程
 
 **Qps 1000 到 2500 (CA 与 PA 使用异步 http 通信)**
 
@@ -201,7 +201,7 @@ private void initThreadBoundClient(EventLoopGroup workerGroup) {
 }
 ```
 
-使用入站服务端的 eventLoopGroup 为出站客户端预先创建好 channel，这样可以达到复用 eventLoop 的目的。并且此时还有一个伴随的优化点，就是将存储 Map<requestId,Promise> 的数据结构，从 concurrentHashMap 替换为了 ThreadLocal<HashMap> ,因为入站线程和出站线程都是相同的现成，省去一个 concurrentHashMap 可以进一步降低锁的竞争。
+使用入站服务端的 eventLoopGroup 为出站客户端预先创建好 channel，这样可以达到复用 eventLoop 的目的。并且此时还有一个伴随的优化点，就是将存储 Map<requestId,Promise> 的数据结构，从 concurrentHashMap 替换为了 ThreadLocal<HashMap> ,因为入站线程和出站线程都是相同的线程，省去一个 concurrentHashMap 可以进一步降低锁的竞争。
 
 到了这一步，整体架构已经清晰了，c->ca，ca->pa，pa->p 都实现了异步非阻塞的 reactor 模型，qps 在 256 并发下，也达到了 4400 qps。
 
@@ -338,7 +338,7 @@ Netty 提供了一个方便的解码工具类 `ByteToMessageDecoder` ，如图
 
 ### 总结
 
-其实在 qps 6500 时，整体代码还是挺漂亮的，至少感觉能拿的出手给别人看。但最后为了性能，加上时间比较赶，不少地方都进行了 hardcoding，而实际能投入生产使用的代码必然要求通用性和扩展性，赛后有空会整理出两个分支：一个 highest-qps 追求性能，另一个分支保留下通用性。这次比赛从一个 netty 小白，最终学到了不少的知识点，还是收获很大的，最后感谢一下比赛中给过我指导的各位老哥。代码由于通用性的问题在后面整理过后会贴在公众号中分享，本文暂时只分享思路。
+其实在 qps 6500 时，整体代码还是挺漂亮的，至少感觉能拿的出手给别人看。但最后为了性能，加上时间比较赶，不少地方都进行了 hardcoding，而实际能投入生产使用的代码必然要求通用性和扩展性，赛后有空会整理出两个分支：一个 highest-qps 追求性能，另一个分支保留下通用性。这次比赛从一个 netty 小白，最终学到了不少的知识点，还是收获很大的，最后感谢一下比赛中给过我指导的各位老哥。
 
 最高 qps 分支：highest-qps
 
