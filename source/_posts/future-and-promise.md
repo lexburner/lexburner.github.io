@@ -1,8 +1,10 @@
 ---
-title: future_and_promise
+title: JAVA 拾遗--Future 模式与 Promise 模式
 date: 2018-03-28 18:22:14
 tags:
+- JAVA
 categories:
+- JAVA
 ---
 
 写这篇文章的动机，是缘起于微信闲聊群的一场讨论，粗略整理下，主要涉及了以下几个具体的问题：
