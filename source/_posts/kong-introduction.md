@@ -11,6 +11,8 @@ categories:
 
 > Kong（https://github.com/Kong/kong）是一个云原生，高效，可扩展的分布式 API 网关。 自 2015 年在 github 开源后，广泛受到关注，目前已收获 1.68w+ 的 star，其核心价值在于高性能和可扩展性。
 
+<!— more —>
+
 ### 为什么需要 API 网关
 
 ![img](https://camo.githubusercontent.com/d4d0dcb22c223db0bf2e301aab0dddb3015f1729/68747470733a2f2f6b6f6e6768712e636f6d2f77702d636f6e74656e742f75706c6f6164732f323031382f30352f6b6f6e672d62656e65666974732d6769746875622d726561646d652e706e67)
@@ -159,12 +161,6 @@ curl -X POST http://localhost:8001/routes/{routeId}/plugins \
 ### 总结
 
 Kong 是目前市场上相对较为成熟的开源 API 网关产品，无论是性能，扩展性，还是功能特性，都决定了它是一款优秀的产品，对 OpenResty 和 Lua 感兴趣的同学，Kong 也是一个优秀的学习参考对象。基于 OpenResty，可以在现有 Kong 的基础上进行一些扩展，从而实现更复杂的特性，比如我司内部的 ABTest 插件和定制化的认证插件，开发成本都相对较低。Kong 系列的文章将会在以后持续连载。
-
-
-
-**Kirito 有话说：感谢阅读，为了博主更好地创作，提供更多的原创文章，请大家务必！务必！帮我点击阅读一下明天即将发出来的公众号文章！！！**
-
-
 
 ---
 
