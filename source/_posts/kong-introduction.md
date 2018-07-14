@@ -1,18 +1,15 @@
 ---
-title: 选择KONG作为你的API网关
+title: 选择Kong作为你的API网关
 date: 2018-07-12 19:47:28
 tags:
-- KONG
+- Kong
 categories:
-- KONG
+- Kong
 ---
-
-![img](https://camo.githubusercontent.com/9e4fe7914c7357861223aa535d7ca9858253c96e/68747470733a2f2f6b6f6e6768712e636f6d2f77702d636f6e74656e742f75706c6f6164732f323031382f30352f6b6f6e672d6c6f676f2d6769746875622d726561646d652e706e67)
 
 > Kong（https://github.com/Kong/kong）是一个云原生，高效，可扩展的分布式 API 网关。 自 2015 年在 github 开源后，广泛受到关注，目前已收获 1.68w+ 的 star，其核心价值在于高性能和可扩展性。
 
-<!— more —>
-
+<!-- more -->
 ### 为什么需要 API 网关
 
 ![img](https://camo.githubusercontent.com/d4d0dcb22c223db0bf2e301aab0dddb3015f1729/68747470733a2f2f6b6f6e6768712e636f6d2f77702d636f6e74656e742f75706c6f6164732f323031382f30352f6b6f6e672d62656e65666974732d6769746875622d726561646d652e706e67)
@@ -104,6 +101,7 @@ curl -X POST http://localhost:8001/upstreams/hello/targets --data "target=localh
 curl -X POST http://localhost:8001/services --data "name=hello" --data "host=helloUpstream"
 # 配置 route
 curl -X POST http://localhost:8001/routes --data "paths[]=/hello" --data "service.id=8695cc65-16c1-43b1-95a1-5d30d0a50409"
+curl -X POST http://localhost:8001/routes --data "hosts[]=a.com,b.com,*.abc.com" --data "service.id=8695cc65-16c1-43b1-95a1-5d30d0a50409"
 ```
 
 这一切都是动态的，无需手动 reload nginx.conf。
