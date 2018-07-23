@@ -1,5 +1,5 @@
 ---
-title: java trick--String.intern()
+title: java trick -- intergerCache
 date: 2016-11-07 23:00:52
 tags: 
 - JAVA
@@ -19,6 +19,8 @@ public class Main {
 }
 ```
 这段代码会输出什么？
+
+<!-- more -->
 
 不加留意的人可能会理所当然的认为两个答案会是一致的，但结果却是：
 

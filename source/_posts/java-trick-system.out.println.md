@@ -1,5 +1,5 @@
 ---
-title: java trick--String.intern()
+title: java trick--system.out.println
 date: 2016-11-07 22:03:52
 tags: 
 - JAVA
@@ -7,10 +7,8 @@ categories:
 - JAVA
 ---
 
-
-
 多线程在使用`system.out.println`时要留一个有意思的地方
-
+<!-- more -->
 ```java
 public class Main {
 
