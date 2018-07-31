@@ -211,3 +211,7 @@ public class Application {
 本篇文章没有什么干货，基本算是翻译了Spring Security Guides的内容，稍微了解Spring Security的朋友都不会对这个翻译感到陌生。考虑到受众的问题，一个入门的例子是必须得有的，方便后续对Spring Security的自定义配置进行讲解。下一节，以此guides为例，讲解这些最简化的配置背后，Spring Security都帮我们做了什么工作。
 
 本节所有的代码，可以直接在Spring的官方仓库下载得到，`git clone https://github.com/spring-guides/gs-securing-web.git`。不过，建议初学者根据文章先一步步配置，出了问题，再与demo进行对比。
+
+**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+
+![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

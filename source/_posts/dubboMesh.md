@@ -347,3 +347,7 @@ Netty 提供了一个方便的解码工具类 `ByteToMessageDecoder` ，如图
 https://code.aliyun.com/250577914/agent-demo.git
 
 最后帮队友@闪电侠推广下他的 netty 视频教程，比赛中两个比较难的优化点，都是由他进行的改造。imooc.com 搜索 Netty，可以获取 netty 源码分析视频。
+
+**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+
+![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

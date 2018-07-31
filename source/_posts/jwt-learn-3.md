@@ -139,4 +139,6 @@ jwt 和 oauth2 都可以用于 restful 的认证，就我个人的使用经验�
 可能对 jwt 的使用场景还有一些地方未被我察觉，后续会研究下 spring security oauth jwt 的源码，不知到时会不会有新发现。
 
 
+**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
+![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

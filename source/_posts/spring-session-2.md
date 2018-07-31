@@ -126,7 +126,9 @@ Spring Session provides an API and implementations for managing a user’s sessi
 本节主要讲解了Spring Boot如何集成Spring Session，下一节将介绍更加复杂的特性。包括自定义Cookie序列化策略，与Spring Security的集成，根据用户名查找session等特性以及使用注意点。
 
 
+**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
+![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 
 
 

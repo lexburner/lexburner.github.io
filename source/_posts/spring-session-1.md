@@ -108,3 +108,7 @@ JSESSIONID : 320C21A645A160C4843D076204DA2F40
 证实了一点，存放在客户端的Cookie的确是存在安全问题的，我们使用360的JSESSIONID“骗”过了服务器。毕竟，服务器只能通过Cookie中的JSESSIONID来辨别身份。（这提示我们不要在公共场合保存Cookie信息，现在的浏览器在保存Cookie时通常会让你确定一次）
 
 下一篇文章，将正式讲解如何在应用中集成Spring Session。
+
+**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+
+![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

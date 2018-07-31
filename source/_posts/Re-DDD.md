@@ -304,3 +304,6 @@ sinosoftgz.message.admin
 
 [DDD领域驱动设计基本理论知识总结 - netfocus](http://www.cnblogs.com/netfocus/archive/2011/10/10/2204949.html)
 
+**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+
+![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

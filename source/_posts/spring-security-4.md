@@ -463,3 +463,7 @@ protected void configure(HttpSecurity http) throws Exception {
 ### 总结
 
 本篇文章在介绍过滤器时，顺便进行了一些源码的分析，目的是方便理解整个Spring Security的工作流。伴随着整个过滤器链的介绍，安全框架的轮廓应该已经浮出水面了，下面的章节，主要打算通过自定义一些需求，再次分析其他组件的源码，学习应该如何改造Spring Security，为我们所用。
+
+**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+
+![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

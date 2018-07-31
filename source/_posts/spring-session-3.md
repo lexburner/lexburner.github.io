@@ -120,3 +120,7 @@ public class CookieController {
 ## 总结
 
 Spring Session对各种场景下的Session管理提供一套非常完善的实现。笔者所介绍的，仅仅是Spring Session常用的一些特性，更多的知识点可以在spring.io的文档中一览无余，以及本文中作者存在的一个疑惑，如有兴趣可与我沟通。
+
+**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+
+![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

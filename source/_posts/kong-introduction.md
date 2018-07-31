@@ -168,3 +168,6 @@ Kong 是目前市场上相对较为成熟的开源 API 网关产品，无论是�
 
 Kong 集成 Jwt 插件 https://www.cnkirito.moe/kong-jwt/
 
+**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+
+![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
