@@ -11,6 +11,8 @@ categories:
 
 [JMH](http://openjdk.java.net/projects/code-tools/jmh/) 是 Java Microbenchmark Harness（微基准测试）框架的缩写（2013年首次发布）。与其他众多测试框架相比，其特色优势在于它是由 Oracle 实现 JIT 的相同人员开发的。在此，我想特别提一下 [Aleksey Shipilev ](http://shipilev.net/)（JMH 的作者兼布道者）和他优秀的博客文章。笔者花费了一个周末，将 Aleksey 大神的博客，特别是那些和 JMH 相关的文章通读了几遍，外加一部公开课视频 [《"The Lesser of Two Evils" Story》](https://www.youtube.com/watch?v=VaWgOCDBxYw&feature=youtu.be) ，将自己的收获归纳在这篇文章中，文中不少图片都来自 Aleksey 公开课视频。
 
+<!-- more -->
+
 ### 阅读本文前
 
 本文没有花费专门的篇幅在文中介绍 JMH 的语法，如果你使用过 JMH，那当然最好，但如果没听过它，也不需要担心（跟我一周前的状态一样）。我会从 Java Developer 角度来谈谈一些常见的代码测试陷阱，分析他们和操作系统底层以及 Java 底层的关联性，并借助 JMH 来帮助大家摆脱这些陷阱。
