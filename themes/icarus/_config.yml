@@ -25,7 +25,7 @@ customize:
     highlight: monokai
     sidebar: right # sidebar position, options: left, right
     thumbnail: true # enable posts thumbnail, options: true, false
-    favicon: # path to favicon
+    favicon: /css/images/avatar.png
     social_links:
         github: https://github.com/lexburner
         wechat: /css/images/kirito_wechat.jpg

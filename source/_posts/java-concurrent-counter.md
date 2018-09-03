@@ -105,7 +105,7 @@ public class LongAdder extends Striped64 implements Serializable {}
 
 LongAdder 的 API 如下
 
-![LongAdder](/private/var/folders/k8/bm5wfrrs29v3z47xdz3sfm_c0000gn/T/abnerworks.Typora/LongAdder.png)
+![LongAdder](http://ov0zuistv.bkt.clouddn.com/LongAdder.png)
 
 你应当发现，LongAdder 和 AtomicLong 明显的区别在于，increment 是一个 void 方法。直接来看看 LongAdder 的性能表现如何。(LA = LongAdder, AL = AtomicLong, 单位  ns/op)
 
@@ -125,7 +125,7 @@ LongAdder 的 API 如下
 
 1. Cell 设计减少并发修改时的冲突
 
-![LongAdder](/private/var/folders/k8/bm5wfrrs29v3z47xdz3sfm_c0000gn/T/abnerworks.Typora/LongAdder-layer.png)
+![LongAdder](http://ov0zuistv.bkt.clouddn.com/LongAdder-layer.png)
 
 在 LongAdder 的父类 Striped64 中存在一个 `volatile Cell[] cells;` 数组，其长度是 2 的幂次方，每个 Cell 都填充了一个 @Contended 的 Long 字段，为了避免伪共享问题。
 
@@ -180,7 +180,7 @@ longAccumulate 方法是 LongAdder 的核心方法，内部存在大量的分支
 
 > An auto-resizing table of longs, supporting low-contention CAS operations.Updates are done with CAS’s to no particular table element.The intent is to support **highly scalable counters**, r/w locks, and other structures where the updates are associative, loss-free (no-brainer), and otherwise happen at such a high volume that the cache contention for CAS’ing a single word is unacceptable.
 
-![ConcurrentAutoTable](/private/var/folders/k8/bm5wfrrs29v3z47xdz3sfm_c0000gn/T/abnerworks.Typora/ConcurrentAutoTable.png)
+![ConcurrentAutoTable](http://ov0zuistv.bkt.clouddn.com/ConcurrentAutoTable.png)
 
 在最后的测评中，我们将 JCTools 的 ConcurrentAutoTable 也作为一个参考对象。
 
