@@ -11,6 +11,8 @@ categories:
 
 ![最终排名](http://ov0zuistv.bkt.clouddn.com/image-20180713165417073.png)
 
+<!-- more -->
+
 ### 赛题介绍
 
 题面描述很简单：使用 Java 或者 C++ 实现一个进程内的队列引擎，单机可支持 100 万队列以上。
