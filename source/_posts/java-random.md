@@ -208,7 +208,7 @@ public class RightCase {
 
 梁飞博客中一句话常常在我脑海中萦绕：魔鬼在细节中。优秀的代码都是一个个小细节堆砌出来，今天介绍的 ThreadLocalRandom 也不例外。
 
-![dubbo](http://ov0zuistv.bkt.clouddn.com/image-20180911184147013.png)
+![dubbo](http://kirito.iocoder.cn/image-20180911184147013.png)
 
 在 incubator-dubbo-2.7.0 中，随机负载均衡器的一个小改动便是将 Random 替换为了 ThreadLocalRandom，用于优化并发性能。
 
@@ -236,11 +236,11 @@ public int nextInt(int bound) {
 
 **欢迎关注李钊同学的微信公众号：「咖啡拿铁」**
 
-![咖啡拿铁](http://ov0zuistv.bkt.clouddn.com/image-20180911185754582.png)
+![咖啡拿铁](http://kirito.iocoder.cn/image-20180911185754582.png)
 
 **当然，也欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 
 
 

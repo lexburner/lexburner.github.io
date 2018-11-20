@@ -58,7 +58,7 @@ public class TestController {
 
 ## 2 使用maven插件打包成jar
 
-![maven插件](http://ov0zuistv.bkt.clouddn.com/maven_install.png)
+![maven插件](http://kirito.iocoder.cn/maven_install.png)
 
 ## 3 准备启动脚本
 
@@ -71,7 +71,7 @@ java -jar -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=64057 re
 
 ## 4 配置IDEA
 
-![IDEA配置](http://ov0zuistv.bkt.clouddn.com/%E8%BF%9C%E7%A8%8Bdebug_idea%E9%85%8D%E7%BD%AE.png)
+![IDEA配置](http://kirito.iocoder.cn/%E8%BF%9C%E7%A8%8Bdebug_idea%E9%85%8D%E7%BD%AE.png)
 
 1. 与脚本中的指令完全一致
 2. 远程jar包运行的host，由于我的jar运行在本地，所以使用的是localhost，一般线上环境自然是修改为线上的地址
@@ -84,12 +84,12 @@ java -jar -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=64057 re
 
 保存第4步的配置后，先执行脚本让远程的jar包跑起来，再在IDEA中运行remote-debug
 
-![运行remote-jar](http://ov0zuistv.bkt.clouddn.com/%E8%BF%90%E8%A1%8Cremote.png)
+![运行remote-jar](http://kirito.iocoder.cn/%E8%BF%90%E8%A1%8Cremote.png)
 
 如上便代表连接运行成功了
 
 在本地打上断点，访问`localhost:8080/test`
 
-![远程debug信息展示](http://ov0zuistv.bkt.clouddn.com/debug%E4%BF%A1%E6%81%AF%E5%B1%95%E7%A4%BA.png)
+![远程debug信息展示](http://kirito.iocoder.cn/debug%E4%BF%A1%E6%81%AF%E5%B1%95%E7%A4%BA.png)
 
 可以在本地看到堆栈信息，大功告成。一行指令便完成了远程调试。

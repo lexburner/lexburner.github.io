@@ -138,7 +138,7 @@ public class EventDemoApp {
 
 当我们调用userService.register("kirito");方法时，控制台打印信息如下：
 
-![用户注册](http://ov0zuistv.bkt.clouddn.com/event1.png)
+![用户注册](http://kirito.iocoder.cn/event1.png)
 
 他们的顺序是无序的，如果需要控制顺序，需要重写order接口，这点不做介绍。其次，我们完成了用户注册和其他服务的解耦，这也是事件驱动的最大特性之一，如果需要在用户注册时完成其他操作，只需要再添加相应的事件订阅者即可。
 

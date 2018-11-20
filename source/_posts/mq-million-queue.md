@@ -9,7 +9,7 @@ categories:
 
 维持了 20 天的复赛终于告一段落了，国际惯例先说结果，复赛结果不太理想，一度从第 10 名掉到了最后的第 36 名，主要是写入的优化卡了 5 天，一直没有进展，最终排名也是定格在了排行榜的第二页。痛定思痛，这篇文章将自己复赛中学习的知识，成功的优化，未成功的优化都罗列一下。
 
-![最终排名](http://ov0zuistv.bkt.clouddn.com/image-20180713165417073.png)
+![最终排名](http://kirito.iocoder.cn/image-20180713165417073.png)
 
 <!-- more -->
 
@@ -91,17 +91,17 @@ public void test1() throws Exception {
 
 如上的代码呈现了一个最简单的 Mmap 使用方式，速度也是没话说，一个字：快！我怀着将信将疑的态度去找了更多的佐证，优秀的源码总是第一参考对象，观察下 RocketMQ 的设计，可以发现 NIO 和 Mmap 都出现在了源码中，但更多的读写操作似乎更加青睐 Mmap。RocketMQ 源码 `org.apache.rocketmq.store.MappedFile`  中两种写方法同时存在，请教 @匠心零度 后大概得出结论：RocketMQ 主要的写是通过 Mmap 来完成。
 
-![两种写入方式](http://ov0zuistv.bkt.clouddn.com/image-20180714165922905.png)
+![两种写入方式](http://kirito.iocoder.cn/image-20180714165922905.png)
 
 但是在实际使用 Mmap 来作为写方案时遇到了两大难题，单纯从使用角度来看，暴露出了 Mmap 的局限性：
 
 1. Mmap 在 Java 中一次只能映射 1.5~2G 的文件内存，但实际上我们的数据文件大于 100g，这带来了第一个问题：要么需要对文件做物理拆分，切分成多文件；要么需要对文件映射做逻辑拆分，大文件分段映射。RocketMQ 中限制了单文件大小来避免这个问题。
 
-![文件做物理拆分](http://ov0zuistv.bkt.clouddn.com/image-20180714170826926.png)
+![文件做物理拆分](http://kirito.iocoder.cn/image-20180714170826926.png)
 
 2. Mmap 之所以快，是因为借助了内存来加速，mappedByteBuffer 的 put 行为实际是对内存进行的操作，实际的刷盘行为依赖于操作系统的定时刷盘或者手动调用 mappedByteBuffer.force() 接口来刷盘，否则将会导致机器卡死（实测后的结论）。由于复赛的环境下内存十分有限，所以使用 Mmap 存在较难的控制问题。
 
-![rocketmq存在定时force线程](http://ov0zuistv.bkt.clouddn.com/image-20180714175418301.png)
+![rocketmq存在定时force线程](http://kirito.iocoder.cn/image-20180714175418301.png)
 
 经过这么一折腾，再加上资料的搜集，最终确定，**Mmap 在内存较为富足并且数据量小的场景下存在优势**（大多数文章的结论认为 Mmap 适合大文件的读写，私以为是不严谨的结论）。
 
@@ -109,7 +109,7 @@ public void test1() throws Exception {
 
 由于每个消息只有 58 字节左右，直接通过 FileChannel 写入一定会遇到瓶颈，事实上，如果你这么做，复赛连成绩估计都跑不出来。另一个说法是 ssd 最小的写入单位是 4k，如果一次写入低于 4k，实际上耗时和 4k 一样。这里涉及到了赛题的一个重要考点：块读写。
 
-![云盘ssd写入性能](http://ov0zuistv.bkt.clouddn.com/image-20180714180739936.png)
+![云盘ssd写入性能](http://kirito.iocoder.cn/image-20180714180739936.png)
 
 根据阿里云的 ssd 云盘介绍，只有一次写入 16kb ~ 64kb 才能获得理想的 IOPS。文件系统块存储的特性，启发我们需要设置一个内存的写入缓冲区，单个消息写入内存缓冲区，缓冲区满，使用 FileChannel 进行刷盘。经过实践，使用 FileChannel 搭配缓冲区发挥的写入性能和内存充足情况下的 Mmap 并无区别，并且 FileChannel 对文件大小并无限制，控制也相对简单，所以最终确定使用 FileChannel 进行读写。
 
@@ -122,11 +122,11 @@ public void test1() throws Exception {
 
 由于赛题规定消息体是非定长的，大多数消息 58 字节，少量消息 1k 字节的数据特性，所以存储消息体时使用 short+byte[] 的结构即可，short 记录消息的实际长度，byte[] 记录完整的消息体。short 比 int 少了 2 个字节，2*20亿消息，可以减少 4g 的数据量。
 
-![稠密索引](http://ov0zuistv.bkt.clouddn.com/image-20180714194249525.png)
+![稠密索引](http://kirito.iocoder.cn/image-20180714194249525.png)
 
 稠密索引是对全量的消息进行索引，适用于无序消息，索引量大，数据可以按条存取。
 
-![稀疏索引](http://ov0zuistv.bkt.clouddn.com/image-20180714194347125.png)
+![稀疏索引](http://kirito.iocoder.cn/image-20180714194347125.png)
 
 稀疏索引适用于按块存储的消息，块内有序，适用于有序消息，索引量小，数据按照块进行存取。
 
@@ -162,17 +162,17 @@ public void put(String queueName,byte[] message){
 
 写入流程：
 
-![put流程](http://ov0zuistv.bkt.clouddn.com/put%E6%B5%81%E7%A8%8B.png)
+![put流程](http://kirito.iocoder.cn/put%E6%B5%81%E7%A8%8B.png)
 
 读取流程：
 
-![读取流程](http://ov0zuistv.bkt.clouddn.com/%E8%AF%BB%E5%8F%96%E6%B5%81%E7%A8%8B.png)
+![读取流程](http://kirito.iocoder.cn/%E8%AF%BB%E5%8F%96%E6%B5%81%E7%A8%8B.png)
 
 ### 内存读缓存优化
 
 方案设计经过好几次的推翻重来，才算是确定了上述的架构，这样的架构优势在于非常简单明了，实际上我的第一版设计方案的代码量是上述方案代码量的 2~3 倍，但实际效果却不理想。上述架构的跑分成绩大概可以达到 70~80w TPS，只能算作是第三梯队的成绩，在此基础上，进行了读取缓存的优化才达到了 126w 的 TPS。在介绍读取缓存优化之前，先容我介绍下 PageCache 的概念。
 
-![PageCache](http://ov0zuistv.bkt.clouddn.com/1364556742_9652.gif)
+![PageCache](http://kirito.iocoder.cn/1364556742_9652.gif)
 
 Linux 内核会将它最近访问过的文件页面缓存在内存中一段时间，这个文件缓存被称为 PageCache。如上图所示。一般的 read() 操作发生在应用程序提供的缓冲区与 PageCache 之间。而预读算法则负责填充这个PageCache。应用程序的读缓存一般都比较小，比如文件拷贝命令 cp 的读写粒度就是 4KB；内核的预读算法则会以它认为更合适的大小进行预读  I/O，比如 16-128KB。
 
@@ -180,7 +180,7 @@ Linux 内核会将它最近访问过的文件页面缓存在内存中一段时�
 
 回到题目，这简直 nice 啊，因为在磁盘中同一个队列的数据是部分连续（同一个块则连续），实际上一个 4KB 块中大概可以存储 70 多个数据，而在顺序消费阶段，一次的 offset 一般为 10，有了 PageCache 的预读机制，7 次文件 IO 可以减少为 1 次！这可是不得了的优化，但是上述的架构仅仅只有 70~80w 的 TPS，这让我产生了疑惑，经过多番查找资料，最终在 @江学磊 的提醒下，才定位到了问题。
 
-![linux io](http://ov0zuistv.bkt.clouddn.com/linux-io.png)
+![linux io](http://kirito.iocoder.cn/linux-io.png)
 
 两种可能导致比赛中无法使用 pageCache 来做缓存
 
@@ -191,7 +191,7 @@ Linux 内核会将它最近访问过的文件页面缓存在内存中一段时�
 
 一个队列一个读缓冲区用于顺序读，又要使得 get 阶段不存在并发问题，所以我选择了复用读缓冲区，并且给 get 操作加上了队列级别的锁，这算是一个小的牺牲，因为 2 阶段不会发生冲突，3 阶段冲突概率也并不大。改造后的读取缓存方案如下：
 
-![读取流程-优化](http://ov0zuistv.bkt.clouddn.com/%E8%AF%BB%E5%8F%96%E6%B5%81%E7%A8%8B-%E4%BC%98%E5%8C%96%20%281%29.png)
+![读取流程-优化](http://kirito.iocoder.cn/%E8%AF%BB%E5%8F%96%E6%B5%81%E7%A8%8B-%E4%BC%98%E5%8C%96%20%281%29.png)
 
 经过缓存改造之后，使用 Direct IO 也可以实现类似于 PageCache 的优化，并且会更加的可控，不至于造成频繁的缺页中断。经过这个优化，加上一些 gc 的优化，可以达到 126w TPS。整体方案算是介绍完毕。
 
@@ -233,5 +233,5 @@ gc 优化，能用数组的地方不要用 List。尽量减少小对象的出现
 
 **欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 

@@ -192,19 +192,19 @@ public class Application {
 
 访问首页`http://localhost:8080/`:
 
-![home.html](http://ov0zuistv.bkt.clouddn.com/home.png)
+![home.html](http://kirito.iocoder.cn/home.png)
 
 点击here，尝试访问受限的页面：`/hello`,由于未登录，结果被强制跳转到登录也`/login`：
 
-![login.html](http://ov0zuistv.bkt.clouddn.com/login.png)
+![login.html](http://kirito.iocoder.cn/login.png)
 
 输入正确的用户名和密码之后，跳转到之前想要访问的`/hello`:
 
-![hello.html](http://ov0zuistv.bkt.clouddn.com/hello.png)
+![hello.html](http://kirito.iocoder.cn/hello.png)
 
 点击Sign out退出按钮，访问:`/logout`,回到登录页面:
 
-![logout.html](http://ov0zuistv.bkt.clouddn.com/logout.png)
+![logout.html](http://kirito.iocoder.cn/logout.png)
 
 ### 2.6 总结
 
@@ -214,4 +214,4 @@ public class Application {
 
 **欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

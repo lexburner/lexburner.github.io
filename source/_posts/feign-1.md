@@ -84,7 +84,7 @@ Host: localhost:8080
 
 而实际上，RestController并没有接收到，我们在RestController一侧的应用中获得了一些提示：
 
-![服务端DEBUG信息](http://ov0zuistv.bkt.clouddn.com/feignlog.png)
+![服务端DEBUG信息](http://kirito.iocoder.cn/feignlog.png)
 
 - 并没有按照期望使用GET方式发送请求，而是POST方式
 - name参数没有被封装，获得了一个null值

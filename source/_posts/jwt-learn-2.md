@@ -30,37 +30,37 @@ type: 2
 
 首先，服务器应用（下面简称“应用”）让用户通过Web表单将自己的用户名和密码发送到服务器的接口。这一过程一般是一个HTTP POST请求。建议的方式是通过SSL加密的传输（https协议），从而避免敏感信息被嗅探。
 
-![auth1](http://ov0zuistv.bkt.clouddn.com/jwtauth1.png)
+![auth1](http://kirito.iocoder.cn/jwtauth1.png)
 
 接下来，应用和数据库核对用户名和密码。
 
-![auth2](http://ov0zuistv.bkt.clouddn.com/jwtauth2.png)
+![auth2](http://kirito.iocoder.cn/jwtauth2.png)
 
 核对用户名和密码成功后，应用将用户的`id`（图中的`user_id`）作为JWT Payload的一个属性，将其与头部分别进行Base64编码拼接后签名，形成一个JWT。这里的JWT就是一个形同`lll.zzz.xxx`的字符串。
 
-![auth3](http://ov0zuistv.bkt.clouddn.com/jwtauth3.png)
+![auth3](http://kirito.iocoder.cn/jwtauth3.png)
 
 应用将JWT字符串作为该请求Cookie的一部分返回给用户。注意，在这里必须使用`HttpOnly`属性来防止Cookie被JavaScript读取，从而避免[跨站脚本攻击（XSS攻击）](http://www.cnblogs.com/bangerlee/archive/2013/04/06/3002142.html)。
 
-![auth4](http://ov0zuistv.bkt.clouddn.com/jwtauth4.png)
+![auth4](http://kirito.iocoder.cn/jwtauth4.png)
 
 在Cookie失效或者被删除前，用户每次访问应用，应用都会接受到含有`jwt`的Cookie。从而应用就可以将JWT从请求中提取出来。
 
-![auth5](http://ov0zuistv.bkt.clouddn.com/jwtauth5.png)
+![auth5](http://kirito.iocoder.cn/jwtauth5.png)
 
 应用通过一系列任务检查JWT的有效性。例如，检查签名是否正确；检查Token是否过期；检查Token的接收方是否是自己（可选）。
 
-![auth6](http://ov0zuistv.bkt.clouddn.com/jwtauth6.png)
+![auth6](http://kirito.iocoder.cn/jwtauth6.png)
 
 应用在确认JWT有效之后，JWT进行Base64解码（可能在上一步中已经完成），然后在Payload中读取用户的id值，也就是`user_id`属性。这里用户的`id`为1025。
 
 应用从数据库取到`id`为1025的用户的信息，加载到内存中，进行ORM之类的一系列底层逻辑初始化。
 
-![auth7](http://ov0zuistv.bkt.clouddn.com/jwtauth7.png)
+![auth7](http://kirito.iocoder.cn/jwtauth7.png)
 
 应用根据用户请求进行响应。
 
-![auth8](http://ov0zuistv.bkt.clouddn.com/jwtauth8.png)
+![auth8](http://kirito.iocoder.cn/jwtauth8.png)
 
 ### 和Session方式存储id的差异
 
@@ -91,4 +91,4 @@ Set-Cookie: jwt=lll.zzz.xxx; HttpOnly; max-age=980000; domain=.taobao.com
 
 **欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

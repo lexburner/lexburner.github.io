@@ -34,7 +34,7 @@ security:
 
 测试登录点沿用上一篇文章的端点，访问`http://localhost:8080/test/cookie?browser=chrome`端点后会出现http basic的认证框，我们输入admin/admin，即可获得结果，也遇到了第一个坑点，我们会发现每次请求，sessionId都会被刷新，这显然不是我们想要的结果。
 
-![诡异的运行结果](http://ov0zuistv.bkt.clouddn.com/QQ%E5%9B%BE%E7%89%8720170904212709.png)
+![诡异的运行结果](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720170904212709.png)
 
 这个现象笔者研究了不少源码，但并没有得到非常满意的解释，只能理解为SecurityAutoConfiguration提供的默认配置，没有触发到响应的配置，导致了session的不断刷新（如果读者有合理的解释可以和我沟通）。Spring Session之所以能够替换默认的tomcat httpSession是因为配置了`springSessionRepositoryFilter`这个过滤器，且提供了非常高的优先级，这归功于`AbstractSecurityWebApplicationInitializer` ，`AbstractHttpSessionApplicationInitializer` 这两个初始化器，当然，也保证了Spring Session会在Spring Security之前起作用。
 
@@ -113,7 +113,7 @@ public class CookieController {
 
 由于一个用户可能拥有多个Session，所以返回的是一个Map信息，而这里的username，则就是与Spring Security集成之后的用户名，最令人感动Spring厉害的地方，是这一切都是自动配置好的。我们在内存中配置的用户的username是admin，于是我们访问这个端点,可以看到如下的结果
 
-![用户名访问session](http://ov0zuistv.bkt.clouddn.com/2.png)
+![用户名访问session](http://kirito.iocoder.cn/2.png)
 
 连同我们存入session中的browser=chrome，browser=360都可以看见（只有键名）。
 
@@ -123,4 +123,4 @@ Spring Session对各种场景下的Session管理提供一套非常完善的实�
 
 **欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
