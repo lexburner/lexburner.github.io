@@ -1,5 +1,5 @@
 ---
-title: 使用 URL 完成 Dubbo 的统一配置
+title: Dubbo 中的 URL 统一模型
 date: 2018-12-25 10:24:09
 tags:
 - DUBBO
@@ -19,6 +19,8 @@ categories:
 ```
 protocol://username:password@host:port/path?key=value&key=value
 ```
+
+<!-- more -->
 
 **一些典型 URL**
 
