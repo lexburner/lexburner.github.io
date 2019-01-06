@@ -30,7 +30,7 @@ categories:
 
 前面已经提到过，追求性能的时候，必然会选择使用长连接，所以借助 Dubbo 可以很好的来理解 TCP。我们开启两个 Dubbo 应用，一个 server 负责监听本地 20880（众所周知，这是 Dubbo 协议默认的端口），一个 client 负责循环发送请求。执行 `lsof -i:20880` 命令可以查看端口的相关使用情况：
 
-![image-20190106203341694](/Users/xujingfeng/Library/Application Support/typora-user-images/image-20190106203341694.png)
+![image-20190106203341694](http://kirito.iocoder.cn/image-20190106203341694.png)
 
 - `*:20880 (LISTEN)` 说明了 Dubbo 正在监听本地的 20880 端口，处理发送到本地 20880 端口的请求
 - 后两条信息说明请求的发送情况，验证了 TCP 是一个双向的通信过程，由于我是在同一个机器开启了两个 Dubbo 应用，所以你能够看到是本地的 53078 端口与 20880 端口在通信。我们并没有手动设置 53078 这个客户端端口，他是随机的，但也阐释了一个道理：即使是发送请求的一方，也需要占用一个端口。
@@ -109,11 +109,11 @@ if (channel instanceof Client) {
 
 除了定时任务的设计，还需要在协议层面支持心跳。最简单的例子可以参考 nginx 的健康检查，而针对 Dubbo 协议，自然也需要做心跳的支持，如果将心跳请求识别为正常流量，会造成服务端的压力问题，干扰限流等诸多问题。
 
-![img](http://dl2.iteye.com/upload/attachment/0127/0402/359310b9-b980-3254-aed6-78aa6c482e53.png)
+![dubbo protocol](http://kirito.iocoder.cn/359310b9-b980-3254-aed6-78aa6c482e53.png)
 
 其中 Flag 代表了 Dubbo 协议的标志位，一共 8 个地址位。低四位用来表示消息体数据用的序列化工具的类型（默认 hessian），高四位中，第一位为1表示是 request 请求，第二位为 1 表示双向传输（即有返回response），**第三位为 1 表示是心跳事件**。
 
-> 心跳请求应当和普通调用区别对待。
+> 心跳请求应当和普通请求区别对待。
 
 ### 注意和 HTTP 的 KeepAlive 区别对待
 
@@ -131,15 +131,11 @@ if (channel instanceof Client) {
    ```java
    java.io.IOException: Connection timed out
    ```
-
 2. EHOSTUNREACH host unreachable(主机不可达)错误，这个应该是 ICMP 汇报给上层应用的。
-
    ```java
    java.io.IOException: No route to host
    ```
-
 3. 链接被重置，终端可能崩溃死机重启之后，接收到来自服务器的报文，然物是人非，前朝往事，只能报以无奈重置宣告之。
-
    ```java
    java.io.IOException: Connection reset by peer
    ```
@@ -149,14 +145,11 @@ if (channel instanceof Client) {
 有三种使用 KeepAlive 的实践方案：
 
 1. 默认情况下使用 KeepAlive 周期为 2 个小时，如不选择更改，属于误用范畴，造成资源浪费：内核会为每一个连接都打开一个保活计时器，N 个连接会打开 N 个保活计时器。 优势很明显：
-
-- TCP 协议层面保活探测机制，系统内核完全替上层应用自动给做好了
-- 内核层面计时器相比上层应用，更为高效
-- 上层应用只需要处理数据收发、连接异常通知即可
-- 数据包将更为紧凑
-
+    - TCP 协议层面保活探测机制，系统内核完全替上层应用自动给做好了
+    - 内核层面计时器相比上层应用，更为高效
+    - 上层应用只需要处理数据收发、连接异常通知即可
+    - 数据包将更为紧凑
 2. 关闭 TCP 的 KeepAlive，完全使用应用层心跳保活机制。由应用掌管心跳，更灵活可控，比如可以在应用级别设置心跳周期，适配私有协议。
-
 3. 业务心跳 + TCP KeepAlive 一起使用，互相作为补充，但 TCP 保活探测周期和应用的心跳周期要协调，以互补方可，不能够差距过大，否则将达不到设想的效果。
 
 各个框架的设计都有所不同，例如 Dubbo 使用的是方案三，但阿里内部的 HSF 框架则没有设置 TCP 的 KeepAlive，仅仅由应用心跳保活。和心跳策略一样，这和框架整体的设计相关。
