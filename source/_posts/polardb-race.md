@@ -270,3 +270,7 @@ try (final AffinityLock al2 = AffinityLock.acquireLock()) {
 说回 FileChannel，MMAP，最容易想到的是 RocketMQ 之中对两者灵活的运用，不知道在其他 Java 实现的存储引擎之中，是不是可以考虑使用 Direct IO 来提升存储引擎的性能呢？我们可以设想一下，利用有限并且少量的 PageCache 来保证一致性，在主流程中使用 Direct IO 配合顺序读写是不是一种可以配套使用的方案，不仅仅 PolarDB，算作是参加本次比赛给予我的一个启发。
 
 虽然无缘决赛，但使用 Java 取得这样的成绩还算不是特别难过，在 6400w 数据随机写，随机读，顺序读的场景下，Java 可以做到仅仅相差 C++ 不到 10s 的 overhead，我倒是觉得完全是可以接受的，哈哈。还有一些小的优化点就不在此赘述了，欢迎留言与我交流优化点和比赛感悟。
+
+**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+
+![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
