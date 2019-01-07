@@ -67,7 +67,7 @@ public class NettyServer extends AbstractServer implements Server {
 在 Netty 中开启 KeepAlive：
 
 ```java
-bootstrap.option(ChannelOption.TCP_NODELAY, true)
+bootstrap.option(ChannelOption.SO_KEEPALIVE, true)
 ```
 
 Linux 操作系统中设置 KeepAlive 相关参数，修改 `/etc/sysctl.conf` 文件：
