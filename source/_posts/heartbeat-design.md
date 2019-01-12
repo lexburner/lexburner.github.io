@@ -35,7 +35,7 @@ Dubbo 在通信层是异步的，呈现给使用者同步的错觉是因为内�
 一个常见的设计是：客户端发起一个 RPC 请求，会设置一个超时时间 `client_timeout`，发起调用的同时，客户端会开启一个延迟 `client_timeout` 的定时器
 
 - 接收到正常响应时，移除该定时器。
-- 定时器倒计时完毕，还没有被取消，则任务请求超时，构造一个失败的响应传递给客户端。
+- 定时器倒计时完毕，还没有被移除，则认为请求超时，构造一个失败的响应传递给客户端。
 
 Dubbo 中的超时判定逻辑：
 
@@ -76,13 +76,13 @@ private static class TimeoutCheckTask implements TimerTask {
 
 #### 心跳检测需要容错
 
-网络通信永远要考虑到最坏的情况，一次心跳失败，不能认定为是连接不通，多次心跳失败，我们才能采取相应的措施。
+网络通信永远要考虑到最坏的情况，一次心跳失败，不能认定为连接不通，多次心跳失败，才能采取相应的措施。
 
 #### 心跳检测不需要忙检测
 
 忙检测的对立面是空闲检测，我们做心跳的初衷，是为了保证连接的可用性，以保证及时采取断连，重连等措施。如果一条通道上有频繁的 RPC 调用正在进行，我们不应该为通道增加负担去发送心跳包。**心跳扮演的角色应当是晴天收伞，雨天送伞。**
 
-###Dubbo
+### Dubbo
 
 > 本文的源码对应 Dubbo  2.7.x 版本，在 apache 孵化的该版本中，心跳机制得到了增强。
 
@@ -112,7 +112,7 @@ public class HeaderExchangeClient implements ExchangeClient {
 
 <1> 默认开启心跳检测的定时器
 
-<2> 创建了一个 `HashWheelTimer` 开启心跳检测，这是 Netty 所提供的一个经典的时间轮定时器实现，至于它和 jdk 的实现有何不同，不了解的同学也可以关注下，我就不扯了。
+<2> 创建了一个 `HashWheelTimer` 开启心跳检测，这是 Netty 所提供的一个经典的时间轮定时器实现，至于它和 jdk 的实现有何不同，不了解的同学也可以关注下，我就拓展了。
 
 不仅 `HeaderExchangeClient` 客户端开起了定时器，`HeaderExchangeServer` 服务端同样开起了定时器，由于服务端的逻辑和客户端几乎一致，所以后续我并不会重复粘贴服务端的代码。
 
@@ -185,7 +185,7 @@ protected void doTask(Channel channel) {
 }
 ```
 
-第二个定时器则负责根据客户端、服务端类型来对连接坐不同的处理，当超过设置的心跳总时间之后，客户端选择的是重新连接，服务端则是选择直接断开连接。这样的考虑是合理的，客户端调用是强依赖可用的连接的，而服务端可以等待客户端重新建立连接。
+第二个定时器则负责根据客户端、服务端类型来对连接坐不同的处理，当超过设置的心跳总时间之后，客户端选择的是重新连接，服务端则是选择直接断开连接。这样的考虑是合理的，客户端调用是强依赖可用连接的，而服务端可以等待客户端重新建立连接。
 
 > 细心的朋友会发现，这个类被命名为 ReconnectTimerTask 是不太准确的，因为它处理的是重连和断连两个逻辑。
 
@@ -208,14 +208,14 @@ long heartbeatTick = calculateLeastDuration(heartbeat);
 long heartbeatTimeoutTick = calculateLeastDuration(heartbeatTimeout);
 ```
 
-其中 `calculateLeastDuration` 根据心跳时间和超时时间分别计算出了一个 tick 时间，实际上就是将 两个变量除以了 3，将他们的值缩小，并传入了 HashWeelTimer 的第二个参数之中
+其中 `calculateLeastDuration` 根据心跳时间和超时时间分别计算出了一个 tick 时间，实际上就是将两个变量除以了 3，使得他们的值缩小，并传入了 `HashWeelTimer` 的第二个参数之中
 
 ```java
 heartbeatTimer.newTimeout(heartBeatTimerTask, heartbeatTick, TimeUnit.MILLISECONDS);
 heartbeatTimer.newTimeout(reconnectTimerTask, heartbeatTimeoutTick, TimeUnit.MILLISECONDS);
 ```
 
-tick 的含义便是定时任务执行的频率。这样，通过减少检测间隔时间，增大了及时发现死链的概率，原来的最坏情况是 60s，如今变成了 20s。
+tick 的含义便是定时任务执行的频率。这样，通过减少检测间隔时间，增大了及时发现死链的概率，原先的最坏情况是 60s，如今变成了 20s。这个频率依旧可以加快，但需要考虑资源消耗的问题。
 
 > 定时不准确的问题出现在 Dubbo 的两个定时任务之中，所以都做了 tick 操作。事实上，所有的定时检测的逻辑都存在类似的问题。
 
