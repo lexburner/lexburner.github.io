@@ -220,7 +220,7 @@ Doing some work
 
 **Backpressure（回压）** 描述了 pipeline 中的一种场景：某些异步阶段的处理速度跟不上，需要告诉上游生产者放慢速度。直接失败是不能接受的，这会导致大量数据的丢失。
 
-![backpressure.jpg](http://ov0zuistv.bkt.clouddn.com/backpressure.jpg)
+![backpressure.jpg](http://kirito.iocoder.cn/backpressure.jpg)
 
 **Stream & Optional** - 不支持回压，因为它们是拉模型。
 
@@ -246,15 +246,15 @@ Doing some work
 
 **Macro-fusion** - 用一个操作替换 2 个或更多的相继的操作
 
-![macro-fusion_.png](http://ov0zuistv.bkt.clouddn.com/7fec27a062235dff88ef1d56ee2ce483.png)
+![macro-fusion_.png](http://kirito.iocoder.cn/7fec27a062235dff88ef1d56ee2ce483.png)
 
 **Micro-fusion** - 一个输出队列的结束操作，和在一个输入队列的开始操作，能够共享一个队列的实例。比如说，与其调用 `request(1)` 然后处理 onNext()`：
 
-![micro-fusion-1_1.png](http://ov0zuistv.bkt.clouddn.com/6d4b0b357777b8caa2f87283027206ff.png)
+![micro-fusion-1_1.png](http://kirito.iocoder.cn/6d4b0b357777b8caa2f87283027206ff.png)
 
 不然让订阅者直接从父 `observable` 拉取值。
 
-![micro-fusion-2.png](http://ov0zuistv.bkt.clouddn.com/fac526768bed14d11933464646eb6471.png)
+![micro-fusion-2.png](http://kirito.iocoder.cn/fac526768bed14d11933464646eb6471.png)
 
 更多信息可以参考 [Part1](http://akarnokd.blogspot.com/2016/03/operator-fusion-part-1.html) 和 [Part2](http://akarnokd.blogspot.com/2016/04/operator-fusion-part-2-final.html)
 
@@ -262,7 +262,7 @@ Doing some work
 
 一图胜千言
 
-![2018-04-12_20-38-07.png](http://ov0zuistv.bkt.clouddn.com/5a57f2b1b694cc0f41320763a0cb1c0a.png)
+![2018-04-12_20-38-07.png](http://kirito.iocoder.cn/5a57f2b1b694cc0f41320763a0cb1c0a.png)
 
 `Stream`，`CompletableFuture` 和 `Optional` 这些类的创建，都是为了解决特定的问题。 并且他们非常适合用于解决这些问题。 如果它们满足你的需求，你可以立马使用它们。
 
@@ -272,4 +272,4 @@ Doing some work
 
 **欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://ov0zuistv.bkt.clouddn.com/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

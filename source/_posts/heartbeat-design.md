@@ -86,7 +86,7 @@ private static class TimeoutCheckTask implements TimerTask {
 
 > 本文的源码对应 Dubbo  2.7.x 版本，在 apache 孵化的该版本中，心跳机制得到了增强。
 
-介绍完了一些基础的概念，我们便来看看 Dubbo 是如何设计应用层心跳的。Dubbo 的心跳是双向心跳，客户端会给服务端发送心跳，反之，服务端也会向客户端发送心跳。
+介绍完了一些基础的概念，我们再来看看 Dubbo 是如何设计应用层心跳的。Dubbo 的心跳是双向心跳，客户端会给服务端发送心跳，反之，服务端也会向客户端发送心跳。
 
 #### 3.1 连接建立时创建定时器
 
@@ -112,11 +112,11 @@ public class HeaderExchangeClient implements ExchangeClient {
 
 <1> **默认开启心跳检测的定时器**
 
-<2> **创建了一个 `HashWheelTimer` 开启心跳检测**，这是 Netty 所提供的一个经典的时间轮定时器实现，至于它和 jdk 的实现有何不同，不了解的同学也可以关注下，我就拓展了。
+<2> **创建了一个 `HashedWheelTimer` 开启心跳检测**，这是 Netty 所提供的一个经典的时间轮定时器实现，至于它和 jdk 的实现有何不同，不了解的同学也可以关注下，我就拓展了。
 
 不仅 `HeaderExchangeClient` 客户端开起了定时器，`HeaderExchangeServer` 服务端同样开起了定时器，由于服务端的逻辑和客户端几乎一致，所以后续我并不会重复粘贴服务端的代码。
 
-> Dubbo 在早期版本版本中使用的是 shedule 方案，在 2.7.x 中替换成了 HashWheelTimer。
+> Dubbo 在早期版本版本中使用的是 schedule 方案，在 2.7.x 中替换成了 HashWheelTimer。
 
 #### 3.2 开启两个定时任务
 
@@ -160,7 +160,7 @@ protected void doTask(Channel channel) {
 }
 ```
 
-前面已经介绍过，**Dubbo 采取的是设计是双向心跳**，即服务端会向客户端发送心跳，客户端也会向服务端发送心跳，接收的一方更新 lastRead 字段，发送的一方更新 lastWrite 字段，超过心跳间隙的时间，便发送心跳请求给对端。这里的 lastRead/lastWrite 同样会被同一个通道上的普通调用更新，通过更新这两个字段，实现了只在连接空闲时才会真正发送空闲报文的机制，符合我们一开始科普的做法。
+前面已经介绍过，**Dubbo 采取的是是双向心跳设计**，即服务端会向客户端发送心跳，客户端也会向服务端发送心跳，接收的一方更新 lastRead 字段，发送的一方更新 lastWrite 字段，超过心跳间隙的时间，便发送心跳请求给对端。这里的 lastRead/lastWrite 同样会被同一个通道上的普通调用更新，通过更新这两个字段，实现了只在连接空闲时才会真正发送空闲报文的机制，符合我们一开始科普的做法。
 
 > 注意：不仅仅心跳请求会更新 lastRead 和 lastWrite，普通请求也会。这对应了我们预备知识中的空闲检测机制。
 
@@ -205,7 +205,7 @@ long heartbeatTick = calculateLeastDuration(heartbeat);
 long heartbeatTimeoutTick = calculateLeastDuration(heartbeatTimeout);
 ```
 
-其中 `calculateLeastDuration` 根据心跳时间和超时时间分别计算出了一个 tick 时间，实际上就是将两个变量除以了 3，使得他们的值缩小，并传入了 `HashWeelTimer` 的第二个参数之中
+其中 `calculateLeastDuration` 根据心跳时间和超时时间分别计算出了一个 tick 时间，实际上就是将两个变量除以了 3，使得他们的值缩小，并传入了 `HashedWheelTimer` 的第二个参数之中
 
 ```java
 heartbeatTimer.newTimeout(heartBeatTimerTask, heartbeatTick, TimeUnit.MILLISECONDS);
@@ -367,13 +367,13 @@ public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exc
 
 |                      |                        Dubbo 现有方案                        |                    Dubbo 改进方案                    |
 | :------------------: | :----------------------------------------------------------: | :--------------------------------------------------: |
-|     **主体设计**     |                        开启两个定时器                        |       借助 IdleStateHandler，底层使用 shedule        |
+|     **主体设计**     |                        开启两个定时器                        |       借助 IdleStateHandler，底层使用 schedule        |
 |     **心跳方向**     |                             双向                             |               单向（客户端 -> 服务端）               |
 | **心跳失败判定方式** | 心跳成功更新标记，借助定时器定时扫描标记，如果超过心跳超时周期未更新标记，认为心跳失败。 | 通过判断心跳响应是否失败，超过失败次数，认为心跳失败 |
 |      **扩展性**      | Dubbo 存在 mina，grizzy 等其他通信层实现，自定义定时器很容易适配多种扩展 |         多通信层各自实现心跳，不做心跳的抽象         |
 |      **设计性**      |          编码复杂度高，代码量大，方案复杂，不易维护          |                 编码量小，可维护性强                 |
 
-私下请教过**美团点评的长连接负责人：俞超（闪电侠）**，美点使用的心跳方案和 Dubbo 改进方案几乎一致，可以该方案是标准实现了。
+私下请教过**美团点评的长连接负责人：俞超（闪电侠）**，美点使用的心跳方案和 Dubbo 改进方案几乎一致，可以说该方案是标准实现了。
 
 ### 6 Dubbo 实际改动点建议
 
