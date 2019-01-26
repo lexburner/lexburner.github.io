@@ -60,7 +60,6 @@ comment:
     gitment:
         owner: lexburner
         repo: lexburner.github.io
-        #Register an OAuth application, and you will get a client ID and a client secret.
         client_id: d5fc3e1150477a0d433d
         client_secret: aa94acd5f130281051b9e703c19b4c6d878e90c4
     livere: # enter livere uid here
