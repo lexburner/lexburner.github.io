@@ -9,7 +9,7 @@ categories:
 
 ### 1 前言
 
-在开始正题之前，先闲聊几句。有人说，计算机科学这个学科，软件方向研究到头就是数学，硬件方向研究到头就是物理，最轻松的是中间这批使用者，可以不太懂物理，不太懂数学，依旧可以使用计算机作为自己谋生的工具。这个规律具有普适应，再看看“定时器”这个例子，往应用层研究，有 Quartz，Spring Schedule 等框架；往分布式研究，又有 SchedulerX，ElasticJob 等分布式任务调度；往底层实现研究，又有不同的定时器实现原理，工作效率，数据结构…简单上手使用一个框架，并不能体现出个人的水平，如何与他人构成区分度？我觉得至少要在某一个方向有所建树：
+在开始正题之前，先闲聊几句。有人说，计算机科学这个学科，软件方向研究到头就是数学，硬件方向研究到头就是物理，最轻松的是中间这批使用者，可以不太懂物理，不太懂数学，依旧可以使用计算机作为自己谋生的工具。这个规律具有普适应，看看“定时器”这个例子，往应用层研究，有 Quartz，Spring Schedule 等框架；往分布式研究，又有 SchedulerX，ElasticJob 等分布式任务调度；往底层实现看，又有多种定时器实现方案的原理、工作效率、数据结构可以深究…简单上手使用一个框架，并不能体现出个人的水平，如何与他人构成区分度？我觉得至少要在某一个方向有所建树：
 
 1. 深入研究某个现有框架的实现原理，例如：读源码
 2. 将一个传统技术在分布式领域很好地延伸，很多成熟的传统技术可能在单机 work well，但分布式场景需要很多额外的考虑。
@@ -28,16 +28,11 @@ categories:
 定时器像水和空气一般，普遍存在于各个场景中，一般定时任务的形式表现为：经过固定时间后触发、按照固定频率周期性触发、在某个时刻触发。定时器是什么？可以理解为这样一个数据结构：
 
 > 存储一系列的任务集合，并且 Deadline 越接近的任务，拥有越高的执行优先级
->
 > 在用户视角支持以下几种操作：
->
 > NewTask：将新任务加入任务集合
->
 > Cancel：取消某个任务
->
 > 在任务调度的视角还要支持：
->
-> Run：执行一个到底的定时任务
+> Run：执行一个到期的定时任务
 
 判断一个任务是否到期，基本会采用轮询的方式，**每隔一个时间片** 去检查 **最近的任务** 是否到期，并且，在 NewTask 和 Cancel 的行为发生之后，任务调度策略也会出现调整。
 
@@ -52,11 +47,8 @@ categories:
 在 Java 中，`LinkedList` 是一个天然的双向链表
 
 > NewTask：O(N) 
->
 > Cancel：O(1)
->
 > Run：O(1)
->
 > N：任务数
 
 NewTask O(N) 很容易理解，按照 expireTime 查找合适的位置即可；Cancel O(1) ，任务在 Cancel 时，会持有自己节点的引用，所以不需要查找其在链表中所在的位置，即可实现当前节点的删除，这也是为什么我们使用双向链表而不是普通链表的原因是 ；Run O(1)，由于整个双向链表是基于 expireTime 有序的，所以调度器只需要轮询第一个任务即可。
@@ -66,11 +58,8 @@ NewTask O(N) 很容易理解，按照 expireTime 查找合适的位置即可；C
 在 Java 中，`PriorityQueue` 是一个天然的堆，可以利用传入的 `Comparator` 来决定其中元素的优先级。
 
 > NewTask：O(logN) 
->
 > Cancel：O(logN)
->
 > Run：O(1)
->
 > N：任务数
 
 expireTime 是  `Comparator`  的对比参数。NewTask O(logN) 和 Cancel O(logN) 分别对应堆插入和删除元素的时间复杂度 ；Run O(1)，由 expireTime 形成的小根堆，我们总能在堆顶找到最快的即将过期的任务。
@@ -90,16 +79,12 @@ Netty 针对 I/O 超时调度的场景进行了优化，实现了 `HashedWheelTi
 再看图中的 bucket5，我们可以知道在 $1*8+5=13s$  后，有两个任务需要执行，在 $2*8+5=21s$ 后有一个任务需要执行。
 
 > NewTask：O(1) 
->
 > Cancel：O(1)
->
 > Run：O(M)
->
 > Tick：O(1)
->
 > M： bucket ，M ~ N/C ，其中 C 为单轮 bucket 数，Netty 中默认为 512 
 
-时间轮算法的复杂度可能表达有误，我个人觉得比较难算，仅供参考。另外，其复杂度还受到多个任务分配到同一个 bucket 的影响。并且多了一个转动指针的开销。
+时间轮算法的复杂度可能表达有误，比较难算，仅供参考。另外，其复杂度还受到多个任务分配到同一个 bucket 的影响。并且多了一个转动指针的开销。
 
 > 传统定时器是面向任务的，时间轮定时器是面向 bucket 的。
 
@@ -119,13 +104,9 @@ Kafka 针对时间轮算法进行了优化，实现了层级时间轮 `TimingWhe
 现在，每个任务除了要维护在当前轮盘的 `round`，还要计算在所有下级轮盘的`round`。当本层的`round`为0时，任务按下级 `round` 值被下放到下级轮子，最终在最底层的轮盘得到执行。
 
 > NewTask：O(H) 
->
 > Cancel：O(H)
->
 > Run：O(M)
->
 > Tick：O(1)
->
 > H：层级数量
 
 设想一下一个定时了 3 天，10 小时，50 分，30 秒的定时任务，在 tickDuration = 1s 的单层时间轮中，需要经过：$3*24*60*60+10*60*60+50*60+30$ 次指针的拨动才能被执行。但在 wheel1 tickDuration = 1 天，wheel2 tickDuration = 1 小时，wheel3 tickDuration = 1 分，wheel4 tickDuration = 1 秒 的四层时间轮中，只需要经过 $3+10+50+30$ 次指针的拨动！ 
@@ -158,14 +139,14 @@ public class Timer {
 }
 ```
 
-其中 TaskQueue 是使用数组实现的一个简易的堆，前面我们已经介绍过了堆这个数据结构的特点。另外一个值得注意的属性便是 `TimerThread`，一个 `Timer` 使用了唯一的线程负责了轮询和任务的执行。`Timer` 的优点在于简单易用，但也因为所有任务都是由同一个线程来调度，因此整个过程是串行执行的，同一时间只能有一个任务在执行，前一个任务的延迟或异常都将会影响到之后的任务。
+其中 TaskQueue 是使用数组实现的一个简易的堆。另外一个值得注意的属性是 `TimerThread`，`Timer` 使用唯一的线程负责轮询并执行任务。`Timer` 的优点在于简单易用，但也因为所有任务都是由同一个线程来调度，因此整个过程是串行执行的，同一时间只能有一个任务在执行，前一个任务的延迟或异常都将会影响到之后的任务。
 
 > 轮询时如果发现  currentTime < heapFirst.executionTime，可以 wait(executionTime - currentTime) 来减少不必要的轮询时间。这是普遍被使用的一个优化。
 
 1. `Timer` 只能被单线程调度
 2. `TimerTask` 中出现的异常会影响到 `Timer` 的执行。 
 
-出于这两个缺陷，JDK 1.5 支持了新的定时器方案 `ScheduledExecutorService`。
+由于这两个缺陷，JDK 1.5 支持了新的定时器方案 `ScheduledExecutorService`。
 
 #### 4.2 ScheduledExecutorService
 
@@ -180,7 +161,7 @@ service.scheduleA(new Runnable() {
 }, 1, TimeUnit.SECONDS);
 ```
 
-相比 `Timer`，`ScheduledExecutorService` 解决了同一个定时器调度多个任务的阻塞问题，并且任务的异常不会中断 `ScheduledExecutorService`。
+相比 `Timer`，`ScheduledExecutorService` 解决了同一个定时器调度多个任务的阻塞问题，并且任务异常不会中断 `ScheduledExecutorService`。
 
 `ScheduledExecutorService` 提供了两种常用的周期调度方法 ScheduleAtFixedRate 和 ScheduleWithFixedDelay。
 
@@ -190,7 +171,7 @@ ScheduleWithFixedDelay 每次执行时间为上一次任务结束起向后推一
 
 由此可见，ScheduleAtFixedRate 是基于固定时间间隔进行任务调度，ScheduleWithFixedDelay 取决于每次任务执行的时间长短，是基于不固定时间间隔的任务调度。
 
-`ScheduledExecutorService` 底层使用的数据结构为 `PriorityQueue`，任务调度方式较为常规，不做特别介绍了。
+`ScheduledExecutorService` 底层使用的数据结构为 `PriorityQueue`，任务调度方式较为常规，不做特别介绍。
 
 #### 4.3 HashedWheelTimer
 
@@ -205,14 +186,14 @@ timer.newTimeout(new TimerTask() {
 }, 1, TimeUnit.SECONDS);
 ```
 
-前面已经介绍过了 Netty 中 `HashedWheelTimer` 内部的数据结构，默认构造器会配置轮询周期为 100ms，bucket 数量为 512。其使用方法和 JDK 的使用方式也十分相同。
+前面已经介绍过了 Netty 中 `HashedWheelTimer` 内部的数据结构，默认构造器会配置轮询周期为 100ms，bucket 数量为 512。其使用方法和 JDK 的 `Timer` 十分相似。
 
 ```java
 private final Worker worker = new Worker();// Runnable
 private final Thread workerThread;// Thread
 ```
 
-由于篇幅限制，我并不打算做详细的源码分析，但上述两行来自 HashedWheelTimer 的代码告诉了我们一个事实：`HashedWheelTimer` 内部也同样是使用了单个线程来进行任务调度。他跟 JDK 的 `Timer` 一样，存在”前一个任务执行时间过长，影响后续定时任务执行的问题“。
+由于篇幅限制，我并不打算做详细的源码分析，但上述两行来自 `HashedWheelTimer` 的代码阐释了一个事实：`HashedWheelTimer` 内部也同样是使用单个线程进行任务调度。与  JDK 的 `Timer` 一样，存在”前一个任务执行时间过长，影响后续定时任务执行“的问题。
 
 > 理解 HashedWheelTimer 中的 ticksPerWheel，tickDuration，对二者进行合理的配置，可以使得用户在合适的场景得到最佳的性能。
 
@@ -220,19 +201,19 @@ private final Thread workerThread;// Thread
 
 #### 5.1 选择合适的定时器 
 
-毋庸置疑，JDK 的 `Timer` 使用的场景是最窄的，完全可以被后两者取代。如何在 `ScheduledExecutorService` 和 `HashedWheelTimer` 之间如何做选择，还是要区分场景来看待。
+毋庸置疑，JDK 的 `Timer` 使用的场景是最窄的，完全可以被后两者取代。如何在 `ScheduledExecutorService` 和 `HashedWheelTimer` 之间如何做选择，需要区分场景，做一个简单的对比：
 
-1. `ScheduledExecutorService` 是面向任务的，当任务数非常大时，使用堆(PriorityQueue)维护任务的新增、删除会造成性能的下降，而 `HashedWheelTimer` 是面向 bucket 的，设置合理的 ticksPerWheel，tickDuration ，可以不受任务量的限制。所以在任务量非常大时，`HashedWheelTimer` 可以表现出它的优势。
+1. `ScheduledExecutorService` 是面向任务的，当任务数非常大时，使用堆(PriorityQueue)维护任务的新增、删除会导致性能下降，而 `HashedWheelTimer` 面向 bucket，设置合理的 ticksPerWheel，tickDuration ，可以不受任务量的限制。所以在任务非常多时，`HashedWheelTimer` 可以表现出它的优势。
 2. 相反，如果任务量少，`HashedWheelTimer` 内部的 Worker 线程依旧会不停的拨动指针，虽然不是特别消耗性能，但至少不能说：`HashedWheelTimer` 一定比 `ScheduledExecutorService` 优秀。
-3. `HashedWheelTimer` 由于开辟了一个 bucket 数组，占用的内存也会稍大。
+3. `HashedWheelTimer` 由于开辟了一个 bucket 数组，占用的内存会稍大。
 
-上述的对比，让我们得到了一个最佳实践：在任务量非常大时，使用 `HashedWheelTimer` 可以获得性能的提升。例如服务治理框架中的心跳定时任务，当服务实例非常多时，每一个客户端都需要定时发送心跳，每一个服务端都需要定时检测连接状态，这是一个非常适合使用 `HashedWheelTimer`  的场景。
+上述的对比，让我们得到了一个最佳实践：在任务非常多时，使用 `HashedWheelTimer` 可以获得性能的提升。例如服务治理框架中的心跳定时任务，服务实例非常多时，每一个客户端都需要定时发送心跳，每一个服务端都需要定时检测连接状态，这是一个非常适合使用 `HashedWheelTimer`  的场景。
 
 #### 5.2 单线程与业务线程池
 
-我们需要注意`HashedWheelTimer` 使用的是单线程调度任务，如果任务比较耗时，应当设置一个业务线程池，将`HashedWheelTimer` 当做一个定时触发器，任务的实际执行，交给业务线程池。
+我们需要注意`HashedWheelTimer` 使用单线程来调度任务，如果任务比较耗时，应当设置一个业务线程池，将`HashedWheelTimer` 当做一个定时触发器，任务的实际执行，交给业务线程池。
 
-> 确保 taskNStartTime - taskN-1StartTime > taskN-1CostTime，则无需担心这个问题。
+> 如果所有的任务都满足： taskNStartTime - taskN-1StartTime > taskN-1CostTime，即任意两个任务的间隔时间小于先执行任务的执行时间，则无需担心这个问题。
 
 #### 5.3 全局定时器
 
@@ -244,13 +225,13 @@ ticksPerWheel，tickDuration 这两个参数尤为重要，ticksPerWheel 控制�
 
 #### 5.5 什么时候使用层级时间轮
 
-当时间跨度很大时，提升单层时间轮的 tickDuration 可以减少空转次数，但会导致时间精度变低，层级时间轮既可以避免精度降低，又避免了指针空转的次数。如果有长时间跨度的定时任务，则可以交给层级时间轮去调度。此外，也可以按照定时精度实例化多个不同作用的单层时间轮，dayHashedWheelTimer、hourHashedWheelTimer、minHashedWheelTimer，配置不同的 tickDuration，此法虽 low，但不失为一个解决方案。
+当时间跨度很大时，提升单层时间轮的 tickDuration 可以减少空转次数，但会导致时间精度变低，层级时间轮既可以避免精度降低，又避免了指针空转的次数。如果有时间跨度较长的定时任务，则可以交给层级时间轮去调度。此外，也可以按照定时精度实例化多个不同作用的单层时间轮，dayHashedWheelTimer、hourHashedWheelTimer、minHashedWheelTimer，配置不同的 tickDuration，此法虽 low，但不失为一个解决方案。Netty 设计的 `HashedWheelTimer` 是专门用来优化 I/O 调度的，场景较为局限，所以并没有实现层级时间轮；而在 Kafka 中定时器的适用范围则较广，所以其实现了层级时间轮，以应对更为复杂的场景。
 
 ### 6 参考资料
 
 [1] https://www.ibm.com/developerworks/cn/java/j-lo-taskschedule/index.html
 
-[2] http://novoland.github.io/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Timer%EF%BC%89%E7%9A%84%E5%AE%9E%E7%8E%B0.html
+[2] http://novoland.github.io/并发/2014/07/26/定时器（Timer）的实现.html
 
 [3] http://www.cs.columbia.edu/~nahum/w6998/papers/sosp87-timing-wheels.pdf
 
