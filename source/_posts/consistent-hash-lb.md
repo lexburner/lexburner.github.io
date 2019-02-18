@@ -218,9 +218,9 @@ public class LoadBalanceTest {
     public void testDistribution() {
         List<Server> servers = new ArrayList<>();
         for (String ip : ips) {
-            servers.add(new Server(ip));
+            servers.add(new Server(ip+":8080"));
         }
-        ConsistentHashLoadBalancer chloadBalance = new ConsistentHashLoadBalancer();
+        LoadBalancer chloadBalance = new ConsistentHashLoadBalancer();
         // 构造 10000 随机请求
         List<Invocation> invocations = new ArrayList<>();
         for (int i = 0; i < 10000; i++) {
@@ -228,10 +228,14 @@ public class LoadBalanceTest {
         }
         // 统计分布
         AtomicLongMap<Server> atomicLongMap = AtomicLongMap.create();
+        for (Server server : servers) {
+            atomicLongMap.put(server, 0);
+        }
         for (Invocation invocation : invocations) {
             Server selectedServer = chloadBalance.select(servers, invocation);
             atomicLongMap.getAndIncrement(selectedServer);
         }
+        System.out.println(StatisticsUtil.variance(atomicLongMap.asMap().values().toArray(new Long[]{})));
         System.out.println(StatisticsUtil.standardDeviation(atomicLongMap.asMap().values().toArray(new Long[]{})));
     }
 
@@ -408,15 +412,15 @@ public class MurmurHashStrategy implements HashStrategy {
 | ----------------------- | -------- | ------ | ------------ |
 | **JdkHashCodeStrategy** | 29574.08 | 171.97 | 0.6784       |
 | **CRCHashStrategy**     | 3013.02  | 54.89  | 0.7604       |
-| **FnvHashStrategy**     | 792.02   | 28.14  | 0.7892       |
-| **KetamaHashStrategy**  | 1147.08  | 33.86  | 0.80         |
-| **MurmurHashStrategy**  | 634.82   | 25.19  | 0.80         |
+| **FnvHashStrategy**     | 961.64   | 31.01  | 0.7892       |
+| **KetamaHashStrategy**  | 1254.64  | 35.42  | 0.7986       |
+| **MurmurHashStrategy**  | 815.72   | 28.56  | 0.7971       |
 
-其中方差和标准差反映了均匀情况，越低越好，可以发现 MurmurHashStrategy，KetamaHashStrategy，FnvHashStrategy 都表现的不错，其中 MurmurHashStrategy 最为优秀。
+其中方差和标准差反映了均匀情况，越低越好，可以发现 MurmurHashStrategy，KetamaHashStrategy，FnvHashStrategy 都表现的不错。
 
 不变流量比例体现了服务器上下线对原有请求的影响程度，不变流量比例越高越高，可以发现 KetamaHashStrategy 和 MurmurHashStrategy 表现最为优秀。
 
-我并没有对小集群，小流量进行测试，样本偏差性较大，仅从这个常见场景来看，MurmurHashStrategy 似乎是最优的选择。
+我并没有对小集群，小流量进行测试，样本偏差性较大，仅从这个常见场景来看，MurmurHashStrategy 是一个不错的选择，多次测试后发现 **FnvHashStrategy**，**KetamaHashStrategy**，**MurmurHashStrategy** 差距不是很大。
 
 至于性能测试，MurmurHash 也十分的高性能，我并没有做测试（感兴趣的同学可以对几种 strategy 用 JMH 测评一下）,这里我贴一下 MurmurHash 官方的测评数据：
 
@@ -535,6 +539,3 @@ public class KetamaConsistentHashLoadBalancer implements LoadBalancer {
 
 [memcached Java客户端spymemcached的一致性Hash算法](https://colobu.com/2015/04/13/consistent-hash-algorithm-in-java-memcached-client/)
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
-
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
