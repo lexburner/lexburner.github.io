@@ -20,7 +20,7 @@ customize:
         gravatar: # Gravatar email address, if you enable Gravatar, your avatar config will be overriden
         author: 徐靖峰
         author_title: software engineer
-        location: Nanking, China
+        location: 中国，杭州
         follow: https://github.com/lexburner
     highlight: monokai
     sidebar: right # sidebar position, options: left, right
