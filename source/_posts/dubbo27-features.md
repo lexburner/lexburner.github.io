@@ -7,13 +7,13 @@ categories:
 - RPC
 ---
 
-## 背景介绍
+## 1 背景介绍
 
 自 2017 年 7 月阿里重启 Dubbo 开源，到目前为止 github star 数，contributor 数都有了非常大的提升。2018 年 2 月 9 日阿里决定将 Dubbo 项目贡献给 Apache，经过一周的投票，顺利成为了 Apache 的孵化项目，也就是大家现在看到的 **Incubator Dubbo**。预计在 2019 年 4 月，Dubbo 可以达成毕业，成为 Apache 的顶级项目。
 
 <!-- more -->
 
-## 分支介绍
+## 2 分支介绍
 
 ![分支](http://kirito.iocoder.cn/image-20190321153455566.png)
 
@@ -26,7 +26,7 @@ Dubbo 目前有如图所示的 5 个分支，其中 2.7.1-release 只是一个�
 
 > 如果想要研究 Dubbo 的源码，建议直接浏览 master 分支。
 
-## Dubbo 2.7 新特性
+## 3 Dubbo 2.7 新特性
 
 Dubbo 2.7.x 作为 Apache 的孵化版本，除了代码优化之外，还新增了许多重磅的新特性，本文将会介绍其中最典型的三个新特性：
 
@@ -34,9 +34,9 @@ Dubbo 2.7.x 作为 Apache 的孵化版本，除了代码优化之外，还新增
 - 三大中心改造
 - 服务治理增强
 
-## 异步化改造
+## 4 异步化改造
 
-### 几种调用方式
+### 4.1 几种调用方式
 
 ![调用方式](http://kirito.iocoder.cn/image-20190321160844133.png)
 
@@ -48,61 +48,54 @@ sync 是最常用的通信方式，也是默认的通信方法。
 
 future 和 callback 都属于异步调用的范畴，他们的区别是：在接收响应时，future.get() 会导致线程的阻塞;callback 通常会设置一个回调线程，当接收到响应时，自动执行，不会对当前线程造成阻塞。
 
-### Dubbo 2.6 异步化
+### 4.2 Dubbo 2.6 异步化
 
 异步化的优势在于客户端不需要启动多线程即可完成并行调用多个远程服务，相对多线程开销较小。介绍 2.7 中的异步化改造之前，先回顾一下如何在 2.6 中使用 Dubbo 异步化的能力。
 
 1. 将同步接口声明成 `async=true`
-
-```xml
-<dubbo:reference id="asyncService" interface="org.apache.dubbo.demo.api.AsyncService" async="true"/>
-```
-
-```java
-public interface AsyncService {
-    String sayHello(String name);
-}
-```
-
+    ```xml
+    <dubbo:reference id="asyncService" interface="org.apache.dubbo.demo.api.AsyncService" async="true"/>
+    ```
+    ```java
+    public interface AsyncService {
+        String sayHello(String name);
+    }
+    ```
 2. 通过上下文类获取 future
-
-```java
-AsyncService.sayHello("Han Meimei");
-Future<String> fooFuture = RpcContext.getContext().getFuture();
-fooFuture.get();
-```
+    ```java
+    AsyncService.sayHello("Han Meimei");
+    Future<String> fooFuture = RpcContext.getContext().getFuture();
+    fooFuture.get();
+    ```
 
 可以看出，这样的使用方式，不太符合异步编程的习惯，竟然需要从一个上下文类中获取到 Future。如果同时进行多个异步调用，使用不当很容易造成上下文污染。而且，Future 并不支持 callback 的调用方式。这些弊端在 Dubbo 2.7 中得到了改进。
 
-### Dubbo 2.7 异步化
+### 4.3 Dubbo 2.7 异步化
 
 1. 无需配置中特殊声明，显示声明异步接口即可
-
-```java
-public interface AsyncService {
-    String sayHello(String name);
-    default CompletableFuture<String> sayHiAsync(String name) {
-        return CompletableFuture.completedFuture(sayHello(name));
+    ```java
+    public interface AsyncService {
+        String sayHello(String name);
+        default CompletableFuture<String> sayHiAsync(String name) {
+            return CompletableFuture.completedFuture(sayHello(name));
+        }
     }
-}
-```
-
+    ```
 2. 使用 callback 方式处理返回值
-
-```java
-CompletableFuture<String> future = asyncService.sayHiAsync("Han MeiMei");
-future.whenComplete((retValue, exception) -> {
-    if (exception == null) {
-        System.out.println(retValue);
-    } else {
-        exception.printStackTrace();
-    }
-});
-```
+    ```java
+    CompletableFuture<String> future = asyncService.sayHiAsync("Han MeiMei");
+    future.whenComplete((retValue, exception) -> {
+        if (exception == null) {
+            System.out.println(retValue);
+        } else {
+            exception.printStackTrace();
+        }
+    });
+    ```
 
 Dubbo 2.7 中使用了 JDK1.8 提供的 `CompletableFuture` 原生接口对自身的异步化做了改进。`CompletableFuture` 可以支持 future 和 callback 两种调用方式，用户可以根据自己的喜好和场景选择使用，非常灵活。
 
-### 异步化设计 FAQ
+### 4.4 异步化设计 FAQ
 
 Q：如果 RPC 接口只定义了同步接口，有办法使用异步调用吗？
 
@@ -120,13 +113,13 @@ Q：Dubbo 分为了客户端异步和服务端异步，刚刚你介绍的是客�
 
 A：Dubbo 2.7 新增了服务端异步的支持，但实际上，Dubbo 的业务线程池模型，本身就可以理解为异步调用，个人认为服务端异步的特性较为鸡肋。
 
-##三大中心改造
+## 5 三大中心改造
 
 三大中心指的：注册中心，元数据中心，配置中心。
 
 在 2.7 之前的版本，Dubbo 只配备了注册中心，主流使用的注册中心为 zookeeper。新增加了元数据中心和配置中心，自然是为了解决对应的痛点，下面我们来详细阐释三大中心改造的原因。
 
-### 元数据改造
+### 5.1 元数据改造
 
 元数据是什么？元数据定义为描述数据的数据，在服务治理中，例如服务接口名，重试次数，版本号等等都可以理解为元数据。在 2.7 之前，元数据一股脑丢在了注册中心之中，这造成了一系列的问题：
 
@@ -142,7 +135,7 @@ A：Dubbo 2.7 新增了服务端异步的支持，但实际上，Dubbo 的业务
 <dubbo:metadata-report address="zookeeper://127.0.0.1:2181"/>
 ```
 
-### Dubbo 2.6 元数据 
+### 5.2 Dubbo 2.6 元数据 
 
 ```shell
 dubbo://30.5.120.185:20880/com.alibaba.dubbo.demo.DemoService?
@@ -163,7 +156,7 @@ timestamp=1552965771067
 
 从本地的 zookeeper 中取出一条服务数据，通过解码之后，可以看出，的确有很多参数是不必要。
 
-### Dubbo 2.7 元数据
+### 5.3 Dubbo 2.7 元数据
 
 在 2.7 中，如果不进行额外的配置，zookeeper 中的数据格式仍然会和 Dubbo 2.6 保持一致，这主要是为了保证兼容性，让 Dubbo 2.6 的客户端可以调用 Dubbo 2.7 的服务端。如果整体迁移到 2.7，则可以为注册中心开启简化配置的参数：
 
@@ -187,7 +180,7 @@ timestamp=1552975501873
 
 > 元数据中心的数据可以被用于服务测试，服务 MOCK 等功能。目前注册中心配置中 simplified 的默认值为 false，因为考虑到了迁移的兼容问题，在后续迭代中，默认值将会改为 true。
 
-### 配置中心支持
+### 5.4 配置中心支持
 
 衡量配置中心的必要性往往从三个角度出发：
 
@@ -215,7 +208,7 @@ Spring Cloud Config, Apollo, Nacos 等分布式配置中心组件都对上述功
 
 ![配置覆盖优先级](http://kirito.iocoder.cn/configuration.jpg)
 
-## 服务治理增强
+## 6 服务治理增强
 
 我更倾向于将 Dubbo 当做一个服务治理框架，而不仅仅是一个 RPC 框架。在 2.7 中，Dubbo 对其服务治理能力进行了增强，增加了标签路由的能力，并抽象出了应用路由和服务路由的概念。在最后一个特性介绍中，着重对标签路由 TagRouter 进行探讨。
 
@@ -235,7 +228,7 @@ Spring Cloud Config, Apollo, Nacos 等分布式配置中心组件都对上述功
 
 Dubbo 用户可以在自己系统的基础上对标签路由进行二次扩展，或者借鉴标签路由的设计，实现自己系统的流量隔离，灰度发布。
 
-## 总结
+## 7 总结
 
 本文介绍了 Dubbo 2.7 比较重要的三大新特性：异步化改造，三大中心改造，服务治理增强。Dubbo 2.7 还包含了很多功能优化、特性升级，可以在项目源码的 [CHANGES.md](https://github.com/apache/incubator-dubbo/blob/master/CHANGES.md) 中浏览全部的改动点。最后提供一份 Dubbo 2.7 的升级文档：[2.7迁移文档](http://dubbo.incubator.apache.org/zh-cn/docs/user/versions/version-270.html)，欢迎体验。
 
