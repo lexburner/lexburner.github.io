@@ -11,11 +11,13 @@ categories:
 
 我曾经写过一篇和本文标题类似的文章《研究优雅停机时的一点思考》，上文和本文都有一个共同点：网卡地址注册和优雅停机都是一个很小的知识点，但是背后牵扯到的知识点却是庞大的体系，我在写这类文章前基本也和大多数读者一样，处于“知道有这么个东西，但不了解细节”的阶段，但一旦深挖，会感受到其中的奇妙，并有机会接触到很多平时不太关注的知识点。
 
-另外，我还想介绍一个叫做”元阅读“的技巧，可能这个词是我自己造的，也有人称之为”超视角阅读“。其内涵指的是，普通读者从我的文章中学到的是某个知识点，而元阅读者从我的文章中可能会额外关注，我是如何掌握某个知识点的，在一个知识点的学习过程中我关注了哪些知识点相关的点，又是如何将他们联系在一起，最终形成一个体系的。这篇文章就是一个典型的例子，我会对一些点进行发散，大家可以尝试着跟我一起来思考”网卡地址注册“这个问题。
+另外，我还想介绍一个叫做”元阅读“的技巧，可能这个词是我自己造的，也有人称之为”超视角阅读“。其内涵指的是，普通读者从我的文章中学到的是某个知识点，而元阅读者从我的文章中可能会额外关注，我是如何掌握某个知识点的，在一个知识点的学习过程中我关注了哪些相关的知识点，又是如何将它们联系在一起，最终形成一个体系的。这篇文章就是一个典型的例子，我会对一些点进行发散，大家可以尝试着跟我一起来思考”网卡地址注册“这个问题。
+
+<!-- more -->
 
 ## 1 如何选择合适的网卡地址
 
-可能相当一部分人还不知道我这篇文章到底要讲什么，我说个场景，大家应该就明晰了。在分布式服务调用过程中以 Dubbo 为例，服务提供者往往需要将自身的 IP 地址上报给注册中心，供消费者去发现。在大多数情况下 Dubbo 都可以正常工作，但你如果留意过 Dubbo 的 github issue，其实有不少人反馈：Dubbo Provider 注册了错误的 IP。如果你能立刻联想到：多网卡、内外网地址共存、VPN、虚拟网卡等关键词，那我建议你一定要继续将本文看下去，因为我也想到了这些，它们都是本文所要探讨的东西！那么“如何选择合适的网卡地址”呢？Dubbo 现有的逻辑到底算不算完备？是否有改进措施？我们不急着回答它，而是带着这些问题一起来进行研究，相信到文末，其中答案，各位看官自有评说。
+可能相当一部分人还不知道我这篇文章到底要讲什么，我说个场景，大家应该就明晰了。在分布式服务调用过程中，以 Dubbo 为例，服务提供者往往需要将自身的 IP 地址上报给注册中心，供消费者去发现。在大多数情况下 Dubbo 都可以正常工作，但如果你留意过 Dubbo 的 github issue，其实有不少人反馈：Dubbo Provider 注册了错误的 IP。如果你能立刻联想到：多网卡、内外网地址共存、VPN、虚拟网卡等关键词，那我建议你一定要继续将本文看下去，因为我也想到了这些，它们都是本文所要探讨的东西！那么“如何选择合适的网卡地址”呢，Dubbo 现有的逻辑到底算不算完备？我们不急着回答它，而是带着这些问题一起进行研究，相信到文末，其中答案，各位看官自有评说。
 
 ## 2 Dubbo 是怎么做的
 
@@ -51,7 +53,7 @@ private static InetAddress getLocalAddress0() {
 }
 ```
 
-Dubbo 这段获取 localhost 的逻辑大致分成了两步
+Dubbo 这段选取本地地址的逻辑大致分成了两步
 
 1. 先去 /etc/hosts 文件中找 hostname 对应的 IP 地址，找到则返回；找不到则转 2
 2. 轮询网卡，寻找合适的 IP 地址，找到则返回；找不到返回 null，再 getLocalAddress0 外侧还有一段逻辑，如果返回 null，则注册 127.0.0.1 这个本地回环地址
@@ -145,7 +147,7 @@ static boolean isValidV4Address(InetAddress address) {
 
 如果上述地址获取为 null 则进入轮询网卡的逻辑（例如 hosts 未指定 hostname 的映射或者 hostname 配置成了 127.0.0.1 之类的地址便会导致获取到空的网卡地址），轮询网卡对应的源码是 `NetworkInterface.getNetworkInterfaces()` ，这里面涉及的知识点就比较多了，支撑起了我写这篇文章的素材，Dubbo 的逻辑并不复杂，进行简单的校验，返回第一个可用的 IP 即可。
 
-性子急的读者可能忍不住了，多网卡！合适的网卡可能不止一个，Dubbo 怎么应对呢？按道理说，我们也替 Dubbo 说句公道话，客官要不你自己指定下？我们首先对于多网卡的场景达成一致看法，咱们才能继续把这篇文章完成下去：我们只能**尽可能**过滤那些“**不对**”的网卡。Dubbo 看样子对所有网卡是一视同仁了，我们是不是可以尝试优化一下其中的逻辑呢？
+性子急的读者可能忍不住了，多网卡！合适的网卡可能不止一个，Dubbo 怎么应对呢？按道理说，我们也替 Dubbo 说句公道话，客官要不你自己指定下？我们首先得对多网卡的场景达成一致看法，才能继续把这篇文章完成下去：我们只能**尽可能**过滤那些“**不对**”的网卡。Dubbo 看样子对所有网卡是一视同仁了，那么是不是可以尝试优化一下其中的逻辑呢？
 
 许多开源的服务治理框架在 stackoverflow 或者其 issue 中，注册错 IP 相关的问题都十分高频，大多数都是轮询网卡出了问题。既然事情发展到这儿，势必需要了解一些网络、网卡的知识，我们才能过滤掉那些明显不适合 RPC 服务注册的 IP 地址了。
 
@@ -386,7 +388,7 @@ tun0      Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
 
 ## 7 MAC 下的差异
 
-虽然 ifconfig 等指令是 *nux 通用的，但是其展示信息，网卡相关的属性和命名都有较大的差异。例如这是我 MAC 下执行 `ifconfig -a` 的返回：
+虽然 ifconfig 等指令是 `*nux` 通用的，但是其展示信息，网卡相关的属性和命名都有较大的差异。例如这是我 MAC 下执行 `ifconfig -a` 的返回：
 
 ```shell
 xujingfengdeMacBook-Pro:dubbo-in-action xujingfeng$ ifconfig -a
@@ -475,14 +477,17 @@ utun1: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1380
 >
 > `p2p0` is related to AWDL features. Either as an old version, or virtual interface with different semantics than `awdl`.
 >
-> - the "Network" panel in System Preferences to see what network devices "exist" or "can exist" with current configuration.
-> - many VPNs will add additional devices, often "utun#" or "utap#" following [TUN/TAP (L3/L2)](https://en.wikipedia.org/wiki/TUN/TAP)virtual networking devices.
-> - use `netstat -nr` to see how traffic is currently routed via network devices according to destination.
-> - interface naming conventions started in BSD were retained in OS X / macOS, and now there also additions.
+> the "Network" panel in System Preferences to see what network devices "exist" or "can exist" with current configuration.
+>
+> many VPNs will add additional devices, often "utun#" or "utap#" following [TUN/TAP (L3/L2)](https://en.wikipedia.org/wiki/TUN/TAP)virtual networking devices.
+>
+> use `netstat -nr` to see how traffic is currently routed via network devices according to destination.
+>
+> interface naming conventions started in BSD were retained in OS X / macOS, and now there also additions.
 
 ## 8 Dubbo 改进建议
 
-我们进行了以上探索，算是对网卡有了一点了解了。回过头来看看 Dubbo 的获取网卡的逻辑，是否可以做出改进呢？
+我们进行了以上探索，算是对网卡有一点了解了。回过头来看看 Dubbo 获取网卡的逻辑，是否可以做出改进呢？
 
 **Dubbo Action 1:** 
 
