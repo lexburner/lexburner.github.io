@@ -15,6 +15,8 @@ RSocket 是一个支持 reactive-stream 语义的开源网络通信协议，它�
 
 Dubbo 在 [3.0.0-SNAPSHOT](https://github.com/apache/incubator-Dubbo/tree/3.x-dev) 版本里基于 RSocket 对响应式编程提供了支持，用户可以在请求参数和返回值里使用 Mono 和 Flux 类型的对象。下面我们给出使用范例，源码可以在文末获取。
 
+<!--more-->
+
 ## Dubbo RSocket 初体验
 
 ### 服务接口
