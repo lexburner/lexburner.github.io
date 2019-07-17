@@ -1,5 +1,5 @@
 ---
-title: IDEA 插件推荐: Cloud Toolkit 测评
+title: IDEA 插件推荐：Cloud Toolkit 测评
 date: 2019-06-27 19:19:41
 tags:
 - Cloud Toolkit
@@ -12,6 +12,8 @@ categories:
 [Cloud Toolkit](https://cn.aliyun.com/product/cloudtoolkit) 是一款 IDE 插件，帮助开发者更高效地开发、测试、诊断并部署应用。开发者能够方便地将本地应用一键部署到任意机器，或 ECS、EDAS、Kubernetes；并内置 Arthas 诊断、高效执行终端命令和 SQL 等。
 
 对这款产品最直观的感受：这是一款发布工具，帮助用户在 IDE 中直接打包应用并部署到各种终端。原本看到其产品介绍位于阿里云的页面中，以为是一款和阿里云服务强绑定的产品，但试用过后发现，即使对于普通的云主机，其也非常适用，可以解决很多开发运维的痛点，非阿里云用户可以放心使用。
+
+<!-- more -->
 
 ## 在 Cloud Toolkit 出现之前
 
