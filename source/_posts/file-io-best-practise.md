@@ -155,7 +155,7 @@ private static ByteBuffer viewed(ByteBuffer buffer) {
 
 对的，你没看错，这么长的代码仅仅是为了干回收 MappedByteBuffer 这一件事。
 
-所以我建议，优先使用 FileChannel 去完成初始代码的提交，在必须使用小数据量(例如几个字节)刷盘的场景下，再换成 MMAP 的实现，其他场景 FileChannel 完全可以 cover(前提是你理解怎么合理使用 FileChannel)。至于 MMAP 为什么在一次写入少量数据的场景下表现的比 FileChannel 优异，我还没有查到理论根据，如果你有相关的线索，欢迎留言。理论分析下，FileChannel 同样是写入内存，但比 MMAP 多了一次内核缓冲区与用户空间互相复制的过程，所以在极端场景下，MMAP 表现的更加优秀。至于 MMAP 分配的虚拟内存是否就是真正的 PageCache 这一点，我觉得可以近似理解成 PageCache。
+所以我建议，优先使用 FileChannel 去完成初始代码的提交，在必须使用小数据量(例如几个字节)刷盘的场景下，再换成 MMAP 的实现，其他场景 FileChannel 完全可以 cover(前提是你理解怎么合理使用 FileChannel)。至于 MMAP 为什么在一次写入少量数据的场景下表现的比 FileChannel 优异，我还没有查到理论根据，如果你有相关的线索，欢迎留言。理论分析下，FileChannel 同样是写入内存，但是在写入小数据量时，MMAP 表现的更加优秀，所以在索引数据落盘时，大多数情况应该选择使用 MMAP。至于 MMAP 分配的虚拟内存是否就是真正的 PageCache 这一点，我觉得可以近似理解成 PageCache。
 
 ### 顺序读比随机读快，顺序写比随机写快
 
@@ -199,7 +199,7 @@ public synchronized void write(byte[] data){
 
 时序2：thread3 write position[8194~12288)
 
-时序2：thread2 write position[4096~8194)
+时序3：thread2 write position[4096~8194)
 
 所以并不是完全的“顺序写”。不过你也别担心加锁会导致性能下降，我们会在下面的小结介绍一个优化：通过文件分片来减少多线程读写时锁的冲突。
 
@@ -236,13 +236,13 @@ public synchronized void write(byte[] data){
 |   **底层实现**   |                        数组，JVM 内存                        |           unsafe.allocateMemory(size)返回直接内存            |
 | **分配大小限制** | -Xms-Xmx 配置的 JVM 内存相关，并且数组的大小有限制，在做测试时发现，当 JVM free memory 大于 1.5G 时，ByteBuffer.allocate(900M) 时会报错 | 可以通过 -XX:MaxDirectMemorySize 参数从 JVM 层面去限制，同时受到机器虚拟内存（说物理内存不太准确）的限制 |
 |   **垃圾回收**   |                           不必多说                           | 当 DirectByteBuffer 不再被使用时，会出发内部 cleaner 的钩子，保险起见，可以考虑手动回收：((DirectBuffer) buffer).cleaner().clean(); |
-|   **拷贝方式**   |                       用户态<->内核态                        |                            内核态                            |
+|   **内存复制**   |              堆内内存 -> 堆外内存 -> pageCache               |                    堆外内存 -> pageCache                     |
 
 关于堆内内存和堆外内存的一些最佳实践：
 
 1. 当需要申请大块的内存时，堆内内存会受到限制，只能分配堆外内存。
 2. 堆外内存适用于生命周期中等或较长的对象。( 如果是生命周期较短的对象，在 YGC 的时候就被回收了，就不存在大内存且生命周期较长的对象在 FGC 对应用造成的性能影响 )。
-3. 直接的文件拷贝操作，或者 I/O 操作。直接使用堆外内存就能少去内存从用户内存拷贝到系统内存的消耗
+3. 堆内内存刷盘的过程中，还需要复制一份到堆外内存，这部分内容可以在 FileChannel 的实现源码中看到细节，至于 Jdk 为什么需要这么做，可以参考我的另外一篇文章：[《一文探讨堆外内存的监控与回收》](https://www.cnkirito.moe/nio-buffer-recycle/)
 4. 同时，还可以使用池+堆外内存 的组合方式，来对生命周期较短，但涉及到 I/O 操作的对象进行堆外内存的再使用( Netty中就使用了该方式 )。在比赛中，尽量不要出现在频繁 `new byte[]` ，创建内存区域再回收也是一笔不小的开销，使用 `ThreadLocal<ByteBuffer>`  和 `ThreadLocal<byte[]>` 往往会给你带来意外的惊喜~
 5. 创建堆外内存的消耗要大于创建堆内内存的消耗，所以当分配了堆外内存之后，尽可能复用它。
 
