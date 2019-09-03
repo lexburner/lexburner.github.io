@@ -2,9 +2,9 @@
 title: PolarDB数据库性能大赛Java选手分享
 date: 2018-12-10 18:43:56
 tags:
-- PolarDB性能挑战赛
-categories:
 - 数据库
+categories:
+- 性能挑战赛
 ---
 
 ### 1 前言
