@@ -15,11 +15,15 @@ categories:
 
 ### 2 Random
 
-Random 这个类是 JDK 提供的用来生成随机数的一个类，这个类并不是真正的随机，而是伪随机，伪随机的意思是生成的随机数其实是有一定规律的，而这个规律出现的周期随着伪随机算法的优劣而不同，一般来说周期比较长，但是可以预测。通过下面的代码我们可以对 Random 进行简单的使用: ![img](https://user-gold-cdn.xitu.io/2018/8/28/165808ef9aa120a4?w=875&h=325&f=png&s=48454&ynotemdtimestamp=1536657462341)
+Random 这个类是 JDK 提供的用来生成随机数的一个类，这个类并不是真正的随机，而是伪随机，伪随机的意思是生成的随机数其实是有一定规律的，而这个规律出现的周期随着伪随机算法的优劣而不同，一般来说周期比较长，但是可以预测。通过下面的代码我们可以对 Random 进行简单的使用: 
+
+![img](http://kirito.iocoder.cn/648.jpeg)
 
 #### Random原理
 
-Random 中的方法比较多，这里就针对比较常见的 nextInt() 和 nextInt(int bound) 方法进行分析，前者会计算出 int 范围内的随机数，后者如果我们传入 10，那么他会求出 [0,10) 之间的 int 类型的随机数，左闭右开。我们首先看一下 Random() 的构造方法: ![img](https://user-gold-cdn.xitu.io/2018/8/29/165839a7af1b2bf4?w=1175&h=1065&f=png&s=208341&ynotemdtimestamp=1536657462341)
+Random 中的方法比较多，这里就针对比较常见的 nextInt() 和 nextInt(int bound) 方法进行分析，前者会计算出 int 范围内的随机数，后者如果我们传入 10，那么他会求出 [0,10) 之间的 int 类型的随机数，左闭右开。我们首先看一下 Random() 的构造方法:
+
+ ![img](http://kirito.iocoder.cn/20190906173929.jpg)
 
 可以发现在构造方法当中，根据当前时间的种子生成了一个 AtomicLong 类型的 seed，这也是我们后续的关键所在。
 
@@ -27,17 +31,17 @@ Random 中的方法比较多，这里就针对比较常见的 nextInt() 和 next
 
 nextInt() 的代码如下所示：
 
- ![img](https://user-gold-cdn.xitu.io/2018/8/29/165835e5dc06e0b0?w=455&h=253&f=png&s=17651&ynotemdtimestamp=1536657462341)
+ ![img](http://kirito.iocoder.cn/642.png)
 
 这个里面直接调用的是 next() 方法，传入的 32，代指的是 Int 类型的位数。
 
-![img](https://user-gold-cdn.xitu.io/2018/8/29/16583a202542c345?w=1117&h=565&f=png&s=109411&ynotemdtimestamp=1536657462341)
+![img](http://kirito.iocoder.cn/643.jpeg)
 
 这里会根据 seed 当前的值，通过一定的规则(伪随机算法)算出下一个 seed，然后进行 CAS，如果 CAS 失败则继续循环上面的操作。最后根据我们需要的 bit 位数来进行返回。核心便是 CAS 算法。
 
 #### nextInt(int bound)
 
-nextInt(int bound) 的代码如下所示：![img](https://user-gold-cdn.xitu.io/2018/8/29/16583af1dc803706?w=1086&h=772&f=png&s=120184&ynotemdtimestamp=1536657462341)
+nextInt(int bound) 的代码如下所示：![img](http://kirito.iocoder.cn/644.jpeg)
 
 这个流程比 nextInt() 多了几步，具体步骤如下:
 
@@ -61,7 +65,9 @@ ThreadLocalRandom.current().nextInt(10);
 
 在 current 方法中有:
 
-![img](https://user-gold-cdn.xitu.io/2018/8/29/16583ef88efdeb38?w=1115&h=623&f=png&s=133206&ynotemdtimestamp=1536657462341)可以看见如果没有初始化会对其进行初始化，而这里我们的 seed 不再是一个全局变量，在我们的Thread中有三个变量: ![img](https://user-gold-cdn.xitu.io/2018/8/29/16584270d8e58e00?w=1309&h=610&f=png&s=117360&ynotemdtimestamp=1536657462341)
+![img](http://kirito.iocoder.cn/645.jpeg)可以看见如果没有初始化会对其进行初始化，而这里我们的 seed 不再是一个全局变量，在我们的Thread中有三个变量: 
+
+![img](http://kirito.iocoder.cn/646.jpeg)
 
 - threadLocalRandomSeed：ThreadLocalRandom 使用它来控制随机数种子。
 - threadLocalRandomProbe：ThreadLocalRandom 使用它来控制初始化。
@@ -71,7 +77,7 @@ ThreadLocalRandom.current().nextInt(10);
 
 在 nextInt() 方法当中代码如下:
 
-![img](https://user-gold-cdn.xitu.io/2018/8/29/165846e544b493ae?w=1089&h=457&f=png&s=72760&ynotemdtimestamp=1536657462341)
+![img](http://kirito.iocoder.cn/647.jpeg)
 
 我们的关键代码如下:
 
