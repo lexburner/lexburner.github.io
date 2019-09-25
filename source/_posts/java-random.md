@@ -27,7 +27,7 @@ Random 中的方法比较多，这里就针对比较常见的 nextInt() 和 next
 
 可以发现在构造方法当中，根据当前时间的种子生成了一个 AtomicLong 类型的 seed，这也是我们后续的关键所在。
 
-####nextInt()
+### nextInt()
 
 nextInt() 的代码如下所示：
 
@@ -39,7 +39,7 @@ nextInt() 的代码如下所示：
 
 这里会根据 seed 当前的值，通过一定的规则(伪随机算法)算出下一个 seed，然后进行 CAS，如果 CAS 失败则继续循环上面的操作。最后根据我们需要的 bit 位数来进行返回。核心便是 CAS 算法。
 
-#### nextInt(int bound)
+### nextInt(int bound)
 
 nextInt(int bound) 的代码如下所示：![img](http://kirito.iocoder.cn/644.jpeg)
 
