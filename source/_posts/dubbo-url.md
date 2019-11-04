@@ -14,7 +14,7 @@ categories:
 > 因特网上的可用资源可以用简单字符串来表示，该文档就是描述了这种字符串的语法和语
 > 义。而这些字符串则被称为：“统一资源定位器”（URL）
 
-**一个标准的 URL 格式**至多可以包含如下的几个部分
+** 一个标准的 URL 格式 ** 至多可以包含如下的几个部分
 
 ```
 protocol://username:password@host:port/path?key=value&key=value
@@ -22,7 +22,7 @@ protocol://username:password@host:port/path?key=value&key=value
 
 <!-- more -->
 
-**一些典型 URL**
+** 一些典型 URL**
 
 ```
 http://www.facebook.com/friends?param1=value1&amp;param2=value2
@@ -30,7 +30,7 @@ https://username:password@10.20.130.230:8080/list?version=1.0.0
 ftp://username:password@192.168.1.7:21/1/read.txt
 ```
 
-当然，也有一些**不太符合常规的 URL**，也被归类到了 URL 之中
+当然，也有一些 ** 不太符合常规的 URL**，也被归类到了 URL 之中
 
 ```
 192.168.1.3:20880
@@ -60,15 +60,15 @@ url protocol = null, url host = home, url path = user1/router.js
 在 dubbo 中，也使用了类似的 URL，主要用于在各个扩展点之间传递数据，组成此 URL 对象的具体参数如下:
 
 - protocol：一般是 dubbo 中的各种协议 如：dubbo thrift http zk 
-- username/password：用户名/密码
-- host/port：主机/端口
+- username/password：用户名 / 密码
+- host/port：主机 / 端口
 - path：接口名称
 - parameters：参数键值对
 
 ```java
 public URL(String protocol, String username, String password, String host, int port, String path, Map<String, String> parameters) {
    if ((username == null || username.length() == 0) 
-         && password != null && password.length() > 0) {
+         && password != null && password.length()> 0) {
       throw new IllegalArgumentException("Invalid url, password without username!");
    }
    this.protocol = protocol;
@@ -92,7 +92,7 @@ public URL(String protocol, String username, String password, String host, int p
 
 可以看出，dubbo 认为 protocol，username，passwored，host，port，path 是主要的 URL 参数，其他键值对村房子啊 parameters 之中。
 
-**一些典型的 Dubbo URL**
+** 一些典型的 Dubbo URL**
 
 ```
 dubbo://192.168.1.6:20880/moe.cnkirito.sample.HelloService?timeout=3000
@@ -125,7 +125,7 @@ consumer://30.5.120.217/org.apache.dubbo.demo.DemoService?application=demo-consu
 
 在没有注册中心，直接暴露提供者的情况下，`ServiceConfig` 解析出的 URL 的格式为：`dubbo://service-host/com.foo.FooService?version=1.0.0`。
 
-基于扩展点自适应机制，通过 URL 的 `dubbo://` 协议头识别，直接调用 `DubboProtocol`的 `export()` 方法，打开服务端口。
+基于扩展点自适应机制，通过 URL 的 `dubbo://` 协议头识别，直接调用 `DubboProtocol` 的 `export()` 方法，打开服务端口。
 
 **2. 向注册中心暴露服务：**
 
@@ -155,7 +155,7 @@ consumer://30.5.120.217/org.apache.dubbo.demo.DemoService?application=demo-consu
 
 ### URL 统一模型的意义
 
-对于 dubbo 中的 URL，有人理解为配置总线，有人理解为统一配置模型，说法虽然不同，但都是在表达一个意思，这样的 URL 在 dubbo 中被当做是[公共契约](http://dubbo.incubator.apache.org/zh-cn/docs/dev/contract.html)，所有扩展点参数都包含 URL 参数，URL 作为上下文信息贯穿整个扩展点设计体系。
+对于 dubbo 中的 URL，有人理解为配置总线，有人理解为统一配置模型，说法虽然不同，但都是在表达一个意思，这样的 URL 在 dubbo 中被当做是 [公共契约](http://dubbo.incubator.apache.org/zh-cn/docs/dev/contract.html)，所有扩展点参数都包含 URL 参数，URL 作为上下文信息贯穿整个扩展点设计体系。
 
 在没有 URL 之前，只能以字符串传递参数，不停的解析和拼装，导致相同类型的接口，参数时而 Map, 时而 Parameters 类包装：
 
@@ -174,7 +174,7 @@ createExporter(URL url)
 在最新的 dubbo 代码中，我们可以看到大量使用 URL 来进行上下文之间信息的传递，这样的好处是显而易见的：
 
 1. 使得代码编写者和阅读者能够将一系列的参数联系起来，进而形成规范，使得代码易写，易读。
-2. 可扩展性强，URL 相当于参数的集合(相当于一个 Map)，他所表达的含义比单个参数更丰富，当我们在扩展代码时，可以将新的参数追加到 URL 之中，而不需要改变入参，返参的结构。
+2. 可扩展性强，URL 相当于参数的集合 (相当于一个 Map)，他所表达的含义比单个参数更丰富，当我们在扩展代码时，可以将新的参数追加到 URL 之中，而不需要改变入参，返参的结构。
 3. 统一模型，它位于 org.apache.dubbo.common 包中，各个扩展模块都可以使用它作为参数的表达形式，简化了概念，降低了代码的理解成本。
 
 如果你能够理解 final 契约和 restful 契约，那我相信你会很好地理解 URL 契约。契约的好处我还是啰嗦一句：大家都这么做，就形成了默契，沟通是一件很麻烦的事，统一 URL 模型可以省去很多沟通成本，这边是 URL 统一模型存在的意义。

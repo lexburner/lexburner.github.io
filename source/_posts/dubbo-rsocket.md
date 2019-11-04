@@ -1,5 +1,5 @@
 ---
-title: 【Dubbo3.0新特性】集成RSocket,新增响应式支持
+title: 【Dubbo3.0 新特性】集成 RSocket, 新增响应式支持
 date: 2019-04-11 19:19:41
 tags:
 - Dubbo
@@ -9,7 +9,7 @@ categories:
 
 ## 响应式编程
 
-响应式编程现在是现在一个很热的话题。响应式编程让开发者更方便地编写高性能的异步代码，关于响应式编程更详细的信息可以参考 http://reactivex.io/ 。很可惜，在之前很长一段时间里，Dubbo 并不支持响应式编程，简单来说，Dubbo 不支持在 rpc 调用时，使用 Mono/Flux 这种流对象（reactive-stream 中流的概念)，给用户使用带来了不便。
+响应式编程现在是现在一个很热的话题。响应式编程让开发者更方便地编写高性能的异步代码，关于响应式编程更详细的信息可以参考 http://reactivex.io/ 。很可惜，在之前很长一段时间里，Dubbo 并不支持响应式编程，简单来说，Dubbo 不支持在 rpc 调用时，使用 Mono/Flux 这种流对象（reactive-stream 中流的概念 )，给用户使用带来了不便。
 
 RSocket 是一个支持 reactive-stream 语义的开源网络通信协议，它将 reactive 语义的复杂逻辑封装了起来，使得上层可以方便实现网络程序。RSocket 详细资料：http://rsocket.io/。
 
@@ -178,7 +178,7 @@ public class RsocketConsumer {
 
 ## 实现原理
 
-以前用户并不能在参数或者返回值里使用 Mono/Flux 这种流对象（reactive-stream里的流的概念）。因为流对象自带异步属性，当业务把流对象作为参数或者返回值传递给框架之后，框架并不能将流对象正确的进行序列化。
+以前用户并不能在参数或者返回值里使用 Mono/Flux 这种流对象（reactive-stream 里的流的概念）。因为流对象自带异步属性，当业务把流对象作为参数或者返回值传递给框架之后，框架并不能将流对象正确的进行序列化。
 
 Dubbo 基于 RSocket 提供了 reactive 支持。RSocket 将 reactive 语义的复杂逻辑封装起来了，给上层提供了简洁的抽象如下：
 ```Java
@@ -198,7 +198,7 @@ Flux<Payload> requestChannel(Publisher<Payload> payloads);
 
 ## 结语
 
-Dubbo 2.7 相比 Dubbo 2.6 提供了 CompletableFuture 的异步化支持，在 Dubbo 3.0 又继续拥抱了 Reactive，不断对新特性的探索，无疑是增加了使用者的信心。RSocket 这一框架/协议，如今在国内外也是比较火的一个概念，它提供了丰富的 Reactive 语义以及多语言的支持，使得服务治理框架可以很快地借助它实现 Reactive 语义。有了响应式编程支持，业务可以更加方便的实现异步逻辑。
+Dubbo 2.7 相比 Dubbo 2.6 提供了 CompletableFuture 的异步化支持，在 Dubbo 3.0 又继续拥抱了 Reactive，不断对新特性的探索，无疑是增加了使用者的信心。RSocket 这一框架 / 协议，如今在国内外也是比较火的一个概念，它提供了丰富的 Reactive 语义以及多语言的支持，使得服务治理框架可以很快地借助它实现 Reactive 语义。有了响应式编程支持，业务可以更加方便的实现异步逻辑。
 
 本篇文章对 Dubbo RSocket 进行了一个简单的介绍，对 Reactive、RSocket 感兴趣的同学也可以浏览下 Dubbo 3.0 源码对 RSocket 的封装。
 

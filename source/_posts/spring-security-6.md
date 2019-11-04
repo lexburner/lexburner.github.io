@@ -57,7 +57,7 @@ java.lang.IllegalArgumentException: There is no PasswordEncoder mapped for the i
 
 > modern hardware perform billions of hash calculations a second.
 
-考虑到大多数用户使用的密码多为数字+字母+特殊符号的组合，攻击者将常用的密码进行枚举，甚至通过排列组合来暴力破解，这被称为 rainbow table。算法爱好者能够立刻看懂到上述的方案，这被亲切地称之为—打表，一种暴力美学，这张表是可以被复用的。
+考虑到大多数用户使用的密码多为数字 + 字母 + 特殊符号的组合，攻击者将常用的密码进行枚举，甚至通过排列组合来暴力破解，这被称为 rainbow table。算法爱好者能够立刻看懂到上述的方案，这被亲切地称之为—打表，一种暴力美学，这张表是可以被复用的。
 
 虽然仅仅依赖于传统 hash 算法的思路被否决了，但这种 hash 后比对的思路，几乎被后续所有的优化方案继承。
 
@@ -79,7 +79,7 @@ PBKDF2 被设计的很简单，它的基本原理是通过一个伪随机函数�
 
 Bcrypt 强大的一点在于，其不仅仅是 CPU 密集型，还是 RAM 密集型！双重的限制因素，导致 GPU，ASIC（专用集成电路）无法应对 Bcrypt 带来的破解困境。
 
-然后…看了 Scrypt 的相关资料之后我才意识到这个坑有多深。一个熟悉又陌生的词出现在了我面前：FPGA（现场可编程逻辑门阵列），这货就比较厉害了。现成的芯片指令结构如传统的 CPU，GPU，ASIC 都无法破解 Bcrypt，但是 FPGA 支持烧录逻辑门（如AND、OR、XOR、NOT），通过编程的方式烧录指令集的这一特性使得可以定制硬件来破解 Bcrypt。尽管我不认为懂这个技术的人会去想办法破解真正的系统，但，只要这是一个可能性，就总有方法会被发明出来与之对抗。Scrypt 比 Bcrypt 额外考虑到的就是大规模的[自定义硬件攻击](https://zh.wikipedia.org/w/index.php?title=%E5%AE%A2%E8%A3%BD%E7%A1%AC%E9%AB%94%E6%94%BB%E6%93%8A&action=edit&redlink=1) ，从而刻意设计需要大量内存运算。
+然后…看了 Scrypt 的相关资料之后我才意识到这个坑有多深。一个熟悉又陌生的词出现在了我面前：FPGA（现场可编程逻辑门阵列），这货就比较厉害了。现成的芯片指令结构如传统的 CPU，GPU，ASIC 都无法破解 Bcrypt，但是 FPGA 支持烧录逻辑门（如 AND、OR、XOR、NOT），通过编程的方式烧录指令集的这一特性使得可以定制硬件来破解 Bcrypt。尽管我不认为懂这个技术的人会去想办法破解真正的系统，但，只要这是一个可能性，就总有方法会被发明出来与之对抗。Scrypt 比 Bcrypt 额外考虑到的就是大规模的 [自定义硬件攻击](https://zh.wikipedia.org/w/index.php?title=%E5%AE%A2%E8%A3%BD%E7%A1%AC%E9%AB%94%E6%94%BB%E6%93%8A&action=edit&redlink=1) ，从而刻意设计需要大量内存运算。
 
 理论终归是理论，实际上 Bcrypt 算法被发明至今 18 年，使用范围广，且从未因为安全问题而被修改，其有限性是已经被验证过的，相比之下 Scrypt 据我看到的文章显示是 9 年的历史，没有 Bcrypt 使用的广泛。从破解成本和权威性的角度来看，Bcrypt 用作密码编码器是不错的选择。
 
@@ -145,7 +145,7 @@ public class PasswordEncoderFactories {
       return new DelegatingPasswordEncoder(encodingId, encoders);
    }
 
-   private PasswordEncoderFactories() {}
+   private PasswordEncoderFactories(){}
 }
 ```
 
@@ -169,7 +169,7 @@ java.lang.IllegalArgumentException: There is no PasswordEncoder mapped for the i
 
 > 你会不会担心密码泄露后，{bcrypt}，{pbkdf2}，{scrypt}，{sha256} 此类前缀会直接暴露密码的编码方式？其实这个考虑是多余的，因为密码存储的依赖算法并不是一个秘密。大多数能搞到你密码的 hacker 都可以轻松的知道你用的是什么算法，例如，bcrypt 算法通常以 \$2a$ 开头
 
-稍微思考下，前面的三个疑问就可以迎刃而解，这就是文档中所谓的：**能够自适应服务器性能的现代化密码编码方案**。
+稍微思考下，前面的三个疑问就可以迎刃而解，这就是文档中所谓的：** 能够自适应服务器性能的现代化密码编码方案 **。
 
 ### 参考
 
@@ -183,6 +183,6 @@ spring security oauth2 的 github 代码示例，体会下 spring security 4 -> 
 
 https://github.com/lexburner/oauth2-demo
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

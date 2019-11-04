@@ -69,9 +69,9 @@ curl http://127.0.0.1:8001/consumers/kirito/jwt
 
 ### 生成 Jwt 
 
-使用 jwt 官网(jwt.io)提供的 Debugger 功能可以很方便的生成 jwt。
+使用 jwt 官网 (jwt.io) 提供的 Debugger 功能可以很方便的生成 jwt。
 
-![jwt官网](http://kirito.iocoder.cn/9ADA76C8-6704-4C6A-A7D5-E6EF91D5225D.png)
+![jwt 官网](http://kirito.iocoder.cn/9ADA76C8-6704-4C6A-A7D5-E6EF91D5225D.png)
 
 HEADER 部分声明了验证方式为 JWT，加密算法为 HS256
 
@@ -103,7 +103,7 @@ iss 这一参数在 Kong 的 Jwt 插件中对应的是
 
 最后还要一个没有用到的用户信息：secret。HS256 加密算法是对称加密算法，加密和解密都依赖于同一个密钥，在生成 Jwt 的消息签名时（Verify Signature）需要被使用到。
 
-我们使用 jwt 官网(jwt.io)提供的 Debugger 功能快速生成我们的 Jwt
+我们使用 jwt 官网 (jwt.io) 提供的 Debugger 功能快速生成我们的 Jwt
 
 ```
 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ2Y252WVNGelRJR3lNeHpLU2duTlUwdXZ4aXhkWVdCOSJ9.3iL4sXgZyvRx2XtIe2X73yplfmSSu1WPGcvyhwq7TVE
@@ -156,6 +156,6 @@ String jwt = Jwts.builder()
         .compact();
 ```
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

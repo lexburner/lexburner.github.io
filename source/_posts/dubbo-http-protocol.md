@@ -134,7 +134,7 @@ public class HttpClientApp {
 Dubbo 提供的众多协议有各自适用的场景，例如
 
 - dubbo://，dubbo 协议是默认的协议，自定义二进制协议；单个长连接节省资源；基于 tcp，架构于 netty 之上，性能还算可以；协议设计上没有足够的前瞻性，不适合做 service-mesh 谈不上多么优雅，但是好歹风风雨雨用了这么多年，周边也有不少配套组件例如 dubbo2.js, dubbo-go, dubbo-cpp，一定程度解决了多语言的问题。
-- webservice://,hession://,thrift:// 等协议，基本是为了适配已有协议的服务端/客户端，借助于 dubbo 框架的 api，可以使用其功能特性，意义不是特别大。
+- webservice://,hession://,thrift:// 等协议，基本是为了适配已有协议的服务端 / 客户端，借助于 dubbo 框架的 api，可以使用其功能特性，意义不是特别大。
 - redis://,memcached:// 等协议，并非是暴露给用户配置的协议，一般是 dubbo 自用，在注册中心模块中会使用到相应的扩展
 
 所有协议的具体使用场景和其特性，我可能会单独写文章来分析，而如今我们要思考的是 dubbo 提供 http 协议到底解决什么问题，什么场景下用户会考虑使用 dubbo 的 http 协议。
@@ -151,6 +151,6 @@ Topic：[Proposal] replace the protocol="http" with protocol="jsonrpc"
 
 
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

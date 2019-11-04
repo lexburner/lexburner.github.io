@@ -36,13 +36,13 @@ categories:
 > 在任务调度的视角还要支持：
 > Run：执行一个到期的定时任务
 
-判断一个任务是否到期，基本会采用轮询的方式，**每隔一个时间片** 去检查 **最近的任务** 是否到期，并且，在 NewTask 和 Cancel 的行为发生之后，任务调度策略也会出现调整。
+判断一个任务是否到期，基本会采用轮询的方式，** 每隔一个时间片 ** 去检查 ** 最近的任务 ** 是否到期，并且，在 NewTask 和 Cancel 的行为发生之后，任务调度策略也会出现调整。
 
 > 说到底，定时器还是靠线程轮询实现的。
 
 ### 3 数据结构
 
-我们主要衡量 NewTask（新增任务），Cancel（取消任务），Run（执行到期的定时任务）这三个指标，分析他们使用不同数据结构的时间/空间复杂度。
+我们主要衡量 NewTask（新增任务），Cancel（取消任务），Run（执行到期的定时任务）这三个指标，分析他们使用不同数据结构的时间 / 空间复杂度。
 
 #### 3.1 双向有序链表
 
@@ -74,7 +74,7 @@ Netty 针对 I/O 超时调度的场景进行了优化，实现了 `HashedWheelTi
 
 ![时间轮算法](http://kirito.iocoder.cn/201807171109599678a80c-075a-40ee-b25f-10fd82c1025c.png)
 
-`HashedWheelTimer` 是一个环形结构，可以用时钟来类比，钟面上有很多 bucket ，每一个 bucket 上可以存放多个任务，使用一个 List 保存该时刻到期的所有任务，同时一个指针随着时间流逝一格一格转动，并执行对应 bucket 上所有到期的任务。任务通过`取模`决定应该放入哪个 bucket 。和 HashMap 的原理类似，newTask 对应 put，使用 List 来解决 Hash 冲突。
+`HashedWheelTimer` 是一个环形结构，可以用时钟来类比，钟面上有很多 bucket ，每一个 bucket 上可以存放多个任务，使用一个 List 保存该时刻到期的所有任务，同时一个指针随着时间流逝一格一格转动，并执行对应 bucket 上所有到期的任务。任务通过 ` 取模 ` 决定应该放入哪个 bucket 。和 HashMap 的原理类似，newTask 对应 put，使用 List 来解决 Hash 冲突。
 
 以上图为例，假设一个 bucket 是 1 秒，则指针转动一轮表示的时间段为 8s，假设当前指针指向 0，此时需要调度一个 3s 后执行的任务，显然应该加入到 (0+3=3) 的方格中，指针再走 3 次就可以执行了；如果任务要在 10s 后执行，应该等指针走完一轮零 2 格再执行，因此应放入 2，同时将 round（1）保存到任务中。检查到期任务时只执行 round 为 0 的， bucket 上其他任务的 round 减 1。
 
@@ -103,7 +103,7 @@ Kafka 针对时间轮算法进行了优化，实现了层级时间轮 `TimingWhe
 
 ![层级时间轮](http://kirito.iocoder.cn/7f03c027b1de345a0b1e57239d73de74.png)
 
-现在，每个任务除了要维护在当前轮盘的 `round`，还要计算在所有下级轮盘的`round`。当本层的`round`为0时，任务按下级 `round` 值被下放到下级轮子，最终在最底层的轮盘得到执行。
+现在，每个任务除了要维护在当前轮盘的 `round`，还要计算在所有下级轮盘的 `round`。当本层的 `round` 为 0 时，任务按下级 `round` 值被下放到下级轮子，最终在最底层的轮盘得到执行。
 
 > NewTask：O(H) 
 > Cancel：O(H)
@@ -179,7 +179,7 @@ ScheduleWithFixedDelay 每次执行时间为上一次任务结束起向后推一
 
 ```java
 Timer timer = new HashedWheelTimer();
-//等价于 Timer timer = new HashedWheelTimer(100, TimeUnit.MILLISECONDS, 512);
+// 等价于 Timer timer = new HashedWheelTimer(100, TimeUnit.MILLISECONDS, 512);
 timer.newTimeout(new TimerTask() {
     @Override
     public void run(Timeout timeout) throws Exception {
@@ -205,7 +205,7 @@ private final Thread workerThread;// Thread
 
 毋庸置疑，JDK 的 `Timer` 使用的场景是最窄的，完全可以被后两者取代。如何在 `ScheduledExecutorService` 和 `HashedWheelTimer` 之间如何做选择，需要区分场景，做一个简单的对比：
 
-1. `ScheduledExecutorService` 是面向任务的，当任务数非常大时，使用堆(PriorityQueue)维护任务的新增、删除会导致性能下降，而 `HashedWheelTimer` 面向 bucket，设置合理的 ticksPerWheel，tickDuration ，可以不受任务量的限制。所以在任务非常多时，`HashedWheelTimer` 可以表现出它的优势。
+1. `ScheduledExecutorService` 是面向任务的，当任务数非常大时，使用堆 (PriorityQueue) 维护任务的新增、删除会导致性能下降，而 `HashedWheelTimer` 面向 bucket，设置合理的 ticksPerWheel，tickDuration ，可以不受任务量的限制。所以在任务非常多时，`HashedWheelTimer` 可以表现出它的优势。
 2. 相反，如果任务量少，`HashedWheelTimer` 内部的 Worker 线程依旧会不停的拨动指针，虽然不是特别消耗性能，但至少不能说：`HashedWheelTimer` 一定比 `ScheduledExecutorService` 优秀。
 3. `HashedWheelTimer` 由于开辟了一个 bucket 数组，占用的内存会稍大。
 
@@ -213,13 +213,13 @@ private final Thread workerThread;// Thread
 
 #### 5.2 单线程与业务线程池
 
-我们需要注意`HashedWheelTimer` 使用单线程来调度任务，如果任务比较耗时，应当设置一个业务线程池，将`HashedWheelTimer` 当做一个定时触发器，任务的实际执行，交给业务线程池。
+我们需要注意 `HashedWheelTimer` 使用单线程来调度任务，如果任务比较耗时，应当设置一个业务线程池，将 `HashedWheelTimer` 当做一个定时触发器，任务的实际执行，交给业务线程池。
 
 > 如果所有的任务都满足： taskNStartTime - taskN-1StartTime > taskN-1CostTime，即任意两个任务的间隔时间小于先执行任务的执行时间，则无需担心这个问题。
 
 #### 5.3 全局定时器
 
-实际使用 `HashedWheelTimer` 时，**应当将其当做一个全局的任务调度器，例如设计成 static** 。时刻谨记一点：`HashedWheelTimer` 对应一个线程，如果每次实例化 `HashedWheelTimer`，首先是线程会很多，其次是时间轮算法将会完全失去意义。
+实际使用 `HashedWheelTimer` 时，** 应当将其当做一个全局的任务调度器，例如设计成 static** 。时刻谨记一点：`HashedWheelTimer` 对应一个线程，如果每次实例化 `HashedWheelTimer`，首先是线程会很多，其次是时间轮算法将会完全失去意义。
 
 #### 5.4 为 HashedWheelTimer 设置合理的参数
 
@@ -233,12 +233,12 @@ ticksPerWheel，tickDuration 这两个参数尤为重要，ticksPerWheel 控制�
 
 [1] https://www.ibm.com/developerworks/cn/java/j-lo-taskschedule/index.html
 
-[2] http://novoland.github.io/并发/2014/07/26/定时器（Timer）的实现.html
+[2] http://novoland.github.io/ 并发 /2014/07/26/ 定时器（Timer）的实现.html
 
 [3] http://www.cs.columbia.edu/~nahum/w6998/papers/sosp87-timing-wheels.pdf
 
 
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

@@ -1,5 +1,5 @@
 ---
-title: JAVA 拾遗--Instrument 机制
+title: JAVA 拾遗 --Instrument 机制
 date: 2018-02-04 22:18:51
 tags:
 - JAVA
@@ -60,10 +60,10 @@ public class GreetingTransformer implements ClassFileTransformer {
 public class GreetingAgent {
     public static void premain(String options, Instrumentation ins) {
         if (options != null) {
-            System.out.printf("  I've been called with options: \"%s\"\n", options);
+            System.out.printf("I've been called with options: \"%s\"\n", options);
         }
         else
-            System.out.println("  I've been called with no options.");
+            System.out.println("I've been called with no options.");
         ins.addTransformer(new GreetingTransformer());
     }
 }
@@ -78,7 +78,7 @@ public static void main(String[] args) {
 
 不同的是 main 函数的参数是一个 string[]，而 premain 的入参是一个 String 和一个 Instrumentation。
 
-前者不用过多赘述，而后者 Instrumentation 便是 JAVA5 的 Instrument 机制的核心，它负责为类添加 ClassFileTransformer 的实现，从而对类进行装配。注意 premain 和它的两个参数不能随意修改，为啥？我们使用 main 函数的时候也没问为啥一定是 public static void main(String[] args) 啊，规定！规定！从premain 的命名也可以看出，它的运行显然是在 main 函数之前的。
+前者不用过多赘述，而后者 Instrumentation 便是 JAVA5 的 Instrument 机制的核心，它负责为类添加 ClassFileTransformer 的实现，从而对类进行装配。注意 premain 和它的两个参数不能随意修改，为啥？我们使用 main 函数的时候也没问为啥一定是 public static void main(String[] args) 啊，规定！规定！从 premain 的命名也可以看出，它的运行显然是在 main 函数之前的。
 
 **MANIFEST.MF**
 
@@ -92,7 +92,7 @@ Premain-Class: moe.cnkirito.agent.GreetingAgent
 Can-Redefine-Classes: true
 ```
 
-**MAVEN 插件**
+**MAVEN 插件 **
 
 为了打包 agent 我们需要额外添加 maven 插件，将 mf 文件和两个类一起打包
 
@@ -158,15 +158,15 @@ Can-Redefine-Classes: true
 
 运行 Main.jar 的话就是这样的形式：java -javaagent:C:\Users\xujingfeng\Desktop\agent.jar=hello Main
 
-**运行结果**
+** 运行结果 **
 
 ```
-  I've been called with options: "hello"
+  I've been called with options:"hello"
 Dog's method invoke at	Sun Feb 04 23:54:45 CST 2018
 wow wow~
 ```
 
-I've been called with options: "hello" 代表我们的 premain 已经装载成功，并且正确接收到了启动参数。第二行语句也正常打印出了调用时间，至此便完成了 Dog 的装配。
+I've been called with options:"hello" 代表我们的 premain 已经装载成功，并且正确接收到了启动参数。第二行语句也正常打印出了调用时间，至此便完成了 Dog 的装配。
 
 ## Instrument 进阶
 
@@ -188,7 +188,7 @@ ClassFileTransformer 可以对所有的方法进行拦截，看见返回值 byte
 >
 > 这个方法的实现可能会改变提供的类文件并返回一个新的替换类文件。
 
-这给了我们足够的操作自由度，我们甚至可以替换一个类的实现，只要你能够返回一个正确的替换类。ClassLoader 代表被转换类的类加载器，如果是 bootstrap loader 则可以省略，className 代表全类名，注意是以 `/`作为分隔符。其他参数我也不是太懂，想深究的同学自行翻看下文档。byte[] 代表被转换后的类的字节，为 null 则代表不转换。
+这给了我们足够的操作自由度，我们甚至可以替换一个类的实现，只要你能够返回一个正确的替换类。ClassLoader 代表被转换类的类加载器，如果是 bootstrap loader 则可以省略，className 代表全类名，注意是以 `/` 作为分隔符。其他参数我也不是太懂，想深究的同学自行翻看下文档。byte[] 代表被转换后的类的字节，为 null 则代表不转换。
 
 ### 替换 Dog 的实现
 
@@ -206,11 +206,11 @@ public class Dog {
 public class DogTransformer implements ClassFileTransformer {
 
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-        System.out.println("className: " + className);
+        System.out.println("className:" + className);
         if (!className.equalsIgnoreCase("moe/cnkirito/agent/Dog")) {
             return null;
         }
-        return getBytesFromFile("C:/Users/xujingfeng/Desktop/Dog.class");//新的 Dog
+        return getBytesFromFile("C:/Users/xujingfeng/Desktop/Dog.class");// 新的 Dog
 //        return getBytesFromFile("app/target/classes/moe/cnkirito/agent/Dog.class");
     }
 
@@ -231,7 +231,7 @@ public class DogTransformer implements ClassFileTransformer {
             }
 
             if (offset < bytes.length) {
-                throw new IOException("Could not completely read file "
+                throw new IOException("Could not completely read file"
                         + file.getName());
             }
             is.close();
@@ -248,7 +248,7 @@ public class DogTransformer implements ClassFileTransformer {
 
 return getBytesFromFile("C:/Users/xujingfeng/Desktop/Dog.class") 一行返回了新的 Dog 试图替换原先的 Dog。注意，这一切都放生在 Agent.jar 之中，我并没有对 Main 函数（也就是我们自己的源代码）做任何改动。
 
-**控制台输出**
+** 控制台输出 **
 
 ```
 miao miao~

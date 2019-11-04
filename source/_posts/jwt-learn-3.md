@@ -1,5 +1,5 @@
 ---
-title: 理解JWT的使用场景和优劣
+title: 理解 JWT 的使用场景和优劣
 date: 2018-04-20 22:57:45
 tags:
 - JWT
@@ -7,8 +7,9 @@ categories:
 - JWT
 ---
 
-经过前面两篇文章《[JSON Web Token - 在Web应用间安全地传递信息](https://www.cnkirito.moe/2018/04/14/jwt-learn/)》《[八幅漫画理解使用JSON Web Token设计单点登录系统](https://www.cnkirito.moe/2018/04/14/jwt-learn-2/)》的科普，相信大家应该已经知道了 JWT 协议是什么了。至少看到
+经过前面两篇文章《[JSON Web Token - 在 Web 应用间安全地传递信息](https://www.cnkirito.moe/jwt-learn/)》《[八幅漫画理解使用 JSON Web Token 设计单点登录系统](https://www.cnkirito.moe/jwt-learn-2/)》的科普，相信大家应该已经知道了 JWT 协议是什么了。至少看到
 <!-- more -->
+
 ```
 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJxaWFubWlJZCI6InFtMTAzNTNzaEQiLCJpc3MiOiJhcHBfcW0xMDM1M3NoRCIsInBsYXRmb3JtIjoiYXBwIn0.cMNwyDTFVYMLL4e7ts50GFHTvlSJLDpePtHXzu7z9j4
 ```
@@ -19,66 +20,66 @@ eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJxaWFubWlJZCI6InFtMTAzNTNzaEQiLCJpc3MiOiJ
 
 这些基础知识简单地介绍下，千万别搞混了三个概念。在 jwt 中恰好同时涉及了这三个概念，笔者用大白话来做下通俗的讲解（非严谨定义，供个人理解）
 
-#### 编码(encode)和解码(decode)
+#### 编码 (encode) 和解码(decode)
 
-一般是编码解码是为了方便以字节的方式表示数据，便于存储和网络传输。整个 jwt 串会被置于 http 的 Header 或者 url 中，为了不出现乱码解析错误等意外，编码是有必要的。在 jwt 中以 `.` 分割的三个部分都经过 base64 编码(secret 部分是否进行 base64 编码是可选的，header 和 payload 则是必须进行 base64 编码)。注意，编码的一个特点：编码和解码的整个过程是可逆的。得知编码方式后，整个 jwt 串便是明文了，随意找个网站验证下解码后的内容：
+一般是编码解码是为了方便以字节的方式表示数据，便于存储和网络传输。整个 jwt 串会被置于 http 的 Header 或者 url 中，为了不出现乱码解析错误等意外，编码是有必要的。在 jwt 中以 `.` 分割的三个部分都经过 base64 编码 (secret 部分是否进行 base64 编码是可选的，header 和 payload 则是必须进行 base64 编码)。注意，编码的一个特点：编码和解码的整个过程是可逆的。得知编码方式后，整个 jwt 串便是明文了，随意找个网站验证下解码后的内容：
 
 ![base64](http://kirito.iocoder.cn/04081086-5158-489E-8EC2-B28795B99BD6.png)
 
-所以注意一点，**payload 是一定不能够携带敏感数据如密码等信息的**。
+所以注意一点，**payload 是一定不能够携带敏感数据如密码等信息的 **。
 
-#### 签名(signature)
+#### 签名 (signature)
 
-签名的目的主要是为了验证我是“我”。jwt 中常用的签名算法是 HS256，可能大多数人对这个签名算法不熟悉，但 md5,sha 这样的签名算法肯定是为人熟知的，签名算法共同的特点是整个过程是不可逆的。由于签名之前的主体内容(header,payload)会携带在 jwt 字符串中，所以需要使用带有密钥(yuè)的签名算法，密钥是服务器和签发者共享的。header 部分和 payload 部分如果被篡改，由于篡改者不知道密钥是什么，也无法生成新的 signature 部分，服务端也就无法通过，在 jwt 中，消息体是透明的，使用签名可以保证消息不被篡改。
+签名的目的主要是为了验证我是“我”。jwt 中常用的签名算法是 HS256，可能大多数人对这个签名算法不熟悉，但 md5,sha 这样的签名算法肯定是为人熟知的，签名算法共同的特点是整个过程是不可逆的。由于签名之前的主体内容 (header,payload) 会携带在 jwt 字符串中，所以需要使用带有密钥 (yuè) 的签名算法，密钥是服务器和签发者共享的。header 部分和 payload 部分如果被篡改，由于篡改者不知道密钥是什么，也无法生成新的 signature 部分，服务端也就无法通过，在 jwt 中，消息体是透明的，使用签名可以保证消息不被篡改。
 
 > 前面转载的文章中，原作者将 HS256 称之为加密算法，不太严谨。
 
-#### 加密(encryption)
+#### 加密 (encryption)
 
-加密是将明文信息改变为难以读取的密文内容，使之不可读。只有拥有解密方法的对象，经由解密过程，才能将密文还原为正常可读的内容。加密算法通常按照加密方式的不同分为对称加密(如 AES)和非对称加密(如 RSA)。你可能会疑惑：“jwt 中哪儿涉及加密算法了？”，其实 jwt 的 第一部分(header) 中的 alg 参数便可以指定不同的算法来生成第三部分(signature)，大部分支持 jwt 的框架至少都内置 rsa 这种非对称加密方式。这里诞生了第一个疑问
+加密是将明文信息改变为难以读取的密文内容，使之不可读。只有拥有解密方法的对象，经由解密过程，才能将密文还原为正常可读的内容。加密算法通常按照加密方式的不同分为对称加密 (如 AES) 和非对称加密(如 RSA)。你可能会疑惑：“jwt 中哪儿涉及加密算法了？”，其实 jwt 的 第一部分(header) 中的 alg 参数便可以指定不同的算法来生成第三部分(signature)，大部分支持 jwt 的框架至少都内置 rsa 这种非对称加密方式。这里诞生了第一个疑问
 
 > 疑问：一提到 rsa，大多数人第一想到的是非对称加密算法，而 jwt 的第三部分明确的英文定义是 signature，这不是矛盾吗？
 
 划重点！
 
-**rsa 加密**和**rsa 签名** 是两个概念！(吓得我都换行了)
+**rsa 加密 ** 和 **rsa 签名 ** 是两个概念！(吓得我都换行了)
 
 这两个用法很好理解：
 
-- 既然是加密，自然是不希望别人知道我的消息，只有我自己才能解密，所以**公钥负责加密，私钥负责解密**。这是大多数的使用场景，使用 rsa 来加密。
-- 既然是签名，自然是希望别人不能冒充我发消息，只有我才能发布签名，所以**私钥负责签名，公钥负责验证**。
+- 既然是加密，自然是不希望别人知道我的消息，只有我自己才能解密，所以 ** 公钥负责加密，私钥负责解密 **。这是大多数的使用场景，使用 rsa 来加密。
+- 既然是签名，自然是希望别人不能冒充我发消息，只有我才能发布签名，所以 ** 私钥负责签名，公钥负责验证 **。
 
 所以，在客户端使用 rsa 算法生成 jwt 串时，是使用私钥来“加密”的，而公钥是公开的，谁都可以解密，内容也无法变更（篡改者无法得知私钥）。
 
 所以，在 jwt 中并没有纯粹的加密过程，而是使加密之虚，行签名之实。
 
-### 什么场景该适合使用jwt？
+### 什么场景该适合使用 jwt？
 
-来聊聊几个场景，注意，以下的几个场景不是都和jwt贴合。
+来聊聊几个场景，注意，以下的几个场景不是都和 jwt 贴合。
 
 1. 一次性验证
 
 比如用户注册后需要发一封邮件让其激活账户，通常邮件中需要有一个链接，这个链接需要具备以下的特性：能够标识用户，该链接具有时效性（通常只允许几小时之内激活），不能被篡改以激活其他可能的账户…这种场景就和 jwt 的特性非常贴近，jwt 的 payload 中固定的参数：iss 签发者和 exp 过期时间正是为其做准备的。
 
-2. restful api的无状态认证
+2. restful api 的无状态认证
 
 使用 jwt 来做 restful api 的身份认证也是值得推崇的一种使用方案。客户端和服务端共享 secret；过期时间由服务端校验，客户端定时刷新；签名信息不可被修改…spring security oauth jwt 提供了一套完整的 jwt 认证体系，以笔者的经验来看：使用 oauth2 或 jwt 来做 restful api 的认证都没有大问题，oauth2 功能更多，支持的场景更丰富，后者实现简单。
 
-3. 使用 jwt 做单点登录+会话管理(不推荐)
+3. 使用 jwt 做单点登录 + 会话管理 (不推荐)
 
-在《[八幅漫画理解使用JSON Web Token设计单点登录系统](https://www.cnkirito.moe/2018/04/14/jwt-learn-2/)》一文中提及了使用 jwt 来完成单点登录，本文接下来的内容主要就是围绕这一点来进行讨论。如果你正在考虑使用 jwt+cookie 代替 session+cookie ，我强力不推荐你这么做。
+在《[八幅漫画理解使用 JSON Web Token 设计单点登录系统](https://www.cnkirito.moe/jwt-learn-2/)》一文中提及了使用 jwt 来完成单点登录，本文接下来的内容主要就是围绕这一点来进行讨论。如果你正在考虑使用 jwt+cookie 代替 session+cookie ，我强力不推荐你这么做。
 
-首先明确一点：使用 jwt 来设计单点登录系统是一个不太严谨的说法。首先 cookie+jwt 的方案前提是非跨域的单点登录(cookie 无法被自动携带至其他域名)，其次单点登录系统包含了很多技术细节，至少包含了身份认证和会话管理，这还不涉及到权限管理。如果觉得比较抽象，不妨用传统的 session+cookie 单点登录方案来做类比，通常我们可以选择 spring security（身份认证和权限管理的安全框架）和 spring session（session 共享）来构建，而选择用 jwt 设计单点登录系统需要解决很多传统方案中同样存在和本不存在的问题，以下一一详细罗列。
+首先明确一点：使用 jwt 来设计单点登录系统是一个不太严谨的说法。首先 cookie+jwt 的方案前提是非跨域的单点登录 (cookie 无法被自动携带至其他域名)，其次单点登录系统包含了很多技术细节，至少包含了身份认证和会话管理，这还不涉及到权限管理。如果觉得比较抽象，不妨用传统的 session+cookie 单点登录方案来做类比，通常我们可以选择 spring security（身份认证和权限管理的安全框架）和 spring session（session 共享）来构建，而选择用 jwt 设计单点登录系统需要解决很多传统方案中同样存在和本不存在的问题，以下一一详细罗列。
 
-### jwt token泄露了怎么办？
+### jwt token 泄露了怎么办？
 
 前面的文章下有不少人留言提到这个问题，我则认为这不是问题。传统的 session+cookie 方案，如果泄露了 sessionId，别人同样可以盗用你的身份。扬汤止沸不如釜底抽薪，不妨来追根溯源一下，什么场景会导致你的 jwt 泄露。
 
-遵循如下的实践可以尽可能保护你的 jwt 不被泄露：使用 https 加密你的应用，返回 jwt 给客户端时设置 httpOnly=true 并且使用 cookie 而不是 LocalStorage 存储 jwt，这样可以防止 XSS 攻击和 CSRF 攻击（对这两种攻击感兴趣的童鞋可以看下 spring security 中对他们的介绍[CSRF](https://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html),[XSS](https://docs.spring.io/spring-security/site/docs/current/reference/html/headers.html#headers-xss-protection)）
+遵循如下的实践可以尽可能保护你的 jwt 不被泄露：使用 https 加密你的应用，返回 jwt 给客户端时设置 httpOnly=true 并且使用 cookie 而不是 LocalStorage 存储 jwt，这样可以防止 XSS 攻击和 CSRF 攻击（对这两种攻击感兴趣的童鞋可以看下 spring security 中对他们的介绍 [CSRF](https://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html),[XSS](https://docs.spring.io/spring-security/site/docs/current/reference/html/headers.html#headers-xss-protection)）
 
 你要是正在使用 jwt 访问一个接口，这个时候你的同事跑过来把你的 jwt 抄走了，这种泄露，恕在下无力
 
-### secret如何设计
+### secret 如何设计
 
 jwt 唯一存储在服务端的只有一个 secret，个人认为这个 secret 应该设计成和用户相关的，而不是一个所有用户公用的统一值。这样可以有效的避免一些注销和修改密码时遇到的窘境。
 
@@ -118,15 +119,15 @@ jwt 修改 payload 中的 exp 后整个 jwt 串就会发生改变，那…就让
 
 实际上我的项目中由于历史遗留问题，就是使用 jwt 来做登录和会话管理的，为了解决续签问题，我们在 redis 中单独会每个 jwt 设置了过期时间，每次访问时刷新 jwt 的过期时间，若 jwt 不存在与 redis 中则认为过期。
 
-> tips:精确控制 redis 的过期时间不是件容易的事，可以参考我最近的一篇借助于 spring session 讲解 redis 过期时间的排坑记录。
+> tips: 精确控制 redis 的过期时间不是件容易的事，可以参考我最近的一篇借助于 spring session 讲解 redis 过期时间的排坑记录。
 
 同样改变了 jwt 的流程，不过嘛，世间安得两全法。我只能奉劝各位还未使用 jwt 做会话管理的朋友，尽量还是选用传统的 session+cookie 方案，有很多成熟的分布式 session 框架和安全框架供你开箱即用。
 
-### jwt,oauth2,session千丝万缕的联系
+### jwt,oauth2,session 千丝万缕的联系
 
 具体的对比不在此文介绍，就一位读者的留言回复下它的提问
 
-> 这么长一个字符串，还不如我把数据存到数据库，给一个长的很难碰撞的key来映射，也就是专用token。
+> 这么长一个字符串，还不如我把数据存到数据库，给一个长的很难碰撞的 key 来映射，也就是专用 token。
 
 这位兄弟认为 jwt 太长了，是不是可以考虑使用和 oauth2 一样的 uuid 来映射。这里面自然是有问题的，jwt 不仅仅是作为身份的认证（验证签名是否正确，签发者是否存在，有限期是否过期），还在其 payload 中存储着会话信息，这是 jwt 和 session 的最大区别，一个在客户端携带会话信息，一个在服务端存储会话信息。如果真的是要将 jwt 的信息置于在共享存储中，那再找不到任何使用 jwt 的意义了。
 
@@ -138,7 +139,6 @@ jwt 和 oauth2 都可以用于 restful 的认证，就我个人的使用经验�
 
 可能对 jwt 的使用场景还有一些地方未被我察觉，后续会研究下 spring security oauth jwt 的源码，不知到时会不会有新发现。
 
-
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+**欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

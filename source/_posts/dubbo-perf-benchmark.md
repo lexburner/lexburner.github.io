@@ -26,7 +26,7 @@ categories:
 
 截止本文发布，官方的最新版本为：[apache-jmeter-5.1.1.zip](http://mirrors.tuna.tsinghua.edu.cn/apache//jmeter/binaries/apache-jmeter-5.1.1.zip) , 下载后直接解压即可。
 
-![jmeter目录](http://kirito.iocoder.cn/image-20190905204943326.png)
+![jmeter 目录](http://kirito.iocoder.cn/image-20190905204943326.png)
 
 在 ${JMETER_HOME}/bin 下找到启动脚本，可以打开图形化界面
 
@@ -82,7 +82,7 @@ Check : https://jmeter.apache.org/usermanual/best-practices.html
 
 ### 3.2 增加 HTTP 取样器
 
-在刚刚创建的线程组上右键 【添加】-->【取样器】-->【HTTP请求】。
+在刚刚创建的线程组上右键 【添加】-->【取样器】-->【HTTP 请求】。
 
 ![image-20190905211606505](http://kirito.iocoder.cn/image-20190905211606505.png)
 
@@ -168,7 +168,7 @@ JMeter 默认并不支持私有的 dubbo 协议，但其优秀的扩展机制使
 2. 打包项目，构建 JMeter 插件：`mvn clean install` ，得到：jmeter-plugins-dubbo-2.7.3-jar-with-dependencies.jar
 3. 将插件添加到 `${JMETER_HOME}\lib\ext`
 
-![安装插件后的ext目录](http://kirito.iocoder.cn/image-20190906140927770.png)
+![安装插件后的 ext 目录](http://kirito.iocoder.cn/image-20190906140927770.png)
 
 ### 4.2 增加 Dubbo 取样器
 

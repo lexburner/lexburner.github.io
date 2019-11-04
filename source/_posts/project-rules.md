@@ -1,5 +1,5 @@
 ---
-title: sinosoft代码规范
+title: sinosoft 代码规范
 date: 2017-08-25 12:18:45
 tags: 
 - 代码规范
@@ -10,14 +10,14 @@ categories: 技术杂谈
 ## 介绍
 本文档主要针对我们项目内部正在使用的框架，以及代码审查发现的一些共性问题提出一些开发规范。
 
-### JavaBean规范
+### JavaBean 规范
 
 1	驼峰命名法【强制】
 
 2	布尔类型规范【强制】
-【说明】所有的布尔类型不允许以is开头，否则会导致部分序列化，hibernate框架出现解析异常。
+【说明】所有的布尔类型不允许以 is 开头，否则会导致部分序列化，hibernate 框架出现解析异常。
 【反例】
-原来项目的BaseDomain中标记逻辑删除的字段,在部分场景下会出现问题
+原来项目的 BaseDomain 中标记逻辑删除的字段, 在部分场景下会出现问题
 
 ```java
     @Column(name = "is_delete")
@@ -34,8 +34,8 @@ categories: 技术杂谈
     }
 ```
 
-tips: 使用intellij idea的快捷键（for eclipse）alt+shift+r，
-或者菜单栏Refactor->Rename，可以重构字段名称
+tips: 使用 intellij idea 的快捷键（for eclipse）alt+shift+r，
+或者菜单栏 Refactor->Rename，可以重构字段名称
 【正例】
 
 ```java
@@ -44,9 +44,9 @@ tips: 使用intellij idea的快捷键（for eclipse）alt+shift+r，
 ```
 
 3	装箱类型优于原生类型【推荐】
-在业务代码中，更加推荐使用装箱类型Integer Double Boolean...
-【说明】在未设值的情况下，基础类型具有默认值，而装箱类型为null
-以Boolean类型为例，如果使用boolean，那么在未复制时，无法得知其到底是被赋值成了false，
+在业务代码中，更加推荐使用装箱类型 Integer Double Boolean...
+【说明】在未设值的情况下，基础类型具有默认值，而装箱类型为 null
+以 Boolean 类型为例，如果使用 boolean，那么在未复制时，无法得知其到底是被赋值成了 false，
 还是未赋值
 
 ### 领域模型规范
@@ -59,22 +59,22 @@ tips: 使用intellij idea的快捷键（for eclipse）alt+shift+r，
 | DTO  | Data Transfer Object | 数据传输对象 |
 | VO   | View Object          | 视图对象   |
 
-对于View Object，PO等等其他一些的对象不在此做要求，只说明一下常用的几个
-DO就是我们最常用的数据库持久对象，是OOP对于现实中的抽象，一般使用orm框架映射到数据库
-DTO这一层，目前我们的项目还没有投入使用，即将考虑投入使用，理论上来说，两个微服务模块是严禁共享数据库的
-所以A模块要查询B模块的数据，需要使用B模块app层暴露出来的api来查询，其中B模块返回的实体，不能是直接从数据库中
-查询出来的DO，而应该是DO转换而成的DTO。以及其他服务服务用语传输的变量，都叫做DTO
-VO就是常存在于视图层模板渲染使用的实体类
+对于 View Object，PO 等等其他一些的对象不在此做要求，只说明一下常用的几个
+DO 就是我们最常用的数据库持久对象，是 OOP 对于现实中的抽象，一般使用 orm 框架映射到数据库
+DTO 这一层，目前我们的项目还没有投入使用，即将考虑投入使用，理论上来说，两个微服务模块是严禁共享数据库的
+所以 A 模块要查询 B 模块的数据，需要使用 B 模块 app 层暴露出来的 api 来查询，其中 B 模块返回的实体，不能是直接从数据库中
+查询出来的 DO，而应该是 DO 转换而成的 DTO。以及其他服务服务用语传输的变量，都叫做 DTO
+VO 就是常存在于视图层模板渲染使用的实体类
 
 【推荐】领域模型命名规范
-【说明】由于 DO 这一层大家已经养成了习惯，不做要求了。DTO有些特殊，他常常与业务的传输对象相关，而不限于以 Dto 结尾，如xxxQuery也可以是DTO对象。VO对象推荐以Vo结尾
+【说明】由于 DO 这一层大家已经养成了习惯，不做要求了。DTO 有些特殊，他常常与业务的传输对象相关，而不限于以 Dto 结尾，如 xxxQuery 也可以是 DTO 对象。VO 对象推荐以 Vo 结尾
 
 ### 包结构规范
 
 1	包命名【强制】 
 
-格式如下：公司名.模块名.层次名
-包名应当尽量使用能够概括模块总体含义,单词义,单数,不包含特殊字符的单词
+格式如下：公司名. 模块名. 层次名
+包名应当尽量使用能够概括模块总体含义, 单词义, 单数, 不包含特殊字符的单词
 【正例】: `sinosoftgz.message.admin`
 【反例】: `sinosoftgz.mailsms.admin` `sinosoftgz.mail.sms.admin`
 
@@ -86,22 +86,22 @@ VO就是常存在于视图层模板渲染使用的实体类
 ```java
     sinosoftgz.message.admin
         config
-            模块公用Config.java
+            模块公用 Config.java
         service
-            模块公用Service.java
-            Mail私有Service.java
+            模块公用 Service.java
+            Mail 私有 Service.java
             MailTemplateService.java
             MailMessageService.java
-            Sms私有Service.java
+            Sms 私有 Service.java
             SmsTemplateService.java
             SmsMessageService.java
         web
-            模块公用Controller.java
+            模块公用 Controller.java
             IndexController.java
-            Mail私有Controller.java
+            Mail 私有 Controller.java
             MailTemplateController.java
             MailMessageController.java
-            Sms私有Controller.java
+            Sms 私有 Controller.java
             SmsTemplateController.java
             SmsMessageController.java
         MailSmsAdminApp.java
@@ -112,37 +112,37 @@ VO就是常存在于视图层模板渲染使用的实体类
 ```java
     sinosoftgz.message.admin
         config
-            模块公用Config.java
+            模块公用 Config.java
         service
-            模块公用Service.java
+            模块公用 Service.java
         web
-            模块公用Controller.java
+            模块公用 Controller.java
             IndexController.java
         mail
             config
                 MailConfig.java
             service
-                Mail私有Service.java
+                Mail 私有 Service.java
                 MailTemplateService.java
                 MailMessageService.java
             web
-                Mail私有Controller.java
+                Mail 私有 Controller.java
                 MailTemplateController.java
                 MailMessageController.java
         sms
             config
                 Smsconfig.java
             service
-                Sms私有Service.java
+                Sms 私有 Service.java
                 SmsTemplateService.java
                 SmsMessageService.java
             web
-                Sms私有Controller.java
+                Sms 私有 Controller.java
                 SmsTemplateController.java
                 SmsMessageController.java
         MessageAdminApp.java
 ```
-service和controller以及其他业务模块相关的包相隔太远，或者干脆全部丢到一个包内，单纯用前缀区分，会形成臃肿，充血的包结构。如果是项目结构较为单一，可以仅仅使用前缀区分；如果是项目中业务模块有明显的区分条件，应当单独作为一个包，用包名代表业务模块的含义。
+service 和 controller 以及其他业务模块相关的包相隔太远，或者干脆全部丢到一个包内，单纯用前缀区分，会形成臃肿，充血的包结构。如果是项目结构较为单一，可以仅仅使用前缀区分；如果是项目中业务模块有明显的区分条件，应当单独作为一个包，用包名代表业务模块的含义。
 
 ## 容易忽视的细节
 
@@ -152,13 +152,13 @@ service和controller以及其他业务模块相关的包相隔太远，或者干
 
 【正例】Long a =  Integer b * Integer c;(强转)
 
-整数相乘可能会溢出，需要使用Long接收
+整数相乘可能会溢出，需要使用 Long 接收
 
-2	Double类型的精度问题【强制】
+2	Double 类型的精度问题【强制】
 
-Double不能用于商业计算，使用BigDecimal代替
+Double 不能用于商业计算，使用 BigDecimal 代替
 
-3	BigDecimal规范【强制】
+3	BigDecimal 规范【强制】
 
 【反例】
 
@@ -173,10 +173,10 @@ BigDecimal totalMoney = new BigDecimal("100.42");
 BigDecimal averageMoney = totalMoney.divide(new BigDecimal("22"),3);
 ```
 
-业务实体类中的与金额相关的变量统一使用BigDecimal,四则运算采用BigDecimal的相关api进行。
-做**除法**时需要额外注意保留精度的问题，否则可能会报异常，并且不易被测试出
+业务实体类中的与金额相关的变量统一使用 BigDecimal, 四则运算采用 BigDecimal 的相关 api 进行。
+做 ** 除法 ** 时需要额外注意保留精度的问题，否则可能会报异常，并且不易被测试出
 
-4	equals规范【强制】
+4	equals 规范【强制】
 
 【反例】
 
@@ -195,15 +195,15 @@ System.out.println(a == b);//true
 a.equals(b)
 ```
 
-要注意正确的比较方法，谨慎使用==，它比较的是引用
+要注意正确的比较方法，谨慎使用 ==，它比较的是引用
 
 ## 数据库规范
 1	必要的地方必须添加索引，如唯一索引，作为条件查询的列【强制】
 
 不添加索引，会造成全表扫描，浪费性能。
 
-2	生产环境，uat环境，不允许使用`jpa.hibernate.ddl-auto: create`自动建表，每次ddl的修改需要保留脚本，统一管理【强制】
-3	业务数据不能使用deleteBy...而要使用逻辑删除setDeleteFlag(true),查询时，findByxxxAndDeleteFlag(xxx,false)【强制】
+2	生产环境，uat 环境，不允许使用 `jpa.hibernate.ddl-auto: create` 自动建表，每次 ddl 的修改需要保留脚本，统一管理【强制】
+3	业务数据不能使用 deleteBy... 而要使用逻辑删除 setDeleteFlag(true), 查询时，findByxxxAndDeleteFlag(xxx,false)【强制】
 
 4	如有可替代方案，则禁止使用存储过程和触发器【强制】
 
@@ -238,9 +238,9 @@ class Person{
 不便于数据迁移，统一在应用层控制关联。
 
 
-## ORM规范
+## ORM 规范
 
-【强制】条件查询超过三个参数的，使用`criteriaQuery`，`predicates` 而不能使用springdata的findBy
+【强制】条件查询超过三个参数的，使用 `criteriaQuery`，`predicates` 而不能使用 springdata 的 findBy
 
 【反例】
 
@@ -260,7 +260,7 @@ public Page<GatewayApiDefine> findAll(GatewayApiDefine gatewayApiDefine,Pageable
     }
 ```
 
-在Dao层定义了大量的findBy方法，在Service写了过多的if else判断，导致业务逻辑不清晰
+在 Dao 层定义了大量的 findBy 方法，在 Service 写了过多的 if else 判断，导致业务逻辑不清晰
 
 【正例】
 
@@ -269,22 +269,22 @@ public Page<MailTemplateConfig> findAll(MailTemplateConfig mailTemplateConfig, P
         Specification querySpecification = (Specification<MailTemplateConfig>) (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.isFalse(root.get("deleteFlag")));
-            //级联查询mailTemplate
+            // 级联查询 mailTemplate
             if (!Lang.isEmpty(mailTemplateConfig.getMailTemplate())) {
-                //短信模板名称
+                // 短信模板名称
                 if (!Lang.isEmpty(mailTemplateConfig.getMailTemplate().getTemplateName())) {
                     predicates.add(criteriaBuilder.like(root.join("mailTemplate").get("templateName"), String.format("%%%s%%", mailTemplateConfig.getMailTemplate().getTemplateName())));
                 }
-                //短信模板类型
+                // 短信模板类型
                 if (!Lang.isEmpty(mailTemplateConfig.getMailTemplate().getTemplateType())) {
                     predicates.add(criteriaBuilder.equal(root.join("mailTemplate").get("templateType"), mailTemplateConfig.getMailTemplate().getTemplateType()));
                 }
             }
-            //产品分类
+            // 产品分类
             if (!Lang.isEmpty(mailTemplateConfig.getProductType())) {
                 predicates.add(criteriaBuilder.equal(root.get("productType"), mailTemplateConfig.getProductType()));
             }
-            //客户类型
+            // 客户类型
             if (!Lang.isEmpty(mailTemplateConfig.getConsumerType())) {
                 predicates.add(criteriaBuilder.equal(root.get("consumerType"), mailTemplateConfig.getConsumerType()));
             }
@@ -293,7 +293,7 @@ public Page<MailTemplateConfig> findAll(MailTemplateConfig mailTemplateConfig, P
         return mailTemplateConfigRepos.findAll(querySpecification, pageable);
     }
 ```
-条件查询是admin模块不可避免的一个业务功能，使用`criteriaQuery`可以轻松的添加条件，使得代码容易维护，他也可以进行分页，排序，连表操作，充分发挥jpa面向对象的特性，使得业务开发变得快捷。
+条件查询是 admin 模块不可避免的一个业务功能，使用 `criteriaQuery` 可以轻松的添加条件，使得代码容易维护，他也可以进行分页，排序，连表操作，充分发挥 jpa 面向对象的特性，使得业务开发变得快捷。
 
 ## 数据结构
 
@@ -324,48 +324,48 @@ while(it.hasNext()){
 }
 ```
 
-2	hashCode和equals重写规范【强制】
+2	hashCode 和 equals 重写规范【强制】
 
-作为Map键值，Set值的实体类，务必重写hashCode与equals方法，可参考《effective java》。重写时务必做到以下几点
+作为 Map 键值，Set 值的实体类，务必重写 hashCode 与 equals 方法，可参考《effective java》。重写时务必做到以下几点
 
-- **自反性**:  x.equals(x) 一定是true
-- **对null**:  x.equals(null) 一定是false
-- **对称性**:  x.equals(y)  和  y.equals(x)结果一致
-- **传递性**:  a 和 b equals , b 和 c  equals，那么 a 和 c也一定equals。
-- **一致性**:  在某个运行时期间，2个对象的状态的改变不会不影响equals的决策结果，那么，在这个运行时期间，无论调用多少次equals，都返回相同的结果。做到无状态。
+- ** 自反性 **:  x.equals(x) 一定是 true
+- ** 对 null**:  x.equals(null) 一定是 false
+- ** 对称性 **:  x.equals(y)  和  y.equals(x) 结果一致
+- ** 传递性 **:  a 和 b equals , b 和 c  equals，那么 a 和 c 也一定 equals。
+- ** 一致性 **:  在某个运行时期间，2 个对象的状态的改变不会不影响 equals 的决策结果，那么，在这个运行时期间，无论调用多少次 equals，都返回相同的结果。做到无状态。
 
 ## 禁止使用魔法数字
 
 【模型层与业务层】【强制】
-一些固定业务含义的代码可以使用枚举类型，或者final static常量表示，在设值时，不能直接使用不具备业务含义的数值。
+一些固定业务含义的代码可以使用枚举类型，或者 final static 常量表示，在设值时，不能直接使用不具备业务含义的数值。
 
 【反例】
 
 ```java
-//实体类定义
+// 实体类定义
 /**
-  * 发送设置标志 (1：立即发送 2：预设时间发送 )
+  * 发送设置标志 (1：立即发送 2：预设时间发送)
   */
-@Column(columnDefinition = "varchar(1) comment '发送设置标志'")
+@Column(columnDefinition = "varchar(1) comment' 发送设置标志 '")
 protected String sendFlag;
-//业务代码赋值使用
+// 业务代码赋值使用
 MailMessage mailMessage = new MailMessage();
 mailMessage.setSendSuccessFlag("1");
 mailMessage.setValidStatus("0");
 mailMessage.setCustom(true);
 ```
 
-【正例】：使用final static常量: 
+【正例】：使用 final static 常量: 
 
 ```java
-//实体类定义
+// 实体类定义
 	/**
      * 发送设置标志
      *
      * @see sendFlag
      */
-    public final static String SEND_FLAG_NOW = "1"; //立即发送
-    public final static String SEND_FLAG_DELAY = "2"; //预设时间发送
+    public final static String SEND_FLAG_NOW = "1"; // 立即发送
+    public final static String SEND_FLAG_DELAY = "2"; // 预设时间发送
 
     /**
      * 发送成功标志
@@ -383,12 +383,12 @@ mailMessage.setCustom(true);
         SEND_SUCCESS_FLAG_MAP.put(SEND_FAIL, "发送失败");
     }
 	/**
-     * 发送设置标志 (1：立即发送 2：预设时间发送 )
+     * 发送设置标志 (1：立即发送 2：预设时间发送)
      */
-    @Column(columnDefinition = "varchar(1) comment '发送设置标志'")
+    @Column(columnDefinition = "varchar(1) comment' 发送设置标志 '")
     protected String sendFlag;
 
-//业务代码赋值使用
+// 业务代码赋值使用
 MailMessage mailMessage = new MailMessage();
 mailMessage.setSendSuccessFlag(MailMessage.SEND_WAIT);
 mailMessage.setValidStatus(MailMessage.VALID_WAIT);
@@ -427,13 +427,13 @@ public enum ConsumerTypeEnum {
 }
 ```
 【视图层】【推荐】
-例如，页面迭代select的option，不应该在view层判断，而应该在后台传入map在前台迭代
+例如，页面迭代 select 的 option，不应该在 view 层判断，而应该在后台传入 map 在前台迭代
 【正例】：
 ```java
 model.put("typeMap",typeMap);
 
 模板类型：<select type="text" name="templateType">
-	<option value="">全部</option>
+	<option value=""> 全部 </option>
 	<#list typeMap?keys as key>
 		<option <#if ((mailTemplate.templateType!"")==key)>selected="selected"</#if>value="${key}">${typeMap[key]}</option>
 	 </#list>
@@ -442,21 +442,21 @@ model.put("typeMap",typeMap);
 【反例】：
 ```java
 模板类型：<select type="text" name="templateType">
-	<option value="">全部</option>
+	<option value=""> 全部 </option>
 	<option <#if ${xxx.templateType!}=="1"
-		selected="selected"</#if> value="1">承保通知</option>
+		selected="selected"</#if> value="1"> 承保通知 </option>
 	...
 	<option <#if ${xxx.templateType!}=="5"
-		selected="selected"</#if> value="5">核保通知</option>
+		selected="selected"</#if> value="5"> 核保通知 </option>
 </select>
 ```
-否则修改后台代码后，前端页面也要修改，设计原则应当是修改一处，其他全部变化。且 1，2...,5的含义可能会变化，不能从页面得知value和option的含义是否对应。
+否则修改后台代码后，前端页面也要修改，设计原则应当是修改一处，其他全部变化。且 1，2...,5 的含义可能会变化，不能从页面得知 value 和 option 的含义是否对应。
 
 ## 并发处理
 
 项目中会出现很多并发问题，要做到根据业务选择合适的并发解决方案，避免线程安全问题
 
-1	simpleDateFormat有并发问题，不能作为static类变量【强制】
+1	simpleDateFormat 有并发问题，不能作为 static 类变量【强制】
 【反例】：
 这是我在某个项目模块中，发现的一段代码
 ```java
@@ -472,8 +472,8 @@ Class XxxController{
 	}
 }
 ```
-【说明】SimpleDateFormat 是线程不安全的类，不能作为静态类变量给多线程并发访问。如果不了解多线程，可以将其作为实例变量，每次使用时都new一个出来使用。不过更推荐使用ThreadLocal来维护，减少new的开销。
-【正例】一个使用ThreadLocal维护SimpleDateFormat的线程安全的日期转换类：
+【说明】SimpleDateFormat 是线程不安全的类，不能作为静态类变量给多线程并发访问。如果不了解多线程，可以将其作为实例变量，每次使用时都 new 一个出来使用。不过更推荐使用 ThreadLocal 来维护，减少 new 的开销。
+【正例】一个使用 ThreadLocal 维护 SimpleDateFormat 的线程安全的日期转换类：
 ```java
 public class ConcurrentDateUtil {
 
@@ -495,11 +495,11 @@ public class ConcurrentDateUtil {
 ```
 
 2	名称唯一性校验出现的线程安全问题【推荐】
-各个项目的admin模块在需求中经常会出现要求名称不能重复，即唯一性问题。通常在前台做ajax校验，后台使用`select count(1) from table_name where name=?`的方式查询数据库。这么做无可厚非，但是在极端的情况下，会出现并发问题。两个线程同时插入一条相同的name，如果没有做并发控制，会导致出现脏数据。如果仅仅是后台系统，那么没有必要加锁去避免，只需要对数据库加上唯一索引，并且再web层或者service层捕获数据异常即可。
+各个项目的 admin 模块在需求中经常会出现要求名称不能重复，即唯一性问题。通常在前台做 ajax 校验，后台使用 `select count(1) from table_name where name=?` 的方式查询数据库。这么做无可厚非，但是在极端的情况下，会出现并发问题。两个线程同时插入一条相同的 name，如果没有做并发控制，会导致出现脏数据。如果仅仅是后台系统，那么没有必要加锁去避免，只需要对数据库加上唯一索引，并且再 web 层或者 service 层捕获数据异常即可。
 【正例】：
 
 ```java
-//实体类添加唯一索引
+// 实体类添加唯一索引
 @Entity
 @Table(name = "mns_mail_template",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"templateName"})}
@@ -508,17 +508,17 @@ public class MailTemplate extends AbstractTemplate {
 	/**
      * 模板名称
      */
-    @Column(columnDefinition = "varchar(160) comment '模板名称'")
+    @Column(columnDefinition = "varchar(160) comment' 模板名称 '")
     private String templateName;
 }
 
-//业务代码捕获异常
+// 业务代码捕获异常
 @RequestMapping(value = {"/saveOrUpdate"}, method = RequestMethod.POST)
     @ResponseBody
     public AjaxResponseVo saveOrUpdate(MailTemplate mailTemplate) {
         AjaxResponseVo ajaxResponseVo = new AjaxResponseVo(AjaxResponseVo.STATUS_CODE_SUCCESS, "操作成功", "邮件模板定义", AjaxResponseVo.CALLBACK_TYPE_CLOSE_CURRENT);
         try {
-            //管理端新增时初始化一些数据
+            // 管理端新增时初始化一些数据
             if (Lang.isEmpty(mailTemplate.getId())) {
                 mailTemplate.setValidStatus(MailTemplate.VALID_WAIT);
             }
@@ -538,7 +538,7 @@ public class MailTemplate extends AbstractTemplate {
     }
 ```
 
-【说明】关于其他一些并发问题,如分布式锁，CAS，不仅仅是一篇文档能够讲解清楚的，需要对开发有很深的理解。
+【说明】关于其他一些并发问题, 如分布式锁，CAS，不仅仅是一篇文档能够讲解清楚的，需要对开发有很深的理解。
 
 3	余额扣减，库存扣减，积分发放等敏感并发操作【强制】
 
@@ -550,7 +550,7 @@ public class MailTemplate extends AbstractTemplate {
 //Transaction start
 User user = UserDao.findById("1");
 user.setBalance(user.getBalance()+100.00);
-...//其他耗时操作
+...// 其他耗时操作
 UserDao.save(user);
 //Transaction commit
 ```
@@ -562,15 +562,15 @@ UserDao.save(user);
 lock...
 User user = UserDao.findById("1");
 user.setBalance(user.getBalance()+100.00);
-...//其他耗时操作
+...// 其他耗时操作
 UserDao.save(user);
 release lock...
 //Transaction commit
 ```
 
-并发场景必须加锁，根据业务场景决定到底加什么锁，sychronized，ReentrantLock，version乐观锁，for update悲观锁（不推荐），redis，zookeeper实现的分布式锁等等。
+并发场景必须加锁，根据业务场景决定到底加什么锁，sychronized，ReentrantLock，version 乐观锁，for update 悲观锁（不推荐），redis，zookeeper 实现的分布式锁等等。
 
-## moton使用注意事项
+## moton 使用注意事项
 
 1	包的扫描【注意】
 
@@ -587,9 +587,9 @@ motan:
   zookeeper-host: 127.0.0.1:2181
   annotaiong-package: sinosoftgz.message.admin
 ```
-app模块由于将api-impl脱离出了自身的模块，通常还需要扫描api-impl的模块
+app 模块由于将 api-impl 脱离出了自身的模块，通常还需要扫描 api-impl 的模块
 
-配置pom.xml依赖 
+配置 pom.xml 依赖 
 
 ```xml
 <dependency>
@@ -598,7 +598,7 @@ app模块由于将api-impl脱离出了自身的模块，通常还需要扫描api
 </dependency>
 ```
 
-配置spring ioc扫描 AutoImportConfig.java
+配置 spring ioc 扫描 AutoImportConfig.java
 
 ```java
 @ComponentScans({
@@ -606,7 +606,7 @@ app模块由于将api-impl脱离出了自身的模块，通常还需要扫描api
 })
 ```
 
-配置motan扫描 mail-sms-app:application.yml
+配置 motan 扫描 mail-sms-app:application.yml
 
 ```yaml
 motan:
@@ -619,13 +619,13 @@ motan:
   zookeeper-host: localhost:2181
 ```
 
-2	motan跨模块传输实体类时懒加载失效【注意】
-遇到的时候注意一下，由于jpa，hibernate懒加载的问题，因为其内部使用动态代理去实现的懒加载，导致懒加载对象无法被正确的跨模块传输，此时需要进行深拷贝。
+2	motan 跨模块传输实体类时懒加载失效【注意】
+遇到的时候注意一下，由于 jpa，hibernate 懒加载的问题，因为其内部使用动态代理去实现的懒加载，导致懒加载对象无法被正确的跨模块传输，此时需要进行深拷贝。
 【正例】：
 
 ```java
 /**
-     * 深拷贝OrderMain对象，主要用于防止Hibernate序列化懒加载Session关闭问题
+     * 深拷贝 OrderMain 对象，主要用于防止 Hibernate 序列化懒加载 Session 关闭问题
      * <p/>
      * //     * @param order
      *
@@ -705,76 +705,76 @@ motan:
 
 ## 公用常量规范
 1	模块常量【强制】
-模块自身公用的常量放置于模块的Constants 类中，以final static的方式声明
+模块自身公用的常量放置于模块的 Constants 类中，以 final static 的方式声明
 ```java
 public class Constants {
-    public static final String birthdayPattern = "yyyy-MM-dd"; //生日格式
-    public static final String inputTimePattern = "yyyy-MM-dd HH:mm:ss"; //录入时间格式
+    public static final String birthdayPattern = "yyyy-MM-dd"; // 生日格式
+    public static final String inputTimePattern = "yyyy-MM-dd HH:mm:ss"; // 录入时间格式
 
     public static class PolicyType {
-        public static final String personal = "0"; //个单
-        public static final String group = "1"; //团单
+        public static final String personal = "0"; // 个单
+        public static final String group = "1"; // 团单
     }
 
     public static class InsuredNature {
-        public static final String naturePerson = "1"; //自然人
-        public static final String artificialPerson = "0"; //法人
+        public static final String naturePerson = "1"; // 自然人
+        public static final String artificialPerson = "0"; // 法人
     }
 
     public static class InsuredIdentity {
-        public static final String myself = "0"; //本人
+        public static final String myself = "0"; // 本人
     }
 
     public static class JfeeFlag {
-        public static final String noFeeFlag = "0"; //非见费标志
-        public static final String feeFlag = "1"; //见费标志
+        public static final String noFeeFlag = "0"; // 非见费标志
+        public static final String feeFlag = "1"; // 见费标志
     }
 
     public static class ItemKindFlag {
-        public static final String mainRiskFlag = "1"; //主险标志
-        public static final String additionalRiskFlag = "2"; //附加险标志
-        public static final String otherRiskFlag = "3"; //其它标志
+        public static final String mainRiskFlag = "1"; // 主险标志
+        public static final String additionalRiskFlag = "2"; // 附加险标志
+        public static final String otherRiskFlag = "3"; // 其它标志
     }
 
     public static class CalculateAmountFlag {
-        public static final String calculateFlag = "Y"; //计算保额标志
-        public static final String noCalculateFlag = "N"; //不计算保额标志
+        public static final String calculateFlag = "Y"; // 计算保额标志
+        public static final String noCalculateFlag = "N"; // 不计算保额标志
     }
 
     public static class LimitGrade {
-        public static final String policyLevel = "1"; //限额/免赔保单级别
-        public static final String clauseLevel = "2"; //限额/免赔条款级别
+        public static final String policyLevel = "1"; // 限额 / 免赔保单级别
+        public static final String clauseLevel = "2"; // 限额 / 免赔条款级别
     }
 
     /**
      * 批改类型
      *
-     * 命名规则：对象（可选）+行为
+     * 命名规则：对象（可选）+ 行为
      */
     public static class EndorType {
-        public static final String collectivePolicyInsuredModify = "22"; //团单变更被保险人
-        public static final String collectivePolicyInsuredAdd = "Z1"; //团单批增被保险人
-        public static final String collectivePolicyInsuredRemove = "J1"; //团单批减被保险人
-        public static final String surrender = "04"; //全单退保
-        public static final String withdraw = "05"; //注销
-        public static final String insurancePeriodModify = "06"; //平移保险期限
-        public static final String applicantModify = "H01"; //更改投保人
-        public static final String customerModify = "50"; //变更客户信息
-        public static final String insuredModify = "29"; //变更被保人职业
-        public static final String individualPolicyBeneficiaryModify = "03"; //变更受益人信息
-        public static final String engageModify = "15"; //变更特别约定
-        public static final String individualPolicyInsuredModify = "77";//个单变更被保人
+        public static final String collectivePolicyInsuredModify = "22"; // 团单变更被保险人
+        public static final String collectivePolicyInsuredAdd = "Z1"; // 团单批增被保险人
+        public static final String collectivePolicyInsuredRemove = "J1"; // 团单批减被保险人
+        public static final String surrender = "04"; // 全单退保
+        public static final String withdraw = "05"; // 注销
+        public static final String insurancePeriodModify = "06"; // 平移保险期限
+        public static final String applicantModify = "H01"; // 更改投保人
+        public static final String customerModify = "50"; // 变更客户信息
+        public static final String insuredModify = "29"; // 变更被保人职业
+        public static final String individualPolicyBeneficiaryModify = "03"; // 变更受益人信息
+        public static final String engageModify = "15"; // 变更特别约定
+        public static final String individualPolicyInsuredModify = "77";// 个单变更被保人
     }
 }
 ```
 
-Constants类在一个限界上下文只能有一个，一个限界上下文包含了一整个业务模块（如policy-admin,policy-admin,policy-api,policy-model）
+Constants 类在一个限界上下文只能有一个，一个限界上下文包含了一整个业务模块（如 policy-admin,policy-admin,policy-api,policy-model）
 构成一个限界上下文
 
-在Constants类中使用静态内部类尽量细化到常量的归属，不要散放
+在 Constants 类中使用静态内部类尽量细化到常量的归属，不要散放
 
 2	项目常量【强制】
-项目公用的常量放置于util模块的GlobalContants类中，以内部类和final static的方式声明
+项目公用的常量放置于 util 模块的 GlobalContants 类中，以内部类和 final static 的方式声明
 
 ```java
 public abstract class GlobalContants {
@@ -782,18 +782,18 @@ public abstract class GlobalContants {
      * 返回的状态
      */
     public class ResponseStatus{
-        public static final String SUCCESS = "success";//成功
-        public static final String ERROR = "error";//错误
+        public static final String SUCCESS = "success";// 成功
+        public static final String ERROR = "error";// 错误
     }
 
 	/**
 	 * 响应状态
 	 */
     public class ResponseString{
-        public static final String STATUS = "status";//状态
+        public static final String STATUS = "status";// 状态
         public static final String ERROR_CODE = "error";// 错误代码
-        public static final String MESSAGE = "message";//消息
-        public static final String DATA = "data";//数据
+        public static final String MESSAGE = "message";// 消息
+        public static final String DATA = "data";// 数据
     }
     ...
 }
@@ -803,19 +803,19 @@ public abstract class GlobalContants {
 
 1 打印日志时不允许拼接字符串【强制】
 
-【反例】log.debug ( "Load No." + i + " object, " + object );
+【反例】log.debug ("Load No." + i + "object," + object);
 
-【正例】log.debug( "Load No.{} object, {}" , i , object );
+【正例】log.debug("Load No.{} object, {}" , i , object);
 
-字符串的计算是在编译期，日志级别如果是INFO，就等于在浪费机器的性能，无谓的字符串拼接。
+字符串的计算是在编译期，日志级别如果是 INFO，就等于在浪费机器的性能，无谓的字符串拼接。
 
 2 预防空指针【强制】
 
-【反例】log.debug( "Load student(id={}), name: {}" , id , student.getName() );
+【反例】log.debug("Load student(id={}), name: {}" , id , student.getName() );
 
-【正例】log.debug( "Load student(id={}), student: {}" , id , student );
+【正例】log.debug("Load student(id={}), student: {}" , id , student);
 
-不要在日志中调用对象的方法获取值，除非确保该对象肯定不为 null，否则很有可能会因为日志的问题而导致应用产生空指针异常。实现需要打印日志的实体类的toString方法或者使用JSON.toString
+不要在日志中调用对象的方法获取值，除非确保该对象肯定不为 null，否则很有可能会因为日志的问题而导致应用产生空指针异常。实现需要打印日志的实体类的 toString 方法或者使用 JSON.toString
 
 3 输出异常信息
 
@@ -823,9 +823,9 @@ public abstract class GlobalContants {
 
 【正例】log.error("邮件发送失败，接收人姓名：{}", username, e);
 
-e包含了全部的异常堆栈信息，是e.getMessage的父集，出现异常一定要保证输出堆栈信息。并且要保证exception作为log的重载方法的最后一个参数。
+e 包含了全部的异常堆栈信息，是 e.getMessage 的父集，出现异常一定要保证输出堆栈信息。并且要保证 exception 作为 log 的重载方法的最后一个参数。
 
-4 Logger声明规范
+4 Logger 声明规范
 
 【正例】Logger logger = LoggerFactory.getLogger(Student.class);
 
@@ -867,14 +867,14 @@ for(UserDto user:users){
 
 3 motan 的重试次数
 
-所有的操作分为 CRUD，查询--一般可以设置 2 次重试，增删改不可以重试，除非保证幂等。
+所有的操作分为 CRUD，查询 -- 一般可以设置 2 次重试，增删改不可以重试，除非保证幂等。
 
 全局配置设置重试次数应当为 0 次。
 
 ```
-ProtocolConfigBean.setRetries(0);//protocol级别
-@MotanService(retries = 2)//注意!服务端配置是无效的
-@MotanReferer(retries = 2)//有效 referer 级别
+ProtocolConfigBean.setRetries(0);//protocol 级别
+@MotanService(retries = 2)// 注意! 服务端配置是无效的
+@MotanReferer(retries = 2)// 有效 referer 级别
 ```
 
 motan 中的配置覆盖优先级：method > referer > basic referer > protocol
@@ -925,7 +925,7 @@ dto 应该存在于 api 层，不应该存在于 model 层，model 只应该对�
 
 仅仅作为转换，不添加任何业务逻辑。ApiImpl 层不应该出现 DO 对象。
 
-6 Stub 的意义Facede
+6 Stub 的意义 Facede
 
 对于外部接口的调用，使用 Stub 作为外部接口的包装，在本模块的 service 类中需要调用外部 API 时，则应当调用 Stub。Stub 代表着远程接口在本地的代理。
 
@@ -949,7 +949,7 @@ dto 应该存在于 api 层，不应该存在于 model 层，model 只应该对�
 
 8 领域驱动设计与微服务设计
 
-**实体（Entity）和值对象（Value Object）的区分**
+** 实体（Entity）和值对象（Value Object）的区分 **
 
 实体具有生命周期，需要继承 BaseDomain；值对象没有生命周期，只起到修饰作用。
 
@@ -959,13 +959,13 @@ dto 应该存在于 api 层，不应该存在于 model 层，model 只应该对�
 
 对于实体的删除使用逻辑删除，对于值对象的删除使用物理删除。
 
-**数据库操作使用充血模型而不是贫血模型**
+** 数据库操作使用充血模型而不是贫血模型 **
 
 代码见 ProtocolService，查询使用 Specification 模式，曾经强调过，在公会礼包和协议采购已经在实践。具体表现：Repository 层应该为空实现。update = find + 持久化对象的内存操作 + save
 
-**微服务设计**
+** 微服务设计 **
 
-确定领域的限界上下文，微服务的边界。微服务架构是一件好事，逼着大家关注设计软件的合理性，如果原来在单体式架构中领域分析、面向对象设计做不好，换成微服务会把这个问题成倍的放大。微服务架构首先要关注的不是RPC/ServiceDiscovery/Circuit Breaker这些概念，也不是Eureka/Docker/SpringCloud/Zipkin这些技术框架，而是服务的边界、职责划分，划分错误就会陷入大量的服务间的相互调用和分布式事务中，这种情况微服务带来的不是便利而是麻烦。
+确定领域的限界上下文，微服务的边界。微服务架构是一件好事，逼着大家关注设计软件的合理性，如果原来在单体式架构中领域分析、面向对象设计做不好，换成微服务会把这个问题成倍的放大。微服务架构首先要关注的不是 RPC/ServiceDiscovery/Circuit Breaker 这些概念，也不是 Eureka/Docker/SpringCloud/Zipkin 这些技术框架，而是服务的边界、职责划分，划分错误就会陷入大量的服务间的相互调用和分布式事务中，这种情况微服务带来的不是便利而是麻烦。
 
 ## 线程池注意事项
 
@@ -1011,7 +1011,7 @@ public class SomeService {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                //复用了一个线程池，会导致子任务卡死其他的主任务
+                // 复用了一个线程池，会导致子任务卡死其他的主任务
                 executorService.execute(new Runnable() {
                     @Override
                     public voud run() {
@@ -1034,7 +1034,7 @@ public class SomeService {
 
 ## Executors
 
-Executors是一个线程池框架，其最终还是通过new ThreadPoolExecutor的方式创建的线程池。Executors提供了几个工厂方法。但这几种都不应该在生产中直接使用
+Executors 是一个线程池框架，其最终还是通过 new ThreadPoolExecutor 的方式创建的线程池。Executors 提供了几个工厂方法。但这几种都不应该在生产中直接使用
 
 ### newSingleThreadExecutor
 
@@ -1057,8 +1057,8 @@ new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new Linked
 ### newCachedThreadPool
 
 创建一个可缓存的线程池。如果线程池的大小超过了处理任务所需要的线程，
-那么就会回收部分空闲（60秒不执行任务）的线程，当任务数增加时，此线程池又可以智能的添加新线程来处理任务。
-此线程池不会对线程池大小做限制，线程池大小完全依赖于操作系统（或者说JVM）能够创建的最大线程大小。
+那么就会回收部分空闲（60 秒不执行任务）的线程，当任务数增加时，此线程池又可以智能的添加新线程来处理任务。
+此线程池不会对线程池大小做限制，线程池大小完全依赖于操作系统（或者说 JVM）能够创建的最大线程大小。
 
 ```
 new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,new SynchronousQueue<Runnable>());
@@ -1066,7 +1066,7 @@ new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,new Synchrono
 
 ### ThreadPoolExecutor
 
-再看看如何使用ThreadPoolExecutor创建线程池，我们需要理解各个构造方法的参数：
+再看看如何使用 ThreadPoolExecutor 创建线程池，我们需要理解各个构造方法的参数：
 
 ```
     public ThreadPoolExecutor(int corePoolSize,
@@ -1086,19 +1086,19 @@ workQueue - 用来储存等待执行任务的队列。
 threadFactory - 线程工厂。
 handler - 拒绝策略。
 
-#### 关注点1 线程池大小
+#### 关注点 1 线程池大小
 
 线程池有两个线程数的设置，一个为核心池线程数，一个为最大线程数。
-在创建了线程池后，默认情况下，线程池中并没有任何线程，等到有任务来才创建线程去执行任务，除非调用了prestartAllCoreThreads()或者prestartCoreThread()方法
-当创建的线程数等于 corePoolSize 时，会加入设置的阻塞队列。当队列满时，会创建线程执行任务直到线程池中的数量等于maximumPoolSize。
+在创建了线程池后，默认情况下，线程池中并没有任何线程，等到有任务来才创建线程去执行任务，除非调用了 prestartAllCoreThreads()或者 prestartCoreThread() 方法
+当创建的线程数等于 corePoolSize 时，会加入设置的阻塞队列。当队列满时，会创建线程执行任务直到线程池中的数量等于 maximumPoolSize。
 
-#### 关注点2 适当的阻塞队列
+#### 关注点 2 适当的阻塞队列
 
 java.lang.IllegalStateException: Queue full
 方法 抛出异常 返回特殊值 一直阻塞 超时退出
 插入方法 add(e) offer(e) put(e) offer(e,time,unit)
-移除方法 remove() poll() take() poll(time,unit)
-检查方法 element() peek() 不可用 不可用
+移除方法 remove()poll() take()poll(time,unit)
+检查方法 element()peek() 不可用 不可用
 
 ArrayBlockingQueue ：一个由数组结构组成的有界阻塞队列。
 LinkedBlockingQueue ：一个由链表结构组成的有界阻塞队列。
@@ -1108,9 +1108,9 @@ SynchronousQueue： 一个不存储元素的阻塞队列。
 LinkedTransferQueue： 一个由链表结构组成的无界阻塞队列。
 LinkedBlockingDeque： 一个由链表结构组成的双向阻塞队列。
 
-#### 关注点3 明确拒绝策略
+#### 关注点 3 明确拒绝策略
 
-ThreadPoolExecutor.AbortPolicy: 丢弃任务并抛出RejectedExecutionException异常。 (默认)
+ThreadPoolExecutor.AbortPolicy: 丢弃任务并抛出 RejectedExecutionException 异常。 (默认)
 ThreadPoolExecutor.DiscardPolicy：也是丢弃任务，但是不抛出异常。
 ThreadPoolExecutor.DiscardOldestPolicy：丢弃队列最前面的任务，然后重新尝试执行任务（重复此过程）
 ThreadPoolExecutor.CallerRunsPolicy：由调用线程处理该任务
@@ -1141,7 +1141,7 @@ threadFactory - 线程工厂。
 
 handler - 拒绝策略。
 
-2 使用Spring提供的线程池（强烈推荐）
+2 使用 Spring 提供的线程池（强烈推荐）
 
 ```
 @Bean
@@ -1158,15 +1158,15 @@ public ThreadPoolTaskExecutor someBizThreadPool(){
 
 运行规则如下：
 
-如果此时线程池中的数量小于corePoolSize，即使线程池中的线程都处于空闲状态，也要创建新的线程来处理被添加的任务。
+如果此时线程池中的数量小于 corePoolSize，即使线程池中的线程都处于空闲状态，也要创建新的线程来处理被添加的任务。
 
-如果此时线程池中的数量等于 corePoolSize，但是缓冲队列 workQueue未满，那么任务被放入缓冲队列。
+如果此时线程池中的数量等于 corePoolSize，但是缓冲队列 workQueue 未满，那么任务被放入缓冲队列。
 
-如果此时线程池中的数量大于corePoolSize，缓冲队列workQueue满，并且线程池中的数量小于maxPoolSize，建新的线程来处理被添加的任务。
+如果此时线程池中的数量大于 corePoolSize，缓冲队列 workQueue 满，并且线程池中的数量小于 maxPoolSize，建新的线程来处理被添加的任务。
 
-如果此时线程池中的数量大于corePoolSize，缓冲队列workQueue满，并且线程池中的数量等于maxPoolSize，那么通过handler所指定的策略来处理此任务。也就是：处理任务的优先级为：核心线程corePoolSize、任务队列workQueue、最大线程 maximumPoolSize，如果三者都满了，使用handler处理被拒绝的任务（抛出异常）。
+如果此时线程池中的数量大于 corePoolSize，缓冲队列 workQueue 满，并且线程池中的数量等于 maxPoolSize，那么通过 handler 所指定的策略来处理此任务。也就是：处理任务的优先级为：核心线程 corePoolSize、任务队列 workQueue、最大线程 maximumPoolSize，如果三者都满了，使用 handler 处理被拒绝的任务（抛出异常）。
 
-当线程池中的线程数量大于corePoolSize时，如果某线程空闲时间超过keepAliveTime，线程将被终止。这样，线程池可以动态的调整池中的线程数。
+当线程池中的线程数量大于 corePoolSize 时，如果某线程空闲时间超过 keepAliveTime，线程将被终止。这样，线程池可以动态的调整池中的线程数。
 
 
 

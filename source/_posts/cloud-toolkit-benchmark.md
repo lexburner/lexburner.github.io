@@ -229,7 +229,7 @@ IDEA 的默认插件支持 Remote Host
 
 这个可以提升用户体验，Cloud Toolkit 提供了远程主机的管理，额外实现一个 ftp 协议可能会更方便用户查看自己的部署结果。从连接协议的选择上也可以发现，Cloud Toolkit 目前只支持 sftp 协议，而 IDEA 内置的 Deployment 插件还支持 ftp、ftps 等方式。
 
-## 产品定位&评价&竞品
+## 产品定位 & 评价 & 竞品
 
 其实本文基本是围绕 IDEA 的内置 Deployment 顺带着 Cloud Toolkit 的测评一起进行的。实际上我并不觉得 Cloud Toolkit 存在什么竞品
 

@@ -26,7 +26,7 @@ server {
 }
 ```
 
-nginx 监听来自本地 80 端口的请求，如果路径与 /hello 匹配，便将请求原封不动的转发到名称为 hello 的upstream，而该 upstream 我们配置了一个负载均衡器，会路由到本地的 3000 端口和 3001 端口。
+nginx 监听来自本地 80 端口的请求，如果路径与 /hello 匹配，便将请求原封不动的转发到名称为 hello 的 upstream，而该 upstream 我们配置了一个负载均衡器，会路由到本地的 3000 端口和 3001 端口。
 
 ```Java
 @SpringBootApplication
@@ -134,6 +134,6 @@ https://getkong.org/docs/0.13.x/loadbalancing/
 
 https://getkong.org/docs/0.13.x/configuration/
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

@@ -12,7 +12,7 @@ categories:
 
 Docker 强大的原因之一在于多个 Docker 容器之间的互相连接。涉及到连接，就引出了网络通信的几种模式。Docker 默认提供了 5 种网络驱动模式。
 <!-- more -->
-- bridge:	默认的网络驱动模式。如果不指定驱动程序，bridge 便会作为默认的网络驱动模式。当应用程序运行在需要通信的独立容器(standalone containers)中时，通常会选择 bridge 模式。
+- bridge:	默认的网络驱动模式。如果不指定驱动程序，bridge 便会作为默认的网络驱动模式。当应用程序运行在需要通信的独立容器 (standalone containers) 中时，通常会选择 bridge 模式。
 - host：移除容器和 Docker 宿主机之间的网络隔离，并直接使用主机的网络。host 模式仅适用于 Docker 17.06+。
 - overlay：overlay 网络将多个 Docker 守护进程连接在一起，并使集群服务能够相互通信。您还可以使用 overlay 网络来实现 swarm 集群和独立容器之间的通信，或者不同 Docker 守护进程上的两个独立容器之间的通信。该策略实现了在这些容器之间进行操作系统级别路由的需求。
 - macvlan：Macvlan 网络允许为容器分配 MAC 地址，使其显示为网络上的物理设备。 Docker 守护进程通过其 MAC 地址将流量路由到容器。对于希望直连到物理网络的传统应用程序而言，使用 macvlan 模式一般是最佳选择，而不应该通过 Docker 宿主机的网络进行路由。
@@ -32,7 +32,7 @@ d72064d9febf        host                         host                local
 
 这 3 个网络包含在 Docker 实现中。运行一个容器时，可以使用 **--network** 参数指定在哪种网络模式下运行该容器。
 
-这篇文章重点介绍 bridge 模式。 所有 Docker 安装后都存在的 docker0 网络，这在 Docker 基础中有过介绍。除非使用 **docker run --network=<NETWORK>**选项另行指定，否则 Docker 守护进程默认情况下会将容器连接到 docker0 这个网络。
+这篇文章重点介绍 bridge 模式。 所有 Docker 安装后都存在的 docker0 网络，这在 Docker 基础中有过介绍。除非使用 **docker run --network=<NETWORK>** 选项另行指定，否则 Docker 守护进程默认情况下会将容器连接到 docker0 这个网络。
 
 ### 创建自定义的网络
 
@@ -137,7 +137,7 @@ PING box3 (172.21.0.2): 56 data bytes
 
 与默认的网络 docker0 不同的是，指定了自定义 network 的容器可以使用容器名称相互通信，实际上这也是 docker 官方推荐使用 `—network` 参数运行容器的原因之一。
 
-### 对比自定义 bridge(my-net)与默认 bridge(docker0) 
+### 对比自定义 bridge(my-net) 与默认 bridge(docker0) 
 
 #### 自定义 bridge 提供更好的隔离性和容器间的互操作性
 
@@ -153,7 +153,7 @@ PING box3 (172.21.0.2): 56 data bytes
 
 二： `—link` 参数在官方文档中已经被标记为过期的参数，不被建议使用。
 
-在用户定义的桥接网络上，容器可以通过容器名称(`--name` 指定的名称)或别名来解析对方。可能有人说，在默认 bridge 模式下我可以去修改 `/etc/hosts`文件呀，但这显然不是合理的做法。
+在用户定义的桥接网络上，容器可以通过容器名称 (`--name` 指定的名称) 或别名来解析对方。可能有人说，在默认 bridge 模式下我可以去修改 `/etc/hosts` 文件呀，但这显然不是合理的做法。
 
 #### 容器可以在运行中与自定义 bridge 网络连接和分离
 

@@ -1,5 +1,5 @@
 ---
-title: Java文件IO操作之DirectIO
+title: Java 文件 IO 操作之 DirectIO
 date: 2019-03-02 15:45:13
 tags:
 - DirectIO
@@ -8,7 +8,7 @@ categories:
 - 数据库
 ---
 
-在前文《文件IO操作的一些最佳实践》中，我介绍了一些 Java 中常见的文件操作的接口，并且就 PageCache 和 DIrect IO 进行了探讨，最近我自己封装了一个 Direct IO 的库，趁着这个机会，本文重点谈谈 Java 中 Direct IO 的意义，以及简单介绍下我自己的轮子。
+在前文《文件 IO 操作的一些最佳实践》中，我介绍了一些 Java 中常见的文件操作的接口，并且就 PageCache 和 DIrect IO 进行了探讨，最近我自己封装了一个 Direct IO 的库，趁着这个机会，本文重点谈谈 Java 中 Direct IO 的意义，以及简单介绍下我自己的轮子。
 
 <!-- more -->
 
@@ -108,18 +108,18 @@ public static void read() throws IOException {
 
 ### 总结
 
-这个简单的 Direct IO 框架参考了[smacke/jaydio](https://github.com/smacke/jaydio)，这个库自己搞了一套 Buffer 接口跟 JDK 的类库不兼容，且读写实现里面加了一块 Buffer 用于缓存内容至 Block 对齐有点破坏 Direct IO 的语义。同时，感谢尘央同学的指导，这个小轮子的代码量并不多，初始代码引用自他的一个小 demo（已获得本人授权）。为什么需要这么一个库？主要是考虑后续会出现像「中间件性能挑战赛」和「PolarDB性能挑战赛」这样的比赛，Java 本身的 API 可能不足以发挥其优势，如果有一个库可以屏蔽掉 Java 和 CPP 选手的差距，岂不是美哉？我也将这个库发到了中央仓库，方便大家在自己的代码中引用。
+这个简单的 Direct IO 框架参考了 [smacke/jaydio](https://github.com/smacke/jaydio)，这个库自己搞了一套 Buffer 接口跟 JDK 的类库不兼容，且读写实现里面加了一块 Buffer 用于缓存内容至 Block 对齐有点破坏 Direct IO 的语义。同时，感谢尘央同学的指导，这个小轮子的代码量并不多，初始代码引用自他的一个小 demo（已获得本人授权）。为什么需要这么一个库？主要是考虑后续会出现像「中间件性能挑战赛」和「PolarDB 性能挑战赛」这样的比赛，Java 本身的 API 可能不足以发挥其优势，如果有一个库可以屏蔽掉 Java 和 CPP 选手的差距，岂不是美哉？我也将这个库发到了中央仓库，方便大家在自己的代码中引用。
 
 后续会视需求，会这个小小的轮子增加注入 fadvise，mmap 等系统调用的映射，也欢迎对文件操作感兴趣的同学一起参与进来，pull request & issue are welcome！
 
 ### 扩展阅读
 
-[《文件IO操作的一些最佳实践》](https://www.cnkirito.moe/file-io-best-practise/)
+[《文件 IO 操作的一些最佳实践》](https://www.cnkirito.moe/file-io-best-practise/)
 
-[《PolarDB数据库性能大赛Java选手分享》](https://www.cnkirito.moe/polardb-race/)
+[《PolarDB 数据库性能大赛 Java 选手分享》](https://www.cnkirito.moe/polardb-race/)
 
 
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+**欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

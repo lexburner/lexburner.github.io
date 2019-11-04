@@ -1,5 +1,5 @@
 ---
-title:  drools用户指南----Methods vs Rules
+title:  drools 用户指南 ----Methods vs Rules
 date: 2017-04-11 13:28:44
 tags: 
 - 规则引擎
@@ -16,8 +16,8 @@ categories:
 
 ```java
 public void helloWorld(Person person) {
-    if ( person.getName().equals( "Chuck" ) ) {
-        System.out.println( "Hello Chuck" );
+    if (person.getName().equals("Chuck") ) {
+        System.out.println("Hello Chuck");
     }
 }
 ```
@@ -28,9 +28,9 @@ public void helloWorld(Person person) {
 
 ```java
 rule "Hello World" when
-    Person( name == "Chuck" )
+    Person(name == "Chuck")
 then
-    System.out.println( "Hello Chuck" );
+    System.out.println("Hello Chuck");
 end
 ```
 

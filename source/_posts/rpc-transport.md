@@ -34,12 +34,12 @@ public class RpcResponse implements Serializable {
     private long requestId;
     private long processTime;
     private int timeout;
-    private Map<String, String> attachments;// rpc协议版本兼容时可以回传一些额外的信息
+    private Map<String, String> attachments;// rpc 协议版本兼容时可以回传一些额外的信息
     private byte rpcProtocolVersion;
 }
 ```
 
-## Socket传输
+## Socket 传输
 
 Server
 
@@ -49,7 +49,7 @@ public class RpcServerSocketProvider {
 
     public static void main(String[] args) throws Exception {
 
-        //序列化层实现参考之前的章节
+        // 序列化层实现参考之前的章节
         Serialization serialization = new Hessian2Serialization();
 
         ServerSocket serverSocket = new ServerSocket(8088);
@@ -65,11 +65,11 @@ public class RpcServerSocketProvider {
                         int length = dis.readInt();
                         byte[] requestBody = new byte[length];
                         dis.read(requestBody);
-                        //反序列化requestBody => RpcRequest
+                        // 反序列化 requestBody => RpcRequest
                         RpcRequest rpcRequest = serialization.deserialize(requestBody, RpcRequest.class);
-                        //反射调用生成响应 并组装成 rpcResponse
+                        // 反射调用生成响应 并组装成 rpcResponse
                         RpcResponse rpcResponse = invoke(rpcRequest);
-                        //序列化rpcResponse => responseBody
+                        // 序列化 rpcResponse => responseBody
                         byte[] responseBody = serialization.serialize(rpcResponse);
                         DataOutputStream dos = new DataOutputStream(os);
                         dos.writeInt(responseBody.length);
@@ -96,7 +96,7 @@ public class RpcServerSocketProvider {
     }
 
     public static RpcResponse invoke(RpcRequest rpcRequest) {
-        //模拟反射调用
+        // 模拟反射调用
         RpcResponse rpcResponse = new RpcResponse();
         rpcResponse.setRequestId(rpcRequest.getRequestId());
         //... some operation
@@ -113,16 +113,16 @@ public class RpcSocketConsumer {
 
     public static void main(String[] args) throws Exception {
 
-        //序列化层实现参考之前的章节
+        // 序列化层实现参考之前的章节
         Serialization serialization = new Hessian2Serialization();
 
         Socket socket = new Socket("localhost", 8088);
         InputStream is = socket.getInputStream();
         OutputStream os = socket.getOutputStream();
-        //封装rpc请求
+        // 封装 rpc 请求
         RpcRequest rpcRequest = new RpcRequest();
         rpcRequest.setRequestId(12345L);
-        //序列化 rpcRequest => requestBody
+        // 序列化 rpcRequest => requestBody
         byte[] requestBody = serialization.serialize(rpcRequest);
         DataOutputStream dos = new DataOutputStream(os);
         dos.writeInt(requestBody.length);
@@ -132,7 +132,7 @@ public class RpcSocketConsumer {
         int length = dis.readInt();
         byte[] responseBody = new byte[length];
         dis.read(responseBody);
-        //反序列化 responseBody => rpcResponse
+        // 反序列化 responseBody => rpcResponse
         RpcResponse rpcResponse = serialization.deserialize(responseBody, RpcResponse.class);
         is.close();
         os.close();
@@ -143,7 +143,7 @@ public class RpcSocketConsumer {
 }
 ```
 
-dis.readInt() 和 dis.read(byte[] bytes) 决定了使用 Socket 通信是一种阻塞式的操作，报文头+报文体的传输格式是一种常见的格式，除此之外，使用特殊的字符如空行也可以划分出报文结构。在示例中，我们使用一个 int（4字节）来传递报问题的长度，之后传递报文体，在复杂的通信协议中，报文头除了存储报文体还会额外存储一些信息，包括协议名称，版本，心跳标识等。
+dis.readInt()和 dis.read(byte[] bytes) 决定了使用 Socket 通信是一种阻塞式的操作，报文头 + 报文体的传输格式是一种常见的格式，除此之外，使用特殊的字符如空行也可以划分出报文结构。在示例中，我们使用一个 int（4 字节）来传递报问题的长度，之后传递报文体，在复杂的通信协议中，报文头除了存储报文体还会额外存储一些信息，包括协议名称，版本，心跳标识等。
 
 在网络传输中，只有字节能够被识别，所以我们在开头引入了 Serialization 接口，负责完成 RpcRequest 和 RpcResponse 与字节的相互转换。（Serialization 的工作机制可以参考之前的文章）
 
@@ -199,7 +199,7 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
     }
 
     private RpcResponse invoke(RpcRequest rpcRequest) {
-        //模拟反射调用
+        // 模拟反射调用
         RpcResponse rpcResponse = new RpcResponse();
         rpcResponse.setRequestId(rpcRequest.getRequestId());
         //... some operation
@@ -259,7 +259,7 @@ public class RpcClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
-        System.out.println(response.getRequestId());//处理响应
+        System.out.println(response.getRequestId());// 处理响应
     }
 
     @Override
@@ -324,7 +324,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
 }
 ```
 
-使用 Netty 不能保证返回的字节大小，所以需要加上 in.readableBytes() < 4 这样的判断，以及 in.markReaderIndex() 这样的标记，用来区分报文头和报文体。
+使用 Netty 不能保证返回的字节大小，所以需要加上 in.readableBytes()< 4 这样的判断，以及 in.markReaderIndex() 这样的标记，用来区分报文头和报文体。
 
 ## 同步与异步 阻塞与非阻塞
 
@@ -332,22 +332,22 @@ public class RpcDecoder extends ByteToMessageDecoder {
 
 其实这两组并没有必然的联系，同步阻塞，同步非阻塞，异步非阻塞都有可能（同步非阻塞倒是没见过），而大多数使用 Netty 实现的 RPC 调用其实应当是同步非阻塞的（当然一般 RPC 也支持异步非阻塞）。
 
-> 同步和异步关注的是**消息通信机制**
-> 所谓同步，就是在发出一个*调用*时，在没有得到结果之前，该*调用*就不返回。但是一旦调用返回，就得到返回值了。
-> 换句话说，就是由*调用者*主动等待这个*调用*的结果。
+> 同步和异步关注的是 ** 消息通信机制 **
+> 所谓同步，就是在发出一个 * 调用 * 时，在没有得到结果之前，该 * 调用 * 就不返回。但是一旦调用返回，就得到返回值了。
+> 换句话说，就是由 * 调用者 * 主动等待这个 * 调用 * 的结果。
 >
-> 而异步则是相反，调用在发出之后，这个调用就直接返回了，所以没有返回结果。换句话说，当一个异步过程调用发出后，调用者不会立刻得到结果。而是在*调用*发出后，*被调用者*通过状态、通知来通知调用者，或通过回调函数处理这个调用。
+> 而异步则是相反，调用在发出之后，这个调用就直接返回了，所以没有返回结果。换句话说，当一个异步过程调用发出后，调用者不会立刻得到结果。而是在 * 调用 * 发出后，* 被调用者 * 通过状态、通知来通知调用者，或通过回调函数处理这个调用。
 
 如果需要 RPC 调用返回一个结果，该结果立刻被使用，那意味着着大概率需要是一个同步调用。如果不关心其返回值，则可以将其做成异步接口，以提升效率。
 
-> 阻塞和非阻塞关注的是**程序在等待调用结果（消息，返回值）时的状态**.
+> 阻塞和非阻塞关注的是 ** 程序在等待调用结果（消息，返回值）时的状态 **.
 >
 > 阻塞调用是指调用结果返回之前，当前线程会被挂起。调用线程只有在得到结果之后才会返回。
 > 非阻塞调用指在不能立刻得到结果之前，该调用不会阻塞当前线程。
 
-在上述的例子中可以看出 Socket 通信我们显示声明了一个包含10个线程的线程池，每次请求到来，分配一个线程，等待客户端传递报文头和报文体的行为都会阻塞该线程，可以见得其整体是阻塞的。而在 Netty 通信的例子中，每次请求并没有分配一个线程，而是通过 Handler 的方式处理请求（联想 NIO 中 Selector），是非阻塞的。
+在上述的例子中可以看出 Socket 通信我们显示声明了一个包含 10 个线程的线程池，每次请求到来，分配一个线程，等待客户端传递报文头和报文体的行为都会阻塞该线程，可以见得其整体是阻塞的。而在 Netty 通信的例子中，每次请求并没有分配一个线程，而是通过 Handler 的方式处理请求（联想 NIO 中 Selector），是非阻塞的。
 
-使用同步非阻塞方式的通信机制并不一定同步阻塞式的通信强，所谓没有最好，只有更合适，而一般的同步非阻塞 通信适用于 1.网络连接数量多 2.每个连接的io不频繁 的场景，与 RPC 调用较为契合。而成熟的 RPC 框架的传输层和协议层通常也会提供多种选择，以应对不同的场景。
+使用同步非阻塞方式的通信机制并不一定同步阻塞式的通信强，所谓没有最好，只有更合适，而一般的同步非阻塞 通信适用于 1. 网络连接数量多 2. 每个连接的 io 不频繁 的场景，与 RPC 调用较为契合。而成熟的 RPC 框架的传输层和协议层通常也会提供多种选择，以应对不同的场景。
 
 ## 总结
 

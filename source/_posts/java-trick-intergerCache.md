@@ -28,9 +28,9 @@ public class Main {
 true
 false
 ```
-下面一个很好解释，因为自动拆装箱机制，比较的是两者的引用，而不是值，所以为false，那么为什么前者是同一个引用呢？
+下面一个很好解释，因为自动拆装箱机制，比较的是两者的引用，而不是值，所以为 false，那么为什么前者是同一个引用呢？
 
-来看看Integer这个类，首先是自动拆装箱会调用`valueOf()`方法
+来看看 Integer 这个类，首先是自动拆装箱会调用 `valueOf()` 方法
 
 ```java
 public static Integer valueOf(int i) {
@@ -40,7 +40,7 @@ public static Integer valueOf(int i) {
         return new Integer(i);
     }
 ```
-这里并不是简单的返回`new Integer(i)` 而是判断了一下int的数值，Integer的存在一个缓存机制，默认用一个IntegerCache缓存了`[IntegerCache.low,IntegerCache.high]`的引用,其中IntegerCache这个内部类真正在做缓存
+这里并不是简单的返回 `new Integer(i)` 而是判断了一下 int 的数值，Integer 的存在一个缓存机制，默认用一个 IntegerCache 缓存了 `[IntegerCache.low,IntegerCache.high]` 的引用, 其中 IntegerCache 这个内部类真正在做缓存
 
 ```java
 private static class IntegerCache {
@@ -67,10 +67,10 @@ private static class IntegerCache {
                 cache[k] = new Integer(j++);
         }
 
-        private IntegerCache() {}
+        private IntegerCache(){}
     }
 ```
-所以就出现了最开始的一个小trick
+所以就出现了最开始的一个小 trick
 
 
 

@@ -7,7 +7,7 @@ categories:
 - JAVA
 ---
 
-多线程在使用`system.out.println`时要留一个有意思的地方
+多线程在使用 `system.out.println` 时要留一个有意思的地方
 <!-- more -->
 ```java
 public class Main {
@@ -32,10 +32,10 @@ class MyThread extends Thread {
     }
 }
 ```
-主线程另起一个线程，然后在主线程最后打印一个`end`，猜猜看结果是什么？`end`会不会打印？
+主线程另起一个线程，然后在主线程最后打印一个 `end`，猜猜看结果是什么？`end` 会不会打印？
 ![这里写图片描述](http://img.blog.csdn.net/20161107224558403)
-主线程一直被Mythread占用
-原因就在于`system.out.println`是一个同步方法
+主线程一直被 Mythread 占用
+原因就在于 `system.out.println` 是一个同步方法
 
 ```java
 /**

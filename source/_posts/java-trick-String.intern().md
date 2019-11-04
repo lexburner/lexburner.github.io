@@ -9,9 +9,9 @@ categories:
 
 
 
-《深入理解java虚拟机》第二版中对`String.intern()`方法的讲解中所举的例子非常有意思
+《深入理解 java 虚拟机》第二版中对 `String.intern()` 方法的讲解中所举的例子非常有意思
 
-不了解String.intern()的朋友要理解他其实也很容易，它返回的是一个字符串在字符串常亮池中的引用。直接看下面的demo
+不了解 String.intern() 的朋友要理解他其实也很容易，它返回的是一个字符串在字符串常亮池中的引用。直接看下面的 demo
 
 ```java
 public class Main {
@@ -30,7 +30,7 @@ public class Main {
 true
 false
 ```
-我用的jdk版本为`Oracle JDK7u45`。简单来说，就是一个很奇怪的现象，为什么`java`这个字符串在类加载之前就已经加载到常量池了？
+我用的 jdk 版本为 `Oracle JDK7u45`。简单来说，就是一个很奇怪的现象，为什么 `java` 这个字符串在类加载之前就已经加载到常量池了？
 
 我在知乎找到了具体的说明，如下：
 
@@ -48,7 +48,7 @@ public class Version {
 }
 ```
 
-而HotSpot JVM的实现会在类加载时先调用：
+而 HotSpot JVM 的实现会在类加载时先调用：
 
 ```java
 public final class System{
@@ -61,5 +61,5 @@ public final class System{
 	    ...
 }
 ```
-原来是sun.misc.Version这个类在起作用。
+原来是 sun.misc.Version 这个类在起作用。
 

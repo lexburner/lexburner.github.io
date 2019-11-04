@@ -1,13 +1,13 @@
 ---
-title: Java随机数探秘
+title: Java 随机数探秘
 date: 2018-09-12 19:47:28
 tags:
 - JAVA
 categories:
-- JAVA并发合集
+- JAVA 并发合集
 ---
 
-> 本文的前3节参考修改自微信公众号「咖啡拿铁」的文章，感谢李钊同学对这个话题热情的讨论。
+> 本文的前 3 节参考修改自微信公众号「咖啡拿铁」的文章，感谢李钊同学对这个话题热情的讨论。
 
 ### 1 前言
 
@@ -19,9 +19,9 @@ Random 这个类是 JDK 提供的用来生成随机数的一个类，这个类�
 
 ![img](http://kirito.iocoder.cn/648.jpeg)
 
-#### Random原理
+#### Random 原理
 
-Random 中的方法比较多，这里就针对比较常见的 nextInt() 和 nextInt(int bound) 方法进行分析，前者会计算出 int 范围内的随机数，后者如果我们传入 10，那么他会求出 [0,10) 之间的 int 类型的随机数，左闭右开。我们首先看一下 Random() 的构造方法:
+Random 中的方法比较多，这里就针对比较常见的 nextInt()和 nextInt(int bound) 方法进行分析，前者会计算出 int 范围内的随机数，后者如果我们传入 10，那么他会求出 [0,10) 之间的 int 类型的随机数，左闭右开。我们首先看一下 Random() 的构造方法:
 
  ![img](http://kirito.iocoder.cn/20190906173929.jpg)
 
@@ -37,7 +37,7 @@ nextInt() 的代码如下所示：
 
 ![img](http://kirito.iocoder.cn/643.jpeg)
 
-这里会根据 seed 当前的值，通过一定的规则(伪随机算法)算出下一个 seed，然后进行 CAS，如果 CAS 失败则继续循环上面的操作。最后根据我们需要的 bit 位数来进行返回。核心便是 CAS 算法。
+这里会根据 seed 当前的值，通过一定的规则 (伪随机算法) 算出下一个 seed，然后进行 CAS，如果 CAS 失败则继续循环上面的操作。最后根据我们需要的 bit 位数来进行返回。核心便是 CAS 算法。
 
 ### nextInt(int bound)
 
@@ -45,9 +45,9 @@ nextInt(int bound) 的代码如下所示：![img](http://kirito.iocoder.cn/644.j
 
 这个流程比 nextInt() 多了几步，具体步骤如下:
 
-1. 首先获取 31 位的随机数，注意这里是 31 位，和上面 32 位不同，因为在 nextInt() 方法中可以获取到随机数可能是负数，而 nextInt(int bound) 规定只能获取到 [0,bound) 之前的随机数，也就意味着必须是正数，预留一位符号位，所以只获取了31位。(不要想着使用取绝对值这样操作，会导致性能下降)
+1. 首先获取 31 位的随机数，注意这里是 31 位，和上面 32 位不同，因为在 nextInt()方法中可以获取到随机数可能是负数，而 nextInt(int bound) 规定只能获取到 [0,bound) 之前的随机数，也就意味着必须是正数，预留一位符号位，所以只获取了 31 位。(不要想着使用取绝对值这样操作，会导致性能下降)
 2. 然后进行取 bound 操作。
-3. 如果 bound 是2的幂次方，可以直接将第一步获取的值乘以 bound 然后右移31位，解释一下:如果 bound 是4，那么乘以4其实就是左移2位，其实就是变成了33位，再右移31位的话，就又会变成2位，最后，2位 int 的范围其实就是 [0,4) 了。
+3. 如果 bound 是 2 的幂次方，可以直接将第一步获取的值乘以 bound 然后右移 31 位，解释一下: 如果 bound 是 4，那么乘以 4 其实就是左移 2 位，其实就是变成了 33 位，再右移 31 位的话，就又会变成 2 位，最后，2 位 int 的范围其实就是 [0,4) 了。
 4. 如果不是 2 的幂，通过模运算进行处理。
 
 #### 并发瓶颈
@@ -65,7 +65,7 @@ ThreadLocalRandom.current().nextInt(10);
 
 在 current 方法中有:
 
-![img](http://kirito.iocoder.cn/645.jpeg)可以看见如果没有初始化会对其进行初始化，而这里我们的 seed 不再是一个全局变量，在我们的Thread中有三个变量: 
+![img](http://kirito.iocoder.cn/645.jpeg) 可以看见如果没有初始化会对其进行初始化，而这里我们的 seed 不再是一个全局变量，在我们的 Thread 中有三个变量: 
 
 ![img](http://kirito.iocoder.cn/646.jpeg)
 
@@ -146,7 +146,7 @@ RandomBenchmark.threadLocalRandom        avgt    3    90.731 ±  39.098  ns/op
 RandomBenchmark.threadLocalRandomHolder  avgt    3   229.502 ± 267.144  ns/op
 ```
 
-从上图可以发现，JDK1.7 的 `ThreadLocalRandom` 取得了最好的成绩，仅仅需要 90 ns 就可以生成一次随机数，netty 实现的`ThreadLocalRandom`  以及使用 ThreadLocal 维护 Random 的方式差距不是很大，位列 2、3 位，共享的 Random 变量则效果最差。
+从上图可以发现，JDK1.7 的 `ThreadLocalRandom` 取得了最好的成绩，仅仅需要 90 ns 就可以生成一次随机数，netty 实现的 `ThreadLocalRandom`  以及使用 ThreadLocal 维护 Random 的方式差距不是很大，位列 2、3 位，共享的 Random 变量则效果最差。
 
 可见，在并发场景下，ThreadLocalRandom 可以明显的提升性能。
 
@@ -210,7 +210,7 @@ public class RightCase {
 }
 ```
 
-### 彩蛋1
+### 彩蛋 1
 
 梁飞博客中一句话常常在我脑海中萦绕：魔鬼在细节中。优秀的代码都是一个个小细节堆砌出来，今天介绍的 ThreadLocalRandom 也不例外。
 
@@ -218,7 +218,7 @@ public class RightCase {
 
 在 incubator-dubbo-2.7.0 中，随机负载均衡器的一个小改动便是将 Random 替换为了 ThreadLocalRandom，用于优化并发性能。
 
-### 彩蛋2
+### 彩蛋 2
 
 ThreadLocalRandom 的 nextInt(int bound) 方法中，当 bound 不为 2 的幂次方时，使用了一个循环来修改 r 的值，我认为这可能不必要，你觉得呢？
 
@@ -240,11 +240,11 @@ public int nextInt(int bound) {
 }
 ```
 
-**欢迎关注李钊同学的微信公众号：「咖啡拿铁」**
+** 欢迎关注李钊同学的微信公众号：「咖啡拿铁」**
 
 ![咖啡拿铁](http://kirito.iocoder.cn/image-20180911185754582.png)
 
-**当然，也欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 当然，也欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 

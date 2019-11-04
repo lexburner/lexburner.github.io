@@ -1,5 +1,5 @@
 ---
-title: PolarDB数据库性能大赛Java选手分享
+title: PolarDB 数据库性能大赛 Java 选手分享
 date: 2018-12-10 18:43:56
 tags:
 - 数据库
@@ -11,7 +11,7 @@ categories:
 
 ![排名](http://kirito.iocoder.cn/image-20181210184521001.png)
 
-国际惯例，先报成绩，熬了无数个夜晚，最后依旧被绝杀出了第一页，最终排名第 21 名。前十名的成绩分布为 413.69~416.94，我最终的耗时是 422.43。成绩虽然不是特别亮眼，但与众多参赛选手使用 C++ 作为参赛语言不同，我使用的是 Java，一方面是我 C++ 的能力早已荒废，另一方面是我想验证一下使用 Java 编写存储引擎是否与 C++ 差距巨大(当然，主要还是前者 QAQ)。所以在本文中，我除了介绍整体的架构之外，还会着重笔墨来探讨 Java 编写存储类型应用的一些最佳实践，文末会给出 github 的开源地址。
+国际惯例，先报成绩，熬了无数个夜晚，最后依旧被绝杀出了第一页，最终排名第 21 名。前十名的成绩分布为 413.69~416.94，我最终的耗时是 422.43。成绩虽然不是特别亮眼，但与众多参赛选手使用 C++ 作为参赛语言不同，我使用的是 Java，一方面是我 C++ 的能力早已荒废，另一方面是我想验证一下使用 Java 编写存储引擎是否与 C++ 差距巨大 (当然，主要还是前者 QAQ)。所以在本文中，我除了介绍整体的架构之外，还会着重笔墨来探讨 Java 编写存储类型应用的一些最佳实践，文末会给出 github 的开源地址。
 
 <!-- more -->
 
@@ -32,7 +32,7 @@ public abstract byte[] read(byte[] key);
 public abstract void range(byte[] lower, byte[] upper, AbstractVisitor visitor);
 ```
 
-程序评测逻辑 分为2个阶段：
+程序评测逻辑 分为 2 个阶段：
 1）Recover 正确性评测：
 此阶段评测程序会并发写入特定数据（key 8B、value 4KB）同时进行任意次 kill -9 来模拟进程意外退出（参赛引擎需要保证进程意外退出时数据持久化不丢失），接着重新打开 DB，调用 Read、Range 接口来进行正确性校验
 
@@ -42,13 +42,13 @@ public abstract void range(byte[] lower, byte[] upper, AbstractVisitor visitor);
 -  顺序读取：64 个线程并发顺序读取，每个线程各使用 Range 有序（增序）遍历全量数据 2 次
   注：
   2.2 阶段会对所有读取的 kv 校验是否匹配，如不通过则终止，评测失败；
-  2.3 阶段除了对迭代出来每条的 kv校 验是否匹配外，还会额外校验是否严格字典序递增，如不通过则终止，评测失败。
+  2.3 阶段除了对迭代出来每条的 kv 校 验是否匹配外，还会额外校验是否严格字典序递增，如不通过则终止，评测失败。
 
 语言限定：C++ & JAVA，一起排名
 
 ### 3 赛题剖析
 
-关于文件 IO 操作的一些基本常识，我已经在专题文章中进行了介绍，如果你没有浏览那篇文章，建议先行浏览一下：[文件IO操作的一些最佳实践](https://www.cnkirito.moe/file-io-best-practise/)。再回归赛题，先对赛题中的几个关键词来进行解读。
+关于文件 IO 操作的一些基本常识，我已经在专题文章中进行了介绍，如果你没有浏览那篇文章，建议先行浏览一下：[文件 IO 操作的一些最佳实践](https://www.cnkirito.moe/file-io-best-practise/)。再回归赛题，先对赛题中的几个关键词来进行解读。
 
 #### 3.1 key 8B, value 4kb
 
@@ -66,7 +66,7 @@ value 为 4kb 的另一个好处是我们再内存做索引时，可以使用 in
 
 赛题分为了随机写，随机读，顺序读三个阶段，每个阶段都会重新 open，且不会发生随机写到一半校验随机读这样的行为，所以我们在随机写阶段不需要在内存维护索引，而是直接落盘。随机读和顺序读阶段，磁盘均存在数据，open 阶段需要恢复索引，可以使用多线程并发恢复。
 
-**同时，赛题还有存在一些隐性的测评细节没有披露给大家，但通过测试，我们可以得知这些信息。**
+** 同时，赛题还有存在一些隐性的测评细节没有披露给大家，但通过测试，我们可以得知这些信息。**
 
 #### 3.4 清空 PageCache 的耗时
 
@@ -77,7 +77,7 @@ value 为 4kb 的另一个好处是我们再内存做索引时，可以使用 in
 sysctl -w vm.drop_caches=1
 #清理 dentries（目录缓存）和 inodes
 sysctl -w vm.drop_caches=2
-#清理pagecache、dentries和inodes
+#清理 pagecache、dentries 和 inodes
 sysctl -w vm.drop_caches=3
 ```
 
@@ -85,7 +85,7 @@ sysctl -w vm.drop_caches=3
 
 #### 3.5 key 的分布
 
-这一个隐性条件可谓是本次比赛的关键，因为它涉及到 Range 部分的架构设计。本次比赛的 key 共计 6400w，但是他们的分布都是**均匀**的，在[《文件IO操作的一些最佳实践》](https://www.cnkirito.moe/file-io-best-practise/) 一文中我们已经提到了数据分区的好处，可以大大减少顺序读写的锁冲突，而 key 的分布均匀这一特性，启发我们在做数据分区时，可以按照 key 的搞 n 位来做 hash，从而确保 key 两个分区之间整体有序(分区内部无序)。实际我尝试了将数据分成 1024、2048 个分区，效果最佳。
+这一个隐性条件可谓是本次比赛的关键，因为它涉及到 Range 部分的架构设计。本次比赛的 key 共计 6400w，但是他们的分布都是 ** 均匀 ** 的，在 [《文件 IO 操作的一些最佳实践》](https://www.cnkirito.moe/file-io-best-practise/) 一文中我们已经提到了数据分区的好处，可以大大减少顺序读写的锁冲突，而 key 的分布均匀这一特性，启发我们在做数据分区时，可以按照 key 的搞 n 位来做 hash，从而确保 key 两个分区之间整体有序 (分区内部无序)。实际我尝试了将数据分成 1024、2048 个分区，效果最佳。
 
 #### 3.6 Range 的缓存设计
 
@@ -102,22 +102,22 @@ sysctl -w vm.drop_caches=3
 public class HighTenPartitioner implements Partitionable {
     @Override
     public int getPartition(byte[] key) {
-        return ((key[0] & 0xff) << 2) | ((key[1] & 0xff) >> 6);
+        return ((key[0] & 0xff)<< 2) | ((key[1] & 0xff)>> 6);
     }
 }
 ```
 
 明确了高位分区的前提再来看整体的架构就变得明朗了
 
-**全局视角**
+** 全局视角 **
 
 ![全局视角](http://kirito.iocoder.cn/KiritoDB.png)
 
-**分区视角**
+** 分区视角 **
 
 ![分区视角](http://kirito.iocoder.cn/image-20181210204156199.png)
 
-**内存视角**
+** 内存视角 **
 
 内存中仅仅维护有序的 `key[1024][625000]` 数组和 `offset[1024][625000]` 数组。
 
@@ -171,8 +171,8 @@ Range 环节是整个比赛的大头，也是拉开差距的分水岭。前面�
 
 1. fetch thread 1~4 加载磁盘数据进入缓存是并发的
 2. visit group 1~64 访问同一个 buffer 是并发的
-3. visit group 1~64 访问不同 partition 对应的 buffer 是按照次序来进行的(打到全局有序)
-4. 加载 partitonN 会阻塞 visit bufferN，visit bufferN 会阻塞加载 partitionN+4(相当于复用4块缓存)
+3. visit group 1~64 访问不同 partition 对应的 buffer 是按照次序来进行的 (打到全局有序)
+4. 加载 partitonN 会阻塞 visit bufferN，visit bufferN 会阻塞加载 partitionN+4(相当于复用 4 块缓存)
 
 大块的加载读进缓存，最大程度复用，是 ReadSeq 部分的关键。顺序读两轮的成绩在 196~198s 左右，相比 C++ 又慢了 4s 左右。
 
@@ -182,7 +182,7 @@ Range 环节是整个比赛的大头，也是拉开差距的分水岭。前面�
 
 ### 10 Java 实现 Direct IO
 
-由于这次比赛将 drop cache 的时间算进了测评程序之中，所以在不必要的地方应当尽量避免 pageCache，也就是说除了写索引之外，其他阶段不应该出现 pageCache。这对于 Java 选手来说可能是不小的障碍，因为 Java 原生没有提供 Direct IO，需要自己封装一套 JNA 接口，封装这套接口借鉴了开源框架 jaydio 的思路，感谢@尘央的协助，大家可以在文末的代码中看到实现细节。这一点可以说是拦住了一大票 Java 选手。
+由于这次比赛将 drop cache 的时间算进了测评程序之中，所以在不必要的地方应当尽量避免 pageCache，也就是说除了写索引之外，其他阶段不应该出现 pageCache。这对于 Java 选手来说可能是不小的障碍，因为 Java 原生没有提供 Direct IO，需要自己封装一套 JNA 接口，封装这套接口借鉴了开源框架 jaydio 的思路，感谢 @尘央的协助，大家可以在文末的代码中看到实现细节。这一点可以说是拦住了一大票 Java 选手。
 
 Direct IO 需要注意的两个细节：
 
@@ -191,7 +191,7 @@ Direct IO 需要注意的两个细节：
 
 ### 11 直接内存优于堆内内存
 
-这一点在《文件IO操作的一些最佳实践》中有所提及，堆外内存的两大好处是减少了一份内存拷贝，并且对 gc 友好，在 Direct IO 的实现中，应该配备一套堆外内存的接口，才能发挥出最大的功效。尤其在 Range 阶段，一个缓存区的大小便对应一个 partition 数据分区的大小：256M，大块的内存，更加适合用 DirectByteBuffer 装载。
+这一点在《文件 IO 操作的一些最佳实践》中有所提及，堆外内存的两大好处是减少了一份内存拷贝，并且对 gc 友好，在 Direct IO 的实现中，应该配备一套堆外内存的接口，才能发挥出最大的功效。尤其在 Range 阶段，一个缓存区的大小便对应一个 partition 数据分区的大小：256M，大块的内存，更加适合用 DirectByteBuffer 装载。
 
 ### 12 JVM 调优
 
@@ -199,7 +199,7 @@ Direct IO 需要注意的两个细节：
 -server -Xms2560m -Xmx2560m -XX:MaxDirectMemorySize=1024m -XX:NewRatio=4 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:-UseBiasedLocking
 ```
 
-众所周知 newRatio 控制的是 young 区和 old 区大小的比例，官方推荐参数为  `-XX:NewRatio=1`，很多不注意的 Java 选手可能没有意识去修改它，会在无形中被 gc 拖累。经过和@阿杜的讨论，最终得出的结论：
+众所周知 newRatio 控制的是 young 区和 old 区大小的比例，官方推荐参数为  `-XX:NewRatio=1`，很多不注意的 Java 选手可能没有意识去修改它，会在无形中被 gc 拖累。经过和 @阿杜的讨论，最终得出的结论：
 
 1. young 区过大，对象在年轻代待得太久，多次拷贝
 2. old 区过小，会频繁触发 old 区的 cms gc
@@ -265,12 +265,12 @@ try (final AffinityLock al2 = AffinityLock.acquireLock()) {
 
 我在最终版本的代码中，几乎完全抛弃了 FileChannel，事实上，在不 Drop Cache 的场景下，它已经可以发挥出它利用 PageCache 的一些优势，并且优秀的 Java 存储引擎都主要使用了 FileChannel 来进行读写，在少量的场景下，使用了 MMAP 作为辅助，毕竟，MMAP 在写小数据量文件时存在其价值。
 
-另外需要注意的一点，在跟@96年的亚普长谈的一个夜晚，发现 FileChannel 中出人意料的一个实现，在分配对内内存时，它仍然会拷贝一份堆外内存，这对于实际使用 FileChannel 的场景需要额外注意，这部分意料之外分配的内存很容易导致线上的问题（实际上已经遇到了，和 glibc 的 malloc 相关，当 buffer 大于 128k 时，会使用 mmap 分配一块内存作为缓存）
+另外需要注意的一点，在跟 @96 年的亚普长谈的一个夜晚，发现 FileChannel 中出人意料的一个实现，在分配对内内存时，它仍然会拷贝一份堆外内存，这对于实际使用 FileChannel 的场景需要额外注意，这部分意料之外分配的内存很容易导致线上的问题（实际上已经遇到了，和 glibc 的 malloc 相关，当 buffer 大于 128k 时，会使用 mmap 分配一块内存作为缓存）
 
 说回 FileChannel，MMAP，最容易想到的是 RocketMQ 之中对两者灵活的运用，不知道在其他 Java 实现的存储引擎之中，是不是可以考虑使用 Direct IO 来提升存储引擎的性能呢？我们可以设想一下，利用有限并且少量的 PageCache 来保证一致性，在主流程中使用 Direct IO 配合顺序读写是不是一种可以配套使用的方案，不仅仅 PolarDB，算作是参加本次比赛给予我的一个启发。
 
 虽然无缘决赛，但使用 Java 取得这样的成绩还算不是特别难过，在 6400w 数据随机写，随机读，顺序读的场景下，Java 可以做到仅仅相差 C++ 不到 10s 的 overhead，我倒是觉得完全是可以接受的，哈哈。还有一些小的优化点就不在此赘述了，欢迎留言与我交流优化点和比赛感悟。
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

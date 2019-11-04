@@ -2,7 +2,7 @@
 title: 一文探讨堆外内存的监控与回收
 date: 2019-03-17 14:12:40
 tags:
-- 文件IO
+- 文件 IO
 categories:
 - 数据库
 ---
@@ -15,7 +15,7 @@ categories:
 
 <!-- more -->
 
-## 问题分析&源码分析
+## 问题分析 & 源码分析
 
 根据异常日志的定位，发现的确使用的是 HeapByteBuffer 来进行读写，但却导致堆外内存飙升，随即翻了 FileChannel 的源码，来一探究竟。
 
@@ -96,7 +96,7 @@ JDK 提供了一个非常好用的监控工具 —— Java VisualVM。我们只�
 
 ![jvisualVM 主界面](http://kirito.iocoder.cn/image-20190315193955214.png)
 
-左侧树状目录可以选择需要监控的 Java 进程，右侧是监控的维度信息，除了 CPU、线程、堆、类等信息，还可以通过上方的【工具(T)】 安装插件，增加 MBeans、Buffer Pools 等维度的监控。
+左侧树状目录可以选择需要监控的 Java 进程，右侧是监控的维度信息，除了 CPU、线程、堆、类等信息，还可以通过上方的【工具 (T)】 安装插件，增加 MBeans、Buffer Pools 等维度的监控。
 
 ![jvisualVM 插件](http://kirito.iocoder.cn/image-20190315194046726.png)
 
@@ -149,7 +149,7 @@ public class ReadByHeapByteBufferTest {
 
 那大家有没有想过，为什么 JDK 要如此设计？为什么不直接使用堆内内存写入 PageCache 进而落盘呢？为什么一定要经过 DirectByteBuffer 的拷贝呢？
 
-在知乎的相关问题中，R 大和[曾泽堂](https://www.zhihu.com/people/zeng-ze-tang) 两位同学进行了解答，是我比较认同的解释：
+在知乎的相关问题中，R 大和 [曾泽堂](https://www.zhihu.com/people/zeng-ze-tang) 两位同学进行了解答，是我比较认同的解释：
 
 > 作者：RednaxelaFX
 >
@@ -157,17 +157,17 @@ public class ReadByHeapByteBufferTest {
 >
 > 来源：知乎
 >
-> 这里其实是在迁就OpenJDK里的HotSpot VM的一点实现细节。
+> 这里其实是在迁就 OpenJDK 里的 HotSpot VM 的一点实现细节。
 >
 > HotSpot VM 里的 GC 除了 CMS 之外都是要移动对象的，是所谓“compacting GC”。
 >
-> 如果要把一个Java里的 byte[] 对象的引用传给native代码，让native代码直接访问数组的内容的话，就必须要保证native代码在访问的时候这个 byte[] 对象不能被移动，也就是要被“pin”（钉）住。
+> 如果要把一个 Java 里的 byte[] 对象的引用传给 native 代码，让 native 代码直接访问数组的内容的话，就必须要保证 native 代码在访问的时候这个 byte[] 对象不能被移动，也就是要被“pin”（钉）住。
 >
 > 可惜 HotSpot VM 出于一些取舍而决定不实现单个对象层面的 object pinning，要 pin 的话就得暂时禁用 GC——也就等于把整个 Java 堆都给 pin 住。
 >
 > 所以 Oracle/Sun JDK / OpenJDK 的这个地方就用了点绕弯的做法。它假设把 HeapByteBuffer 背后的 byte[] 里的内容拷贝一次是一个时间开销可以接受的操作，同时假设真正的 I/O 可能是一个很慢的操作。
 >
-> 于是它就先把 HeapByteBuffer 背后的 byte[] 的内容拷贝到一个 DirectByteBuffer 背后的 native memory去，这个拷贝会涉及 sun.misc.Unsafe.copyMemory() 的调用，背后是类似 memcpy() 的实现。这个操作本质上是会在整个拷贝过程中暂时不允许发生 GC 的。
+> 于是它就先把 HeapByteBuffer 背后的 byte[] 的内容拷贝到一个 DirectByteBuffer 背后的 native memory 去，这个拷贝会涉及 sun.misc.Unsafe.copyMemory() 的调用，背后是类似 memcpy() 的实现。这个操作本质上是会在整个拷贝过程中暂时不允许发生 GC 的。
 >
 > 然后数据被拷贝到 native memory 之后就好办了，就去做真正的 I/O，把 DirectByteBuffer 背后的 native memory 地址传给真正做 I/O 的函数。这边就不需要再去访问 Java 对象去读写要做 I/O 的数据了。
 
@@ -243,7 +243,7 @@ public class WriteByDirectByteBufferTest {
 public class MmapUtil {
     public static void clean(MappedByteBuffer mappedByteBuffer) {
         ByteBuffer buffer = mappedByteBuffer;
-        if (buffer == null || !buffer.isDirect() || buffer.capacity() == 0)
+        if (buffer == null || !buffer.isDirect() || buffer.capacity()== 0)
             return;
         invoke(invoke(viewed(buffer), "cleaner"), "clean");
     }
@@ -305,7 +305,7 @@ public class WriteByMappedByteBufferTest {
 }
 ```
 
-![mmap手动回收](http://kirito.iocoder.cn/image-20190315203424823.png)
+![mmap 手动回收](http://kirito.iocoder.cn/image-20190315203424823.png)
 
 结论：通过一顿复杂的反射操作，成功地手动回收了 Mmap 的内存映射。
 
@@ -328,13 +328,13 @@ public class WriteByMappedByteBufferTest {
 
 我尝试映射了 1000G 的内存，我的电脑显然没有 1000G 这么大内存，那么监控是如何反馈的呢？
 
-![mmap映射1000G](http://kirito.iocoder.cn/image-20190315203835758.png)
+![mmap 映射 1000G](http://kirito.iocoder.cn/image-20190315203835758.png)
 
 几乎在瞬间，控制台打印出了 map finish 的日志，也意味着 1000G 的内存映射几乎是不耗费时间的，为什么要做这个测试？就是为了解释内存映射并不等于内存占用，很多文章认为内存映射这种方式可以大幅度提升文件的读写速度，并宣称“写 MappedByteBuffer 就等于写内存”，实际是非常错误的认知。通过控制面板可以查看到该 Java 进程（pid 39040）实际占用的内存，仅仅不到 100M。(关于 Mmap 的使用场景和方式可以参考我之前的文章)
 
 ![实际消耗内存](http://kirito.iocoder.cn/image-20190315204304382.png)
 
-结论：MappedByteBuffer 映射出一片文件内容之后，不会全部加载到内存中，而是会进行一部分的预读（体现在占用的那 100M 上），MappedByteBuffer 不是文件读写的银弹，它仍然依赖于 PageCache 异步刷盘的机制。**通过 Java VisualVM 可以监控到 mmap 总映射的大小，但并不是实际占用的内存量**。
+结论：MappedByteBuffer 映射出一片文件内容之后，不会全部加载到内存中，而是会进行一部分的预读（体现在占用的那 100M 上），MappedByteBuffer 不是文件读写的银弹，它仍然依赖于 PageCache 异步刷盘的机制。** 通过 Java VisualVM 可以监控到 mmap 总映射的大小，但并不是实际占用的内存量 **。
 
 ## 总结
 
@@ -344,6 +344,6 @@ public class WriteByMappedByteBufferTest {
 
 
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

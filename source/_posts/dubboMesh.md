@@ -1,5 +1,5 @@
 ---
-title: 天池中间件大赛dubboMesh优化总结（qps从1000到6850）
+title: 天池中间件大赛 dubboMesh 优化总结（qps 从 1000 到 6850）
 date: 2018-06-19 19:47:28
 tags:
 - RPC
@@ -27,13 +27,13 @@ categories:
 
 ### 赛题剖析
 
-这次比赛的主要考察点在于高并发下网络通信模型的实现，可以涵盖以下几个关键点：reactor 模型，负载均衡，线程，锁，io 通信，阻塞与非阻塞，零拷贝，序列化，http/tcp/udp与自定义协议，批处理，垃圾回收，服务注册发现等。它们对最终程序的 qps 起着或大或小的影响，对它们的理解越深，越能够编写出高性能的 dubbo mesh 方案。
+这次比赛的主要考察点在于高并发下网络通信模型的实现，可以涵盖以下几个关键点：reactor 模型，负载均衡，线程，锁，io 通信，阻塞与非阻塞，零拷贝，序列化，http/tcp/udp 与自定义协议，批处理，垃圾回收，服务注册发现等。它们对最终程序的 qps 起着或大或小的影响，对它们的理解越深，越能够编写出高性能的 dubbo mesh 方案。
 
-语言的选择，初赛结束后的感受，大家主要还是在 java，c++，go 中进行了抉择。语言的选择考虑到了诸多的因素，通用性，轻量级，性能，代码量和qps的性价比，选手的习惯等等。虽然前几名貌似都是 c++，但总体来说，排名 top 10 之外，绝不会是因为语言特性在从中阻挠。c++ 选手高性能的背后，可能是牺牲了 600 多行代码在自己维护一个 etcd-lib（比赛限制使用 etcd，但据使用 c++ 的选手说，c++ 没有提供 etcd 的 lib）；且这次比赛提供了预热环节，java 党也露出了欣慰的笑容。java 的主流框架还是在 nio，akka，netty 之间的抉择，netty 应该是众多 java 选手中较为青睐的，博主也选择了 netty 作为 dubbo mesh 的实现；go 的协程和网络库也是两把利器，并不比 java 弱，加上其进程轻量级的特性，也作为了一个选择。
+语言的选择，初赛结束后的感受，大家主要还是在 java，c++，go 中进行了抉择。语言的选择考虑到了诸多的因素，通用性，轻量级，性能，代码量和 qps 的性价比，选手的习惯等等。虽然前几名貌似都是 c++，但总体来说，排名 top 10 之外，绝不会是因为语言特性在从中阻挠。c++ 选手高性能的背后，可能是牺牲了 600 多行代码在自己维护一个 etcd-lib（比赛限制使用 etcd，但据使用 c++ 的选手说，c++ 没有提供 etcd 的 lib）；且这次比赛提供了预热环节，java 党也露出了欣慰的笑容。java 的主流框架还是在 nio，akka，netty 之间的抉择，netty 应该是众多 java 选手中较为青睐的，博主也选择了 netty 作为 dubbo mesh 的实现；go 的协程和网络库也是两把利器，并不比 java 弱，加上其进程轻量级的特性，也作为了一个选择。
 
 官方提供了一个 qps 并不是很高的 demo，来方便选手们理解题意，可以说是非常贴心了，来回顾一下最简易的 dubbo mesh 实现：
 
-![dubbo mesh初始方案](http://kirito.iocoder.cn/image-20180619200219464.png)
+![dubbo mesh 初始方案](http://kirito.iocoder.cn/image-20180619200219464.png)
 
 如上图所示，是整个初始 dubbo mesh 的架构图，其中 consumer 和 provider 以灰色表示，因为选手是不能修改其实现的，绿色部分的 agent 是可以由选手们自由发挥的部分。比赛中 consumer，consumer-agent 为 单个实例，provider、provider-agent 分别启动了三个性能不一的实例：small，medium，large，这点我没有在图中表示出来，大家自行脑补。所以所有选手都需要完成以下几件事：
 
@@ -100,11 +100,11 @@ Promise<Integer> agentResponsePromise = new DefaultPromise<>(ctx.executor());
 agentResponsePromise.addListener();
 ```
 
-netty 为此提供了默认的 Promise 的抽象，以及 DefaultPromise 的默认实现，我们可以 out-of-box 的使用 callback 特性。在 netty 的入站 handler 的 channelRead 事件中创建 promise，拿到 requestId，建立 requestId 和 promise 的映射；在出站 handler 的channelRead 事件中拿到返回的 requestId，查到 promise，调用 done 方法，便完成了非阻塞的请求响应。可参考： 入站 handler `ConsumerAgentHttpServerHandler` 和  和出站 handler  `ConsumerAgentClientHandler` 的实现。
+netty 为此提供了默认的 Promise 的抽象，以及 DefaultPromise 的默认实现，我们可以 out-of-box 的使用 callback 特性。在 netty 的入站 handler 的 channelRead 事件中创建 promise，拿到 requestId，建立 requestId 和 promise 的映射；在出站 handler 的 channelRead 事件中拿到返回的 requestId，查到 promise，调用 done 方法，便完成了非阻塞的请求响应。可参考： 入站 handler `ConsumerAgentHttpServerHandler` 和  和出站 handler  `ConsumerAgentClientHandler` 的实现。
 
-**Qps 3500 到 4200 (http通信替换为tcp通信)**
+**Qps 3500 到 4200 (http 通信替换为 tcp 通信)**
 
-ca 到 pa 的通信原本是异步 http 的通信方式，完全可以参考 pa 到 p 的异步 tcp 通信进行改造。自定义 agent 之间的通信协议也非常容易，考虑到 tcp 粘包的问题，使用定长头+字节数组来作为自定义协议是一个较为常用的做法。这里踩过一个坑，原本想使用 protoBuffer 来作为自定义协议，netty 也很友好的提供了基于 protoBuffer 协议的编解码器，只需要编写好 DubboMeshProto.proto 文件即可：
+ca 到 pa 的通信原本是异步 http 的通信方式，完全可以参考 pa 到 p 的异步 tcp 通信进行改造。自定义 agent 之间的通信协议也非常容易，考虑到 tcp 粘包的问题，使用定长头 + 字节数组来作为自定义协议是一个较为常用的做法。这里踩过一个坑，原本想使用 protoBuffer 来作为自定义协议，netty 也很友好的提供了基于 protoBuffer 协议的编解码器，只需要编写好 DubboMeshProto.proto 文件即可：
 
 ```protobuf
 message AgentRequest {
@@ -121,7 +121,7 @@ message AgentResponse {
 }
 ```
 
-protoBuffer 在实际使用中的优势是毋庸置疑的，其可以尽可能的压缩字节，减少 io 码流。在正式赛之前一直用的好好的，但后来的 512 并发下通过 jprofile 发现，DubboMeshProto 的 getSerializedSize ,getDescriptorForType 等方法存在不必要的耗时，对于这次比赛中如此简单的数据结构而言 protoBuffer 并不是那么优秀。最终还是采取了定长头+字节数组的自定义协议。参考：`com.alibaba.dubbo.performance.demo.agent.protocol.simple.SimpleDecoder`
+protoBuffer 在实际使用中的优势是毋庸置疑的，其可以尽可能的压缩字节，减少 io 码流。在正式赛之前一直用的好好的，但后来的 512 并发下通过 jprofile 发现，DubboMeshProto 的 getSerializedSize ,getDescriptorForType 等方法存在不必要的耗时，对于这次比赛中如此简单的数据结构而言 protoBuffer 并不是那么优秀。最终还是采取了定长头 + 字节数组的自定义协议。参考：`com.alibaba.dubbo.performance.demo.agent.protocol.simple.SimpleDecoder`
 
 http 通信既然换了，干脆一换到底，ca 的 springmvc 服务器也可以使用 netty 实现，这样更加有利于实现 ca 整体的 reactive。使用 netty 实现 http 服务器很简单，使用 netty 提供的默认编码解码器即可。
 
@@ -138,12 +138,12 @@ public class ConsumerAgentHttpServerInitializer extends ChannelInitializer<Socke
 }
 ```
 
-http 服务器的实现也踩了一个坑，解码 http request 请求时没注意好 ByteBuf 的释放，导致 qps 跌倒了 2000+，反而不如 springmvc 的实现。在队友@闪电侠的帮助下成功定位到了内存泄露的问题。
+http 服务器的实现也踩了一个坑，解码 http request 请求时没注意好 ByteBuf 的释放，导致 qps 跌倒了 2000+，反而不如 springmvc 的实现。在队友 @闪电侠的帮助下成功定位到了内存泄露的问题。
 
 ```java
 public static Map<String, String> parse(FullHttpRequest req) {
     Map<String, String> params = new HashMap<>();
-    // 是POST请求
+    // 是 POST 请求
     HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(new DefaultHttpDataFactory(false), req);
     List<InterfaceHttpData> postList = decoder.getBodyHttpDatas();
     for (InterfaceHttpData data : postList) {
@@ -180,9 +180,9 @@ public static Map<String, String> fastParse(FullHttpRequest httpRequest) {
 
 节省篇幅，直接在这儿将之后的优化贴出来，后续不再对这个优化赘述了。
 
-**Qps 4200 到 4400 (netty复用eventLoop)**
+**Qps 4200 到 4400 (netty 复用 eventLoop)**
 
-这个优化点来自于比赛认识的一位好友@半杯水，由于没有使用过 netty，比赛期间恶补了一下 netty 的线程模型，得知了 netty 可以从客户端引导 channel，从而复用 eventLoop。不了解 netty 的朋友可以把 eventLoop 理解为 io 线程，如果入站的 io 线程和 出站的 io 线程使用相同的线程，可以减少不必要的上下文切换，这一点在 256 并发下可能还不明显，只有 200 多 qps 的差距，但在 512 下尤为明显。复用 eventLoop 在《netty实战》中是一个专门的章节，篇幅虽然不多，但非常清晰地向读者阐释了如何复用 eventLoop（注意复用同时存在于 ca 和 pa 中）。
+这个优化点来自于比赛认识的一位好友 @半杯水，由于没有使用过 netty，比赛期间恶补了一下 netty 的线程模型，得知了 netty 可以从客户端引导 channel，从而复用 eventLoop。不了解 netty 的朋友可以把 eventLoop 理解为 io 线程，如果入站的 io 线程和 出站的 io 线程使用相同的线程，可以减少不必要的上下文切换，这一点在 256 并发下可能还不明显，只有 200 多 qps 的差距，但在 512 下尤为明显。复用 eventLoop 在《netty 实战》中是一个专门的章节，篇幅虽然不多，但非常清晰地向读者阐释了如何复用 eventLoop（注意复用同时存在于 ca 和 pa 中）。
 
 ```java
 // 入站服务端的 eventLoopGroup
@@ -201,11 +201,11 @@ private void initThreadBoundClient(EventLoopGroup workerGroup) {
 }
 ```
 
-使用入站服务端的 eventLoopGroup 为出站客户端预先创建好 channel，这样可以达到复用 eventLoop 的目的。并且此时还有一个伴随的优化点，就是将存储 Map<requestId,Promise> 的数据结构，从 concurrentHashMap 替换为了 ThreadLocal<HashMap> ,因为入站线程和出站线程都是相同的线程，省去一个 concurrentHashMap 可以进一步降低锁的竞争。
+使用入站服务端的 eventLoopGroup 为出站客户端预先创建好 channel，这样可以达到复用 eventLoop 的目的。并且此时还有一个伴随的优化点，就是将存储 Map<requestId,Promise> 的数据结构，从 concurrentHashMap 替换为了 ThreadLocal<HashMap> , 因为入站线程和出站线程都是相同的线程，省去一个 concurrentHashMap 可以进一步降低锁的竞争。
 
 到了这一步，整体架构已经清晰了，c->ca，ca->pa，pa->p 都实现了异步非阻塞的 reactor 模型，qps 在 256 并发下，也达到了 4400 qps。
 
-![优化后的dubbo mesh方案](http://kirito.iocoder.cn/image-20180619214121418.png)
+![优化后的 dubbo mesh 方案](http://kirito.iocoder.cn/image-20180619214121418.png)
 
 ### 正式赛 512 连接带来的新格局
 
@@ -217,17 +217,17 @@ private void initThreadBoundClient(EventLoopGroup workerGroup) {
 
 理论上来说，channel 数应该不至于成为性能的瓶颈，可能和 provider dubbo 的线程池策略有关，最终得出的经验就是：在 server 中合理的在 io 事件处理能力的承受范围内，使用尽可能少的连接数和线程数，可以提升 qps，减少不必要的线程切换。顺带一提（此时 ca 的线程数为 4，入站连接为 http 连接，最高为 512 连接，出站连接由于和线程绑定，又需要做负载均衡，所以为
 $$
-线程数*pa数=4*3=12
+线程数 *pa 数 =4*3=12
 $$
 这个阶段，还存在另一个问题，由于 provider 线程数固定为 200 个线程，如果 large-pa 继续分配 3/1+2+3=0.5 即 50% 的请求，很容易出现 provider 线程池饱满的异常，所以调整了加权值为 1：2：2。限制加权负载均衡的不再仅仅是机器性能，还要考虑到 provider 的连接处理能力。
 
-**Qps 5800 到 6100 (Epoll替换Nio)**
+**Qps 5800 到 6100 (Epoll 替换 Nio)**
 
-依旧感谢@半杯水的提醒，由于评测环境使用了 linux 作为评测环境，所以可以使用 netty 自己封装的 EpollSocketChannel 来代替 NioSocketChannel，这个提升远超我的想象，直接帮助我突破了 6000 的关卡。
+依旧感谢 @半杯水的提醒，由于评测环境使用了 linux 作为评测环境，所以可以使用 netty 自己封装的 EpollSocketChannel 来代替 NioSocketChannel，这个提升远超我的想象，直接帮助我突破了 6000 的关卡。
 
 ```Java
-private EventLoopGroup bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
-private EventLoopGroup workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(2) : new NioEventLoopGroup(2);
+private EventLoopGroup bossGroup = Epoll.isAvailable()? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
+private EventLoopGroup workerGroup = Epoll.isAvailable()? new EpollEventLoopGroup(2) : new NioEventLoopGroup(2);
 bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
                     .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
@@ -238,19 +238,19 @@ bootstrap = new ServerBootstrap();
 NioServerSocketChannel 使用了 jdk 的 nio，其会根据操作系统选择使用不同的 io 模型，在 linux 下同样是 epoll，但默认是 level-triggered ，而 netty 自己封装的 EpollSocketChannel 默认是 edge-triggered。 我原先以为是 et 和 lt 的差距导致了 qps 如此大的悬殊，但后续优化 Epoll 参数时发现 EpollSocketChannel 也可以配置为 level-triggered，qps 并没有下降，在比赛的特殊条件下，个人猜想并不是这两种触发方式带来的差距，而仅仅是 netty 自己封装 epoll 带来的优化。
 
 ```java
-//默认
+// 默认
 bootstrap.option(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED);
-//可修改触发方式
+// 可修改触发方式
 bootstrap.option(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED);
 ```
 
-**Qps 6100 到 6300 (agent自定义协议优化)**
+**Qps 6100 到 6300 (agent 自定义协议优化)**
 
 agent 之间的自定义协议我之前已经介绍过了，由于一开始我使用了 protoBuf，发现了性能问题，就是在这儿发现的。在 512 下 protoBuf 的问题尤为明显，最终为了保险起见，以及为了和我后面的一个优化兼容，最终替换为了自定义协议—Simple 协议，这一点优化之前提到了，不在过多介绍。
 
-**Qps 6300 到 6500 (参数调优与zero-copy)**
+**Qps 6300 到 6500 (参数调优与 zero-copy)**
 
-这一段优化来自于和 @折袖-许华建 的交流，非常感谢。又是一个对 netty 不太了解而没注意的优化点：
+这一段优化来自于和 @折袖 - 许华建 的交流，非常感谢。又是一个对 netty 不太了解而没注意的优化点：
 
 1. 关闭 netty 的内存泄露检测：
 
@@ -280,7 +280,7 @@ serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true)
 
 在这个阶段还同时进行了一个优化，和参数调优一起进行的，所以不知道哪个影响更大一些。demo 中 dubbo 协议编码没有做到 zero-copy，这无形中增加了一份数据从内核态到用户态的拷贝；自定义协议之间同样存在这个问题，在 dubbo mesh 的实践过程中应该尽可能做到：能用 ByteBuf 的地方就不要用其他对象，ByteBuf 提供的 slice 和 CompositeByteBuf 都可以很方便的实现 zero-copy。
 
-**Qps 6500 到 6600 (自定义http协议编解码)**
+**Qps 6500 到 6600 (自定义 http 协议编解码)**
 
 看着榜单上的人 qps 逐渐上升，而自己依旧停留在 6500，于是乎动了歪心思，GTMD 的通用性，自己解析 http 协议得了，不要 netty 提供的 http 编解码器，不需要比 HttpPostRequestDecoder 更快的 QueryStringDecoder，就一个偏向于固定的 http 请求，实现自定义解析非常简单。
 
@@ -310,11 +310,11 @@ Content-Length: 6\r\n
 
 继续丧心病狂，不考虑通用性，把之前所有的中间对象都省略，encode 和 decode 尽一切可能压缩到 handler 中去处理，这样的代码看起来非常难受，存在不少地方的 hardcoding。但效果是存在的，ygc 的次数降低了不少，全程使用 ByteBuf 和 byte[] 来进行数据交互。这个优化点同样存在存在 hack 倾向，不过多赘述。
 
-**Qps 6700 到 6850 (批量flush，批量decode)**
+**Qps 6700 到 6850 (批量 flush，批量 decode)**
 
-事实上到了 6700 有时候还是需要看运气的，从群里的吐槽现象就可以发现，512 下的网路 io 非常抖，不清楚是机器的问题还是高并发下的固有现象，6700的代码都能抖到 5000 分。所以 6700 升 6850 的过程比较曲折，而且很不稳定，提交 20 次一共就上过两次 6800+。
+事实上到了 6700 有时候还是需要看运气的，从群里的吐槽现象就可以发现，512 下的网路 io 非常抖，不清楚是机器的问题还是高并发下的固有现象，6700 的代码都能抖到 5000 分。所以 6700 升 6850 的过程比较曲折，而且很不稳定，提交 20 次一共就上过两次 6800+。
 
-所做的优化是来自队友@闪电侠的批量flush类，一次传输的字节数可以提升，使得网络 io 次数可以降低，原理可以简单理解为：netty 中 write 10 次，flush 1 次。一共实现了两个版本的批量 flush。一个版本是根据同一个 channel write 的次数积累，最终触发 flush；另一个版本是根据一次 eventLoop 结束才强制flush。经过很多测试，由于环境抖动太厉害，这两者没测出多少差距。
+所做的优化是来自队友 @闪电侠的批量 flush 类，一次传输的字节数可以提升，使得网络 io 次数可以降低，原理可以简单理解为：netty 中 write 10 次，flush 1 次。一共实现了两个版本的批量 flush。一个版本是根据同一个 channel write 的次数积累，最终触发 flush；另一个版本是根据一次 eventLoop 结束才强制 flush。经过很多测试，由于环境抖动太厉害，这两者没测出多少差距。
 
 ```java
 handler(new ChannelInitializer<SocketChannel>() {
@@ -346,8 +346,8 @@ Netty 提供了一个方便的解码工具类 `ByteToMessageDecoder` ，如图
 
 https://code.aliyun.com/250577914/agent-demo.git
 
-最后帮队友@闪电侠推广下他的 netty 视频教程，比赛中两个比较难的优化点，都是由他进行的改造。imooc.com 搜索 Netty，可以获取 netty 源码分析视频。
+最后帮队友 @闪电侠推广下他的 netty 视频教程，比赛中两个比较难的优化点，都是由他进行的改造。imooc.com 搜索 Netty，可以获取 netty 源码分析视频。
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

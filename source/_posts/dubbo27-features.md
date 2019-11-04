@@ -99,7 +99,7 @@ Dubbo 2.7 中使用了 JDK1.8 提供的 `CompletableFuture` 原生接口对自�
 
 Q：如果 RPC 接口只定义了同步接口，有办法使用异步调用吗？
 
-A：2.6 中的异步调用唯一的优势在于，不需要在接口层面做改造，又可以进行异步调用，这种方式仍然在 2.7 中保留；使用 Dubbo 官方提供的 compiler hacker，编译期自动重写同步方法，请[在此](https://github.com/dubbo/dubbo-async-processor#compiler-hacker-processer)讨论和跟进具体进展。
+A：2.6 中的异步调用唯一的优势在于，不需要在接口层面做改造，又可以进行异步调用，这种方式仍然在 2.7 中保留；使用 Dubbo 官方提供的 compiler hacker，编译期自动重写同步方法，请 [在此](https://github.com/dubbo/dubbo-async-processor#compiler-hacker-processer) 讨论和跟进具体进展。
 
 ---
 
@@ -123,7 +123,7 @@ A：Dubbo 2.7 新增了服务端异步的支持，但实际上，Dubbo 的业务
 
 元数据是什么？元数据定义为描述数据的数据，在服务治理中，例如服务接口名，重试次数，版本号等等都可以理解为元数据。在 2.7 之前，元数据一股脑丢在了注册中心之中，这造成了一系列的问题：
 
-**推送量大 -> 存储数据量大 -> 网络传输量大 -> 延迟严重**
+** 推送量大 -> 存储数据量大 -> 网络传输量大 -> 延迟严重 **
 
 生产者端注册 30+ 参数，有接近一半是不需要作为注册中心进行传递；消费者端注册 25+ 参数，只有个别需要传递给注册中心。有了以上的理论分析，Dubbo 2.7 进行了大刀阔斧的改动，只将真正属于服务治理的数据发布到注册中心之中，大大降低了注册中心的负荷。
 
@@ -220,7 +220,7 @@ Spring Cloud Config, Apollo, Nacos 等分布式配置中心组件都对上述功
 
 标签路由提供了这样一个能力，当调用链路为 A -> B -> C -> D 时，用户给请求打标，最典型的打标方式可以借助 attachment（他可以在分布式调用中传递下去），调用会优先请求那些匹配的服务端，如 A -> B，C -> D，由于集群中未部署 C 节点，则会降级到普通节点。
 
-打标方式会收到集成系统差异的影响，从而导致很大的差异，所以 Dubbo 只提供了 `RpcContext.getContext().setAttachment()` 这样的基础接口，用户可以使用 SPI 扩展，或者 server filter 的扩展，对测试流量进行打标，引导进入隔离环境/灰度环境。
+打标方式会收到集成系统差异的影响，从而导致很大的差异，所以 Dubbo 只提供了 `RpcContext.getContext().setAttachment()` 这样的基础接口，用户可以使用 SPI 扩展，或者 server filter 的扩展，对测试流量进行打标，引导进入隔离环境 / 灰度环境。
 
 新版的 Dubbo Admin 提供了标签路由的配置项：
 
@@ -230,10 +230,10 @@ Dubbo 用户可以在自己系统的基础上对标签路由进行二次扩展�
 
 ## 7 总结
 
-本文介绍了 Dubbo 2.7 比较重要的三大新特性：异步化改造，三大中心改造，服务治理增强。Dubbo 2.7 还包含了很多功能优化、特性升级，可以在项目源码的 [CHANGES.md](https://github.com/apache/incubator-dubbo/blob/master/CHANGES.md) 中浏览全部的改动点。最后提供一份 Dubbo 2.7 的升级文档：[2.7迁移文档](http://dubbo.incubator.apache.org/zh-cn/docs/user/versions/version-270.html)，欢迎体验。
+本文介绍了 Dubbo 2.7 比较重要的三大新特性：异步化改造，三大中心改造，服务治理增强。Dubbo 2.7 还包含了很多功能优化、特性升级，可以在项目源码的 [CHANGES.md](https://github.com/apache/incubator-dubbo/blob/master/CHANGES.md) 中浏览全部的改动点。最后提供一份 Dubbo 2.7 的升级文档：[2.7 迁移文档](http://dubbo.incubator.apache.org/zh-cn/docs/user/versions/version-270.html)，欢迎体验。
 
 
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

@@ -1,5 +1,5 @@
 ---
-title: spring中的懒加载与事务--排坑记录
+title: spring 中的懒加载与事务 -- 排坑记录
 date: 2017-06-23 13:37:41
 tags: 
 - Spring
@@ -11,17 +11,17 @@ categories:
 
 
 ## 案例描述
-本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，描述常见的使用场景，以及如何规避他们，给出具体的代码。
+本文主要描述了开发中常见的几个与 spring 懒加载和事务相关的案例，描述常见的使用场景，以及如何规避他们，给出具体的代码。
 1. 在新的线程中，访问某个持久化对象的懒加载属性。
-2. 在quartz定时任务中，访问某个持久化对象的懒加载属性。
-3. 在dubbo，motan一类rpc框架中，远程调用时服务端session关闭的问题。
+2. 在 quartz 定时任务中，访问某个持久化对象的懒加载属性。
+3. 在 dubbo，motan 一类 rpc 框架中，远程调用时服务端 session 关闭的问题。
 
-上面三个案例，其实核心都是一个问题，就是牵扯到spring对事务的管理，而懒加载这个技术，只是比较容易体现出事务出错的一个实践，主要用它来引发问题，进而对问题进行思考。
+上面三个案例，其实核心都是一个问题，就是牵扯到 spring 对事务的管理，而懒加载这个技术，只是比较容易体现出事务出错的一个实践，主要用它来引发问题，进而对问题进行思考。
 
 <!-- more -->
 
 ## 前期准备
-为了能直观的暴露出第一个案例的问题，我新建了一个项目，采用传统的mvc分层，一个student.java实体类，一个studentDao.java持久层，一个studentService.java业务层，一个studentController控制层。
+为了能直观的暴露出第一个案例的问题，我新建了一个项目，采用传统的 mvc 分层，一个 student.java 实体类，一个 studentDao.java 持久层，一个 studentService.java 业务层，一个 studentController 控制层。
 
 ```java
 @Entity
@@ -35,12 +35,12 @@ public class Student {
 	getter..setter..
 }
 ```
-持久层使用springdata，框架自动扩展出CURD方法
+持久层使用 springdata，框架自动扩展出 CURD 方法
 ```java
 public interface StudentDao extends JpaRepository<Student, Integer>{
 }
 ```
-service层，先给出普通的调用方法。用于错误演示。
+service 层，先给出普通的调用方法。用于错误演示。
 ```java
 @Service
 public class StudentService {
@@ -54,9 +54,9 @@ public class StudentService {
     }
 }
 ```
-注意：getOne和findOne都是springdata提供的根据id查找单个实体的方法，区别是前者是懒加载，后者是立即加载。我们使用getOne来进行懒加载的实验，就不用大费周章去写懒加载属性，设置多个实体类了。
+注意：getOne 和 findOne 都是 springdata 提供的根据 id 查找单个实体的方法，区别是前者是懒加载，后者是立即加载。我们使用 getOne 来进行懒加载的实验，就不用大费周章去写懒加载属性，设置多个实体类了。
 
-controller层，不是简简单单的调用，而是在新的线程中调用。使用controller层来代替单元测试（实际项目中，通常使用controller调用service，然后在浏览器或者http工具中调用触发，较为方便）
+controller 层，不是简简单单的调用，而是在新的线程中调用。使用 controller 层来代替单元测试（实际项目中，通常使用 controller 调用 service，然后在浏览器或者 http 工具中调用触发，较为方便）
 ```java
 	@RequestMapping("/testNormalGetOne")
 	@ResponseBody
@@ -70,17 +70,17 @@ controller层，不是简简单单的调用，而是在新的线程中调用。�
 		return "testNormalGetOne";
 	}
 ```
-启动项目后，访问`localhost:8080/testNormalGetOne`报错如下：
+启动项目后，访问 `localhost:8080/testNormalGetOne` 报错如下：
 ```java
 Exception in thread "Thread-6" org.hibernate.LazyInitializationException: could not initialize proxy - no Session
 ```
 
 ## 问题分析
-no session说明了什么？
-道理很简单，因为spring的session是和线程绑定的，在整个model->dao->service->controller的调用链中，这种事务和线程绑定的机制非常契合。而我们出现的问题正式由于新开启了一个线程，这个线程与调用链的线程不是同一个。
+no session 说明了什么？
+道理很简单，因为 spring 的 session 是和线程绑定的，在整个 model->dao->service->controller 的调用链中，这种事务和线程绑定的机制非常契合。而我们出现的问题正式由于新开启了一个线程，这个线程与调用链的线程不是同一个。
 
 ## 问题解决
-我们先使用一种不太优雅的方式解决这个问题。在新的线程中，手动打开session。
+我们先使用一种不太优雅的方式解决这个问题。在新的线程中，手动打开 session。
 
 ```java
 public void testNormalGetOne() {
@@ -94,8 +94,8 @@ public void testNormalGetOne() {
         EntityManagerFactoryUtils.closeEntityManager(entityManager);
 }
 ```
-由于我们使用了JPA，所以事务是由EntityManagerFactory这个工厂类生成的EntityManager来管理的。`TransactionSynchronizationManager.bindResource(entityManagerFactory, entityManagerHolder);`这个方法使用事务管理器绑定session。
-而`ApplicationContextProvider`这个工具类是用来获取spring容器中的`EntityManagerFactory`的，为什么不用注入的方式，下文讲解。它的代码如下：
+由于我们使用了 JPA，所以事务是由 EntityManagerFactory 这个工厂类生成的 EntityManager 来管理的。`TransactionSynchronizationManager.bindResource(entityManagerFactory, entityManagerHolder);` 这个方法使用事务管理器绑定 session。
+而 `ApplicationContextProvider` 这个工具类是用来获取 spring 容器中的 `EntityManagerFactory` 的，为什么不用注入的方式，下文讲解。它的代码如下：
 ```java
 public class ApplicationContextProvider implements ApplicationContextAware {
 
@@ -114,16 +114,16 @@ public class ApplicationContextProvider implements ApplicationContextAware {
 问题暂时得到了解决。
 
 ## 问题再思考
-我们一般情况下使用懒加载属性，为什么没有出现no session的问题呢？相信大家都知道`@Transactional`这个注解，他会帮我们进行事务包裹，当然也会绑定session；以及大家熟知的hiberbate中的`OpenSessionInterceptor`和`OpenSessionInViewFilter`以及jpa中的` OpenEntityManagerInViewInterceptor`都是在没有session的情况下，打开session的过滤器。这种方法开始前依赖事务开启，方法结束后回收资源的操作，非常适合用过滤器拦截器处理，后续的两个未讲解的案例，其实都是使用了特殊的过滤器。
+我们一般情况下使用懒加载属性，为什么没有出现 no session 的问题呢？相信大家都知道 `@Transactional` 这个注解，他会帮我们进行事务包裹，当然也会绑定 session；以及大家熟知的 hiberbate 中的 `OpenSessionInterceptor` 和 `OpenSessionInViewFilter` 以及 jpa 中的 ` OpenEntityManagerInViewInterceptor` 都是在没有 session 的情况下，打开 session 的过滤器。这种方法开始前依赖事务开启，方法结束后回收资源的操作，非常适合用过滤器拦截器处理，后续的两个未讲解的案例，其实都是使用了特殊的过滤器。
 
-看一下官方文档如何描述这个jpa中的过滤器的：
+看一下官方文档如何描述这个 jpa 中的过滤器的：
 
 > 29.3.4 Open EntityManager in View
 
 >If you are running a web application, Spring Boot will by default register OpenEntityManagerInViewInterceptor to apply the "Open EntityManager in View" pattern, i.e. to allow for lazy loading in web views. If you don’t want this behavior you should set spring.jpa.open-in-view to false in your application.properties.
 
 我们尝试着关闭这个过滤器：
-配置application.properties/application.yml文件
+配置 application.properties/application.yml 文件
 ```properties
 spring.jpa.open-in-view=false
 ```
@@ -147,13 +147,13 @@ spring.jpa.open-in-view=false
 ```json
 {"timestamp":1498194914012,"status":500,"error":"Internal Server Error","exception":"org.hibernate.LazyInitializationException","message":"could not initialize proxy - no Session","path":"/testNormalGetOne"}
 ```
-是的，我们使用spring的controller作为单元测试时，以及我们平时在直接使用jpa的懒加载属性时没有太关注这个jpa的特性，因为springboot帮我们默认开启了这个过滤器。这也解释了，为什么在新的线程中，定时任务线程中，rpc远程调用时session没有打开的原因，因为这些流程没有经过springboot的web调用链。
+是的，我们使用 spring 的 controller 作为单元测试时，以及我们平时在直接使用 jpa 的懒加载属性时没有太关注这个 jpa 的特性，因为 springboot 帮我们默认开启了这个过滤器。这也解释了，为什么在新的线程中，定时任务线程中，rpc 远程调用时 session 没有打开的原因，因为这些流程没有经过 springboot 的 web 调用链。
 
 ## 另外两个实战案例
-上文已经阐释了，为什么quartz定时任务中访问懒加载属性，rpc框架服务端访问懒加载属性（注意不是客户端，客户端访问懒加载属性那是一种作死的行为，因为是代理对象）为出现问题。我们仿照spring打开session的思路（这取决于你使用hibernate还是jpa，抑或是mybatis），来编写我们的过滤器。
+上文已经阐释了，为什么 quartz 定时任务中访问懒加载属性，rpc 框架服务端访问懒加载属性（注意不是客户端，客户端访问懒加载属性那是一种作死的行为，因为是代理对象）为出现问题。我们仿照 spring 打开 session 的思路（这取决于你使用 hibernate 还是 jpa，抑或是 mybatis），来编写我们的过滤器。
 
-**quartz中打开session：**
-使用quartz提供的`JobListenerSupport`支持，编写一个任务过滤器，用于在每次任务执行时打开session
+**quartz 中打开 session：**
+使用 quartz 提供的 `JobListenerSupport` 支持，编写一个任务过滤器，用于在每次任务执行时打开 session
 ```java
 public class OpenEntityManagerJobListener extends JobListenerSupport implements ApplicationContextAware {
 
@@ -188,10 +188,10 @@ public class OpenEntityManagerJobListener extends JobListenerSupport implements 
     }
 }
 ```
-**配置调度工厂：**
+** 配置调度工厂：**
 
 ```java
-//调度工厂
+// 调度工厂
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean() {
         SchedulerFactoryBean factoryBean = new SchedulerFactoryBean();
@@ -201,10 +201,10 @@ public class OpenEntityManagerJobListener extends JobListenerSupport implements 
     }
 ```
 
-也可以参考我的另一篇描述更为细致的文章(解决Quartz定时器中查询懒加载数据no session的问题)，那是我还是刚刚参加工作，可能有些许疏漏之处，不过参考是够了。
+也可以参考我的另一篇描述更为细致的文章 (解决 Quartz 定时器中查询懒加载数据 no session 的问题)，那是我还是刚刚参加工作，可能有些许疏漏之处，不过参考是够了。
 
-**Motan（我现在使用的rpc框架）服务端打开session**
-利用了motan对spi扩展的支持，编写了一个Filter，主要参考了motan的spi过滤器写法和springdata打开session/entityManager的思路。
+**Motan（我现在使用的 rpc 框架）服务端打开 session**
+利用了 motan 对 spi 扩展的支持，编写了一个 Filter，主要参考了 motan 的 spi 过滤器写法和 springdata 打开 session/entityManager 的思路。
 ```java
 @SpiMeta(name = "openjpasession")
 @Activation(sequence = 100)
@@ -317,13 +317,13 @@ public class OpenEntityManagerInMotanFilter implements Filter {
             logger.error(e.getMessage(), e);
         }
 
-        //可能没有启用openjpa
+        // 可能没有启用 openjpa
         if (emf == null) {
             return caller.call(request);
         }
 
         try {
-            //如果没有绑定，绑定到当前线程
+            // 如果没有绑定，绑定到当前线程
             if (TransactionSynchronizationManager.getResource(emf) == null) {
                 EntityManager em = createEntityManager(emf);
                 EntityManagerHolder emHolder = new EntityManagerHolder(em);
@@ -335,7 +335,7 @@ public class OpenEntityManagerInMotanFilter implements Filter {
         try {
             return caller.call(request);
         } finally {
-            //解除绑定
+            // 解除绑定
             closeManager(emf);
         }
     }
@@ -367,5 +367,5 @@ public class OpenEntityManagerInMotanFilter implements Filter {
 ```
 
 ## 总结
-springboot中的事务管理做的永远比我们想的多，事务管理器的使用场景，@Transactional究竟起了哪些作用，以及spring-data这个对DDD最佳的阐释，以及mybatis一类的非j2ee规范在微服务的地位中是否高于jpa，各个层次之间的实体传输，消息传递...都是值得思考的。
+springboot 中的事务管理做的永远比我们想的多，事务管理器的使用场景，@Transactional 究竟起了哪些作用，以及 spring-data 这个对 DDD 最佳的阐释，以及 mybatis 一类的非 j2ee 规范在微服务的地位中是否高于 jpa，各个层次之间的实体传输，消息传递... 都是值得思考的。
 

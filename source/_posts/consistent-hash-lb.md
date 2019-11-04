@@ -9,7 +9,7 @@ categories:
 
 ### 前言
 
-一致性哈希算法在很多领域有应用，例如分布式缓存领域的 MemCache，Redis，负载均衡领域的 Nginx，各类 RPC 框架。不同领域场景不同，需要顾及的因素也有所差异，本文主要讨论在**负载均衡**中一致性哈希算法的设计。
+一致性哈希算法在很多领域有应用，例如分布式缓存领域的 MemCache，Redis，负载均衡领域的 Nginx，各类 RPC 框架。不同领域场景不同，需要顾及的因素也有所差异，本文主要讨论在 ** 负载均衡 ** 中一致性哈希算法的设计。
 
 在介绍一致性哈希算法之前，我将会介绍一些哈希算法，讨论它们的区别和使用场景。也会给出一致性哈希算法的 Java 通用实现，可以直接引用，文末会给出 github 地址。
 
@@ -36,7 +36,7 @@ categories:
 
 ### 哈希算法介绍
 
-哈希算法是一致性哈希算法中重要的一个组成部分，你可以借助 Java 中的 `int hashCode()`去理解它。 说到哈希算法，你想到了什么？Jdk 中的 hashCode、SHA-1、MD5，除了这些耳熟能详的哈希算法，还存在很多其他实现，详见 [HASH 算法一览](https://www.oschina.net/translate/state-of-hash-functions)。可以将他们分成三代：
+哈希算法是一致性哈希算法中重要的一个组成部分，你可以借助 Java 中的 `int hashCode()` 去理解它。 说到哈希算法，你想到了什么？Jdk 中的 hashCode、SHA-1、MD5，除了这些耳熟能详的哈希算法，还存在很多其他实现，详见 [HASH 算法一览](https://www.oschina.net/translate/state-of-hash-functions)。可以将他们分成三代：
 
 - 第一代：SHA-1（1993），MD5（1992），CRC（1975），Lookup3（2006）
 - 第二代：MurmurHash（2008）
@@ -73,13 +73,13 @@ categories:
 
 ### 一致性哈希算法实现
 
-![一致性hash](https://user-gold-cdn.xitu.io/2019/2/16/168f69205ef99590?w=861&h=635&f=png&s=59703)
+![一致性 hash](https://user-gold-cdn.xitu.io/2019/2/16/168f69205ef99590?w=861&h=635&f=png&s=59703)
 
-一致性哈希的概念我不做赘述，简单介绍下这个负载均衡中的一致性哈希环。首先将服务器（ip+端口号）进行哈希，映射成环上的一个节点，在请求到来时，根据指定的 hash key 同样映射到环上，并顺时针选取最近的一个服务器节点进行请求（在本图中，使用的是 userId 作为 hash key）。
+一致性哈希的概念我不做赘述，简单介绍下这个负载均衡中的一致性哈希环。首先将服务器（ip+ 端口号）进行哈希，映射成环上的一个节点，在请求到来时，根据指定的 hash key 同样映射到环上，并顺时针选取最近的一个服务器节点进行请求（在本图中，使用的是 userId 作为 hash key）。
 
 当环上的服务器较少时，即使哈希算法选择得当，依旧会遇到大量请求落到同一个节点的问题，为避免这样的问题，大多数一致性哈希算法的实现度引入了虚拟节点的概念。
 
-![一致性hash虚拟节点](https://user-gold-cdn.xitu.io/2019/2/16/168f6921775875f4?w=934&h=639&f=png&s=67921)
+![一致性 hash 虚拟节点](https://user-gold-cdn.xitu.io/2019/2/16/168f6921775875f4?w=934&h=639&f=png&s=67921)
 
 在上图中，只有两台物理服务器节点：11.1.121.1 和 11.1.121.2，我们通过添加后缀的方式，克隆出了另外三份节点，使得环上的节点分布的均匀。一般来说，物理节点越多，所需的虚拟节点就越少。
 
@@ -158,32 +158,32 @@ public class Invocation {
 ```java
 public class StatisticsUtil {
 
-    //方差s^2=[(x1-x)^2 +...(xn-x)^2]/n
+    // 方差 s^2=[(x1-x)^2 +...(xn-x)^2]/n
     public static double variance(Long[] x) {
         int m = x.length;
         double sum = 0;
-        for (int i = 0; i < m; i++) {//求和
+        for (int i = 0; i < m; i++) {// 求和
             sum += x[i];
         }
-        double dAve = sum / m;//求平均值
+        double dAve = sum / m;// 求平均值
         double dVar = 0;
-        for (int i = 0; i < m; i++) {//求方差
-            dVar += (x[i] - dAve) * (x[i] - dAve);
+        for (int i = 0; i < m; i++) {// 求方差
+            dVar += (x[i] - dAve)* (x[i] - dAve);
         }
         return dVar / m;
     }
 
-    //标准差σ=sqrt(s^2)
+    // 标准差σ=sqrt(s^2)
     public static double standardDeviation(Long[] x) {
         int m = x.length;
         double sum = 0;
-        for (int i = 0; i < m; i++) {//求和
+        for (int i = 0; i < m; i++) {// 求和
             sum += x[i];
         }
-        double dAve = sum / m;//求平均值
+        double dAve = sum / m;// 求平均值
         double dVar = 0;
-        for (int i = 0; i < m; i++) {//求方差
-            dVar += (x[i] - dAve) * (x[i] - dAve);
+        for (int i = 0; i < m; i++) {// 求方差
+            dVar += (x[i] - dAve)* (x[i] - dAve);
         }
         return Math.sqrt(dVar / m);
     }
@@ -389,9 +389,9 @@ public class KetamaHashStrategy implements HashStrategy {
     @Override
     public int getHashCode(String origin) {
         byte[] bKey = computeMd5(origin);
-        long rv = ((long) (bKey[3] & 0xFF) << 24)
-                | ((long) (bKey[2] & 0xFF) << 16)
-                | ((long) (bKey[1] & 0xFF) << 8)
+        long rv = ((long) (bKey[3] & 0xFF)<< 24)
+                | ((long) (bKey[2] & 0xFF)<< 16)
+                | ((long) (bKey[1] & 0xFF)<< 8)
                 | (bKey[0] & 0xFF);
         return (int) (rv & 0xffffffffL);
     }
@@ -477,7 +477,7 @@ public class MurmurHashStrategy implements HashStrategy {
 
 我并没有对小集群，小流量进行测试，样本偏差性较大，仅从这个常见场景来看，MurmurHashStrategy 是一个不错的选择，多次测试后发现 **FnvHashStrategy**，**KetamaHashStrategy**，**MurmurHashStrategy** 差距不是很大。
 
-至于性能测试，MurmurHash 也十分的高性能，我并没有做测试（感兴趣的同学可以对几种 strategy 用 JMH 测评一下）,这里我贴一下 MurmurHash 官方的测评数据：
+至于性能测试，MurmurHash 也十分的高性能，我并没有做测试（感兴趣的同学可以对几种 strategy 用 JMH 测评一下）, 这里我贴一下 MurmurHash 官方的测评数据：
 
     OneAtATime - 354.163715 mb/sec
     FNV - 443.668038 mb/sec
@@ -531,9 +531,9 @@ public class KetamaConsistentHashLoadBalancer implements LoadBalancer {
             for (int i = 0; i < VIRTUAL_NODE_SIZE / 4; i++) {
                 byte[] digest = computeMd5(server.getUrl() + VIRTUAL_NODE_SUFFIX + i);
                 for (int h = 0; h < 4; h++) {
-                    Long k = ((long) (digest[3 + h * 4] & 0xFF) << 24)
-                            | ((long) (digest[2 + h * 4] & 0xFF) << 16)
-                            | ((long) (digest[1 + h * 4] & 0xFF) << 8)
+                    Long k = ((long) (digest[3 + h * 4] & 0xFF)<< 24)
+                            | ((long) (digest[2 + h * 4] & 0xFF)<< 16)
+                            | ((long) (digest[1 + h * 4] & 0xFF)<< 8)
                             | (digest[h * 4] & 0xFF);
                     virtualNodeRing.put(k, server);
 
@@ -545,9 +545,9 @@ public class KetamaConsistentHashLoadBalancer implements LoadBalancer {
 
     private long getHashCode(String origin) {
         byte[] bKey = computeMd5(origin);
-        long rv = ((long) (bKey[3] & 0xFF) << 24)
-                | ((long) (bKey[2] & 0xFF) << 16)
-                | ((long) (bKey[1] & 0xFF) << 8)
+        long rv = ((long) (bKey[3] & 0xFF)<< 24)
+                | ((long) (bKey[2] & 0xFF)<< 16)
+                | ((long) (bKey[1] & 0xFF)<< 8)
                 | (bKey[0] & 0xFF);
         return rv;
     }
@@ -592,5 +592,5 @@ public class KetamaConsistentHashLoadBalancer implements LoadBalancer {
 
 [MurmurHash](https://sites.google.com/site/murmurhash/)
 
-[memcached Java客户端spymemcached的一致性Hash算法](https://colobu.com/2015/04/13/consistent-hash-algorithm-in-java-memcached-client/)
+[memcached Java 客户端 spymemcached 的一致性 Hash 算法](https://colobu.com/2015/04/13/consistent-hash-algorithm-in-java-memcached-client/)
 

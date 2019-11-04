@@ -14,19 +14,19 @@ type: 3
 
 > 响应式编程在单机环境下是否鸡肋？
 
-结论是：没有结论，我觉得只能抱着怀疑的眼光审视这个问题了。另外还聊到了 RSocket 这个最近在 SpringOne 大会上比较火爆的响应式"新“网络协议，github 地址[戳这里](https://github.com/rsocket/rsocket)，为什么给”新“字打了个引号，仔细观察下 RSocket 的 commit log，其实三年前就有了。有兴趣的同学自行翻阅，说不定就是今年这最后两三个月的热点技术哦。
+结论是：没有结论，我觉得只能抱着怀疑的眼光审视这个问题了。另外还聊到了 RSocket 这个最近在 SpringOne 大会上比较火爆的响应式 " 新“网络协议，github 地址 [戳这里](https://github.com/rsocket/rsocket)，为什么给”新“字打了个引号，仔细观察下 RSocket 的 commit log，其实三年前就有了。有兴趣的同学自行翻阅，说不定就是今年这最后两三个月的热点技术哦。
 
- Java 圈子有一个怪事，那就是对 RxJava，Reactor，WebFlux 这些响应式编程的名词、框架永远处于渴望了解，感到新鲜，却又不甚了解，使用贫乏的状态。之前转载小马哥的那篇《Reactive Programming 一种技术，各自表述》时，就已经聊过这个关于名词之争的话题了，今天群里的讨论更是加深了我的映像。Java 圈子里面很多朋友一直对响应式编程处于一个了解名词，知道基本原理，而不是深度用户的状态(我也是之一)。可能真的和圈子有关，按石冲兄的说法，其实 Scala 圈子里面的那帮人，不知道比咱们高到哪里去了（就响应式编程而言）。
+ Java 圈子有一个怪事，那就是对 RxJava，Reactor，WebFlux 这些响应式编程的名词、框架永远处于渴望了解，感到新鲜，却又不甚了解，使用贫乏的状态。之前转载小马哥的那篇《Reactive Programming 一种技术，各自表述》时，就已经聊过这个关于名词之争的话题了，今天群里的讨论更是加深了我的映像。Java 圈子里面很多朋友一直对响应式编程处于一个了解名词，知道基本原理，而不是深度用户的状态 (我也是之一)。可能真的和圈子有关，按石冲兄的说法，其实 Scala 圈子里面的那帮人，不知道比咱们高到哪里去了（就响应式编程而言）。
 
-实在是好久没发文章了，向大家说声抱歉，以后的更新频率肯定是没有以前那么勤了（说的好像以前很勤快似的），一部分原因是在公司内网写的文章没法贴到公众号中和大家分享讨论，另一部分是目前我也处于学习公司内部框架的阶段，不太方便提炼成文章，最后，最大的一部分原因还是我这段时间需要学(tou)习(lan)其(da)他(you)东(xi)西啦。好了，废话也说完了，下面是译文的正文部分。
+实在是好久没发文章了，向大家说声抱歉，以后的更新频率肯定是没有以前那么勤了（说的好像以前很勤快似的），一部分原因是在公司内网写的文章没法贴到公众号中和大家分享讨论，另一部分是目前我也处于学习公司内部框架的阶段，不太方便提炼成文章，最后，最大的一部分原因还是我这段时间需要学 (tou) 习(lan)其 (da) 他(you)东 (xi) 西啦。好了，废话也说完了，下面是译文的正文部分。
 
 <!-- more -->
 
 ### 引言
 
-关于响应式编程(Reactive Programming)，你可能有过这样的疑问：我们已经有了 Java8 的 Stream, CompletableFuture, 以及 Optional，为什么还必要存在 RxJava 和 Reactor？
+关于响应式编程 (Reactive Programming)，你可能有过这样的疑问：我们已经有了 Java8 的 Stream, CompletableFuture, 以及 Optional，为什么还必要存在 RxJava 和 Reactor？
 
-回答这个问题并不难，如果在响应式编程中处理的问题非常简单，你的确不需要那些第三方类库的支持。 但随着复杂问题的出现，你写出了一堆难看的代码。然后这些代码变得越来越复杂，难以维护，而 RxJava 和 Reactor 具有许多方便的功能，可以解决你当下问题，并保障了未来一些可预见的需求。本文从响应式编程模型中抽象出了8个标准，这将有助于我们理解标准特性与这些库之间的区别：
+回答这个问题并不难，如果在响应式编程中处理的问题非常简单，你的确不需要那些第三方类库的支持。 但随着复杂问题的出现，你写出了一堆难看的代码。然后这些代码变得越来越复杂，难以维护，而 RxJava 和 Reactor 具有许多方便的功能，可以解决你当下问题，并保障了未来一些可预见的需求。本文从响应式编程模型中抽象出了 8 个标准，这将有助于我们理解标准特性与这些库之间的区别：
 
 1. Composable（可组合）
 2. Lazy（惰性执行）
@@ -34,7 +34,7 @@ type: 3
 4. Asynchronous（异步）
 5. Cacheable（可缓存）
 6. Push or Pull（推拉模型）
-7. Backpressure（回压）(译者注：按照石冲老哥的建议，这个词应当翻译成"回压"而不是"背压")
+7. Backpressure（回压）(译者注：按照石冲老哥的建议，这个词应当翻译成 "回压" 而不是 "背压")
 8. Operator fusion（操作融合）
 
 我们将会对以下这些类进行这些特性的对比：
@@ -47,7 +47,7 @@ type: 3
 6. Flowable (RxJava 2)
 7. Flux (Reactor Core)
 
-让我们开始吧~
+让我们开始吧 ~
 
 
 
@@ -67,7 +67,7 @@ type: 3
 
 **CompletableFuture** - 不具备惰性执行的特性，它本质上只是一个异步结果的容器。这些对象的创建是用来表示对应的工作，CompletableFuture 创建时，对应的工作已经开始执行了。但它并不知道任何工作细节，只关心结果。所以，没有办法从上至下执行整个 pipeline。当结果被设置给 CompletableFuture 时，下一个阶段才开始执行。
 
-**Stream** - 所有的中间操作都是延迟执行的。所有的终止操作(terminal operations)，会触发真正的计算(译者注：如 collect() 就是一个终止操作)。
+**Stream** - 所有的中间操作都是延迟执行的。所有的终止操作 (terminal operations)，会触发真正的计算 (译者注：如 collect() 就是一个终止操作 )。
 
 **Optional** - 不具备惰性执行的特性，所有的操作会立刻执行。
 
@@ -75,7 +75,7 @@ type: 3
 
 ### 3. Reusable（可复用）
 
-**CompletableFuture** - 可以复用，它仅仅是一个实际值的包装类。但需要注意的是，这个包装是可更改的。`.obtrude*()`方法会修改它的内容，如果你确定没有人会调用到这类方法，那么重用它还是安全的。
+**CompletableFuture** - 可以复用，它仅仅是一个实际值的包装类。但需要注意的是，这个包装是可更改的。`.obtrude*()` 方法会修改它的内容，如果你确定没有人会调用到这类方法，那么重用它还是安全的。
 
 **Stream** - 不能复用。Java Doc 注释道：
 
@@ -89,7 +89,7 @@ type: 3
 
 ### 4. Asynchronous（异步）
 
-**CompletableFuture** - 这个类的要点在于它异步地把多个操作连接了起来。`CompletableFuture` 代表一项操作，它会跟一个 `Executor` 关联起来。如果不明确指定一个 `Executor`，那么会默认使用公共的 `ForkJoinPool` 线程池来执行。这个线程池可以用 `ForkJoinPool.commonPool()` 获取到。默认设置下它会创建系统硬件支持的线程数一样多的线程（通常和 CPU 的核心数相等，如果你的 CPU 支持超线程(hyperthreading)，那么会设置成两倍的线程数）。不过你也可以使用 JVM 参数指定 ForkJoinPool 线程池的线程数，
+**CompletableFuture** - 这个类的要点在于它异步地把多个操作连接了起来。`CompletableFuture` 代表一项操作，它会跟一个 `Executor` 关联起来。如果不明确指定一个 `Executor`，那么会默认使用公共的 `ForkJoinPool` 线程池来执行。这个线程池可以用 `ForkJoinPool.commonPool()` 获取到。默认设置下它会创建系统硬件支持的线程数一样多的线程（通常和 CPU 的核心数相等，如果你的 CPU 支持超线程 (hyperthreading)，那么会设置成两倍的线程数）。不过你也可以使用 JVM 参数指定 ForkJoinPool 线程池的线程数，
 
 ```java
 -Djava.util.concurrent.ForkJoinPool.common.parallelism=?
@@ -101,23 +101,23 @@ type: 3
 
 **Optional** - 不支持，它只是一个容器。
 
-**Observable, Flowable, Flux** - 专门设计用以构建异步系统，但默认情况下是同步的。`subscribeOn` 和 `observeOn`允许你来控制订阅以及接收（这个线程会调用 observer 的 `onNext` / `onError` / `onCompleted `方法）。
+**Observable, Flowable, Flux** - 专门设计用以构建异步系统，但默认情况下是同步的。`subscribeOn` 和 `observeOn` 允许你来控制订阅以及接收（这个线程会调用 observer 的 `onNext` / `onError` / `onCompleted ` 方法）。
 
 `subscribeOn ` 方法使得你可以决定由哪个 `Scheduler` 来执行 `Observable.create` 方法。即便你没有调用创建方法，系统内部也会做同样的事情。例如：
 
 ```java
 Observable
   .fromCallable(() -> {
-    log.info("Reading on thread: " + currentThread().getName());
+    log.info("Reading on thread:" + currentThread().getName());
     return readFile("input.txt");
   })
   .map(text -> {
-    log.info("Map on thread: " + currentThread().getName());
+    log.info("Map on thread:" + currentThread().getName());
     return text.length();
   })
   .subscribeOn(Schedulers.io()) // <-- setting scheduler
   .subscribe(value -> {
-     log.info("Result on thread: " + currentThread().getName());
+     log.info("Result on thread:" + currentThread().getName());
   });
 ```
 
@@ -134,17 +134,17 @@ Result on thread: RxIoScheduler-2
 ```Java
 Observable
   .fromCallable(() -> {
-    log.info("Reading on thread: " + currentThread().getName());
+    log.info("Reading on thread:" + currentThread().getName());
     return readFile("input.txt");
   })
   .observeOn(Schedulers.computation()) // <-- setting scheduler
   .map(text -> {
-    log.info("Map on thread: " + currentThread().getName());
+    log.info("Map on thread:" + currentThread().getName());
     return text.length();
   })
   .subscribeOn(Schedulers.io()) // <-- setting scheduler
   .subscribe(value -> {
-     log.info("Result on thread: " + currentThread().getName());
+     log.info("Result on thread:" + currentThread().getName());
   });
 ```
 
@@ -216,7 +216,7 @@ Doing some work
 
 ### 7. Backpressure（回压）
 
-*支持回压的前提是 pipeline 必须是推模型。*
+* 支持回压的前提是 pipeline 必须是推模型。*
 
 **Backpressure（回压）** 描述了 pipeline 中的一种场景：某些异步阶段的处理速度跟不上，需要告诉上游生产者放慢速度。直接失败是不能接受的，这会导致大量数据的丢失。
 
@@ -270,6 +270,6 @@ Doing some work
 
 
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

@@ -19,7 +19,7 @@ customize:
         avatar: /css/images/avatar.png
         gravatar: # Gravatar email address, if you enable Gravatar, your avatar config will be overriden
         author: 徐靖峰
-        author_title: software engineer
+        author_title: 阿里巴巴中间件研发
         location: 中国，杭州
         follow: https://github.com/lexburner
     highlight: monokai
@@ -103,3 +103,4 @@ miscellaneous:
         芋道源码: http://vip.iocoder.cn/
         匠心零度: http://www.jiangxinlingdu.com/
         松花皮蛋的黑板报: http://www.liangsonghua.me
+

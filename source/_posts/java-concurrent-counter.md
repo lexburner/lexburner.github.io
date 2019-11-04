@@ -1,10 +1,10 @@
 ---
-title: Java并发计数器探秘
+title: Java 并发计数器探秘
 date: 2018-08-22 19:47:28
 tags:
 - JAVA
 categories:
-- JAVA并发合集
+- JAVA 并发合集
 ---
 
 ### 前言
@@ -19,7 +19,7 @@ categories:
 
 ### 阅读本文前
 
-本文相关的基准测试代码均可在博主的 github 中找到，测试方式全部采用 JMH，这篇文章可以帮助你[入门 JMH](https://www.cnkirito.moe/java-jmh/)。 
+本文相关的基准测试代码均可在博主的 github 中找到，测试方式全部采用 JMH，这篇文章可以帮助你 [入门 JMH](https://www.cnkirito.moe/java-jmh/)。 
 
 ### AtomicLong 的前世今生
 
@@ -132,7 +132,7 @@ LongAdder 的 API 如下
 ```Java
 @sun.misc.Contended static final class Cell {
     volatile long value;
-    Cell(long x) { value = x; }
+    Cell(long x) {value = x;}
     // ... ignore
 }
 ```
@@ -168,7 +168,7 @@ random.nextInt(5);
 
 3. longAccumulate
 
-longAccumulate 方法是 LongAdder 的核心方法，内部存在大量的分支判断。首先和 Jdk1.7 的 AtomicLong 一样，它使用的是 UNSAFE.compareAndSwapLong 来完成自旋，不同之处在于，其在初次 cas 方式失败的情况下(说明多个线程同时想更新这个值)，尝试将这个值分隔成多个 Cell，让这些竞争的线程只负责更新自己所属的 Cell，这样将竞争压力分散开。
+longAccumulate 方法是 LongAdder 的核心方法，内部存在大量的分支判断。首先和 Jdk1.7 的 AtomicLong 一样，它使用的是 UNSAFE.compareAndSwapLong 来完成自旋，不同之处在于，其在初次 cas 方式失败的情况下 (说明多个线程同时想更新这个值)，尝试将这个值分隔成多个 Cell，让这些竞争的线程只负责更新自己所属的 Cell，这样将竞争压力分散开。
 
 ### LongAdder 的前世今生
 
@@ -240,7 +240,7 @@ CounterBenchmark.rw:inc           LongAdder8  avgt    3    89.547 ±    78.720  
 
 
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 

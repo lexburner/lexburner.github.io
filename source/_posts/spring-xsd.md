@@ -1,5 +1,5 @@
 ---
-title: Spring中的XML schema扩展机制
+title: Spring 中的 XML schema 扩展机制
 date: 2018-09-03 19:47:28
 tags:
 - Spring
@@ -38,7 +38,7 @@ Dubbo 依赖了 Spring，并提供了一套自定义的 XML 标签，`<dubbo:app
 
 有了明确的目标，我们逐步开展自己的工作。
 
-#### 1 编写kirito.xsd
+#### 1 编写 kirito.xsd
 
 **resources/META-INF/kirito.xsd** 
 
@@ -81,7 +81,7 @@ Dubbo 依赖了 Spring，并提供了一套自定义的 XML 标签，`<dubbo:app
 
 > schema 的意义在于它可以和 eclipse/IDEA 这样智能化的集成开发环境形成很好的搭配，在编辑 XML 的过程中，用户可以获得告警和提示。 如果配置得当，可以使用自动完成功能让用户在事先定义好的枚举类型中进行选择。
 
-#### 2 编写KiritoNamespaceHandler
+#### 2 编写 KiritoNamespaceHandler
 
 ```Java
 public class KiritoNamespaceHandler extends NamespaceHandlerSupport {
@@ -103,7 +103,7 @@ public class KiritoNamespaceHandler extends NamespaceHandlerSupport {
 <motan:application name="motan"/>
 ```
 
-不同的命名空间需要不同的 NamespaceHandler 来处理，在今天的示例中，我们使用 KiritoNamespaceHandler 来解析 kirito 命名空间。KiritoNamespaceHandler 继承自 NamespaceHandlerSupport 类，并在其 init() 方法中注册了两个 BeanDefinitionParser ，用于解析 kirito 命名空间/kirito.xsd 约束中定义的两个元素：application，service。BeanDefinitionParser 是下一步的主角，我们暂且跳过，将重心放在父类 NamespaceHandlerSupport 之上。
+不同的命名空间需要不同的 NamespaceHandler 来处理，在今天的示例中，我们使用 KiritoNamespaceHandler 来解析 kirito 命名空间。KiritoNamespaceHandler 继承自 NamespaceHandlerSupport 类，并在其 init() 方法中注册了两个 BeanDefinitionParser ，用于解析 kirito 命名空间 /kirito.xsd 约束中定义的两个元素：application，service。BeanDefinitionParser 是下一步的主角，我们暂且跳过，将重心放在父类 NamespaceHandlerSupport 之上。
 
 ```Java
 public interface NamespaceHandler {
@@ -113,9 +113,9 @@ public interface NamespaceHandler {
 }
 ```
 
-NamespaceHandlerSupport 是 NamespaceHandler 命名空间处理器的抽象实现，我粗略看了NamespaceHandler 的几个实现类，parse 和 decorate 方法可以完成元素节点的组装并通过 ParserContext 注册到 Ioc 容器中，但实际我们并没有调用这两个方法，而是通过 init() 方法注册 BeanDefinitionParser 来完成解析节点以及注册 Bean 的工作，所以对于 NamespaceHandler，我们主要关心 init 中注册的两个 BeanDefinitionParser 即可。
+NamespaceHandlerSupport 是 NamespaceHandler 命名空间处理器的抽象实现，我粗略看了 NamespaceHandler 的几个实现类，parse 和 decorate 方法可以完成元素节点的组装并通过 ParserContext 注册到 Ioc 容器中，但实际我们并没有调用这两个方法，而是通过 init() 方法注册 BeanDefinitionParser 来完成解析节点以及注册 Bean 的工作，所以对于 NamespaceHandler，我们主要关心 init 中注册的两个 BeanDefinitionParser 即可。
 
-#### 3 编写KiritoBeanDefinitionParser 
+#### 3 编写 KiritoBeanDefinitionParser 
 
 在文章开始我们便标记到 BeanDefinitionParser 是最为关键的一环，每一个 BeanDefinitionParser 实现类都负责一个映射，将一个 XML 节点解析成 IOC 容器中的一个实体类。
 
@@ -150,7 +150,7 @@ public class KiritoBeanDefinitionParser implements BeanDefinitionParser {
 
 至此，我们便完成了 XML 文件中定义的对象到 IOC 容器的映射。
 
-#### 4 注册schema和handler 
+#### 4 注册 schema 和 handler 
 
 最后一步还需要通知 Spring，告知其自定义 schema 的所在之处以及对应的处理器。
 
@@ -216,11 +216,11 @@ public class XmlSchemaAuthoringSampleApplication {
 
 一个基础的基于 XML schema 的扩展便完成了。
 
-### Dubbo中的XML schema扩展
+### Dubbo 中的 XML schema 扩展
 
 最后我们以 Dubbo 为例，看看一个成熟的 XML schema 扩展是如何被应用的。
 
-![Dubbo中的应用](http://kirito.iocoder.cn/image-20180903190429383.png)
+![Dubbo 中的应用](http://kirito.iocoder.cn/image-20180903190429383.png)
 
 刚好对应了四个标准的扩展步骤，是不是对 XML 配置下的 Dubbo 应用有了更好的理解了呢？
 
@@ -228,7 +228,7 @@ public class XmlSchemaAuthoringSampleApplication {
 
 
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 

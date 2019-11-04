@@ -12,9 +12,9 @@ categories: JAVA
 
 ## kill -9 和 kill -15 有什么区别？
 
-在以前，我们发布 WEB 应用通常的步骤是将代码打成 war 包，然后丢到一个配置好了应用容器（如 Tomcat，Weblogic）的 Linux 机器上，这时候我们想要启动/关闭应用，方式很简单，运行其中的启动/关闭脚本即可。而 springboot 提供了另一种方式，将整个应用连同内置的 tomcat 服务器一起打包，这无疑给发布应用带来了很大的便捷性，与之而来也产生了一个问题：如何关闭 springboot 应用呢？一个显而易见的做法便是，根据应用名找到进程 id，杀死进程 id 即可达到关闭应用的效果。
+在以前，我们发布 WEB 应用通常的步骤是将代码打成 war 包，然后丢到一个配置好了应用容器（如 Tomcat，Weblogic）的 Linux 机器上，这时候我们想要启动 / 关闭应用，方式很简单，运行其中的启动 / 关闭脚本即可。而 springboot 提供了另一种方式，将整个应用连同内置的 tomcat 服务器一起打包，这无疑给发布应用带来了很大的便捷性，与之而来也产生了一个问题：如何关闭 springboot 应用呢？一个显而易见的做法便是，根据应用名找到进程 id，杀死进程 id 即可达到关闭应用的效果。
 
-上述的场景描述引出了我的疑问：怎么优雅地杀死一个 springboot 应用进程呢？这里仅仅以最常用的 Linux 操作系统为例，在 Linux 中 kill 指令负责杀死进程，其后可以紧跟一个数字，代表**信号编号**(Signal)，执行 `kill -l` 指令，可以一览所有的信号编号。
+上述的场景描述引出了我的疑问：怎么优雅地杀死一个 springboot 应用进程呢？这里仅仅以最常用的 Linux 操作系统为例，在 Linux 中 kill 指令负责杀死进程，其后可以紧跟一个数字，代表 ** 信号编号 **(Signal)，执行 `kill -l` 指令，可以一览所有的信号编号。
 
 ```shell
 xu@ntzyz-qcloud ~ % kill -l                                                                     
@@ -25,7 +25,7 @@ HUP INT QUIT ILL TRAP ABRT BUS FPE KILL USR1 SEGV USR2 PIPE ALRM TERM STKFLT CHL
 
 先简单理解下这两者的区别：`kill -9 pid` 可以理解为操作系统从内核级别强行杀死某个进程，`kill -15 pid` 则可以理解为发送一个通知，告知应用主动关闭。这么对比还是有点抽象，那我们就从应用的表现来看看，这两个命令杀死应用到底有啥区别。
 
-**代码准备**
+** 代码准备 **
 
 由于笔者 springboot 接触较多，所以以一个简易的 springboot 应用为例展开讨论，添加如下代码。
 
@@ -60,18 +60,18 @@ public class TestShutdownApplication implements DisposableBean {
 }
 ```
 
-**测试步骤**
+** 测试步骤 **
 
 1. 执行 `java -jar test-shutdown-1.0.jar` 将应用运行起来
 2. 测试 `kill -9 pid`，`kill -15 pid`，`ctrl + c` 后输出日志内容
 
-**测试结果**
+** 测试结果 **
 
 `kill -15 pid` & `ctrl + c`，效果一样，输出结果如下
 
 ```
-2018-01-14 16:55:32.424  INFO 8762 --- [       Thread-3] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2cdf8d8a: startup date [Sun Jan 14 16:55:24 UTC 2018]; root of context hierarchy
-2018-01-14 16:55:32.432  INFO 8762 --- [       Thread-3] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-01-14 16:55:32.424  INFO 8762 --- [Thread-3] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2cdf8d8a: startup date [Sun Jan 14 16:55:24 UTC 2018]; root of context hierarchy
+2018-01-14 16:55:32.432  INFO 8762 --- [Thread-3] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
 执行 ShutdownHook ...
 测试 Bean 已销毁 ...
 java -jar test-shutdown-1.0.jar  7.46s user 0.30s system 80% cpu 9.674 total
@@ -84,7 +84,7 @@ java -jar test-shutdown-1.0.jar  7.46s user 0.30s system 80% cpu 9.674 total
 java -jar test-shutdown-1.0.jar  7.74s user 0.25s system 41% cpu 19.272 total
 ```
 
-可以发现，kill -9 pid 是给应用杀了个措手不及，没有留给应用任何反应的机会。而反观 kill -15 pid，则比较优雅，先是由`AnnotationConfigEmbeddedWebApplicationContext` （一个 ApplicationContext 的实现类）收到了通知，紧接着执行了测试代码中的 Shutdown Hook，最后执行了 DisposableBean#destory() 方法。孰优孰劣，立判高下。
+可以发现，kill -9 pid 是给应用杀了个措手不及，没有留给应用任何反应的机会。而反观 kill -15 pid，则比较优雅，先是由 `AnnotationConfigEmbeddedWebApplicationContext` （一个 ApplicationContext 的实现类）收到了通知，紧接着执行了测试代码中的 Shutdown Hook，最后执行了 DisposableBean#destory() 方法。孰优孰劣，立判高下。
 
 一般我们会在应用关闭时处理一下“善后”的逻辑，比如
 
@@ -141,7 +141,7 @@ protected void doClose() {
       }
       // spring 的 BeanFactory 可能会缓存单例的 Bean 
       destroyBeans();
-      // 关闭应用上下文&BeanFactory
+      // 关闭应用上下文 &BeanFactory
       closeBeanFactory();
       // 执行子类的关闭逻辑
       onClose();
@@ -150,7 +150,7 @@ protected void doClose() {
 }
 ```
 
-为了方便排版以及便于理解，我去除了源码中的部分异常处理代码，并添加了相关的注释。在容器初始化时，ApplicationContext 便已经注册了一个 Shutdown Hook，这个钩子调用了 Close() 方法，于是当我们执行 kill -15 pid 时，JVM 接收到关闭指令，触发了这个 Shutdown Hook，进而由 Close() 方法去处理一些善后手段。具体的善后手段有哪些，则完全依赖于 ApplicationContext 的 doClose() 逻辑，包括了注释中提及的销毁缓存单例对象，发布 close 事件，关闭应用上下文等等，特别的，当 ApplicationContext 的实现类是 AnnotationConfigEmbeddedWebApplicationContext 时，还会处理一些 tomcat/jetty 一类内置应用服务器关闭的逻辑。
+为了方便排版以及便于理解，我去除了源码中的部分异常处理代码，并添加了相关的注释。在容器初始化时，ApplicationContext 便已经注册了一个 Shutdown Hook，这个钩子调用了 Close()方法，于是当我们执行 kill -15 pid 时，JVM 接收到关闭指令，触发了这个 Shutdown Hook，进而由 Close() 方法去处理一些善后手段。具体的善后手段有哪些，则完全依赖于 ApplicationContext 的 doClose() 逻辑，包括了注释中提及的销毁缓存单例对象，发布 close 事件，关闭应用上下文等等，特别的，当 ApplicationContext 的实现类是 AnnotationConfigEmbeddedWebApplicationContext 时，还会处理一些 tomcat/jetty 一类内置应用服务器关闭的逻辑。
 
 窥见了 springboot 内部的这些细节，更加应该了解到优雅关闭应用的必要性。JAVA 和 C 都提供了对 Signal 的封装，我们也可以手动捕获操作系统的这些 Signal，在此不做过多介绍，有兴趣的朋友可以自己尝试捕获下。
 
@@ -158,7 +158,7 @@ protected void doClose() {
 
 spring-boot-starter-actuator 模块提供了一个 restful 接口，用于优雅停机。
 
-**添加依赖**
+** 添加依赖 **
 
 ```xml
 <dependency>
@@ -167,10 +167,10 @@ spring-boot-starter-actuator 模块提供了一个 restful 接口，用于优雅
 </dependency>
 ```
 
-**添加配置**
+** 添加配置 **
 
 ```properties
-#启用shutdown
+#启用 shutdown
 endpoints.shutdown.enabled=true
 #禁用密码验证
 endpoints.shutdown.sensitive=false
@@ -207,7 +207,7 @@ public class SomeService {
 
 我们需要想办法在应用关闭时（JVM 关闭，容器停止运行），关闭线程池。
 
-初始方案：什么都不做。在一般情况下，这不会有什么大问题，因为 JVM 关闭，会释放之，但显然没有做到本文一直在强调的两个字，没错----优雅。
+初始方案：什么都不做。在一般情况下，这不会有什么大问题，因为 JVM 关闭，会释放之，但显然没有做到本文一直在强调的两个字，没错 ---- 优雅。
 
 方法一的弊端在于线程池中提交的任务以及阻塞队列中未执行的任务变得极其不可控，接收到停机指令后是立刻退出？还是等待任务执行完成？抑或是等待一定时间任务还没执行完成则关闭？
 
@@ -246,7 +246,7 @@ ThreadPoolExecutor 对于 shutdownNow 的处理则不太一样，方法执行之
 
 查看 shutdown 和 shutdownNow 的 java doc，会发现如下的提示：
 
-> shutdown() ：Initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted.Invocation has no additional effect if already shut down.This method does not wait for previously submitted tasks to complete execution.Use {@link #awaitTermination awaitTermination} to do that.
+> shutdown()：Initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted.Invocation has no additional effect if already shut down.This method does not wait for previously submitted tasks to complete execution.Use {@link #awaitTermination awaitTermination} to do that.
 >
 > shutdownNow()：Attempts to stop all actively executing tasks, halts the processing of waiting tasks, and returns a list of the tasks that were awaiting execution. These tasks are drained (removed) from the task queue upon return from this method.This method does not wait for actively executing tasks to terminate.  Use {@link #awaitTermination awaitTermination} to do that.There are no guarantees beyond best-effort attempts to stop processing actively executing tasks.  This implementation cancels tasks via {@link Thread#interrupt}, so any task that fails to respond to interrupts may never terminate.
 
@@ -303,7 +303,7 @@ public abstract class ExecutorConfigurationSupport extends CustomizableThreadFac
 
 ## 更多需要我们的思考的优雅停机策略
 
-在我们分析 RPC 原理的系列文章里面曾经提到，服务治理框架一般会考虑到优雅停机的问题。通常的做法是事先隔断流量，接着关闭应用。常见的做法是将服务节点从注册中心摘除，订阅者接收通知，移除节点，从而优雅停机；涉及到数据库操作，则可以使用事务的 ACID 特性来保证即使 crash 停机也能保证不出现异常数据，正常下线则更不用说了；又比如消息队列可以依靠 ACK 机制+消息持久化，或者是事务消息保障；定时任务较多的服务，处理下线则特别需要注意优雅停机的问题，因为这是一个长时间运行的服务，比其他情况更容易受停机问题的影响，可以使用幂等和标志位的方式来设计定时任务...
+在我们分析 RPC 原理的系列文章里面曾经提到，服务治理框架一般会考虑到优雅停机的问题。通常的做法是事先隔断流量，接着关闭应用。常见的做法是将服务节点从注册中心摘除，订阅者接收通知，移除节点，从而优雅停机；涉及到数据库操作，则可以使用事务的 ACID 特性来保证即使 crash 停机也能保证不出现异常数据，正常下线则更不用说了；又比如消息队列可以依靠 ACK 机制 + 消息持久化，或者是事务消息保障；定时任务较多的服务，处理下线则特别需要注意优雅停机的问题，因为这是一个长时间运行的服务，比其他情况更容易受停机问题的影响，可以使用幂等和标志位的方式来设计定时任务...
 
 事务和 ACK 这类特性的支持，即使是宕机，停电，kill -9 pid 等情况，也可以使服务尽量可靠；而同样需要我们思考的还有 kill -15 pid，正常下线等情况下的停机策略。最后再补充下整理这个问题时，自己对 jvm shutdown hook 的一些理解。
 

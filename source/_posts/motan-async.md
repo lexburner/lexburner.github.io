@@ -1,5 +1,5 @@
 ---
-title: Motan中使用异步RPC接口
+title: Motan 中使用异步 RPC 接口
 date: 2017-12-27 21:34:34
 tags:
 - RPC
@@ -12,13 +12,13 @@ categories:
 
 ## 为什么慢？
 
-大多数开源的 RPC 框架实现远程调用的方式都是同步的，假设 [ 接口1，...，接口5]的每一次调用耗时为 200ms （其中接口2依赖接口1，接口5依赖接口3，接口4），那么总耗时为 1s，这整个是一个串行的过程。
+大多数开源的 RPC 框架实现远程调用的方式都是同步的，假设 [接口 1，...，接口 5] 的每一次调用耗时为 200ms （其中接口 2 依赖接口 1，接口 5 依赖接口 3，接口 4），那么总耗时为 1s，这整个是一个串行的过程。
 
 ## 多线程加速
 
-第一个想到的解决方案便是多线程，那么[1=>2]编为一组，[[3,4]=>5]编为一组，两组并发执行，[1=>2]串行执行耗时400ms，[3,4]并发执行耗时200ms，[[3,4]=>5]总耗时400ms ，最终[[1=>2],[[3,4]=>5]]总耗时400ms（理论耗时）。相比较于原来的1s，的确快了不少，但实际编写接口花了不少功夫，创建线程池，管理资源，分析依赖关系...总之代码不是很优雅。
+第一个想到的解决方案便是多线程，那么 [1=>2] 编为一组，[[3,4]=>5]编为一组，两组并发执行，[1=>2]串行执行耗时 400ms，[3,4]并发执行耗时 200ms，[[3,4]=>5]总耗时 400ms ，最终 [[1=>2],[[3,4]=>5]] 总耗时 400ms（理论耗时）。相比较于原来的 1s，的确快了不少，但实际编写接口花了不少功夫，创建线程池，管理资源，分析依赖关系... 总之代码不是很优雅。
 
-RPC中，多线程着重考虑的点是在客户端优化代码，这给客户端带来了一定的复杂性，并且编写并发代码对程序员的要求更高，且不利于调试。
+RPC 中，多线程着重考虑的点是在客户端优化代码，这给客户端带来了一定的复杂性，并且编写并发代码对程序员的要求更高，且不利于调试。
 
 ## 异步调用
 
@@ -36,7 +36,7 @@ public class Main {
         Future<Integer> resultFuture1 = executorService.submit(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
-                return method1() + method2();
+                return method1()+ method2();
             }
         });
         Future<Integer> resultFuture2 = executorService.submit(new Callable<Integer>() {
@@ -57,9 +57,9 @@ public class Main {
                 return method5()+resultFuture3.get()+resultFuture4.get();
             }
         });
-        int result = resultFuture1.get() + resultFuture2.get();
+        int result = resultFuture1.get()+ resultFuture2.get();
         
-        System.out.println("result = "+result+", total cost "+(System.currentTimeMillis()-start)+" ms");
+        System.out.println("result ="+result+", total cost"+(System.currentTimeMillis()-start)+"ms");
 
       	executorService.shutdown();
     }
@@ -100,13 +100,13 @@ public class Main {
 
 **result = 15, total cost 413 ms**
 
-五个接口，如果同步调用，便是串行的效果，最终耗时必定在 1s 之上，而异步调用的优势便是，submit任务之后立刻返回，只有在调用 `future.get()` 方法时才会阻塞，而这期间多个异步方法便可以并发的执行。
+五个接口，如果同步调用，便是串行的效果，最终耗时必定在 1s 之上，而异步调用的优势便是，submit 任务之后立刻返回，只有在调用 `future.get()` 方法时才会阻塞，而这期间多个异步方法便可以并发的执行。
 
 ## RPC 异步调用
 
 我们的项目使用了 Motan 作为 RPC 框架，查看其 changeLog ，[0.3.0](https://github.com/weibocom/motan/tree/0.3.0) (2017-03-09) 该版本已经支持了 async 特性。可以让开发者很方便地实现 RPC 异步调用。
 
-**1 为接口增加 @MotanAsync 注解**
+**1 为接口增加 @MotanAsync 注解 **
 
 ```java
 @MotanAsync
@@ -115,7 +115,7 @@ public interface DemoApi {
 }
 ```
 
-**2 添加 Maven 插件**
+**2 添加 Maven 插件 **
 
 ```xml
 <build>
@@ -150,7 +150,7 @@ public interface DemoApiAsync extends DemoApi {
 }
 ```
 
-**3 注入接口即可调用**
+**3 注入接口即可调用 **
 
 ```java
 @Service
@@ -182,7 +182,7 @@ public class DemoService {
 
 ## 总结
 
-在异步调用中，如果发起一次异步调用后，立刻使用 future.get() ，则大致和同步调用等同。其真正的优势是在submit 和  future.get() 之间可以混杂一些非依赖性的耗时操作，而不是同步等待，从而充分利用时间片。
+在异步调用中，如果发起一次异步调用后，立刻使用 future.get()，则大致和同步调用等同。其真正的优势是在 submit 和  future.get() 之间可以混杂一些非依赖性的耗时操作，而不是同步等待，从而充分利用时间片。
 
 另外需要注意，如果异步调用涉及到数据的修改，则多个异步操作直接不能保证 happens-before 原则，这属于并发控制的范畴了，谨慎使用。查询操作则大多没有这样的限制。
 

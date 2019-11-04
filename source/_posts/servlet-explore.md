@@ -1,5 +1,5 @@
 ---
-title: Spring揭秘--寻找遗失的web.xml
+title: Spring 揭秘 -- 寻找遗失的 web.xml
 date: 2018-5-4 22:44:34
 tags:
 - Servlet
@@ -121,11 +121,11 @@ servlet3.0 首先提供了 @WebServlet，@WebFilter 等注解，这样便有了�
 - ServletRegistration getServletRegistration(String servletName)
 - Map<String,? extends ServletRegistration> getServletRegistrations()
 
-其中前三个方法的作用是相同的，只是参数类型不同而已；通过 createServlet() 方法创建的 Servlet，通常需要做一些自定义的配置，然后使用 addServlet() 方法来将其动态注册为一个可以用于服务的 Servlet。两个 getServletRegistration() 方法主要用于动态为 Servlet 增加映射信息，这等价于在 web.xml 中使用 <servlet-mapping> 标签为存在的 Servlet 增加映射信息。
+其中前三个方法的作用是相同的，只是参数类型不同而已；通过 createServlet()方法创建的 Servlet，通常需要做一些自定义的配置，然后使用 addServlet() 方法来将其动态注册为一个可以用于服务的 Servlet。两个 getServletRegistration() 方法主要用于动态为 Servlet 增加映射信息，这等价于在 web.xml 中使用 <servlet-mapping> 标签为存在的 Servlet 增加映射信息。
 
 以上 ServletContext 新增的方法要么是在 ServletContextListener 的 contexInitialized 方法中调用，要么是在 ServletContainerInitializer 的 onStartup() 方法中调用。
 
-ServletContainerInitializer 也是 Servlet 3.0 新增的一个接口，容器在启动时使用 JAR 服务 API(JAR Service API) 来发现 ServletContainerInitializer 的实现类，并且容器将 WEB-INF/lib 目录下 JAR 包中的类都交给该类的 onStartup() 方法处理，我们通常需要在该实现类上使用 @HandlesTypes 注解来指定希望被处理的类，过滤掉不希望给 onStartup() 处理的类。
+ServletContainerInitializer 也是 Servlet 3.0 新增的一个接口，容器在启动时使用 JAR 服务 API(JAR Service API) 来发现 ServletContainerInitializer 的实现类，并且容器将 WEB-INF/lib 目录下 JAR 包中的类都交给该类的 onStartup()方法处理，我们通常需要在该实现类上使用 @HandlesTypes 注解来指定希望被处理的类，过滤掉不希望给 onStartup() 处理的类。
 
 一个典型的 servlet3.0+ 的 web 项目结构如下：
 
@@ -150,7 +150,7 @@ ServletContainerInitializer 也是 Servlet 3.0 新增的一个接口，容器在
         └── java
 ```
 
-我并未对 HelloWorldServlet 和 HelloWorldFilter 做任何改动，而是新增了一个 CustomServletContainerInitializer ,它实现了 `javax.servlet.ServletContainerInitializer` 接口，用来在 web 容器启动时加载指定的 servlet 和 filter，代码如下：
+我并未对 HelloWorldServlet 和 HelloWorldFilter 做任何改动，而是新增了一个 CustomServletContainerInitializer , 它实现了 `javax.servlet.ServletContainerInitializer` 接口，用来在 web 容器启动时加载指定的 servlet 和 filter，代码如下：
 
 ```Java
 public class CustomServletContainerInitializer implements ServletContainerInitializer {
@@ -228,7 +228,7 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 			return;
 		}
 
-		servletContext.log(initializers.size() + " Spring WebApplicationInitializers detected on classpath");
+		servletContext.log(initializers.size() + "Spring WebApplicationInitializers detected on classpath");
 		AnnotationAwareOrderComparator.sort(initializers);
         // <2>
 		for (WebApplicationInitializer initializer : initializers) {
@@ -263,7 +263,7 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 
 是的，前面所讲述的 servlet 的规范，无论是 web.xml 中的配置，还是 servlet3.0 中的 ServletContainerInitializer 和 springboot 的加载流程都没有太大的关联。按照惯例，先卖个关子，先看看如何在 springboot 中注册 servlet 和 filter，再来解释下 springboot 的独特之处。
 
-#### 注册方式一：servlet3.0注解+@ServletComponentScan
+#### 注册方式一：servlet3.0 注解 +@ServletComponentScan
 
 springboot 依旧兼容 servlet3.0 一系列以 @Web* 开头的注解：@WebServlet，@WebFilter，@WebListener
 
@@ -318,11 +318,11 @@ ServletRegistrationBean 和 FilterRegistrationBean 都集成自 RegistrationBean
 
 从图中可以看出 RegistrationBean 的地位，它的几个实现类作用分别是：帮助容器注册 filter，servlet，listener，最后的 DelegatingFilterProxyRegistrationBean 使用的不多，但熟悉 SpringSecurity 的朋友不会感到陌生，SpringSecurityFilterChain 就是通过这个代理类来调用的。另外 RegistrationBean 实现了 ServletContextInitializer 接口，这个接口将会是下面分析的核心接口，大家先混个眼熟，了解下它有一个抽象实现 RegistrationBean 即可。
 
-### SpringBoot中servlet加载流程的源码分析
+### SpringBoot 中 servlet 加载流程的源码分析
 
 暂时只介绍这两种方式，下面解释下之前卖的关子，为什么说 springboot 没有完全遵守 servlet3.0 规范。讨论的前提是 springboot 环境下使用内嵌的容器，比如最典型的 tomcat。高能预警，以下内容比较烧脑，觉得看起来吃力的朋友可以跳过本节直接看下一节的总结！
 
-#### Initializer被替换为TomcatStarter 
+#### Initializer 被替换为 TomcatStarter 
 
 当使用内嵌的 tomcat 时，你会发现 springboot 完全走了另一套初始化流程，完全没有使用前面提到的 SpringServletContainerInitializer，实际上一开始我在各种 ServletContainerInitializer 的实现类中打了断点，最终定位到，根本没有运行到 SpringServletContainerInitializer 内部，而是进入了 TomcatStarter 这个类中。
 
@@ -336,7 +336,7 @@ ServletRegistrationBean 和 FilterRegistrationBean 都集成自 RegistrationBean
 
 springboot 这么做是有意而为之。springboot 考虑到了如下的问题，我们在使用 springboot 时，开发阶段一般都是使用内嵌 tomcat 容器，但部署时却存在两种选择：一种是打成 jar 包，使用 java -jar 的方式运行；另一种是打成 war 包，交给外置容器去运行。前者就会导致容器搜索算法出现问题，因为这是 jar 包的运行策略，不会按照 servlet3.0 的策略去加载 ServletContainerInitializer！最后作者还提供了一个替代选项：ServletContextInitializer，注意是 ServletContextInitializer！它和 ServletContainerInitializer 长得特别像，别搞混淆了，前者 ServletContextInitializer 是 org.springframework.boot.web.servlet.ServletContextInitializer，后者 ServletContainerInitializer 是 javax.servlet.ServletContainerInitializer，前文还提到 RegistrationBean 实现了 ServletContextInitializer 接口。
 
-#### TomcatStarter中的ServletContextInitializer是关键
+#### TomcatStarter 中的 ServletContextInitializer 是关键
 
 TomcatStarter 中的 `org.springframework.boot.context.embedded.ServletContextInitializer` 是 springboot 初始化 servlet，filter，listener 的关键。
 
@@ -365,11 +365,11 @@ class TomcatStarter implements ServletContainerInitializer {
 
 太天真了，RegisterBean 并没有出现在 TomcatStarter 的 debug 信息中，initializers 只包含了三个类，其中只有第一个类看上去比较核心，注意第一个类不是 EmbeddedWebApplicationContext！而是这个类中的 $1 匿名类，为了搞清楚 springboot 如何加载 filter servlet listener ，看来还得研究下 EmbeddedWebApplicationContext 的结构。
 
-#### EmbeddedWebApplicationContext中的6层迭代加载
+#### EmbeddedWebApplicationContext 中的 6 层迭代加载
 
 ApplicationContext 大家应该是比较熟悉的，这是 spring 一个比较核心的类，一般我们可以从中获取到那些注册在容器中的托管 Bean，而这篇文章，主要分析的便是它在内嵌容器中的实现类：EmbeddedWebApplicationContext，重点分析它加载 filter servlet listener 这部分的代码。这里是整个代码中迭代层次最深的部分，做好心理准备起航，来看看 EmbeddedWebApplicationContext 是怎么获取到所有的 servlet filter listener 的！以下方法均出自于 EmbeddedWebApplicationContext。
 
-**第一层：onRefresh()**
+** 第一层：onRefresh()**
 
 onRefresh 是 ApplicationContext 的生命周期方法，EmbeddedWebApplicationContext 的实现非常简单，只干了一件事：
 
@@ -378,7 +378,7 @@ onRefresh 是 ApplicationContext 的生命周期方法，EmbeddedWebApplicationC
 protected void onRefresh() {
    super.onRefresh();
    try {
-      createEmbeddedServletContainer();//第二层的入口
+      createEmbeddedServletContainer();// 第二层的入口
    }
    catch (Throwable ex) {
       throw new ApplicationContextException("Unable to start embedded container",
@@ -389,7 +389,7 @@ protected void onRefresh() {
 
 createEmbeddedServletContainer 连接到了第二层
 
-**第二层：createEmbeddedServletContainer()** 
+** 第二层：createEmbeddedServletContainer()** 
 
 看名字 spring 是想创建一个内嵌的 servlet 容器，ServletContainer 其实就是 servlet filter listener 的总称。
 
@@ -400,7 +400,7 @@ private void createEmbeddedServletContainer() {
    if (localContainer == null && localServletContext == null) {
       EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
       this.embeddedServletContainer = containerFactory
-            .getEmbeddedServletContainer(getSelfInitializer());//第三层的入口
+            .getEmbeddedServletContainer(getSelfInitializer());// 第三层的入口
    }
    else if (localServletContext != null) {
       try {
@@ -417,7 +417,7 @@ private void createEmbeddedServletContainer() {
 
 凡是带有 servlet，initializer 字样的方法都是我们需要留意的，getSelfInitializer() 便涉及到了我们最为关心的初始化流程。
 
-**第三层：getSelfInitializer()**
+** 第三层：getSelfInitializer()**
 
 ```Java
 private org.springframework.boot.web.servlet.ServletContextInitializer getSelfInitializer() {
@@ -439,16 +439,16 @@ private void selfInitialize(ServletContext servletContext) throws ServletExcepti
    existingScopes.restore();
    WebApplicationContextUtils.registerEnvironmentBeans(beanFactory,
          getServletContext());
-   //第四层的入口
+   // 第四层的入口
    for (ServletContextInitializer beans : getServletContextInitializerBeans()) {
       beans.onStartup(servletContext);
    }
 }
 ```
 
-还记得前面 TomcatStarter 的 debug 信息中，第一个 ServletContextInitializer 就是出现在 EmbeddedWebApplicationContext 中的一个匿名类，没错了，就是这里的 getSelfInitializer() 方法创建的！解释下这里的 getSelfInitializer() 和 selfInitialize(ServletContext servletContext) 为什么要这么设计：这是典型的回调式方式，当匿名 ServletContextInitializer 类被 TomcatStarter 的 onStartup 方法调用，设计上是触发了 selfInitialize(ServletContext servletContext) 的调用。所以这下就清晰了，为什么 TomcatStarter 中没有出现 RegisterBean ，其实是隐式触发了 EmbeddedWebApplicationContext 中的 selfInitialize 方法。selfInitialize 方法中的 getServletContextInitializerBeans() 成了关键。
+还记得前面 TomcatStarter 的 debug 信息中，第一个 ServletContextInitializer 就是出现在 EmbeddedWebApplicationContext 中的一个匿名类，没错了，就是这里的 getSelfInitializer()方法创建的！解释下这里的 getSelfInitializer() 和 selfInitialize(ServletContext servletContext) 为什么要这么设计：这是典型的回调式方式，当匿名 ServletContextInitializer 类被 TomcatStarter 的 onStartup 方法调用，设计上是触发了 selfInitialize(ServletContext servletContext) 的调用。所以这下就清晰了，为什么 TomcatStarter 中没有出现 RegisterBean ，其实是隐式触发了 EmbeddedWebApplicationContext 中的 selfInitialize 方法。selfInitialize 方法中的 getServletContextInitializerBeans() 成了关键。
 
-**第四层：getServletContextInitializerBeans()**
+** 第四层：getServletContextInitializerBeans()**
 
 ```java
 /**
@@ -459,13 +459,13 @@ private void selfInitialize(ServletContext servletContext) throws ServletExcepti
  * @return the servlet initializer beans
  */
 protected Collection<ServletContextInitializer> getServletContextInitializerBeans() {
-   return new ServletContextInitializerBeans(getBeanFactory());//第五层的入口
+   return new ServletContextInitializerBeans(getBeanFactory());// 第五层的入口
 }
 ```
 
 没错了，注释都告诉我们，这个 ServletContextInitializerBeans 是用来加载 Servlet 和 Filter 的。
 
-**第五层：ServletContextInitializerBeans的构造方法**
+** 第五层：ServletContextInitializerBeans 的构造方法 **
 
 ```Java
 public ServletContextInitializerBeans(ListableBeanFactory beanFactory) {
@@ -482,7 +482,7 @@ public ServletContextInitializerBeans(ListableBeanFactory beanFactory) {
 }
 ```
 
-**第六层：addServletContextInitializerBeans(beanFactory)**
+** 第六层：addServletContextInitializerBeans(beanFactory)**
 
 ```Java
 private void addServletContextInitializerBeans(ListableBeanFactory beanFactory) {
@@ -496,9 +496,9 @@ private void addServletContextInitializerBeans(ListableBeanFactory beanFactory) 
 
 getOrderedBeansOfType 方法便是去容器中寻找注册过得 ServletContextInitializer ，这时候就可以把之前那些 RegisterBean 全部加载出来了，并且 RegisterBean 还实现了 Ordered 接口，在这儿用于排序。不再往下迭代了。
 
-### EmbeddedWebApplicationContext加载流程总结
+### EmbeddedWebApplicationContext 加载流程总结
 
-如果你对具体的代码流程不感兴趣，可以跳过上述的6层分析，直接看本节的结论。总结如下：
+如果你对具体的代码流程不感兴趣，可以跳过上述的 6 层分析，直接看本节的结论。总结如下：
 
 - EmbeddedWebApplicationContext 的 onRefresh 方法触发配置了一个匿名的 ServletContextInitializer。
 - 这个匿名的 ServletContextInitializer 的 onStartup 方法会去容器中搜索到了所有的 RegisterBean 并按照顺序加载到 ServletContext 中。
@@ -574,7 +574,7 @@ public class EmbeddedServletContainerAutoConfiguration {
     * Nested configuration if Tomcat is being used.
     */
    @Configuration
-   @ConditionalOnClass({ Servlet.class, Tomcat.class })
+   @ConditionalOnClass({Servlet.class, Tomcat.class})
    @ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
    public static class EmbeddedTomcat {
 
@@ -597,8 +597,8 @@ public class EmbeddedServletContainerAutoConfiguration {
 
 ### 推荐阅读
 
-JAVA拾遗--关于SPI机制 https://www.cnkirito.moe/spi/
+JAVA 拾遗 -- 关于 SPI 机制 https://www.cnkirito.moe/spi/
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

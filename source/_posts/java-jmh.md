@@ -1,5 +1,5 @@
 ---
-title: JAVA拾遗 — JMH与8个测试陷阱
+title: JAVA 拾遗 — JMH 与 8 个测试陷阱
 date: 2018-08-13 19:47:28
 tags:
 - JAVA
@@ -9,7 +9,7 @@ categories:
 
 ### 前言
 
-[JMH](http://openjdk.java.net/projects/code-tools/jmh/) 是 Java Microbenchmark Harness（微基准测试）框架的缩写（2013年首次发布）。与其他众多测试框架相比，其特色优势在于它是由 Oracle 实现 JIT 的相同人员开发的。在此，我想特别提一下 [Aleksey Shipilev ](http://shipilev.net/)（JMH 的作者兼布道者）和他优秀的博客文章。笔者花费了一个周末，将 Aleksey 大神的博客，特别是那些和 JMH 相关的文章通读了几遍，外加一部公开课视频 [《"The Lesser of Two Evils" Story》](https://www.youtube.com/watch?v=VaWgOCDBxYw&feature=youtu.be) ，将自己的收获归纳在这篇文章中，文中不少图片都来自 Aleksey 公开课视频。
+[JMH](http://openjdk.java.net/projects/code-tools/jmh/) 是 Java Microbenchmark Harness（微基准测试）框架的缩写（2013 年首次发布）。与其他众多测试框架相比，其特色优势在于它是由 Oracle 实现 JIT 的相同人员开发的。在此，我想特别提一下 [Aleksey Shipilev](http://shipilev.net/)（JMH 的作者兼布道者）和他优秀的博客文章。笔者花费了一个周末，将 Aleksey 大神的博客，特别是那些和 JMH 相关的文章通读了几遍，外加一部公开课视频 [《"The Lesser of Two Evils" Story》](https://www.youtube.com/watch?v=VaWgOCDBxYw&feature=youtu.be) ，将自己的收获归纳在这篇文章中，文中不少图片都来自 Aleksey 公开课视频。
 
 <!-- more -->
 
@@ -27,7 +27,7 @@ categories:
 
 ![测试精度](http://kirito.iocoder.cn/image-20180815170601353.png)
 
-上图给出了不同类型测试的耗时数量级，可以发现 JMH 可以达到**微秒**级别的的精度。
+上图给出了不同类型测试的耗时数量级，可以发现 JMH 可以达到 ** 微秒 ** 级别的的精度。
 
 这样几个数量级的测试所面临的挑战也是不同的。
 
@@ -48,9 +48,9 @@ categories:
 
 测试在不同的维度可以分为很多类：集成测试，单元测试，API 测试，压力测试… 而 Benchmark 通常译为基准测试（性能测试）。你可以在很多开源框架的包层级中发现 Benchmark，用于阐释该框架的基准水平，从而量化其性能。
 
-基准测试又可以细分为 ：Micro benchmark，Kernels，Synthetic benchmark，Application benchmarks.etc.本文的主角便属于 Benchmark 的 Micro benchmark。基础测试分类详细介绍 [here](http://prof.ict.ac.cn/DComputing/uploads/2013/DC_1_3_benchmark.pdf)
+基准测试又可以细分为 ：Micro benchmark，Kernels，Synthetic benchmark，Application benchmarks.etc. 本文的主角便属于 Benchmark 的 Micro benchmark。基础测试分类详细介绍 [here](http://prof.ict.ac.cn/DComputing/uploads/2013/DC_1_3_benchmark.pdf)
 
-![motan中的benchmark](http://kirito.iocoder.cn/image-20180815172655473.png)
+![motan 中的 benchmark](http://kirito.iocoder.cn/image-20180815172655473.png)
 
 #### 为什么需要有 Benchmark
 
@@ -98,11 +98,11 @@ public void measure() {
 }
 ```
 
-事实上，这是本文的核心问题，建议在阅读时时刻带着这样的疑问，为什么不使用第一种方式来测试。**在下面的章节中，我将列举诸多的测试陷阱，他们都会为这个问题提供论据，这些陷阱会启发那些对“测试”不感冒的开发者。**。
+事实上，这是本文的核心问题，建议在阅读时时刻带着这样的疑问，为什么不使用第一种方式来测试。** 在下面的章节中，我将列举诸多的测试陷阱，他们都会为这个问题提供论据，这些陷阱会启发那些对“测试”不感冒的开发者。**。
 
 #### 预热
 
-在初识 JMH 小节的最后，花少量的篇幅来给 JMH 涉及的知识点开个头，介绍一个 Java 测试中比较老生常谈的话题 — 预热(warm up)，它存在于下面所有的测试中。
+在初识 JMH 小节的最后，花少量的篇幅来给 JMH 涉及的知识点开个头，介绍一个 Java 测试中比较老生常谈的话题 — 预热 (warm up)，它存在于下面所有的测试中。
 
 > «Warmup» = waiting for the transient responses to settle down
 
@@ -114,7 +114,7 @@ public void measure() {
 
 ### 使用 JMH 解决 12 个测试陷阱
 
-#### 陷阱1：死码消除
+#### 陷阱 1：死码消除
 
 ![死码消除](http://kirito.iocoder.cn/image-20180816164617507.png)
 
@@ -122,7 +122,7 @@ measureWrong 方法想要测试 Math.log 的性能，得到的结果和空方法
 
 这是由于 JIT 擅长删除“无效”的代码，这给我们的测试带来了一些意外，当你意识到 DCE 现象后，应当有意识的去消费掉这些孤立的代码，例如 return。JMH 不会自动实施对冗余代码的消除。
 
-[死码消除](https://zh.wikipedia.org/wiki/%E6%AD%BB%E7%A2%BC%E5%88%AA%E9%99%A4)这个概念很多人其实并不陌生，注释的代码，不可达的代码块，可达但不被使用的代码等等，我这里补充一些 Aleksey 提到的概念，用以阐释为何一般测试方法难以避免引用对象发生死码消除现象：
+[死码消除](https://zh.wikipedia.org/wiki/%E6%AD%BB%E7%A2%BC%E5%88%AA%E9%99%A4) 这个概念很多人其实并不陌生，注释的代码，不可达的代码块，可达但不被使用的代码等等，我这里补充一些 Aleksey 提到的概念，用以阐释为何一般测试方法难以避免引用对象发生死码消除现象：
 
 1. Fast object combinator.
 2. Need to escape object to limit thread-local optimizations. 
@@ -139,7 +139,7 @@ public void measureRight(Blackhole bh) {
 }
 ```
 
-#### 陷阱2：常量折叠与常量传播
+#### 陷阱 2：常量折叠与常量传播
 
 [常量折叠](https://zh.wikipedia.org/wiki/%E5%B8%B8%E6%95%B8%E6%8A%98%E7%96%8A#%E5%B8%B8%E6%95%B8%E5%82%B3%E6%92%AD) (Constant folding) 是一个在编译时期简化常数的一个过程，常数在表示式中仅仅代表一个简单的数值，就像是整数 `2`，若是一个变数从未被修改也可作为常数，或者直接将一个变数被明确地被标注为常数，例如下面的描述：
 
@@ -182,7 +182,7 @@ public double measureRight() { // 22.590 ± 2.636  ns/op
 
 经过 JMH 可以验证这一点：只有最后的 measureRight 正确测试出了 Math.log 的性能，measureWrong_1，measureWrong_2 都受到了常量折叠的影响。
 
-**常数传播(**Constant propagation**)** 是一个替代表示式中已知常数的过程，也是在编译时期进行，包含前述所定义，内建函数也适用于常数，以下列描述为例：
+** 常数传播 (**Constant propagation**)** 是一个替代表示式中已知常数的过程，也是在编译时期进行，包含前述所定义，内建函数也适用于常数，以下列描述为例：
 
 ```Java
   int x = 14;
@@ -198,13 +198,13 @@ public double measureRight() { // 22.590 ± 2.636  ns/op
   return 0;
 ```
 
-#### 陷阱3：永远不要在测试中写循环
+#### 陷阱 3：永远不要在测试中写循环
 
 这个陷阱对我们做日常测试时的影响也是巨大的，所以我直接将他作为了标题：永远不要在测试中写循环！
 
 本节设计不少知识点，[循环展开](https://zh.wikipedia.org/wiki/%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80)(loop unrolling)，JIT & OSR 对循环的优化。对于前者循环展开的定义，建议读者直接查看 wiki 的定义，而对于后者 JIT & OSR 对循环的优化，推荐两篇 R 大的知乎回答：
 
-[循环长度的相同、循环体代码相同的两次for循环的执行时间相差了100倍?](https://www.zhihu.com/question/45910849/answer/100636125java)
+[循环长度的相同、循环体代码相同的两次 for 循环的执行时间相差了 100 倍?](https://www.zhihu.com/question/45910849/answer/100636125java)
 
 [OSR（On-Stack Replacement）是怎样的机制？](https://www.zhihu.com/question/45910849/answer/100636125)
 
@@ -220,7 +220,7 @@ public class BadMicrobenchmark {
             reps();
         }
         long endTime = System.nanoTime();
-        System.out.println("ns/op : " + (endTime - startTime));
+        System.out.println("ns/op :" + (endTime - startTime));
     }
 }
 ```
@@ -300,7 +300,7 @@ Aleksey 在视频中给出结论：假设单词迭代的耗时是 𝑀 ns. 在 J
 
 正确的测试循环的姿势可以看这里：[here](https://github.com/lexburner/JMH-samples/blob/master/src/main/java/org/openjdk/jmh/samples/JMHSample_34_SafeLooping.java)
 
-#### 陷阱4：使用 Fork 隔离多个测试方法
+#### 陷阱 4：使用 Fork 隔离多个测试方法
 
 相信我，这个陷阱中涉及到的例子绝对是 JMH sample 中最诡异的，并且我还没有找到科学的解释（说实话视频中这一段我尝试听了好几遍，没听懂，原谅我的听力）
 
@@ -330,7 +330,7 @@ public class Counter2 implements Counter {
 }
 ```
 
-接着让他们在**同一个 VM** 中按照先手顺序进行评测：
+接着让他们在 ** 同一个 VM** 中按照先手顺序进行评测：
 
 ```Java
 public int measure(Counter c) {
@@ -388,7 +388,7 @@ public int measure_5_forked_c2() {
 }
 ```
 
-这一个例子中多了一个 Fork 注解，让我来简单介绍下它。Fork 这个关键字顾名思义，是用来将运行环境复制一份的意思，在我们之前的多个测试中，实际上每次测评都是默认使用了**相互隔离的，完全一致**的测评环境，这得益于 JMH。每个试验运行在单独的 JVM 进程中。也可以指定(额外的) JVM 参数，例如这里为了演示运行在同一个 JVM 中的弊端，特地做了反面的教材：Fork(0)。试想一下 c1，c2，c1 again 的耗时结果会如何？
+这一个例子中多了一个 Fork 注解，让我来简单介绍下它。Fork 这个关键字顾名思义，是用来将运行环境复制一份的意思，在我们之前的多个测试中，实际上每次测评都是默认使用了 ** 相互隔离的，完全一致 ** 的测评环境，这得益于 JMH。每个试验运行在单独的 JVM 进程中。也可以指定 (额外的) JVM 参数，例如这里为了演示运行在同一个 JVM 中的弊端，特地做了反面的教材：Fork(0)。试想一下 c1，c2，c1 again 的耗时结果会如何？
 
 ```haskell
 Benchmark                                 Mode  Cnt   Score   Error  Units
@@ -403,32 +403,32 @@ JMHSample_12_Forking.measure_5_forked_c2  avgt    5   3.574 ± 0.220  ns/op
 
 JMH samples 中的这个示例主要还是想要表达同一个 JVM 中运行的测评代码会互相影响，从结果也可以发现：c1,c2,c1_again 的实现相同，跑分却不同，因为运行在同一个 JVM 中；而 forked_c1 和 forked_c2 则表现出了一致的性能。所以没有特殊原因，Fork 的值一般都需要设置为 >0。
 
-#### 陷阱5：方法内联
+#### 陷阱 5：方法内联
 
 熟悉 C/C++ 的朋友不会对方法内联感到陌生，方法内联就是把目标方法的代码“复制”到发起调用的方法之中，避免发生真实的方法调用（减少了操作指令周期）。在 Java 中，无法手动编写内联方法，但 JVM 会自动识别热点方法，并对它们使用方法内联优化。一段代码需要执行多少次才会触发 JIT 优化通常这个值由 -XX:CompileThreshold 参数进行设置：
 
-- 1、使用 client 编译器时，默认为1500；
-- 2、使用 server 编译器时，默认为10000；
+- 1、使用 client 编译器时，默认为 1500；
+- 2、使用 server 编译器时，默认为 10000；
 
 但是一个方法就算被 JVM 标注成为热点方法，JVM 仍然不一定会对它做方法内联优化。其中有个比较常见的原因就是这个方法体太大了，分为两种情况。
 
-- 如果方法是经常执行的，默认情况下，方法大小小于 325 字节的都会进行内联（可以通过`-XX:MaxFreqInlineSize=N`来设置这个大小）
-- 如果方法不是经常执行的，默认情况下，方法大小小于 35 字节才会进行内联（可以通过`-XX:MaxInlineSize=N`来设置这个大小）
+- 如果方法是经常执行的，默认情况下，方法大小小于 325 字节的都会进行内联（可以通过 `-XX:MaxFreqInlineSize=N` 来设置这个大小）
+- 如果方法不是经常执行的，默认情况下，方法大小小于 35 字节才会进行内联（可以通过 `-XX:MaxInlineSize=N` 来设置这个大小）
 
 > 我们可以通过增加这个大小，以便更多的方法可以进行内联；但是除非能够显著提升性能，否则不推荐修改这个参数。因为更大的方法体会导致代码内存占用更多，更少的热点方法会被缓存，最终的效果不一定好。
 
-如果想要知道方法被内联的情况，可以使用下面的JVM参数来配置
+如果想要知道方法被内联的情况，可以使用下面的 JVM 参数来配置
 
 ```shell
--XX:+PrintCompilation //在控制台打印编译过程信息
--XX:+UnlockDiagnosticVMOptions //解锁对JVM进行诊断的选项参数。默认是关闭的，开启后支持一些特定参数对JVM进行诊断
--XX:+PrintInlining //将内联方法打印出来
+-XX:+PrintCompilation // 在控制台打印编译过程信息
+-XX:+UnlockDiagnosticVMOptions // 解锁对 JVM 进行诊断的选项参数。默认是关闭的，开启后支持一些特定参数对 JVM 进行诊断
+-XX:+PrintInlining // 将内联方法打印出来
 ```
 
-**方法内联的其他隐含条件**
+** 方法内联的其他隐含条件 **
 
 > - 虽然 JIT 号称可以针对代码全局的运行情况而优化，但是 JIT 对一个方法内联之后，还是可能因为方法被继承，导致需要类型检查而没有达到性能的效果
-> - 想要对热点的方法使用上内联的优化方法，最好尽量使用`final、private、static`这些修饰符修饰方法，避免方法因为继承，导致需要额外的类型检查，而出现效果不好情况。
+> - 想要对热点的方法使用上内联的优化方法，最好尽量使用 `final、private、static` 这些修饰符修饰方法，避免方法因为继承，导致需要额外的类型检查，而出现效果不好情况。
 
 方法内联也可能对 Benchmark 产生影响；或者说有时候我们为了优化代码，而故意触发内联，也可以通过 JMH 来和非内联方法进行性能对比:
 
@@ -457,7 +457,7 @@ JMHSample_16_CompilerControl.inline      avgt    3   0.308 ±  0.264  ns/op
 
 可以发现，内联与不内联的性能差距是巨大的，有一些空间换时间的味道，在 JMH 中使用 CompilerControl.Mode 来控制内联是否开启。
 
-#### 陷阱6：伪共享与缓存行
+#### 陷阱 6：伪共享与缓存行
 
 又遇到了我们的老朋友：CPU Cache 和缓存行填充。这个并发性能杀手，我在之前的文章中专门介绍过，如果你没有看过，可以戳这里：[JAVA 拾遗 — CPU Cache 与缓存行](https://www.cnkirito.moe/cache-line/)。在 Benchmark 中，有时也不能忽视缓存行对测评的影响。
 
@@ -467,7 +467,7 @@ JMH 为解决伪共享问题，提供了 @State 注解，但并不能在单一�
 
 > Aleksey 曾为 Java 并发包提供过优化，其中就包括 @Contended 注解。
 
-#### 陷阱7：分支预测
+#### 陷阱 7：分支预测
 
 分支预测（Branch Prediction）是这篇文章中介绍的最后一个 Benchmark 中的“捣蛋鬼”。还是从一个具体的 Benchmark 中观察结果。下面的代码尝试遍历了两个长度相等的数组，一个有序，一个无序，并在迭代时加入了一个判断语句，这是分支预测的关键：if(v > 0)
 
@@ -491,7 +491,7 @@ public void setup() {
 @OperationsPerInvocation(COUNT)
 public void sorted(Blackhole bh1, Blackhole bh2) {
     for (byte v : sorted) {
-        if (v > 0) { //关键
+        if (v > 0) { // 关键
             bh1.consume(v);
         } else {
             bh2.consume(v);
@@ -503,7 +503,7 @@ public void sorted(Blackhole bh1, Blackhole bh2) {
 @OperationsPerInvocation(COUNT)
 public void unsorted(Blackhole bh1, Blackhole bh2) {
     for (byte v : unsorted) {
-        if (v > 0) { //关键
+        if (v > 0) { // 关键
             bh1.consume(v);
         } else {
             bh2.consume(v);
@@ -539,7 +539,7 @@ JMHSample_36_BranchPrediction.unsorted  avgt   25  8.175 ± 0.883  ns/op
 
 这同时也启发我们：在大规模循环逻辑中要尽量避免大量判断（是不是可以抽取到循环外呢？）。
 
-#### 陷阱8：多线程测试
+#### 陷阱 8：多线程测试
 
 ![多线程测试](http://kirito.iocoder.cn/image-20180816110426619.png)
 
@@ -550,7 +550,7 @@ JMHSample_36_BranchPrediction.unsorted  avgt   25  8.175 ± 0.883  ns/op
 1. 为什么 2 线程 -> 4 线程几乎没有变化？
 2. 为什么 2 线程相比 1 线程只有 1.87 倍的变化，而不是 2 倍？
 
- **1 电源管理**
+ **1 电源管理 **
 
 ![降频](http://kirito.iocoder.cn/image-20180816120810564.png)
 
@@ -562,11 +562,11 @@ JMHSample_36_BranchPrediction.unsorted  avgt   25  8.175 ± 0.883  ns/op
 
 JMH 通过长时间运行，保证线程不出现 park(time waiting) 状态，来保证测试的精准性。
 
-**2 操作系统调度和分时调用模型**
+**2 操作系统调度和分时调用模型 **
 
 造成多线程测试陷阱的第二个问题，需要从线程调度模型出发来理解：分时调度模型和抢占式调度模型。
 
-分时调度模型是指让所有的线程轮流获得 CPU 的使用权,并且平均分配每个线程占用的 CPU 的时间片，这个也比较好理解；抢占式调度模型，是指优先让可运行池中优先级高的线程占用 CPU，如果可运行池中的线程优先级相同，那么就随机选择一个线程，使其占用 CPU。处于运行状态的线程会一直运行，直至它不得不放弃 CPU。一个线程会因为以下原因而放弃 CPU。
+分时调度模型是指让所有的线程轮流获得 CPU 的使用权, 并且平均分配每个线程占用的 CPU 的时间片，这个也比较好理解；抢占式调度模型，是指优先让可运行池中优先级高的线程占用 CPU，如果可运行池中的线程优先级相同，那么就随机选择一个线程，使其占用 CPU。处于运行状态的线程会一直运行，直至它不得不放弃 CPU。一个线程会因为以下原因而放弃 CPU。
 
 需要注意的是，线程的调度不是跨平台的，它不仅仅取决于 Java 虚拟机，还依赖于操作系统。在某些操作系统中，只要运行中的线程没有遇到阻塞，就不会放弃 CPU；在某些操作系统中，即使线程没有遇到阻塞，也会运行一段时间后放弃 CPU，给其它线程运行的机会。
 
@@ -586,7 +586,7 @@ bogus iterations 这个值得一提，我理解为“伪迭代”，并且也只
 
 实际上，本文设计的知识点，仅仅是 Aleksey 博客中的内容、 JMH 的 38 个 sample 的冰山一角，有兴趣的朋友可以戳这里查看所有的 [JMH sample](https://github.com/lexburner/JMH-samples)
 
-陷阱内心 os：像我这么diao的陷阱，还有 30 个！
+陷阱内心 os：像我这么 diao 的陷阱，还有 30 个！
 
 ![kafka](http://kirito.iocoder.cn/image-20180816193913833.png)
 
@@ -594,7 +594,7 @@ bogus iterations 这个值得一提，我理解为“伪迭代”，并且也只
 
 
 
-**欢迎关注我的微信公众号：「Kirito的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
+** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
 ![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 
