@@ -150,7 +150,7 @@ Can-Redefine-Classes: true
 
 如果你使用的 IDEA，eclipse，只需要添加一行启动参数即可：
 
-![启动参数](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720180204235047.png)
+![启动参数](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720180204235047.png)
 
 -javaagent:jar_path=[options] 其中的 jar_path 为 agent.jar 的路径，options 是一个可选参数，其值会被 premain 方法的第一个参数接收 public static void premain(String options, Instrumentation ins).
 

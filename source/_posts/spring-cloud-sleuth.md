@@ -21,7 +21,7 @@ categories:
 
 ## 项目结构
 
-![项目结构](http://kirito.iocoder.cn/sleuth%E9%93%BE%E8%B7%AF%E7%9B%91%E6%8E%A7.png)
+![项目结构](https://kirito.iocoder.cn/sleuth%E9%93%BE%E8%B7%AF%E7%9B%91%E6%8E%A7.png)
 
 上面的项目结构是本次 demo 的核心结构，其中
 
@@ -97,7 +97,7 @@ public class ZipkinServerApp {
 
 zipkin-server 单独启动后，就可以看到链路监控页面了，此时由于没有收集到任何链路调用记录，显示如下：
 
-![zipkin 服务端页面](http://kirito.iocoder.cn/zipkin_blank.png)
+![zipkin 服务端页面](https://kirito.iocoder.cn/zipkin_blank.png)
 
 ## HTTP 链路监控
 
@@ -183,11 +183,11 @@ public MainOrder test(){
 
 紧接着，回到 zipkin-server 的监控页面，查看变化
 
-![应用名称](http://kirito.iocoder.cn/%E5%BA%94%E7%94%A8%E5%90%8D%E7%A7%B0%E8%A2%AB%E8%AE%B0%E5%BD%95.png)
+![应用名称](https://kirito.iocoder.cn/%E5%BA%94%E7%94%A8%E5%90%8D%E7%A7%B0%E8%A2%AB%E8%AE%B0%E5%BD%95.png)
 
-![调用详细记录](http://kirito.iocoder.cn/%E6%9F%A5%E7%9C%8B%E8%B0%83%E7%94%A8%E8%AF%A6%E7%BB%86%E8%AE%B0%E5%BD%95.png)
+![调用详细记录](https://kirito.iocoder.cn/%E6%9F%A5%E7%9C%8B%E8%B0%83%E7%94%A8%E8%AF%A6%E7%BB%86%E8%AE%B0%E5%BD%95.png)
 
-![依赖关系](http://kirito.iocoder.cn/%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB%E6%9F%A5%E7%9C%8B.png)
+![依赖关系](https://kirito.iocoder.cn/%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB%E6%9F%A5%E7%9C%8B.png)
 
 到这里，Http 监控就已经完成了，如果你的应用使用了其他的 Http 工具，如 okhttp3，也可以去 [opentracing，zipkin 相关的文档中寻找依赖。
 
@@ -269,9 +269,9 @@ public class GoodsApiImpl implements GoodsApi {
 
 ** 查看调用关系 **
 
-![motan 调用详细信息](http://kirito.iocoder.cn/%E9%93%BE%E8%B7%AF%E8%B0%83%E7%94%A8%E4%BF%A1%E6%81%AF.png)
+![motan 调用详细信息](https://kirito.iocoder.cn/%E9%93%BE%E8%B7%AF%E8%B0%83%E7%94%A8%E4%BF%A1%E6%81%AF.png)
 
-![依赖关系](http://kirito.iocoder.cn/motan_%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB.png)
+![依赖关系](https://kirito.iocoder.cn/motan_%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB.png)
 
 第一张图中，使用前缀 http 和 motan 来区别调用的类型，第二张图中，依赖变成了双向的，因为一开始的 http 调用 goods 依赖于 order，而新增了 motan rpc 调用之后 order 又依赖于 goods。
 

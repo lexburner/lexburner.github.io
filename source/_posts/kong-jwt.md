@@ -71,7 +71,7 @@ curl http://127.0.0.1:8001/consumers/kirito/jwt
 
 使用 jwt 官网 (jwt.io) 提供的 Debugger 功能可以很方便的生成 jwt。
 
-![jwt 官网](http://kirito.iocoder.cn/9ADA76C8-6704-4C6A-A7D5-E6EF91D5225D.png)
+![jwt 官网](https://kirito.iocoder.cn/9ADA76C8-6704-4C6A-A7D5-E6EF91D5225D.png)
 
 HEADER 部分声明了验证方式为 JWT，加密算法为 HS256
 
@@ -158,4 +158,4 @@ String jwt = Jwts.builder()
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

@@ -105,7 +105,7 @@ public class LongAdder extends Striped64 implements Serializable {}
 
 LongAdder 的 API 如下
 
-![LongAdder](http://kirito.iocoder.cn/LongAdder.png)
+![LongAdder](https://kirito.iocoder.cn/LongAdder.png)
 
 你应当发现，LongAdder 和 AtomicLong 明显的区别在于，increment 是一个 void 方法。直接来看看 LongAdder 的性能表现如何。(LA = LongAdder, AL = AtomicLong, 单位  ns/op)
 
@@ -125,7 +125,7 @@ LongAdder 的 API 如下
 
 1. Cell 设计减少并发修改时的冲突
 
-![LongAdder](http://kirito.iocoder.cn/LongAdder-layer.png)
+![LongAdder](https://kirito.iocoder.cn/LongAdder-layer.png)
 
 在 LongAdder 的父类 Striped64 中存在一个 `volatile Cell[] cells;` 数组，其长度是 2 的幂次方，每个 Cell 都填充了一个 @Contended 的 Long 字段，为了避免伪共享问题。
 
@@ -180,7 +180,7 @@ longAccumulate 方法是 LongAdder 的核心方法，内部存在大量的分支
 
 > An auto-resizing table of longs, supporting low-contention CAS operations.Updates are done with CAS’s to no particular table element.The intent is to support **highly scalable counters**, r/w locks, and other structures where the updates are associative, loss-free (no-brainer), and otherwise happen at such a high volume that the cache contention for CAS’ing a single word is unacceptable.
 
-![ConcurrentAutoTable](http://kirito.iocoder.cn/ConcurrentAutoTable.png)
+![ConcurrentAutoTable](https://kirito.iocoder.cn/ConcurrentAutoTable.png)
 
 在最后的测评中，我们将 JCTools 的 ConcurrentAutoTable 也作为一个参考对象。
 
@@ -242,5 +242,5 @@ CounterBenchmark.rw:inc           LongAdder8  avgt    3    89.547 ±    78.720  
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 

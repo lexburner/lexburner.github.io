@@ -37,7 +37,7 @@ categories:
 
 我们的参考完全是表单认证，在之前章节中，已经了解了表单认证相关的核心流程，将此图再贴一遍：
 
-![http://kirito.iocoder.cn/2011121410543010.jpg](http://kirito.iocoder.cn/2011121410543010.jpg)
+![https://kirito.iocoder.cn/2011121410543010.jpg](https://kirito.iocoder.cn/2011121410543010.jpg)
 
 在 IP 登录的 demo 中，使用 IpAuthenticationProcessingFilter 拦截 IP 登录请求，同样使用 ProviderManager 作为全局 AuthenticationManager 接口的实现类，将 ProviderManager 内部的 DaoAuthenticationProvider 替换为 IpAuthenticationProvider，而 UserDetailsService 则使用一个 ConcurrentHashMap 代替。更详细一点的设计：
 
@@ -239,29 +239,29 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
 - `http://127.0.0.1:8080/` 访问首页，其中 here 链接到的地址为：`http://127.0.0.1:8080/hello`
 
-![首页](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002144410.png)
+![首页](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002144410.png)
 
 - 点击 here，由于 `http://127.0.0.1:8080/hello` 是受保护资源，所以跳转到了校验 IP 的页面。此时若点击 Sign In by IP 按钮，将会提交到 /ipVerify 端点，进行 IP 的认证。
 
-![登录](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002144520.png)
+![登录](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002144520.png)
 
 - 登录校验成功之后，页面被成功重定向到了原先访问的
 
-![受保护的 hello 页](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002144800.png)
+![受保护的 hello 页](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002144800.png)
 
 ### 失败的流程
 
 - 注意此时已经注销了上次的登录，并且，使用了 localhost(localhost 和 127.0.0.1 是两个不同的 IP 地址，我们的内存中只有 127.0.0.1 的用户, 没有 localhost 的用户)
 
-![首页](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002144949.png)
+![首页](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002144949.png)
 
 - 点击 here 后，由于没有认证过，依旧跳转到登录页面
 
-  ![登录](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002145344.png)
+  ![登录](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002145344.png)
 
 - 此时，我们发现使用 localhost，并没有认证成功，符合我们的预期
 
-![认证失败](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002145209.png)
+![认证失败](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171002145209.png)
 
 ### 5.9 总结
 
@@ -273,4 +273,4 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

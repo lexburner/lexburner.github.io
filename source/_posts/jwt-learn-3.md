@@ -24,7 +24,7 @@ eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJxaWFubWlJZCI6InFtMTAzNTNzaEQiLCJpc3MiOiJ
 
 一般是编码解码是为了方便以字节的方式表示数据，便于存储和网络传输。整个 jwt 串会被置于 http 的 Header 或者 url 中，为了不出现乱码解析错误等意外，编码是有必要的。在 jwt 中以 `.` 分割的三个部分都经过 base64 编码 (secret 部分是否进行 base64 编码是可选的，header 和 payload 则是必须进行 base64 编码)。注意，编码的一个特点：编码和解码的整个过程是可逆的。得知编码方式后，整个 jwt 串便是明文了，随意找个网站验证下解码后的内容：
 
-![base64](http://kirito.iocoder.cn/04081086-5158-489E-8EC2-B28795B99BD6.png)
+![base64](https://kirito.iocoder.cn/04081086-5158-489E-8EC2-B28795B99BD6.png)
 
 所以注意一点，**payload 是一定不能够携带敏感数据如密码等信息的 **。
 
@@ -141,4 +141,4 @@ jwt 和 oauth2 都可以用于 restful 的认证，就我个人的使用经验�
 
 **欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

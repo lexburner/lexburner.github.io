@@ -19,7 +19,7 @@ redisTemplate.opsForValue().set("student:1","kirito");
 
 这可以说是 Redis 中最基础的操作了，但严谨起见，还是验证一下为妙，使用 RedisDesktopManager 可视化工具，或者 redis-cli 都可以查看 redis 中的数据。
 
-![查看 redis](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171028125803.png)
+![查看 redis](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171028125803.png)
 
 emmmmm，大概能看出是我们的键值对，但前面似乎多了一些奇怪的 16 进制字符，在不了解 RedisTemplate 工作原理的情况下，自然会对这个现象产生疑惑。
 
@@ -136,7 +136,7 @@ stringRedisTemplate.opsForValue().set("student:2", "SkYe");
 
 再同样观察 RedisDesktopManager 中的变化：
 
-![查看 redis](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171028140012.png)
+![查看 redis](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171028140012.png)
 
 由于更换了序列化器，我们得到的结果也不同了。
 
@@ -222,7 +222,7 @@ public void test() {
 
 紧接着，去 RedisDesktopManager 中查看结果：
 
-![查看 Redis](http://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171028225412.png)
+![查看 Redis](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171028225412.png)
 
 标准的 JSON 格式
 

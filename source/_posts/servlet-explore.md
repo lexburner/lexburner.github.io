@@ -9,7 +9,7 @@ categories:
 
 今天我们来放松下心情，不聊分布式，云原生，来聊一聊初学者接触的最多的 java web 基础。几乎所有人都是从 servlet，jsp，filter 开始编写自己的第一个 hello world 工程。那时，还离不开 web.xml 的配置，在 xml 文件中编写繁琐的 servlet 和 filter 的配置。随着 spring 的普及，配置逐渐演变成了两种方式—java configuration 和 xml 配置共存。现如今，springboot 的普及，java configuration 成了主流，xml 配置似乎已经“灭绝”了。不知道你有没有好奇过，这中间都发生了哪些改变，web.xml 中的配置项又是被什么替代项取代了？
 <!-- more -->
-![servlet](http://kirito.iocoder.cn/servlet.png)
+![servlet](https://kirito.iocoder.cn/servlet.png)
 
 ### servlet3.0 以前的时代
 
@@ -106,7 +106,7 @@ public class HelloWorldFilter implements Filter {
 
 ### servlet3.0 新特性
 
-![servlet_3.0](http://kirito.iocoder.cn/servlet_3.0.jpg)
+![servlet_3.0](https://kirito.iocoder.cn/servlet_3.0.jpg)
 
 Servlet 3.0 作为 Java EE 6 规范体系中一员，随着 Java EE 6 规范一起发布。该版本在前一版本（Servlet 2.5）的基础上提供了若干新特性用于简化 Web 应用的开发和部署。其中一项新特性便是提供了无 xml 配置的特性。
 
@@ -247,13 +247,13 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 
 <2> spring 与我们之前的 demo 不同，并没有在 SpringServletContainerInitializer 中直接对 servlet 和 filter 进行注册，而是委托给了一个陌生的类 WebApplicationInitializer ，WebApplicationInitializer 类便是 spring 用来初始化 web 环境的委托者类，它通常有三个实现类：
 
-![WebApplicationInitializer](http://kirito.iocoder.cn/WebApplicationInitializer.png)
+![WebApplicationInitializer](https://kirito.iocoder.cn/WebApplicationInitializer.png)
 
 你一定不会对 dispatcherServlet 感到陌生，AbstractDispatcherServletInitializer#registerDispatcherServlet 便是无 web.xml 前提下创建 dispatcherServlet 的关键代码。
 
 可以去项目中寻找一下 org.springframework:spring-web:version 的依赖，它下面就存在一个 servletContainerInitializer 的扩展，指向了 SpringServletContainerInitializer，这样只要在 servlet3.0 环境下部署，spring 便可以自动加载进行初始化：
 
-![SpringServletContainerInitializer](http://kirito.iocoder.cn/F835D518-A725-40D9-84BA-6AC014DAE5A7.png)
+![SpringServletContainerInitializer](https://kirito.iocoder.cn/F835D518-A725-40D9-84BA-6AC014DAE5A7.png)
 
 注意，上述这一切特性从 spring 3 就已经存在了，而如今 spring 5 已经伴随 springboot 2.0 一起发行了。
 
@@ -314,7 +314,7 @@ public FilterRegistrationBean helloWorldFilter() {
 
 ServletRegistrationBean 和 FilterRegistrationBean 都集成自 RegistrationBean ，RegistrationBean 是 springboot 中广泛应用的一个注册类，负责把 servlet，filter，listener 给容器化，使他们被 spring 托管，并且完成自身对 web 容器的注册。这种注册方式也值得推崇。
 
-![RegistrationBean](http://kirito.iocoder.cn/RegistrationBean.png)
+![RegistrationBean](https://kirito.iocoder.cn/RegistrationBean.png)
 
 从图中可以看出 RegistrationBean 的地位，它的几个实现类作用分别是：帮助容器注册 filter，servlet，listener，最后的 DelegatingFilterProxyRegistrationBean 使用的不多，但熟悉 SpringSecurity 的朋友不会感到陌生，SpringSecurityFilterChain 就是通过这个代理类来调用的。另外 RegistrationBean 实现了 ServletContextInitializer 接口，这个接口将会是下面分析的核心接口，大家先混个眼熟，了解下它有一个抽象实现 RegistrationBean 即可。
 
@@ -326,7 +326,7 @@ ServletRegistrationBean 和 FilterRegistrationBean 都集成自 RegistrationBean
 
 当使用内嵌的 tomcat 时，你会发现 springboot 完全走了另一套初始化流程，完全没有使用前面提到的 SpringServletContainerInitializer，实际上一开始我在各种 ServletContainerInitializer 的实现类中打了断点，最终定位到，根本没有运行到 SpringServletContainerInitializer 内部，而是进入了 TomcatStarter 这个类中。
 
-![TomcatStarter](http://kirito.iocoder.cn/TomcatStarter.png)
+![TomcatStarter](https://kirito.iocoder.cn/TomcatStarter.png)
 
 并且，仔细扫了一眼源码的包，并没有发现有 SPI 文件对应到 TomcatStarter。于是我猜想，内嵌 tomcat 的加载可能不依赖于 servlet3.0 规范和 SPI！它完全走了一套独立的逻辑。为了验证这一点，我翻阅了 spring github 中的 issue，得到了 spring 作者肯定的答复：https://github.com/spring-projects/spring-boot/issues/321
 
@@ -361,7 +361,7 @@ class TomcatStarter implements ServletContainerInitializer {
 
 经过删减源码后，可以看出 TomcatStarter 的主要逻辑，它其实就是负责调用一系列 ServletContextInitializer 的 onStartup 方法，那么在 debug 中，ServletContextInitializer[] initializers 到底包含了哪些类呢？会不会有我们前面介绍的 RegisterBean 呢？
 
-![initializers](http://kirito.iocoder.cn/35560726-DD9D-478A-BFCA-12ACF4DB497D.png)
+![initializers](https://kirito.iocoder.cn/35560726-DD9D-478A-BFCA-12ACF4DB497D.png)
 
 太天真了，RegisterBean 并没有出现在 TomcatStarter 的 debug 信息中，initializers 只包含了三个类，其中只有第一个类看上去比较核心，注意第一个类不是 EmbeddedWebApplicationContext！而是这个类中的 $1 匿名类，为了搞清楚 springboot 如何加载 filter servlet listener ，看来还得研究下 EmbeddedWebApplicationContext 的结构。
 
@@ -504,7 +504,7 @@ getOrderedBeansOfType 方法便是去容器中寻找注册过得 ServletContextI
 - 这个匿名的 ServletContextInitializer 的 onStartup 方法会去容器中搜索到了所有的 RegisterBean 并按照顺序加载到 ServletContext 中。
 - 这个匿名的 ServletContextInitializer 最终传递给 TomcatStarter，由 TomcatStarter 的 onStartup 方法去触发 ServletContextInitializer 的 onStartup 方法，最终完成装配！
 
-![getServletContextInitializerBeans](http://kirito.iocoder.cn/8FFCA673-DB72-4C0A-BDE9-58CB4B80C484.png)
+![getServletContextInitializerBeans](https://kirito.iocoder.cn/8FFCA673-DB72-4C0A-BDE9-58CB4B80C484.png)
 
 ### 第三种注册 Servlet 的方式
 
@@ -601,4 +601,4 @@ JAVA 拾遗 -- 关于 SPI 机制 https://www.cnkirito.moe/spi/
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

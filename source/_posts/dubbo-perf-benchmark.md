@@ -26,7 +26,7 @@ categories:
 
 截止本文发布，官方的最新版本为：[apache-jmeter-5.1.1.zip](http://mirrors.tuna.tsinghua.edu.cn/apache//jmeter/binaries/apache-jmeter-5.1.1.zip) , 下载后直接解压即可。
 
-![jmeter 目录](http://kirito.iocoder.cn/image-20190905204943326.png)
+![jmeter 目录](https://kirito.iocoder.cn/image-20190905204943326.png)
 
 在 ${JMETER_HOME}/bin 下找到启动脚本，可以打开图形化界面
 
@@ -58,7 +58,7 @@ Check : https://jmeter.apache.org/usermanual/best-practices.html
 
 ### 2.3 GUI 界面展示
 
-![image-20190905211412101](http://kirito.iocoder.cn/image-20190905211412101.png)
+![image-20190905211412101](https://kirito.iocoder.cn/image-20190905211412101.png)
 
 上图所示为 JMeter 的主界面。官方提供了国际化支持，通过 【Options】->【Choose Language】可以将界面语言变更为简体中文。
 
@@ -70,11 +70,11 @@ Check : https://jmeter.apache.org/usermanual/best-practices.html
 
 在“测试计划”上右键 【添加】-->【线程（用户）】-->【线程组】。
 
-![image-20190905211637435](http://kirito.iocoder.cn/image-20190905211637435.png)
+![image-20190905211637435](https://kirito.iocoder.cn/image-20190905211637435.png)
 
 给线程组起一个名字，方便记忆。
 
-![image-20190905211831670](http://kirito.iocoder.cn/image-20190905211831670.png)
+![image-20190905211831670](https://kirito.iocoder.cn/image-20190905211831670.png)
 
 - 线程数：决定了由多少线程并发压测
 - Ramp-Up：代表了 JMeter 创建所有线程所需要的时间，如图所示则代表每 0.1s 创建一个线程
@@ -84,17 +84,17 @@ Check : https://jmeter.apache.org/usermanual/best-practices.html
 
 在刚刚创建的线程组上右键 【添加】-->【取样器】-->【HTTP 请求】。
 
-![image-20190905211606505](http://kirito.iocoder.cn/image-20190905211606505.png)
+![image-20190905211606505](https://kirito.iocoder.cn/image-20190905211606505.png)
 
 为 HTTP 取样器配置上压测地址和必要的参数
 
-![image-20190905212937824](http://kirito.iocoder.cn/image-20190905212937824.png)
+![image-20190905212937824](https://kirito.iocoder.cn/image-20190905212937824.png)
 
 ### 3.3 添加察看结果树
 
 在刚刚创建的线程组上右键 【添加】-->【监听器】-->【察看结果树】。
 
-![image-20190905213114409](http://kirito.iocoder.cn/image-20190905213114409.png)
+![image-20190905213114409](https://kirito.iocoder.cn/image-20190905213114409.png)
 
 只有添加了【察看结果树】才能让我们看到 GUI 中测试的结果。
 
@@ -137,7 +137,7 @@ public class OrderService {
 
  在刚刚创建的线程组上右键 【验证】，执行单次验证，可以用来测试与服务端的连通性。在【察看结果树】选项卡中可以看到【响应数据】已经正常返回了。
 
-![image-20190905214317033](http://kirito.iocoder.cn/image-20190905214317033.png)
+![image-20190905214317033](https://kirito.iocoder.cn/image-20190905214317033.png)
 
 ### 3.6 执行测试计划
 
@@ -149,7 +149,7 @@ jmeter -n -t ./rest-order-thread-group.jmx -l ./result.txt -e -o ./webreport
 
 下图展示了最终生成的测试报告，主要汇总了执行次数、响应时间、吞吐量、网络传输速率。
 
-![image-20190905215339406](http://kirito.iocoder.cn/image-20190905215339406.png)
+![image-20190905215339406](https://kirito.iocoder.cn/image-20190905215339406.png)
 
 在实际的测试报告中，还有更加详细的维度可以展示，上述只是展示了汇总信息。
 
@@ -168,17 +168,17 @@ JMeter 默认并不支持私有的 dubbo 协议，但其优秀的扩展机制使
 2. 打包项目，构建 JMeter 插件：`mvn clean install` ，得到：jmeter-plugins-dubbo-2.7.3-jar-with-dependencies.jar
 3. 将插件添加到 `${JMETER_HOME}\lib\ext`
 
-![安装插件后的 ext 目录](http://kirito.iocoder.cn/image-20190906140927770.png)
+![安装插件后的 ext 目录](https://kirito.iocoder.cn/image-20190906140927770.png)
 
 ### 4.2 增加 Dubbo 取样器
 
 之前的小结已经介绍了如何添加线程组和 HTTP 取样器，现在想要对 Dubbo 应用进行性能测试，可以直接复用之前的线程组配置，在线程组上右键 【添加】-->【取样器】-->【Dubbo Sample】。
 
-![image-20190906141506679](http://kirito.iocoder.cn/image-20190906141506679.png)
+![image-20190906141506679](https://kirito.iocoder.cn/image-20190906141506679.png)
 
 创建 Dubbo 取样器之后，可以对其进行配置
 
-![image-20190906143444779](http://kirito.iocoder.cn/image-20190906143444779.png)
+![image-20190906143444779](https://kirito.iocoder.cn/image-20190906143444779.png)
 
 ### 4.3 准备 Dubbo Provider
 
@@ -211,7 +211,7 @@ dubbo.protocol.port=20880
 
 在 JMeter 中配置好 Dubbo 服务所连接的注册中心，接着通过 `Get Provider List` 可以获取到服务提供者列表，以供压测选择。在线程组上右键 【验证】，执行单次验证，可以用来测试与服务端的连通性。在【察看结果树】选项卡中可以看到【响应数据】可以正常执行 Dubbo 调用了。
 
-![image-20190906143425928](http://kirito.iocoder.cn/image-20190906143425928.png)
+![image-20190906143425928](https://kirito.iocoder.cn/image-20190906143425928.png)
 
 ### 4.5 执行测试计划
 
@@ -223,7 +223,7 @@ jmeter -n -t ./rest-order-thread-group.jmx -l ./result.txt -e -o ./webreport
 
 下图展示了最终生成的测试报告：
 
-![image-20190906144422407](http://kirito.iocoder.cn/image-20190906144422407.png)
+![image-20190906144422407](https://kirito.iocoder.cn/image-20190906144422407.png)
 
 Dubbo 接口与 Rest 接口所封装的业务接口均为 `OrderService`，所以压测上的差距直接体现出了 Dubbo 和 Rest 的差距。从报告对比上来看，Dubbo 接口的平均 RT 远低于 Rest 接口。
 

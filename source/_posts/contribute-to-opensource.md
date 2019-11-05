@@ -35,7 +35,7 @@ Github 上有众多优秀的开源项目，大多数 IT 从业者将其当做了
 
 相信我，一旦养成了每天提交代码的习惯，就像你不想中断打卡一样，你绝不想中断 commit。不止有英语打卡，健身打卡，还有开源打卡！
 
-![开源程序员的日常](http://kirito.iocoder.cn/image-20180827141007663.png)
+![开源程序员的日常](https://kirito.iocoder.cn/image-20180827141007663.png)
 
 ### 2 贡献代码时的一些疑难杂症
 
@@ -49,7 +49,7 @@ Github 上有众多优秀的开源项目，大多数 IT 从业者将其当做了
 
 **fork 与 clone**
 
-![fork 与 clone](http://kirito.iocoder.cn/image-20180827143942178.png)
+![fork 与 clone](https://kirito.iocoder.cn/image-20180827143942178.png)
 
 如果你只是想下载源码，查看他的源码实现，使用 Clone or download 按钮即可。
 
@@ -71,13 +71,13 @@ git merge upstream/master
 
 **pull request**
 
-![pull request](http://kirito.iocoder.cn/image-20180827150703869.png)
+![pull request](https://kirito.iocoder.cn/image-20180827150703869.png)
 
 pull request 经常被缩写为 PR，指的是一次向源仓库请求合并的行为，如上是我 fork 了 incubator-dubbo 的仓库之后才存在的操作按钮。
 
 ** 源仓库视角的 pull request**
 
-![pull request management](http://kirito.iocoder.cn/image-20180827155239155.png)
+![pull request management](https://kirito.iocoder.cn/image-20180827155239155.png)
 
 管理者会对 pull request 涉及的改动进行 review，以确保你的代码是符合规范的，逻辑有没有偏差，以及符合框架的功能需求。
 
@@ -85,7 +85,7 @@ pull request 经常被缩写为 PR，指的是一次向源仓库请求合并的�
 
 一些自动化的 CI 流程被植入在每一次 pull request 的构建之中，用于给开源仓库去校验提交者的代码是否符合既定的规范，如：是否有编译问题，单元测试是否通过，覆盖率是否达标，代码风格是否合规等等。
 
-![CI 报告](http://kirito.iocoder.cn/image-20180827160503114.png)
+![CI 报告](https://kirito.iocoder.cn/image-20180827160503114.png)
 
 一般情况下，必须通过 CI，你的 pull request 才会被管理 review。
 
@@ -203,5 +203,5 @@ Mailing list 简单来说，就是一个邮件通知机制，所有的 Dubbo 开
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 

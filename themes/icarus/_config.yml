@@ -5,6 +5,7 @@ menu:
   归档: archives
   #Tags: tags
   关于: about
+  开源项目: https://github.com/YunaiV/onemall
 
 # Customize
 customize:
@@ -21,14 +22,15 @@ customize:
         author: 徐靖峰
         author_title: 阿里巴巴中间件研发
         location: 中国，杭州
-        follow: https://github.com/lexburner
+        follow: /css/images/wechat_public.jpg
+        wechat: /css/images/wechat_public.jpg
     highlight: monokai
     sidebar: right # sidebar position, options: left, right
     thumbnail: true # enable posts thumbnail, options: true, false
     favicon: /css/images/avatar.png
     social_links:
         github: https://github.com/lexburner
-        wechat: /css/images/kirito_wechat.jpg
+        wechat: /css/images/kirito_wechat.jpeg
         rss: /atom.xml
     social_link_tooltip: true # enable the social link tooltip, options: true, false
 

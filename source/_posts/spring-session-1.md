@@ -96,7 +96,7 @@ Cookie Info:	JSESSIONID : 320C21A645A160C4843D076204DA2F40
 
 我们使用 chrome 插件 Edit this Cookie，将 chrome 浏览器中的 JSESSIONID 修改为 360 浏览器中的值
 
-![EditThisCookie](http://kirito.iocoder.cn/image/EditThisCookie.png)
+![EditThisCookie](https://kirito.iocoder.cn/image/EditThisCookie.png)
 
 同样访问原来的端点：localhost:8080/test/cookie?browser=chrome，得到的输出如下：
 
@@ -111,4 +111,4 @@ JSESSIONID : 320C21A645A160C4843D076204DA2F40
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

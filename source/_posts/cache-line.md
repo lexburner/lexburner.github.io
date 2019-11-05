@@ -62,7 +62,7 @@ CPU 是计算机的心脏，最终由它来执行所有运算和程序。主内�
 >
 > — 维基百科
 
-![CPU 缓存架构](http://kirito.iocoder.cn/10538467-7923f58c663c7db1.png)
+![CPU 缓存架构](https://kirito.iocoder.cn/10538467-7923f58c663c7db1.png)
 
 左图为最简单的高速缓存的架构，数据的读取和存储都经过高速缓存，CPU 核心与高速缓存有一条特殊的快速通道；主存与高速缓存都连在系统总线上（BUS），这条总线还用于其他组件的通信。简而言之，CPU 高速缓存就是位于 CPU 操作和主内存之间的一层缓存。
 
@@ -87,7 +87,7 @@ CPU 是计算机的心脏，最终由它来执行所有运算和程序。主内�
 
 缓存行 (Cache Line) 便是 CPU Cache 中的最小单位，CPU Cache 由若干缓存行组成，一个缓存行的大小通常是 64 字节（这取决于 CPU），并且它有效地引用主内存中的一块地址。一个 Java 的 long 类型是 8 字节，因此在一个缓存行中可以存 8 个 long 类型的变量。
 
-![多级缓存](http://kirito.iocoder.cn/%E5%A4%9A%E7%BA%A7%E7%BC%93%E5%AD%98.png)
+![多级缓存](https://kirito.iocoder.cn/%E5%A4%9A%E7%BA%A7%E7%BC%93%E5%AD%98.png)
 
 试想一下你正在遍历一个长度为 16 的 long 数组 data[16]，原始数据自然存在于主内存中，访问过程描述如下
 
@@ -107,13 +107,13 @@ CPU 缓存在顺序访问连续内存数据时挥发出了最大的优势。试�
 
 伪共享指的是多个线程同时读写同一个缓存行的不同变量时导致的 CPU 缓存失效。尽管这些变量之间没有任何关系，但由于在主内存中邻近，存在于同一个缓存行之中，它们的相互覆盖会导致频繁的缓存未命中，引发性能下降。伪共享问题难以被定位，如果系统设计者不理解 CPU 缓存架构，甚至永远无法发现 — 原来我的程序还可以更快。
 
-![伪共享](http://kirito.iocoder.cn/%E4%BC%AA%E5%85%B1%E4%BA%AB.png) 伪共享
+![伪共享](https://kirito.iocoder.cn/%E4%BC%AA%E5%85%B1%E4%BA%AB.png) 伪共享
 
 正如图中所述，如果多个线程的变量共享了同一个 CacheLine，任意一方的修改操作都会使得整个 CacheLine 失效（因为 CacheLine 是 CPU 缓存的最小单位），也就意味着，频繁的多线程操作，CPU 缓存将会彻底失效，降级为 CPU core 和主内存的直接交互。
 
 伪共享问题的解决方法便是字节填充。
 
-![伪共享 - 字节填充](http://kirito.iocoder.cn/%E4%BC%AA%E5%85%B1%E4%BA%AB-%E5%AD%97%E8%8A%82%E5%A1%AB%E5%85%85.png) 伪共享 - 字节填充
+![伪共享 - 字节填充](https://kirito.iocoder.cn/%E4%BC%AA%E5%85%B1%E4%BA%AB-%E5%AD%97%E8%8A%82%E5%A1%AB%E5%85%85.png) 伪共享 - 字节填充
 
 我们只需要保证不同线程的变量存在于不同的 CacheLine 即可，使用多余的字节来填充可以做点这一点，这样就不会出现伪共享问题。在代码层面如何实现图中的字节填充呢？
 
@@ -302,5 +302,5 @@ abstract class RingBufferFields<E> extends RingBufferPad{}
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 

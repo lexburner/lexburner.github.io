@@ -300,7 +300,7 @@ docker0		8000.02425845c215	no
 
 ### 5.1 真实网卡工作原理
 
-![1918847-496d0e96c237f25a](http://kirito.iocoder.cn/1918847-496d0e96c237f25a.png)
+![1918847-496d0e96c237f25a](https://kirito.iocoder.cn/1918847-496d0e96c237f25a.png)
 
 上图中的 **eth0** 表示我们主机已有的真实的网卡接口 (**interface**)。
 
@@ -310,7 +310,7 @@ docker0		8000.02425845c215	no
 
 ### 5.2 TUN 工作原理
 
-![1918847-85ea08bc89d9427e](http://kirito.iocoder.cn/1918847-85ea08bc89d9427e.png)
+![1918847-85ea08bc89d9427e](https://kirito.iocoder.cn/1918847-85ea08bc89d9427e.png)
 
 我们知道，普通的网卡是通过网线来收发数据包的话，而 **TUN** 设备比较特殊，它通过一个文件收发数据包。
 
@@ -322,7 +322,7 @@ docker0		8000.02425845c215	no
 
 是不是有些懵了？我是谁，为什么我要在这篇文章里面学习 TUN！因为我们常用的 VPN 基本就是基于 TUN/TAP 搭建的，如果我们使用 **TUN** 设备搭建一个基于 **UDP** 的 **VPN** ，那么整个处理过程可能是这幅样子：
 
-![1918847-ac4155ec7e9489b2](http://kirito.iocoder.cn/1918847-ac4155ec7e9489b2.png)
+![1918847-ac4155ec7e9489b2](https://kirito.iocoder.cn/1918847-ac4155ec7e9489b2.png)
 
 ### 5.3 TAP 工作原理
 
@@ -382,7 +382,7 @@ tun0      Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
 
 ## 6 干扰因素三：多网卡
 
-![image-20190429223515625](http://kirito.iocoder.cn/image-20190429223515625.png)
+![image-20190429223515625](https://kirito.iocoder.cn/image-20190429223515625.png)
 
 这个没有太多好说的，有多张真实的网卡，从普哥那儿搞到如上的 IP 信息。
 
@@ -536,4 +536,4 @@ JDK 提供了以上的 API，我们可以利用起来，过滤一部分一定不
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

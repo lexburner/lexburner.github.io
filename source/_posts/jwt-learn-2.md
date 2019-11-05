@@ -30,37 +30,37 @@ type: 2
 
 首先，服务器应用（下面简称“应用”）让用户通过 Web 表单将自己的用户名和密码发送到服务器的接口。这一过程一般是一个 HTTP POST 请求。建议的方式是通过 SSL 加密的传输（https 协议），从而避免敏感信息被嗅探。
 
-![auth1](http://kirito.iocoder.cn/jwtauth1.png)
+![auth1](https://kirito.iocoder.cn/jwtauth1.png)
 
 接下来，应用和数据库核对用户名和密码。
 
-![auth2](http://kirito.iocoder.cn/jwtauth2.png)
+![auth2](https://kirito.iocoder.cn/jwtauth2.png)
 
 核对用户名和密码成功后，应用将用户的 `id`（图中的 `user_id`）作为 JWT Payload 的一个属性，将其与头部分别进行 Base64 编码拼接后签名，形成一个 JWT。这里的 JWT 就是一个形同 `lll.zzz.xxx` 的字符串。
 
-![auth3](http://kirito.iocoder.cn/jwtauth3.png)
+![auth3](https://kirito.iocoder.cn/jwtauth3.png)
 
 应用将 JWT 字符串作为该请求 Cookie 的一部分返回给用户。注意，在这里必须使用 `HttpOnly` 属性来防止 Cookie 被 JavaScript 读取，从而避免 [跨站脚本攻击（XSS 攻击）](http://www.cnblogs.com/bangerlee/archive/2013/04/06/3002142.html)。
 
-![auth4](http://kirito.iocoder.cn/jwtauth4.png)
+![auth4](https://kirito.iocoder.cn/jwtauth4.png)
 
 在 Cookie 失效或者被删除前，用户每次访问应用，应用都会接受到含有 `jwt` 的 Cookie。从而应用就可以将 JWT 从请求中提取出来。
 
-![auth5](http://kirito.iocoder.cn/jwtauth5.png)
+![auth5](https://kirito.iocoder.cn/jwtauth5.png)
 
 应用通过一系列任务检查 JWT 的有效性。例如，检查签名是否正确；检查 Token 是否过期；检查 Token 的接收方是否是自己（可选）。
 
-![auth6](http://kirito.iocoder.cn/jwtauth6.png)
+![auth6](https://kirito.iocoder.cn/jwtauth6.png)
 
 应用在确认 JWT 有效之后，JWT 进行 Base64 解码（可能在上一步中已经完成），然后在 Payload 中读取用户的 id 值，也就是 `user_id` 属性。这里用户的 `id` 为 1025。
 
 应用从数据库取到 `id` 为 1025 的用户的信息，加载到内存中，进行 ORM 之类的一系列底层逻辑初始化。
 
-![auth7](http://kirito.iocoder.cn/jwtauth7.png)
+![auth7](https://kirito.iocoder.cn/jwtauth7.png)
 
 应用根据用户请求进行响应。
 
-![auth8](http://kirito.iocoder.cn/jwtauth8.png)
+![auth8](https://kirito.iocoder.cn/jwtauth8.png)
 
 ### 和 Session 方式存储 id 的差异
 
@@ -91,4 +91,4 @@ Set-Cookie: jwt=lll.zzz.xxx; HttpOnly; max-age=980000; domain=.taobao.com
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

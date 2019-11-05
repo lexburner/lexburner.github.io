@@ -59,13 +59,13 @@ categories:
 
 ### 谷歌地图
 
-![goog-618x338](http://kirito.iocoder.cn/goog-618x338.jpg?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![goog-618x338](https://kirito.iocoder.cn/goog-618x338.jpg?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 自由行期间必备的 APP，基本走到哪儿都靠他了。可能会有朋友会问，为什么不推荐百度地图？实际上两个地图我这次都用到了，但总体感受是谷歌地图体验更好。
 
 ### 换乘案内
 
-![换成案内](http://kirito.iocoder.cn/image-20190910162215664.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![换成案内](https://kirito.iocoder.cn/image-20190910162215664.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 ** 换乘案内 ** 是在日本查询坐车信息的一个软件，功能跟谷歌相似，但比谷歌更详细，也更加准确，但是没有导航功能。在这个软件输入始发站以及到达站就会出来所有的乘坐信息，价格，速度，换乘。
 
@@ -89,7 +89,7 @@ categories:
 
 ### 百度翻译
 
-![百度翻译](http://kirito.iocoder.cn/image-20190918193218634.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![百度翻译](https://kirito.iocoder.cn/image-20190918193218634.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 虽然很多人说日本人英语不好，但东京作为一个国际大都市，给我的感觉是懂英语的人还是很多的，记得在秋叶原的电器小店中一位日本老爷爷，都可以跟我使用简单的英语词汇进行沟通。不过，也有秋叶原街头也有完全听不懂英语的女仆小姐姐，所以这个时候想要体验到日本的服务，一个翻译软件就显得非常重要了。
 
@@ -101,7 +101,7 @@ categories:
 
 ### 新宿
 
-![新宿站](http://kirito.iocoder.cn/image-20190919224026742.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![新宿站](https://kirito.iocoder.cn/image-20190919224026742.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 **LUMINE**：属于日本年轻潮流百货，拥有许多日系少女风服装，日本的本土时尚品牌也非常齐全，并且价格比国内专柜要便宜。LUMINE 分 1、2 和 EST 三个馆。EST 偏平价一些，1 的品牌价格较 EST 来说贵一点，LUMINE 2 价格最高。
 
@@ -157,7 +157,7 @@ categories:
 
 ### 秋叶原
 
-![电器街](http://kirito.iocoder.cn/image-20190918200501518.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![电器街](https://kirito.iocoder.cn/image-20190918200501518.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 秋叶原作为日本最出名的二次元朝圣地，同时还有一个电器街的身份，可以说技术宅的天堂了。
 
@@ -167,7 +167,7 @@ categories:
 
 ### 镰仓
 
-![镰仓车站](http://kirito.iocoder.cn/image-20190918204733386.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![镰仓车站](https://kirito.iocoder.cn/image-20190918204733386.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 神奈川县镰仓，小小的街道，没有太多人。战神源义经的子孙在这里创立了大名鼎鼎的镰仓幕府；几乎笼罩了所有 80 后童年的灌篮高手片头曲里，樱木花道对赤木晴子挥手的地方就取景于镰仓高校前站；倒数第二次恋爱中千明深夜从东京回来居住的小城也是这里。作为继京都、奈良后日本第三座知名的古都，这里的人流量比起其他两座城市要小很多。但就是因为这样，当你坐车江之电瞎转或是慢悠悠散布在海岸上的时候，能发现很多有爱的小细节，请用随意的慢节奏去体会这座海边的古都。
 
@@ -175,7 +175,7 @@ categories:
 
 ### 江之岛
 
-![江之岛](http://kirito.iocoder.cn/image-20190919224558339.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![江之岛](https://kirito.iocoder.cn/image-20190919224558339.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 从镰仓乘坐江之电到江之岛站便可以到达江之岛，江之电之所叫这个名字，最大的原因就是为了服务这里最著名的景点江之岛。 江之岛是湘南海岸的代表景点，也是神奈川县指定史迹名胜。江之岛是一个陆系岛，通过一道沙洲与大陆相连。岛上有几处观光景点。包括神社、公园、展望台和和岩洞。岛上有三处神社统称江之岛神社，可以参拜弁天，以求财富与好运。通往神社的一条商业街，街两旁都是各种小玩意和小吃，推荐一家当地的网红小吃：虾饼。
 
@@ -185,28 +185,28 @@ categories:
 
 在购物篇提到了秋叶原，但秋叶原游玩的地方肯定比购物的地方要多的多，并且还有很多日本“特色”的游玩场所。
 
-![秋叶原夜 - 街头拉客的女仆](http://kirito.iocoder.cn/image-20190919224101473.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![秋叶原夜 - 街头拉客的女仆](https://kirito.iocoder.cn/image-20190919224101473.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 两次来日本都逛了秋叶原，但这次有一个独特的经历便是在深夜の巡礼。原本以为秋叶原街头只有 1~2 家女仆咖啡馆、女仆餐厅，夜晚来到里街才看到街边站着一排排女仆小姐姐，在招揽着 master。大多数店铺会派出 1 个女仆到街边拉客，在店里提供的大多数是爱心蛋包饭、咖啡等轻食，并且会有很多互动的小游戏，如果不会日语，就比较吃亏了，不过只要脸皮厚加上翻译软件的帮助，即使女仆小姐姐不会英语，也可以让你感受到这源自于大和民族独特的宅文化。
 
-![女仆店打卡](http://kirito.iocoder.cn/image-20190918214547752.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![女仆店打卡](https://kirito.iocoder.cn/image-20190918214547752.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 除了声名远扬的女仆店，秋叶原还有遍地的各种类型的新奇店铺：
 
 - 电玩店，最出名的非 Sega 莫属了，里面充斥着各种年龄段的人群，跟国内大多数人童年印象中的游戏厅不同，这里的电玩店主要以 Galgame、小钢珠、音游为主（还有一些看都看不大懂的游戏），由于自己是个电玩小白，只能感受个氛围，凑个热闹。
 
-![复古游戏](http://kirito.iocoder.cn/image-20190919224248761.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![复古游戏](https://kirito.iocoder.cn/image-20190919224248761.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 - 写真店，我也是来了日本才知道，竟然东京街头还有专门卖女子偶像写真营生的店铺，以 AKB48 为首。
 - AKB48 主题餐厅、高达主题餐厅，这两个餐厅可以说是秋叶原的地标了，第二次来日本，竟然店铺还换了个位置，不过牌子倒是还在。
 
 - 手办店。关于日本的手办店，去逛的时候一定要做好心理预期，因为那些没有包装盒的手办基本都是二手的，所以看起来很精致，而且价格也不是很贵，普通的手办只需要 200-400 人民币就可以拿下；很多低于 1000 元的手办其实都有着 made in China 的说明，有人会觉得大老远跑到日本买个中国制造不是有猫病吗，其实不建议这么想，因为日本的人工费很高，所以大多数手办都是日本出图纸，转到中国制造，最后根据成品质量来决定价格。
 
-![手办店](http://kirito.iocoder.cn/image-20190918220151586.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![手办店](https://kirito.iocoder.cn/image-20190918220151586.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 ### 歌舞伎町
 
-![歌舞伎町一番街](http://kirito.iocoder.cn/image-20190919200318118.png)
+![歌舞伎町一番街](https://kirito.iocoder.cn/image-20190919200318118.png)
 
 歌舞伎町说白了就是中国的风月场所，位于新宿的歌舞伎町有两条街：一番街和二番街，仅仅走马观花地看了一遍街道布局，但并不推荐大家体验。由于笔者是一个非常纯洁的人，不太了解这里，所以选取了知乎的一些介绍：
 
@@ -222,11 +222,11 @@ categories:
 
 ### 新宿御苑
 
-![言叶之庭](http://kirito.iocoder.cn/image-20190919224133917.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![言叶之庭](https://kirito.iocoder.cn/image-20190919224133917.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 新宿御苑是跨新宿与涩谷的一个庭园，也是新海诚的《言叶之庭》的灵感发源地。公园位于市中心，乘坐 JR 线在御苑前站下站，走两步就可以直接到达了，距离之前提到的购物圣地 **LUMINE** 也只有 10 分钟的步程。绿荫环绕的和式庭院与周围的摩天大楼形成绝妙的反差，非常适合高强度逛街过后来放松一下。
 
-![新宿御苑](http://kirito.iocoder.cn/image-20190919224152483.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![新宿御苑](https://kirito.iocoder.cn/image-20190919224152483.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 这里四季都有不一样的美，特别推荐在在樱花盛开的季节来赏樱。可惜的是，我冬天来了一次，夏天来了一次，都没能见到樱花盛开，
 
@@ -236,17 +236,17 @@ categories:
 
 按照导游的介绍，区分神社和寺庙实际上非常简单，神社门口大多会有一个红色的鸟居，参拜的地方（拜殿）会有稻草编制的注连绳，进入神社前会有用于清洁的手水舍。
 
-![手水舍](http://kirito.iocoder.cn/image-20190919202846323.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![手水舍](https://kirito.iocoder.cn/image-20190919202846323.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 既然神社这么多，那么自然得推荐大家去看点有意义的神社，例如新海诚导演的《你的名字》就是以须贺神社作为的取经地。须贺神社可以乘坐 JR 线在六本木四丁目站下站之后步行不到 10 分钟就可到达，片中男主与女主最后见面的阶梯就位于须贺神社旁。
 
-![你的名字取景地 - 阶梯](http://kirito.iocoder.cn/image-20190919203443337.png)
+![你的名字取景地 - 阶梯](https://kirito.iocoder.cn/image-20190919203443337.png)
 
 当天玩的太晚，到达神社时已经是夜晚了，人烟也很稀少，相比繁华的东京，这里更加的幽静。喜欢动漫的读者可以将这里作为一个不错的打卡地点。片中还有不少景点，例如天桥取景自 JR 信浓町站旁边，港区的东京塔，涩谷区地标建筑 NTT DoCoMo 代代木大厦等等。
 
 ### 国立新美术馆
 
-![你的名字取景地 - 美术馆](http://kirito.iocoder.cn/image-20190919204519056.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![你的名字取景地 - 美术馆](https://kirito.iocoder.cn/image-20190919204519056.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 同样是《你的名字》中的取景地，片中泷被三叶套路后，与奥寺前辈第一次约会时吃中餐时的咖啡店，位于六本木的国立新美术馆。这家美术馆是世界著名设计师同时也是日本建筑界三杰之一的黑川纪章所设计的最后一件作品，是现在日本楼板面积最大的美术馆，并且也拥有日本国内最大的展示空间。喜欢文艺范的游客可以考虑来此地观光。
 
@@ -264,7 +264,7 @@ categories:
 
 东京这个城市，抬头看到的是高楼大厦，低头看到的便是街道了，日本的街道很容易给来日本旅游的人以深刻的印象，因为太干净了。在街道上，很少看到垃圾桶，所以日本人会有随身携带垃圾袋的习惯。
 
-![池袋的街道](http://kirito.iocoder.cn/image-20190919224846451.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![池袋的街道](https://kirito.iocoder.cn/image-20190919224846451.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 除了干净还有一个印象便是安静，在车水马龙的街道上，几乎没有车辆会按喇叭，但我的旅途上发生了一个小插曲，导游刚介绍完日本的司机基本不会按喇叭，我们旅游大巴的喇叭就不争气的坏了，导致一路上总是会自己发出声响，打的一手好脸。
 
@@ -278,17 +278,17 @@ categories:
 
 日本的食物偏生冷，新鲜是新鲜，但是种类实在太少，相比之下，让我更加感慨中华美食的魅力。日本街头遍历都是拉面店、寿司店，当年看火影忍者时就对片中的一乐拉面饱含期待，在日本领略过当地的拉面后，并没有感到失望，日本拉面店会习惯配上冰水，这个让我感到一本满足。
 
-![胜牛](http://kirito.iocoder.cn/image-20190919213101731.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![胜牛](https://kirito.iocoder.cn/image-20190919213101731.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 要说日本远超预期的美食，非和牛饭莫属了，肉质非常鲜嫩，让人流连忘返。
 
-![居酒屋](http://kirito.iocoder.cn/image-20190919223610888.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![居酒屋](https://kirito.iocoder.cn/image-20190919223610888.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 而傍晚直至深夜，居酒屋这样的场所会涌入一批批上班族，这是日本特有的文化，社长会带着社员一天会轮流去好几个居酒屋，含蓄的日本人只有借助酒意，才敢向领导吐露心声。
 
 ### 穿着
 
-![浴衣](http://kirito.iocoder.cn/image-20190919214212949.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![浴衣](https://kirito.iocoder.cn/image-20190919214212949.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 在日本街头随处可见身着浴衣、脚蹬木屐的女子，日本人真的是把传统服饰融入到了生活之中。
 
@@ -298,7 +298,7 @@ categories:
 
 在之前 【APP 推荐】中介绍换乘案内时，就介绍了日本出行的主要方式了——电车。电车作为日本人最主要的出行方式，主要的原因是，打车实在是太贵了！比国内贵的多的多，所以国内能够随地打车真的是一件非常幸福的事情。日本的出租车司机很有范，个个西装笔挺的打扮，带着白手套；公交车司机给我留下的印象则是年纪偏大，日本是个老龄化严重的国家，所以这些老年人通常退休的时间也会比国内要晚。说道老龄化的对策，最近安倍政府刚推行了一项政策，在九年义务教育的基础上，推行了 3-5 岁幼儿教育费全免的政策，凡是日本国籍或者在日打工的外籍纳税人都可以享受这份政策，从而拯救佛系的日本青年们。
 
-![魅力的小姐姐](http://kirito.iocoder.cn/image-20190919224617503.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
+![魅力的小姐姐](https://kirito.iocoder.cn/image-20190919224617503.png?imageMogr2/thumbnail/640x640/format/webp/blur/1x0/quality/75|imageslim)
 
 乘坐电车时，除了之前提到的坐错车的问题，还需要有不少其他注意事项。日本人是一个秉承着尽量不去打扰别人理念的民族，所以在车厢内或者餐厅都尽量保持安静。在日本的地铁或者电车上有些会贴有将手机调成震动的提醒，大家可以注意一下。日本的电车设有女性车厢，以防止电车之狼，在限定时间段内男性最好还是不要去乘坐的好，要注意电车上贴的标志，不然一群女性投来的目光也会挺尴尬的。
 
