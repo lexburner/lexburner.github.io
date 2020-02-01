@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    
+    <title>EDAS 微服务治理解密 | 徐靖峰|个人博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="前言2020 是多事的一年，首当其冲的是新冠状性病毒的肆虐，其次是自己也生了一场病，希望随着天气暖和起来，一起都能变得更好。 前一段时间真的很忙，一直没有抽出时间，也没有什么思路给大家分享优质的文章，今天这篇文章很久之前就想写了，抓住这次假期的尾巴，总结一下我最近这一年的工作。 EDAS 是什么有很多读者问我在阿里是做什么的，我一般会回答：“我在阿里主要负责 Dubbo、HSF、SpringClo">
+<meta name="keywords" content="微服务,EDAS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EDAS 微服务治理解密">
+<meta property="og:url" content="https://lexburner.github.io/edas-microservice/index.html">
+<meta property="og:site_name" content="徐靖峰|个人博客">
+<meta property="og:description" content="前言2020 是多事的一年，首当其冲的是新冠状性病毒的肆虐，其次是自己也生了一场病，希望随着天气暖和起来，一起都能变得更好。 前一段时间真的很忙，一直没有抽出时间，也没有什么思路给大家分享优质的文章，今天这篇文章很久之前就想写了，抓住这次假期的尾巴，总结一下我最近这一年的工作。 EDAS 是什么有很多读者问我在阿里是做什么的，我一般会回答：“我在阿里主要负责 Dubbo、HSF、SpringClo">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://kirito.iocoder.cn/image-20200201125734612.png">
+<meta property="og:image" content="https://kirito.iocoder.cn/image-20200201144306917.png">
+<meta property="og:updated_time" content="2020-02-01T08:34:58.845Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EDAS 微服务治理解密">
+<meta name="twitter:description" content="前言2020 是多事的一年，首当其冲的是新冠状性病毒的肆虐，其次是自己也生了一场病，希望随着天气暖和起来，一起都能变得更好。 前一段时间真的很忙，一直没有抽出时间，也没有什么思路给大家分享优质的文章，今天这篇文章很久之前就想写了，抓住这次假期的尾巴，总结一下我最近这一年的工作。 EDAS 是什么有很多读者问我在阿里是做什么的，我一般会回答：“我在阿里主要负责 Dubbo、HSF、SpringClo">
+<meta name="twitter:image" content="https://kirito.iocoder.cn/image-20200201125734612.png">
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="徐靖峰|个人博客" type="application/atom+xml">
+    
+
+    
+        <link rel="icon" href="/css/images/avatar.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-118574570-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+    
+
+
+</head>
+</html>
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">徐靖峰|个人博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+                    <a class="main-nav-link" href="https://github.com/YunaiV/onemall">开源项目</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png">
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                    <td><a class="main-nav-link" href="https://github.com/YunaiV/onemall">开源项目</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索">
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png">
+            <h2 id="name">徐靖峰</h2>
+            <h3 id="title">阿里巴巴中间件研发</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>中国，杭州</span>
+            <img id="wechat" src="/css/images/wechat_public.jpg">
+            <a id="follow" target="_blank" href="/css/images/wechat_public.jpg">⬆关注公众号⬆</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                125
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                55
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lexburner" target="_blank" title="github" class="tooltip">
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/kirito_wechat.jpeg" target="_blank" title="wechat" class="tooltip">
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class="tooltip">
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-edas-microservice" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            EDAS 微服务治理解密
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/edas-microservice/">
+            <time datetime="2020-02-01T03:08:59.000Z" itemprop="datePublished">2020-02-01</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/RPC/">RPC</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/EDAS/">EDAS</a>, <a class="tag-link" href="/tags/微服务/">微服务</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>2020 是多事的一年，首当其冲的是新冠状性病毒的肆虐，其次是自己也生了一场病，希望随着天气暖和起来，一起都能变得更好。</p>
+<p>前一段时间真的很忙，一直没有抽出时间，也没有什么思路给大家分享优质的文章，今天这篇文章很久之前就想写了，抓住这次假期的尾巴，总结一下我最近这一年的工作。</p>
+<h2 id="EDAS-是什么"><a href="#EDAS-是什么" class="headerlink" title="EDAS 是什么"></a>EDAS 是什么</h2><p>有很多读者问我在阿里是做什么的，我一般会回答：“我在阿里主要负责 Dubbo、HSF、SpringCloud Alibaba 这几个微服务框架研发和商业化相关的工作”，这样回答，如果对方是 Java 开发，一般都能知道个大概。熟悉阿里云的朋友会了解到阿里云上有很多的 PaaS 产品，我主要就是负责开发 “企业级分布式应用服务 EDAS” 这款产品；不熟悉阿里云的朋友，会对阿里云上一堆产品、一堆名词感到奇怪，什么 EDAS、MSE、ACM、OAM… 我开始接触 EDAS 时，也是吐槽了一下这次名词，但随着逐渐了解，也就觉得这些云产品像 Redis、DB、MQ 这些东西一样亲切了。这篇文章将围绕 EDAS 这款阿里云云产品进行介绍。</p>
+<blockquote>
+<p>企业级分布式应用服务 EDAS（Enterprise Distributed Application Service）是一个应用托管和微服务管理的 PaaS 平台，提供应用开发、部署、监控、运维等全栈式解决方案，同时支持 Spring Cloud、Apache Dubbo（以下简称 Dubbo ）、HSF 等微服务运行环境，助力您的各类应用轻松上云。</p>
+</blockquote>
+<p>可以从简介中提取出 EDAS 的核心能力：应用开发、应用部署、应用监控、应用运维。我这一篇文章自然是没办法介绍整个 PaaS 平台的能力，而且说实话，应用部署和应用监控等等能力也都是我同事们开发的，我真的一无所知，想介绍都难，所以在设计到细节时，我会主要介绍 EDAS 和微服务治理相关的那部分能力。</p>
+<h2 id="为什么用-EDAS"><a href="#为什么用-EDAS" class="headerlink" title="为什么用 EDAS"></a>为什么用 EDAS</h2><p><img src="https://kirito.iocoder.cn/image-20200201125734612.png" alt="云计算"></p>
+<p>上图中，我将微服务框架的不同部署方式和云计算进行了绑定，以方便下面的介绍。</p>
+<p>“种子”用户最容易理解了，例如使用开源的 Apache Dubbo 作为微服务框架，部署在自建机房的机器上，通常以中小公司为主，会有专门的运维搭建操作系统，设计网络拓扑，这也是云计算之前大多数公司的玩法。</p>
+<p>但大家都知道，在现实生活中，“种子”变成“小麦”一般是农民伯伯的活，应该很少有人会因为想吃一个馒头，而去播撒一波种子的。例如很多互联网创业公司肯定接受不了这种玩法，想要尽快落地产品，第一步一定不是搞一堆机器，于是 IaaS 成了他们的救星，很多云计算公司提供了云服务器（ECS），解决了基础硬件问题，剩下的东西研发工程师都能搞定，所以“我有一个很好的 idea，就差一个程序员了”就变得流行了起来。在 IaaS 阶段，可以用 ECS 部署数据库，部署 Redis，部署 Dubbo 节点，机器出了问题可以提工单给云厂商，大大减少了运维成本，可以让研发人员更加专注在业务开发上。</p>
+<p>很多 Dubbo 用户都是在“种子”和“小麦”阶段，还有人跟我说：我们公司在腾讯云上使用 Dubbo。老铁没毛病，开源框架没有强制跟任何云厂商绑定，Pivotal 的 SpringCloud 和 Alibaba 主导的 Dubbo 都是如此。可是，那我又有什么理由去进阶为“面粉”阶段的用户呢？我从 Dubbo 微信交流群的一些讨论去尝试回答这个问题：</p>
+<ul>
+<li>请教大家一个问题，开源的 Dubbo 控制台有一个 xx 的问题，大家有遇到吗？</li>
+<li>请教一下大家，Dubbo 的限流你们是怎么做的？</li>
+<li>有没有人做过 Dubbo 的全链路跟踪的？</li>
+<li>Dubbo 的灰度发布有人在生产实践过吗？</li>
+<li>Dubbo 的分布式事务怎么做？</li>
+<li>Dubbo 的网关怎么做？</li>
+<li>…</li>
+</ul>
+<p>以 Dubbo 为例，大家可以看到一些端倪，开源框架也会存在一些问题。例如开源框架优先考虑的是功能的普适性，对例如灰度发布这种定制化的需求支持较少，且功能越高端，越难以支持。再例如 Dubbo 的全链路跟踪，基本上是每次 Dubbo Meetup 之后收集到的高频问题。有一些公司有基础架构团队，虽然使用的是开源 Dubbo，但他们有能力去进行改造，例如当当、考拉都拉了自己的分支在进行迭代，但我相信，他们自己的扩展也一定是优先适配各自公司的场景。还有一类问题，开源产品也会存在 bug，有时候自己定位出了 bug 提给社区，还得等其他人 review &amp; merge request，必然会有时间成本，这也是很多公司自己拉分支自己维护的重要原因。说了这么多，其实都是在说“小麦”的缺点，“面粉”阶段又是如何解决这些问题的呢？</p>
+<p>我在图中将 EDAS 这款阿里云的产品定位在了“面粉”阶段，主要原因便是：</p>
+<ul>
+<li>IaaS 层解决的问题，它都解决了，甚至做的更好。EDAS 甚至不需要用户去购买机器，可以进行诸如：弹性伸缩，限流降级，优雅上下线等应用生命周期的管理</li>
+<li>在微服务侧，它支持 Dubbo、SpringCloud、HSF 等主流的微服务框架，并且对微服务能力进行了增强。有很多商业化的特性，例如：白屏化的服务治理界面、分布式链路追踪、灰度发布、服务限流、注册中心的高可用…等等，并且随着后续的迭代，会继续支持分布式事务、网关等特性</li>
+<li>背靠阿里云，有专门的团队保障微服务的稳定性，让专业的人做专业的事</li>
+</ul>
+<p>我认为”面粉“是一个恰到好处的阶段，你可以烹饪成面包、面条、馒头，却又不会束缚你的产品形态。</p>
+<h2 id="EDAS-支持微服务的发展史"><a href="#EDAS-支持微服务的发展史" class="headerlink" title="EDAS 支持微服务的发展史"></a>EDAS 支持微服务的发展史</h2><p>在阿里云的角度，如何吸引用户使用阿里云的服务呢？阿里云的服务实在太多了，还是来看微服务这个点。在 N 年前，EDAS 刚刚公测时，EDAS 主打的微服务框架是 HSF（High Speed Framework），熟悉它的朋友知道 HSF 是阿里集团内部使用的自研微服务框架，在历年双 11 支持整个阿里各个产品的平稳运行，有了双 11 这样量级的考验和阿里的背书，EDAS 支持 HSF 也就成了理所当然的事。这时候玩法是这样的：</p>
+<p><img src="https://kirito.iocoder.cn/image-20200201144306917.png" alt="旧"></p>
+<p>如果是 Dubbo 既存用户想要上云使用 EDAS，就必须要改用 HSF 框架改写自己的业务代码，这个迁移成本是很高的。那如果是全新的业务使用 HSF，是不是就没有这个问题了呢？也不尽然。站在开发的角度，开源 Dubbo 的社区非常活跃，文档详细，遇到问题时，搜索引擎也基本能提供解决方案。但 HSF 不同，它是一款闭源的框架，即使是阿里内部用户，可能对其也是一知半解，遇到问题，只能借助于工单、答疑群解决，看不到源码是原罪。尽管 HSF 非常稳定，但用户把自己的代码托管在一个黑匣子中，多多少少会有所顾忌。</p>
+<blockquote>
+<p>很多云平台都有类似的问题，业务上云往往意味着迁移技术栈，这个成本可想而知。</p>
+</blockquote>
+<p>随着阿里重启了 Dubbo 的开源，EDAS 开始支持了开源 Dubbo，这一下子解决了很多上面提到的问题。对于那些处于”种子“、”小麦“阶段的 Dubbo 用户而言，使用 EDAS 不需要修改任何一行代码，即可获得 EDAS 承诺的诸多增强能力。</p>
+<p>紧接着是 SpringCloud Alibaba 的开源，EDAS 也提供了 100% 的兼容。至此，Dubbo 和 SpringCloud 应用上云，EDAS 都能够 cover。</p>
+<h2 id="开源与商业化与云原生"><a href="#开源与商业化与云原生" class="headerlink" title="开源与商业化与云原生"></a>开源与商业化与云原生</h2><p>从刚刚的发展史可以发现云厂商的一个玩法，Dubbo、SpringCloud Alibaba 最早都是由阿里主导开源的，在商业化云产品上都得到了优先的支持，不仅阿里这一家这么玩，华为开源了 ServiceComb，蚂蚁开源了 Sofa Stack，腾讯开源了 Tars，这几家都有各自的云平台，基本都会让用户迁移至自家的微服务框架。开源一方面是培养了用户习惯，积累影响力，一方面也是在为商业化铺路。</p>
+<p>对接开源 SDK 逐渐成为了云厂商们的共识，只不过这里的开源 SDK 现如今没有统一，各家都有各自的玩法。不过这已经是一个很大的进步了，因为开源不会绑架用户，哪一天这家云厂商用的不爽了，随时迁走。相比使用云厂商提供的 SDK 来说，使用开源 SDK 这个理念不知道先进到哪里去了。</p>
+<p>说道这里，不免会有人提出云原生的概念，开源 SDK 实在太多了，如果只有一套大家都遵守的规范就好了，云原生大概就是在做这么一件事。俗话说的好，三等码农写代码，二等码农写框架，一等码农定规范。但目前来说，还没有一统江湖的”云原生开源 SDK“，但已经有人再按照这样的思路再推进了，有兴趣的可以去了解下阿里提出的 OAM。</p>
+<h2 id="EDAS-微服务治理的难点"><a href="#EDAS-微服务治理的难点" class="headerlink" title="EDAS 微服务治理的难点"></a>EDAS 微服务治理的难点</h2><p>前面我们介绍到 EDAS 不仅仅是作为一个跑微服务框架的运行时容器，还为微服务框架提供了很多增强能力。科普完发展史之后，下面对微服务增强的细节进行介绍，但在此之前，为了不让读者知其然而不知其所以然，我先梳理下 EDAS 微服务治理的难点。</p>
+<h3 id="难点-1"><a href="#难点-1" class="headerlink" title="难点 1"></a>难点 1</h3><p>EDAS 支持的微服务框架种类多，目前支持三种微服务框架：Dubbo、SpringCloud、HSF</p>
+<h3 id="难点-2"><a href="#难点-2" class="headerlink" title="难点 2"></a>难点 2</h3><p>微服务框架版本多：</p>
+<ul>
+<li><p>Dubbo 支持 2.5.x，2.6.x，2.7.x</p>
+</li>
+<li><p>SpringCloud 支持 D 以上的版本</p>
+</li>
+</ul>
+<h3 id="难点-3"><a href="#难点-3" class="headerlink" title="难点 3"></a>难点 3</h3><p>例如传统的服务查询，需要访问注册中心，但用户使用的注册中心种类多</p>
+<ul>
+<li>Zookeeper</li>
+<li>Nacos</li>
+<li>Eureka</li>
+</ul>
+<h3 id="难点-4"><a href="#难点-4" class="headerlink" title="难点 4"></a>难点 4</h3><p>部署形态多，EDAS 支持两种部署形态</p>
+<ul>
+<li><p>ECS Jar 包部署</p>
+</li>
+<li><p>K8s 镜像部署</p>
+</li>
+</ul>
+<h3 id="难点-5"><a href="#难点-5" class="headerlink" title="难点 5"></a>难点 5</h3><p>需要考虑存量用户的迁移问题和改造成本</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>EDAS 微服务增强的实现方式必须要考虑以上众多因素，在不得不进行 trace off 时，也应该尽可能解决较多的痛点，避免用户进行过多的改造。</p>
+<h2 id="EDAS-微服务增强实现"><a href="#EDAS-微服务增强实现" class="headerlink" title="EDAS 微服务增强实现"></a>EDAS 微服务增强实现</h2><p>用户部署在 EDAS 中的代码使用的是开源的 SDK，EDAS 又承诺用户不需要改动代码，那是如何做到微服务能力增强的呢？满足这个要求的正是 JDK 提供的 Instrument 机制，熟悉 pinpoint 和 skywalking 等分布式链路追踪框架的读者应该对这个技术不会感到陌生。很久之前我曾经写过一篇文章对它进行过介绍：<a href="https://www.cnkirito.moe/instrument/" target="_blank" rel="noopener">JAVA 拾遗 – Instrument 机制</a>。</p>
+<p>借助一个 Demo，通过 Instrument 来实现无侵入式的 AOP。 </p>
+<p><strong>MicroServiceTransformer</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MicroServiceTransformer</span> <span class="keyword">implements</span> <span class="title">ClassFileTransformer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="keyword">byte</span>[] classfileBuffer) <span class="keyword">throws</span> IllegalClassFormatException &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">"org/apache/dubbo/config/ReferenceConfig"</span>.equals(className)) &#123;</span><br><span class="line">            System.out.println(<span class="string">"microservice improve"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对类进行装配的第一步是编写一个 GreetingTransformer 类，其继承自：<code>java.lang.instrument.ClassFileTransformer</code>。</p>
+<p><strong>MicroServiceAgent</strong></p>
+<p>除了上述的 Transformer，我们还需要有一个容器去加载它。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MicroService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String options, Instrumentation ins)</span> </span>&#123;</span><br><span class="line">        ins.addTransformer(<span class="keyword">new</span> MicroServiceTransformer());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>MicroServiceAgent 便是最终用户的 Jar 运行时挂载的 agent。具体如何加载 agent ，可以参考上述的文章链接，有完整的 demo 和教程。这里主要是为了引出装配机制。</p>
+<p>EDAS 的微服务增强逻辑便如同 AOP 一样，利用无侵入式的挂载，以达到增强的逻辑，这个过程需要 agent 对不同版本进行逐一的适配，从而实现服务查询、灰度发布、分布式链路跟踪等能力。</p>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>本文其实也是一个主观视角，从一个对 EDAS 一无所知的角度，侧重于 EDAS 的微服务能力介绍了一遍 EDAS。EDAS 本身是一个商业化的云产品，但结合开源我们可以从它的演进历史看到一些软件架构演进的规律，这对于我们把握今后的技术发展趋势也有一定的指导意义。</p>
+<p>别的也不多了，我们 Dubbo、SpringCloud 商业化团队招人，对微服务、中间件感兴趣的同学欢迎私聊我，一起干有意思的事。私聊或者投简历~ 微信号：xiayimiaoshenghua</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/edas-microservice/" data-id="ck63ccnvl002o9w9ecu24gx9x" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/dubbo-nacos-stability/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">Dubbo 稳定性案例：Nacos 注册中心可用性问题复盘</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+	<div id="commentContainer"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/edas-microservice/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
+                            <p class="item-title"><a href="/edas-microservice/" class="title">EDAS 微服务治理解密</a></p>
+                            <p class="item-date"><time datetime="2020-02-01T03:08:59.000Z" itemprop="datePublished">2020-02-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/dubbo-nacos-stability/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
+                            <p class="item-title"><a href="/dubbo-nacos-stability/" class="title">Dubbo 稳定性案例：Nacos 注册中心可用性问题复盘</a></p>
+                            <p class="item-date"><time datetime="2019-12-02T13:44:00.000Z" itemprop="datePublished">2019-12-02</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/dubbo-gracefully-startup/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
+                            <p class="item-title"><a href="/dubbo-gracefully-startup/" class="title">一文聊透 Dubbo 优雅上线</a></p>
+                            <p class="item-date"><time datetime="2019-11-17T09:25:04.000Z" itemprop="datePublished">2019-11-17</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/dubbo-metadata/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
+                            <p class="item-title"><a href="/dubbo-metadata/" class="title">一文聊透 Dubbo 元数据中心</a></p>
+                            <p class="item-date"><time datetime="2019-11-03T07:05:50.000Z" itemprop="datePublished">2019-11-03</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/linux-io-benchmark/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/数据库/">数据库</a></p>
+                            <p class="item-title"><a href="/linux-io-benchmark/" class="title">Linux 环境写文件如何稳定跑满磁盘 I/O 带宽?</a></p>
+                            <p class="item-date"><time datetime="2019-10-09T11:01:38.000Z" itemprop="datePublished">2019-10-09</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">16</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 11px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://ntzyz.io/">namespace_ntzyz</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://blog.didispace.com/">程序猿DD|博客</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://vip.iocoder.cn/">芋道源码</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://www.jiangxinlingdu.com/">匠心零度</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://www.liangsonghua.me">松花皮蛋的黑板报</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2020 徐靖峰<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+	<link rel="stylesheet" href="https://billts.site/extra_css/gitment.css">
+	<script src="https://billts.site/js/gitment.js"></script>
+	<script>
+		var gitment = new Gitment({
+			owner: 'lexburner',
+			repo: 'lexburner.github.io',
+			oauth: {
+				client_id: 'd5fc3e1150477a0d433d',
+				client_secret: 'aa94acd5f130281051b9e703c19b4c6d878e90c4',
+			},
+		})
+		gitment.render('commentContainer')
+	</script>
+	
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+<script src="/node_modules/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"node_modules/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/node_modules/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
