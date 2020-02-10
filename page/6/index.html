@@ -166,11 +166,11 @@ ga('send', 'pageview');
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                125
+                127
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                55
+                56
                 <span>标签</span>
             </div>
         </div>
@@ -207,6 +207,294 @@ ga('send', 'pageview');
 
             
             <section id="main">
+    <article id="post-java-how-to-learn" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/java-how-to-learn/">技术精进的三境界</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/java-how-to-learn/">
+            <time datetime="2018-04-04T14:56:45.000Z" itemprop="datePublished">2018-04-04</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p></p><p>最近更新了一篇 Docker 的文章，朋友跟我反馈说效果并不是很好，我回头看了下，的确没有我自己的特色，没有太多思考，让公众号显得有些「百货」了。经过反思，今后只在个人博客更新 Docker 相关的个人学习经验（<a href="https://www.cnkirito.moe/categories/Docker/" target="_blank" rel="noopener">传送门</a>），个人公众号还是主要推送和 Java 结合较为紧密的内容。<br></p>
+            <p class="article-more-link">
+                <a href="/java-how-to-learn/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/java-how-to-learn/" data-id="ck6gbnacg004q6h9e6l8qn78n" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-docker-network-bridge" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/docker-network-bridge/">Docker Network—Bridge 模式</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/docker-network-bridge/">
+            <time datetime="2018-04-03T14:56:45.000Z" itemprop="datePublished">2018-04-03</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Docker/">Docker</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Docker/">Docker</a>, <a class="tag-link" href="/tags/Network/">Network</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p></p><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Docker 强大的原因之一在于多个 Docker 容器之间的互相连接。涉及到连接，就引出了网络通信的几种模式。Docker 默认提供了 5 种网络驱动模式。<br></p>
+            <p class="article-more-link">
+                <a href="/docker-network-bridge/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/docker-network-bridge/" data-id="ck6gbnaat001o6h9ev8k40cbb" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-java-eqaulsandhashcode" class="article article-type-post" itemscope="" itemprop="blogPost">
     <div class="article-inner">
         
@@ -278,7 +566,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/java-eqaulsandhashcode/" data-id="ck63ccnx400779w9egjt3p6or" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/java-eqaulsandhashcode/" data-id="ck6gbnac9004i6h9eg7mrbmk7" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -422,7 +710,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/future-and-promise/" data-id="ck63ccnvw003l9w9eqkgyj38t" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/future-and-promise/" data-id="ck6gbnabx003w6h9e5o23ama2" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -590,7 +878,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/thinking-1/" data-id="ck63ccnya00al9w9e5h5d1u65" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/thinking-1/" data-id="ck6gbnafq00ay6h9e5ya96yy3" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -890,7 +1178,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-cluster/" data-id="ck63ccnx9007k9w9en25du6wm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-cluster/" data-id="ck6gbnaea007t6h9el4l6vrz2" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1099,7 +1387,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/jpa-ddd/" data-id="ck63ccnwi005d9w9edix3eevl" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/jpa-ddd/" data-id="ck6gbnada005v6h9e7jxnipk1" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1304,7 +1592,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/instrument/" data-id="ck63ccnvy003p9w9ehtv6y7wt" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/instrument/" data-id="ck6gbnac3004a6h9e78tishrh" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1695,7 +1983,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/chinese-copywriting-guidelines/" data-id="ck63ccnuk00099w9ejd9bd8sj" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/chinese-copywriting-guidelines/" data-id="ck6gbnaaa000o6h9e2ufbfemc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1919,493 +2207,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/gracefully-shutdown/" data-id="ck63ccnvv003i9w9effiym0vl" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-rpc-registry" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/rpc-registry/">深入理解 RPC 之服务注册与发现篇</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/rpc-registry/">
-            <time datetime="2018-01-05T12:16:28.000Z" itemprop="datePublished">2018-01-05</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/RPC/">RPC</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/RPC/">RPC</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>在我们之前 RPC 原理的分析中，主要将笔墨集中在 Client 和 Server 端。而成熟的服务治理框架中不止存在这两个角色，一般还会有一个 Registry（注册中心）的角色。一张图就可以解释注册中心的主要职责。</p>
-<p><img src="https://kirito.iocoder.cn/17071-20170522235215679-280378465.png" alt="注册中心的地位"></p>
-<ul>
-<li>注册中心，用于服务端注册远程服务以及客户端发现服务</li>
-<li>服务端，对外提供后台服务，将自己的服务信息注册到注册中心</li>
-<li>客户端，从注册中心获取远程服务的注册信息，然后进行远程过程调用</li>
-</ul>
-<p>目前主要的注册中心可以借由 zookeeper，eureka，consul，etcd 等开源框架实现。互联网公司也会因为自身业务的特性自研，如美团点评自研的 MNS，新浪微博自研的 vintage。</p>
-<p>本文定位是对注册中心有一定了解的读者，所以不过多阐述注册中心的基础概念。</p>
-<h2 id="注册中心的抽象"><a href="#注册中心的抽象" class="headerlink" title="注册中心的抽象"></a>注册中心的抽象</h2><p>借用开源框架中的核心接口，可以帮助我们从一个较为抽象的高度去理解注册中心。例如 motan 中的相关接口：</p>
-<p>服务注册接口</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RegistryService</span> </span>&#123;</span><br><span class="line">	<span class="comment">//1. 向注册中心注册服务</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">register</span><span class="params">(URL url)</span></span>;</span><br><span class="line">    <span class="comment">//2. 从注册中心摘除服务</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unregister</span><span class="params">(URL url)</span></span>;</span><br><span class="line">    <span class="comment">//3. 将服务设置为可用，供客户端调用</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">available</span><span class="params">(URL url)</span></span>;</span><br><span class="line">    <span class="comment">//4. 禁用服务，客户端无法发现该服务</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unavailable</span><span class="params">(URL url)</span></span>;</span><br><span class="line">  	<span class="comment">//5. 获取已注册服务的集合</span></span><br><span class="line">    <span class="function">Collection&lt;URL&gt; <span class="title">getRegisteredServiceUrls</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>服务发现接口</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DiscoveryService</span> </span>&#123;</span><br><span class="line">    <span class="comment">//1. 订阅服务</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(URL url, NotifyListener listener)</span></span>;</span><br><span class="line">    <span class="comment">//2. 取消订阅</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unsubscribe</span><span class="params">(URL url, NotifyListener listener)</span></span>;</span><br><span class="line">    <span class="comment">//3. 发现服务列表</span></span><br><span class="line">    <span class="function">List&lt;URL&gt; <span class="title">discover</span><span class="params">(URL url)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>主要使用的方法是 RegistryService#register(URL) 和 DiscoveryService#discover(URL)。其中这个 URL 参数被传递，显然也是很重要的一个类。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">URL</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String protocol;<span class="comment">// 协议名称</span></span><br><span class="line">    <span class="keyword">private</span> String host;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> port;</span><br><span class="line">    <span class="comment">// interfaceName, 也代表着路径</span></span><br><span class="line">    <span class="keyword">private</span> String path;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, String&gt; parameters;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">transient</span> Map&lt;String, Number&gt; numbers;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注册中心也没那么玄乎，其实可以简单理解为：提供一个存储介质，供服务提供者和服务消费者共同连接，而存储的主要信息就是这里的 URL。但是具体 URL 都包含了什么实际信息，我们还没有一个直观的感受。</p>
-<h2 id="注册信息概览"><a href="#注册信息概览" class="headerlink" title="注册信息概览"></a>注册信息概览</h2><p>以元老级别的注册中心 zookeeper 为例，看看它实际都存储了什么信息以及它是如何持久化上一节的 URL。</p>
-<p>为了测试，我创建了一个 RPC 服务接口 <code>com.sinosoft.student.api.DemoApi</code> , 并且在 6666 端口暴露了这个服务的实现类，将其作为服务提供者。在 6667 端口远程调用这个服务，作为服务消费者。两者都连接本地的 zookeeper，本机 ip 为 192.168.150.1。</p>
-<p>使用 zkClient.bash 或者 zkClient.sh 作为客户端连接到本地的 zookeeper，执行如下的命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 1] ls /motan/demo_group/com.sinosoft.student.api.DemoApi</span><br><span class="line">&gt; [client, server, unavailableServer]</span><br></pre></td></tr></table></figure>
-<p>zookeeper 有着和 linux 类似的命令和结构，其中 motan，demo_group，com.sinosoft.student.api.DemoApi，client, server, unavailableServer 都是一个个节点。可以从上述命令看出他们的父子关系。</p>
-<p><code>/motan/demo_group/com.sinosoft.student.api.DemoApi</code> 的结构为 / 框架标识 / 分组名 / 接口名，其中的分组是 motan 为了隔离不同组的服务而设置的。这样，接口名称相同，分组不同的服务无法互相发现。如果此时有一个分组名为 demo_group2 的服务，接口名称为 DemoApi2，则 motan 会为其创建一个新的节点 <code>/motan/demo_group2/com.sinosoft.student.api.DemoApi2</code></p>
-<p>而 client，server，unavailableServer 则就是服务注册与发现的核心节点了。我们先看看这些节点都存储了什么信息。</p>
-<p>server 节点：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 2] ls /motan/demo_group/com.sinosoft.student.api.DemoApi/server</span><br><span class="line">&gt; [192.168.150.1:6666]</span><br><span class="line"></span><br><span class="line">[zk: localhost:2181(CONNECTED) 3] get /motan/demo_group/com.sinosoft.student.api.DemoApi/server/192.168.150.1:6666</span><br><span class="line">&gt; motan://192.168.150.1:6666/com.sinosoft.student.api.DemoApi?serialization=hessian2&amp;protocol=motan&amp;isDefault=true&amp;maxContentLength=1548576&amp;shareChannel=true&amp;refreshTimestamp=1515122649835&amp;id=motanServerBasicConfig&amp;nodeType=service&amp;export=motan:6666&amp;requestTimeout=9000000&amp;accessLog=false&amp;group=demo_group&amp;</span><br></pre></td></tr></table></figure>
-<p>client 节点：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 4] ls /motan/demo_group/com.sinosoft.student.api.DemoApi/client</span><br><span class="line">&gt; [192.168.150.1]</span><br><span class="line">[zk: localhost:2181(CONNECTED) 5] get /motan/demo_group/com.sinosoft.student.api.DemoApi/client/192.168.150.1</span><br><span class="line">&gt; motan://192.168.150.1:0/com.sinosoft.student.api.DemoApi?singleton=true&amp;maxContentLength=1548576&amp;check=false&amp;nodeType=service&amp;version=1.0&amp;throwException=true&amp;accessLog=false&amp;serialization=hessian2&amp;retries=0&amp;protocol=motan&amp;isDefault=true&amp;refreshTimestamp=1515122631758&amp;id=motanClientBasicConfig&amp;requestTimeout=9000&amp;group=demo_group&amp;</span><br></pre></td></tr></table></figure>
-<p>unavailableServer 节点是一个过渡节点，所以在一切正常的情况下不会存在信息，它的具体作用在下面会介绍。</p>
-<p>从这些输出数据可以发现，注册中心承担的一个职责就是存储服务调用中相关的信息，server 向 zookeeper 注册信息，保存在 server 节点，而 client 实际和 server 共享同一个接口，接口名称就是路径名，所以也到达了同样的 server 节点去获取信息。并且同时注册到了 client 节点下（为什么需要这么做在下面介绍）。</p>
-<h2 id="注册信息详解"><a href="#注册信息详解" class="headerlink" title="注册信息详解"></a>注册信息详解</h2><h3 id="Server-节点"><a href="#Server-节点" class="headerlink" title="Server 节点"></a>Server 节点</h3><p>server 节点承担着最重要的职责，它由服务提供者创建，以供服务消费者获取节点中的信息，从而定位到服务提供者真正网络拓扑位置以及得知如何调用。demo 中我只在本机  [192.168.150.1:6666] 启动了一个实例，所以在 server 节点之下，只存在这么一个节点，继续 get 这个节点，可以获取更详细的信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">motan://192.168.150.1:6666/com.sinosoft.student.api.DemoApi?serialization=hessian2&amp;protocol=motan&amp;isDefault=true&amp;maxContentLength=1548576&amp;shareChannel=true&amp;refreshTimestamp=1515122649835&amp;id=motanServerBasicConfig&amp;nodeType=service&amp;export=motan:6666&amp;requestTimeout=9000000&amp;accessLog=false&amp;group=demo_group&amp;</span><br></pre></td></tr></table></figure>
-<p>作为一个 value 值，它和 http 协议的请求十分相似，不过是以 motan:// 开头，表达的意图也很明确，这是 motan 协议和相关的路径及参数，关于 RPC 中的协议，可以翻看我的上一篇文章《深入理解 RPC 之协议篇》。</p>
-<p>serialization 对应序列化方式，protocol 对应协议名称，maxContentLength 对应 RPC 传输中数据报文的最大长度，shareChannel 是传输层用到的参数，netty channel 中的一个属性，group 对应分组名称。</p>
-<p>上述的 value 包含了 RPC 调用中所需要的全部信息。</p>
-<h3 id="Client-节点"><a href="#Client-节点" class="headerlink" title="Client 节点"></a>Client 节点</h3><p>在 motan 中使用 zookeeper 作为注册中心时，客户端订阅服务时会向 zookeeper 注册自身，主要是方便对调用方进行统计、管理。但订阅时是否注册 client 不是必要行为，和不同的注册中心实现有关，例如使用 consul 时便没有注册。</p>
-<p>由于我们使用 zookeeper，也可以分析下 zookeeper 中都注册了什么信息。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">motan://192.168.150.1:0/com.sinosoft.student.api.DemoApi?singleton=true&amp;maxContentLength=1548576&amp;check=false&amp;nodeType=service&amp;version=1.0&amp;throwException=true&amp;accessLog=false&amp;serialization=hessian2&amp;retries=0&amp;protocol=motan&amp;isDefault=true&amp;refreshTimestamp=1515122631758&amp;id=motanClientBasicConfig&amp;requestTimeout=9000&amp;group=demo_group</span><br></pre></td></tr></table></figure>
-<p>和 Server 节点的值类似，但也有客户独有的一些属性，如 singleton 代表服务是否单例，check 检查服务提供者是否存在，retries 代表重试次数，这也是 RPC 中特别需要注意的一点。</p>
-<h3 id="UnavailableServer-节点"><a href="#UnavailableServer-节点" class="headerlink" title="UnavailableServer 节点"></a>UnavailableServer 节点</h3><p>unavailableServer 节点也不是必须存在的一个节点，它主要用来做 server 端的延迟上线，优雅关机。</p>
-<p>延迟上线：一般推荐的服务端启动流程为：server 向注册中心的 unavailableServer 注册，状态为 unavailable，此时整个服务处于启动状态，但不对外提供服务，在服务验证通过，预热完毕，此时打开心跳开关，此时正式提供服务。</p>
-<p>优雅关机：当需要对 server 方进行维护升级时，如果直接关闭，则会影响到客户端的请求。所以理想的情况应当是首先切断流量，再进行 server 的下线。具体的做法便是：先关闭心跳开关，客户端感知停止调用后，再关闭服务进程。</p>
-<h2 id="感知服务的下线"><a href="#感知服务的下线" class="headerlink" title="感知服务的下线"></a>感知服务的下线</h2><p>服务上线时自然要注册到注册中心，但下线时也得从注册中心中摘除。注册是一个主动的行为，这没有特别要注意的地方，但服务下线却是一个值得思考的问题。服务下线包含了主动下线和系统宕机等异常方式的下线。</p>
-<h3 id="临时节点-长连接"><a href="#临时节点-长连接" class="headerlink" title="临时节点 + 长连接"></a>临时节点 + 长连接</h3><p>在 zookeeper 中存在持久化节点和临时节点的概念。持久化节点一经创建，只要不主动删除，便会一直持久化存在；临时节点的生命周期则是和客户端的连接同生共死的，应用连接到 zookeeper 时创建一个临时节点，使用长连接维持会话，这样无论何种方式服务发生下线，zookeeper 都可以感知到，进而删除临时节点。zookeeper 的这一特性和服务下线的需求契合的比较好，所以临时节点被广泛应用。</p>
-<h3 id="主动下线-心跳检测"><a href="#主动下线-心跳检测" class="headerlink" title="主动下线 + 心跳检测"></a>主动下线 + 心跳检测</h3><p>并不是所有注册中心都有临时节点的概念，另外一种感知服务下线的方式是主动下线。例如在 eureka 中，会有 eureka-server 和 eureka-client 两个角色，其中 eureka-server 保存注册信息，地位等同于 zookeeper。当 eureka-client 需要关闭时，会发送一个通知给 eureka-server，从而让 eureka-server 摘除自己这个节点。但这么做最大的一个问题是，如果仅仅只有主动下线这么一个手段，一旦 eureka-client 非正常下线（如断电，断网），eureka-server 便会一直存在一个已经下线的服务节点，一旦被其他服务发现进而调用，便会带来问题。为了避免出现这样的情况，需要给 eureka-server 增加一个心跳检测功能，它会对服务提供者进行探测，比如每隔 30s 发送一个心跳，如果三次心跳结果都没有返回值，就认为该服务已下线。</p>
-<h2 id="注册中心对比"><a href="#注册中心对比" class="headerlink" title="注册中心对比"></a>注册中心对比</h2><table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Consul</th>
-<th>zookeeper</th>
-<th>etcd</th>
-<th>euerka</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>服务健康检查</td>
-<td>服务状态，内存，硬盘等</td>
-<td>(弱) 长连接，keepalive</td>
-<td>连接心跳</td>
-<td>可配支持</td>
-</tr>
-<tr>
-<td>多数据中心</td>
-<td>支持</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-</tr>
-<tr>
-<td>kv 存储服务</td>
-<td>支持</td>
-<td>支持</td>
-<td>支持</td>
-<td>—</td>
-</tr>
-<tr>
-<td>一致性</td>
-<td>raft</td>
-<td>paxos</td>
-<td>raft</td>
-<td>—</td>
-</tr>
-<tr>
-<td>cap</td>
-<td>ca</td>
-<td>cp</td>
-<td>cp</td>
-<td>ap</td>
-</tr>
-<tr>
-<td>使用接口 (多语言能力)</td>
-<td>支持 http 和 dns</td>
-<td>客户端</td>
-<td>http/grpc</td>
-<td>http（sidecar）</td>
-</tr>
-<tr>
-<td>watch 支持</td>
-<td>全量 / 支持 long polling</td>
-<td>支持</td>
-<td>支持 long polling</td>
-<td>支持 long polling/ 大部分增量</td>
-</tr>
-<tr>
-<td>自身监控</td>
-<td>metrics</td>
-<td>—</td>
-<td>metrics</td>
-<td>metrics</td>
-</tr>
-<tr>
-<td>安全</td>
-<td>acl /https</td>
-<td>acl</td>
-<td>https 支持（弱）</td>
-<td>—</td>
-</tr>
-<tr>
-<td>spring cloud 集成</td>
-<td>已支持</td>
-<td>已支持</td>
-<td>已支持</td>
-<td>已支持</td>
-</tr>
-</tbody>
-</table>
-<p>一般而言注册中心的特性决定了其使用的场景，例如很多框架支持 zookeeper，在我自己看来是因为其老牌，易用，但业界也有很多人认为 zookeeper 不适合做注册中心，它本身是一个分布式协调组件，并不是为注册服务而生，server 端注册一个服务节点，client 端并不需要在同一时刻拿到完全一致的服务列表，只要最终一致性即可。在跨 IDC，多数据中心等场景下 consul 发挥了很大的优势，这也是很多互联网公司选择使用 consul 的原因。 eureka 是 ap 注册中心，并且是 spring cloud 默认使用的组件，spring cloud eureka 较为贴近 spring cloud 生态。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>注册中心主要用于解耦服务调用中的定位问题，是分布式系统必须面对的一个问题。更多专业性的对比，可以期待 spring4all.com 的注册中心专题讨论，相信会有更为细致地对比。</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/rpc-registry/" data-id="ck63ccnxd007v9w9et7ywz06v" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-rpc-protocol" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/rpc-protocol/">深入理解 RPC 之协议篇</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/rpc-protocol/">
-            <time datetime="2017-12-28T12:16:28.000Z" itemprop="datePublished">2017-12-28</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/RPC/">RPC</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/RPC/">RPC</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>协议（Protocol）是个很广的概念，RPC 被称为远程过程调用协议，HTTP 和 TCP 也是大家熟悉的协议，也有人经常拿 RPC 和 RESTFUL 做对比，后者也可以被理解为一种协议… 我个人偏向于把“协议”理解为不同厂家不同用户之间的“约定”，而在 RPC 中，协议的含义也有多层。</p>
-<h2 id="Protocol-在-RPC-中的层次关系"><a href="#Protocol-在-RPC-中的层次关系" class="headerlink" title="Protocol 在 RPC 中的层次关系"></a>Protocol 在 RPC 中的层次关系</h2><p>翻看 dubbo 和 motan 两个国内知名度数一数二的 RPC 框架（或者叫服务治理框架可能更合适）的文档，他们都有专门的一章介绍自身对多种协议的支持。RPC 框架是一个分层结构，从我的这个《深入理解 RPC》系列就可以看出，是按照分层来介绍 RPC 的原理的，前面已经介绍过了传输层，序列化层，动态代理层，他们各自负责 RPC 调用生命周期中的一环，而协议层则是凌驾于它们所有层之上的一层。简单描述下各个层之间的关系：</p>
-<blockquote>
-<p>protocol 层主要用于配置 refer（发现服务） 和 exporter（暴露服务） 的实现方式，transport 层定义了传输的方式，codec 层诠释了具体传输过程中报文解析的方式，serialize 层负责将对象转换成字节，以用于传输，proxy 层负责将这些细节屏蔽。</p>
-<p>它们的包含关系如下：protocol &gt; transport &gt; codec &gt; serialize</p>
-</blockquote>
-<p>motan 的 Protocol 接口可以佐证这一点：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Protocol</span> </span>&#123;</span><br><span class="line">    &lt;T&gt; <span class="function">Exporter&lt;T&gt; <span class="title">export</span><span class="params">(Provider&lt;T&gt; provider, URL url)</span></span>;</span><br><span class="line">    &lt;T&gt; <span class="function">Referer&lt;T&gt; <span class="title">refer</span><span class="params">(Class&lt;T&gt; clz, URL url, URL serviceUrl)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们都知道 RPC 框架支持多种协议，由于协议处于框架层次的较高位置，任何一种协议的替换，都可能会导致服务发现和服务注册的方式，传输的方式，以及序列化的方式，而不同的协议也给不同的业务场景带来了更多的选择，下面就来看看一些常用协议。</p>
-<h2 id="Dubbo-中的协议"><a href="#Dubbo-中的协议" class="headerlink" title="Dubbo 中的协议"></a>Dubbo 中的协议</h2><h3 id="dubbo"><a href="#dubbo" class="headerlink" title="dubbo://"></a>dubbo://</h3><p>Dubbo 缺省协议采用单一长连接和 NIO 异步通讯，适合于小数据量高并发的服务调用，以及服务消费者机器数远大于服务提供者机器数的情况。</p>
-<p>反之，Dubbo 缺省协议不适合传送大数据量的服务，比如传文件，传视频等，除非请求量很低。</p>
-<p>适用场景：常规远程服务方法调用</p>
-<h3 id="rmi"><a href="#rmi" class="headerlink" title="rmi://"></a>rmi://</h3><p>RMI 协议采用 JDK 标准的 <code>java.rmi.*</code> 实现，采用阻塞式短连接和 JDK 标准序列化方式。</p>
-<p>适用场景：常规远程服务方法调用，与原生 RMI 服务互操作</p>
-<h3 id="hessian"><a href="#hessian" class="headerlink" title="hessian://"></a>hessian://</h3><p>Hessian 协议用于集成 Hessian 的服务，Hessian 底层采用 Http 通讯，采用 Servlet 暴露服务，Dubbo 缺省内嵌 Jetty 作为服务器实现。</p>
-<p>Dubbo 的 Hessian 协议可以和原生 Hessian 服务互操作，即：</p>
-<ul>
-<li>提供者用 Dubbo 的 Hessian 协议暴露服务，消费者直接用标准 Hessian 接口调用</li>
-<li>或者提供方用标准 Hessian 暴露服务，消费方用 Dubbo 的 Hessian 协议调用。</li>
-</ul>
-<p>Hessian 在之前介绍过，当时仅仅是用它来作为序列化工具，但其本身其实就是一个协议，可以用来做远程通信。</p>
-<p>适用场景：页面传输，文件传输，或与原生 hessian 服务互操作</p>
-<h3 id="http"><a href="#http" class="headerlink" title="http://"></a>http://</h3><p>基于 HTTP 表单的远程调用协议，采用 Spring 的 HttpInvoker 实现</p>
-<p>适用场景：需同时给应用程序和浏览器 JS 使用的服务。</p>
-<h3 id="webserivice"><a href="#webserivice" class="headerlink" title="webserivice://"></a>webserivice://</h3><p>基于 WebService 的远程调用协议，基于 Apache CXF 的 <code>frontend-simple</code> 和 <code>transports-http</code> 实现。</p>
-<p>可以和原生 WebService 服务互操作，即：</p>
-<ul>
-<li>提供者用 Dubbo 的 WebService 协议暴露服务，消费者直接用标准 WebService 接口调用，</li>
-<li>或者提供方用标准 WebService 暴露服务，消费方用 Dubbo 的 WebService 协议调用</li>
-</ul>
-<p>适用场景：系统集成，跨语言调用</p>
-<h3 id="thrift"><a href="#thrift" class="headerlink" title="thrift://"></a>thrift://</h3><p>当前 dubbo 支持的 thrift 协议是对 thrift 原生协议的扩展，在原生协议的基础上添加了一些额外的头信息，比如 service name，magic number 等。</p>
-<h3 id="memcached"><a href="#memcached" class="headerlink" title="memcached://"></a>memcached://</h3><p>基于 memcached 实现的 RPC 协议</p>
-<h3 id="redis"><a href="#redis" class="headerlink" title="redis://"></a>redis://</h3><p>基于 Redis 实现的 RPC 协议。</p>
-<blockquote>
-<p>dubbo 支持的众多协议详见 <a href="http://dubbo.io/books/dubbo-user-book/references/protocol/dubbo.html" target="_blank" rel="noopener">http://dubbo.io/books/dubbo-user-book/references/protocol/dubbo.html</a></p>
-</blockquote>
-<p>dubbo 的一个分支 <a href="https://github.com/dangdangdotcom/dubbox" target="_blank" rel="noopener">dangdangdotcom/dubbox</a> 扩展了 REST 协议</p>
-<h3 id="rest"><a href="#rest" class="headerlink" title="rest://"></a>rest://</h3><p>JAX-RS 是标准的 Java REST API，得到了业界的广泛支持和应用，其著名的开源实现就有很多，包括 Oracle 的 Jersey，RedHat 的 RestEasy，Apache 的 CXF 和 Wink，以及 restlet 等等。另外，所有支持 JavaEE 6.0 以上规范的商用 JavaEE 应用服务器都对 JAX-RS 提供了支持。因此，JAX-RS 是一种已经非常成熟的解决方案，并且采用它没有任何所谓 vendor lock-in 的问题。</p>
-<p>JAX-RS 在网上的资料非常丰富，例如下面的入门教程：</p>
-<ul>
-<li>Oracle 官方的 tutorial：<a href="http://docs.oracle.com/javaee/7/tutorial/doc/jaxrs.htm" target="_blank" rel="noopener">http://docs.oracle.com/javaee/7/tutorial/doc/jaxrs.htm</a></li>
-<li>IBM developerWorks 中国站文章：<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jaxrs/" target="_blank" rel="noopener">http://www.ibm.com/developerworks/cn/java/j-lo-jaxrs/</a></li>
-</ul>
-<p>更多的资料请自行 google 或者百度一下。就学习 JAX-RS 来说，一般主要掌握其各种 annotation 的用法即可。</p>
-<blockquote>
-<p>注意：dubbo 是基于 JAX-RS 2.0 版本的，有时候需要注意一下资料或 REST 实现所涉及的版本。</p>
-</blockquote>
-<p>适用场景：跨语言调用</p>
-<p>千米网也给 dubbo 贡献了一个扩展协议：<a href="https://github.com/dubbo/dubbo-rpc-jsonrpc" target="_blank" rel="noopener">https://github.com/dubbo/dubbo-rpc-jsonrpc</a></p>
-<h3 id="jsonrpc"><a href="#jsonrpc" class="headerlink" title="jsonrpc://"></a>jsonrpc://</h3><h4 id="Why-HTTP"><a href="#Why-HTTP" class="headerlink" title="Why HTTP"></a>Why HTTP</h4><p>在互联网快速迭代的大潮下，越来越多的公司选择 nodejs、django、rails 这样的快速脚本框架来开发 web 端应用 而后端的服务用 Java 又是最合适的，这就产生了大量的跨语言的调用需求。<br>而 http、json 是天然合适作为跨语言的标准，各种语言都有成熟的类库<br>虽然 Dubbo 的异步长连接协议效率很高，但是在脚本语言中，这点效率的损失并不重要。</p>
-<h4 id="Why-Not-RESTful"><a href="#Why-Not-RESTful" class="headerlink" title="Why Not RESTful"></a>Why Not RESTful</h4><p>Dubbox 在 RESTful 接口上已经做出了尝试，但是 REST 架构和 dubbo 原有的 RPC 架构是有区别的，<br>区别在于 REST 架构需要有资源 (Resources) 的定义， 需要用到 HTTP 协议的基本操作 GET、POST、PUT、DELETE 对资源进行操作。<br>Dubbox 需要重新定义接口的属性，这对原有的 Dubbo 接口迁移是一个较大的负担。<br>相比之下，RESTful 更合适互联网系统之间的调用，而 RPC 更合适一个系统内的调用，<br>所以我们使用了和 Dubbo 理念较为一致的 JsonRPC</p>
-<p><a href="http://www.jsonrpc.org/specification" target="_blank" rel="noopener">JSON-RPC 2.0 规范</a> 和 JAX-RS 一样，也是一个规范，JAVA 对其的支持可参考 <a href="https://github.com/briandilley/jsonrpc4j" target="_blank" rel="noopener">jsonrpc4j</a></p>
-<p>适用场景：跨语言调用</p>
-<h2 id="Motan-中的协议"><a href="#Motan-中的协议" class="headerlink" title="Motan 中的协议"></a>Motan 中的协议</h2><h3 id="motan"><a href="#motan" class="headerlink" title="motan://"></a>motan://</h3><p>motan 协议之于 motan，地位等同于 dubbo 协议之于 dubbo，两者都是各自默认的且都是自定义的协议。内部使用 netty 进行通信（旧版本使用 netty3 ，最新版本支持 netty4），默认使用 hessian 作为序列化器。</p>
-<p>适用场景：常规远程服务方法调用</p>
-<h3 id="injvm"><a href="#injvm" class="headerlink" title="injvm://"></a>injvm://</h3><p>顾名思义，如果 Provider 和 Consumer 位于同一个 jvm，motan 提供了 injvm 协议。这个协议是 jvm 内部调用，不经过本地网络，一般在服务化拆分时，作为过渡方案使用，可以通过开关机制在本地和远程调用之间进行切换，等过渡完成后再去除本地实现的引用。</p>
-<h3 id="grpc-和-yar"><a href="#grpc-和-yar" class="headerlink" title="grpc:// 和 yar://"></a>grpc:// 和 yar://</h3><p>这两个协议的诞生缘起于一定的历史遗留问题，moton 是新浪微博开源的，而其内部有很多 PHP 应用，为解决跨语言问题，这两个协议进而出现了。</p>
-<p>适用场景：较为局限的跨语言调用</p>
-<h3 id="restful"><a href="#restful" class="headerlink" title="restful://"></a>restful://</h3><p>motan 在 <a href="https://github.com/weibocom/motan/tree/0.3.1" target="_blank" rel="noopener">0.3.1</a> (2017-07-11) 版本发布了 restful 协议的支持（和 dubbo 的 rest 协议本质一样），dubbo 默认使用 jetty 作为 http server，而 motan 使用则是 netty 。主要实现的是 java 对 restful 指定的规范，即 javax.ws.rs 包下的类。</p>
-<p>适用场景：跨语言调用</p>
-<h3 id="motan2"><a href="#motan2" class="headerlink" title="motan2://"></a>motan2://</h3><p>motan <a href="https://github.com/weibocom/motan/tree/1.0.0" target="_blank" rel="noopener">1.0.0</a> (2017-10-31)  版本发布了 motan2 协议，用于对跨语言的支持，不同于 restful，jsonrpc 这样的通用协议，motan2 把请求的一些元数据作为单独的部分传输，更适合不同语言解析。</p>
-<p>适用场景：跨语言调用</p>
-<blockquote>
-<p>Motan is a cross-language remote procedure call(RPC) framework for rapid development of high performance distributed services.</p>
-<p><a href="https://github.com/weibocom/motan-go" target="_blank" rel="noopener">Motan-go</a> is golang implementation.</p>
-<p><a href="https://github.com/weibocom/motan-php" target="_blank" rel="noopener">Motan-PHP</a> is PHP client can interactive with Motan server directly or through Motan-go agent.</p>
-<p><a href="https://github.com/weibocom/motan-openresty" target="_blank" rel="noopener">Motan-openresty</a> is a Lua(Luajit) implementation based on <a href="http://openresty.org/" target="_blank" rel="noopener">Openresty</a></p>
-</blockquote>
-<p>从 motan 的 changeLog 以及 github 首页的介绍来看，其致力于打造成一个跨语言的服务治理框架，这倒是比较亦可赛艇的事。</p>
-<h3 id="面向未来的协议"><a href="#面向未来的协议" class="headerlink" title="面向未来的协议"></a>面向未来的协议</h3><p>motan 已经支持 motan2://，计划支持 mcq://，kafka:// … 支持更多的协议，以应对复杂的业务场景。对这个感兴趣的朋友，可以参见这篇文章：<a href="http://mp.weixin.qq.com/s/XZVCHZZzCX8wwgNKZtsmcA" target="_blank" rel="noopener">http://mp.weixin.qq.com/s/XZVCHZZzCX8wwgNKZtsmcA</a></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果仅仅是将 dubbo，motan 作为一个 RPC 框架使用，那大多人会选择其默认的协议（dubbo 协议，motan 协议），而如果是有历史遗留原因，如需要对接异构系统，就需要替换成其他协议了。大多数互联网公司选择自研 RPC 框架，或者改造自己的协议，都是为了适配自身业务的特殊性，协议层的选择非常重要。</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/rpc-protocol/" data-id="ck63ccnxa007n9w9eiuz3l97u" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/gracefully-shutdown/" data-id="ck6gbnabz003z6h9ecyz0gjv9" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -2498,6 +2300,44 @@ ga('send', 'pageview');
                     <li>
                         
                         <!-- <div class="item-thumbnail">
+                            <a href="/middleware-hire/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/middleware-hire/" class="title">阿里巴巴中间件技术部春招开始啦</a></p>
+                            <p class="item-date"><time datetime="2020-02-10T10:34:44.000Z" itemprop="datePublished">2020-02-10</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/arthas-redefine/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/arthas-redefine/" class="title">使用 Arthas 热更新线上代码</a></p>
+                            <p class="item-date"><time datetime="2020-02-09T07:42:45.000Z" itemprop="datePublished">2020-02-09</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
                             <a href="/edas-microservice/" class="thumbnail">
     
     
@@ -2552,44 +2392,6 @@ ga('send', 'pageview');
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/dubbo-metadata/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
-                            <p class="item-title"><a href="/dubbo-metadata/" class="title">一文聊透 Dubbo 元数据中心</a></p>
-                            <p class="item-date"><time datetime="2019-11-03T07:05:50.000Z" itemprop="datePublished">2019-11-03</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/linux-io-benchmark/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/数据库/">数据库</a></p>
-                            <p class="item-title"><a href="/linux-io-benchmark/" class="title">Linux 环境写文件如何稳定跑满磁盘 I/O 带宽?</a></p>
-                            <p class="item-date"><time datetime="2019-10-09T11:01:38.000Z" itemprop="datePublished">2019-10-09</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2599,7 +2401,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">16</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2608,7 +2410,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -2617,7 +2419,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 11px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+            <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 11px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
         </div>
     </div>
 
