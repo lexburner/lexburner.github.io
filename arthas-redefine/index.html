@@ -3,19 +3,22 @@
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
     
-    <title>使用 Arthas 热更新线上代码 | 徐靖峰|个人博客</title>
+    <title>Arthas | 热更新线上代码 | 徐靖峰|个人博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="前言一般线上问题比开发环境的问题更难解决，一个主要的原因便在于开发态可以任意 debug 断点调试，而线上环境一般不允许远程调试，所以在实践中，我一般习惯用 Arthas 来定位线上的问题。  Arthas 是阿里巴巴开源的 Java 应用诊断利器  Arthas 可以完成很多骚操作，今天给大家介绍的 Arthas 诊断技巧便是 – 热更新线上代码。在生产环境热更新代码，并不是很好的行为，可能会引">
+    <meta name="description" content="前言本文是我介绍 Arthas 系列文章的第一篇。 一般线上问题比开发环境的问题更难解决，一个主要的原因便在于开发态可以任意 debug 断点调试，而线上环境一般不允许远程调试，所以在实践中，我一般习惯用 Arthas 来定位线上的问题。  Arthas 是阿里巴巴开源的 Java 应用诊断利器  Arthas 可以完成很多骚操作，今天给大家介绍的 Arthas 诊断技巧便是 – 热更新线上代码。">
+<meta name="keywords" content="Arthas">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用 Arthas 热更新线上代码">
+<meta property="og:title" content="Arthas | 热更新线上代码">
 <meta property="og:url" content="https://lexburner.github.io/arthas-redefine/index.html">
 <meta property="og:site_name" content="徐靖峰|个人博客">
-<meta property="og:description" content="前言一般线上问题比开发环境的问题更难解决，一个主要的原因便在于开发态可以任意 debug 断点调试，而线上环境一般不允许远程调试，所以在实践中，我一般习惯用 Arthas 来定位线上的问题。  Arthas 是阿里巴巴开源的 Java 应用诊断利器  Arthas 可以完成很多骚操作，今天给大家介绍的 Arthas 诊断技巧便是 – 热更新线上代码。在生产环境热更新代码，并不是很好的行为，可能会引">
+<meta property="og:description" content="前言本文是我介绍 Arthas 系列文章的第一篇。 一般线上问题比开发环境的问题更难解决，一个主要的原因便在于开发态可以任意 debug 断点调试，而线上环境一般不允许远程调试，所以在实践中，我一般习惯用 Arthas 来定位线上的问题。  Arthas 是阿里巴巴开源的 Java 应用诊断利器  Arthas 可以完成很多骚操作，今天给大家介绍的 Arthas 诊断技巧便是 – 热更新线上代码。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-02-10T08:09:20.130Z">
+<meta property="og:image" content="https://alibaba.github.io/arthas/_images/dingding_qr.jpg">
+<meta property="og:updated_time" content="2020-02-14T12:57:59.242Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用 Arthas 热更新线上代码">
-<meta name="twitter:description" content="前言一般线上问题比开发环境的问题更难解决，一个主要的原因便在于开发态可以任意 debug 断点调试，而线上环境一般不允许远程调试，所以在实践中，我一般习惯用 Arthas 来定位线上的问题。  Arthas 是阿里巴巴开源的 Java 应用诊断利器  Arthas 可以完成很多骚操作，今天给大家介绍的 Arthas 诊断技巧便是 – 热更新线上代码。在生产环境热更新代码，并不是很好的行为，可能会引">
+<meta name="twitter:title" content="Arthas | 热更新线上代码">
+<meta name="twitter:description" content="前言本文是我介绍 Arthas 系列文章的第一篇。 一般线上问题比开发环境的问题更难解决，一个主要的原因便在于开发态可以任意 debug 断点调试，而线上环境一般不允许远程调试，所以在实践中，我一般习惯用 Arthas 来定位线上的问题。  Arthas 是阿里巴巴开源的 Java 应用诊断利器  Arthas 可以完成很多骚操作，今天给大家介绍的 Arthas 诊断技巧便是 – 热更新线上代码。">
+<meta name="twitter:image" content="https://alibaba.github.io/arthas/_images/dingding_qr.jpg">
     
 
     
@@ -174,7 +177,7 @@ ga('send', 'pageview');
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                56
+                57
                 <span>标签</span>
             </div>
         </div>
@@ -218,7 +221,7 @@ ga('send', 'pageview');
                 
     
         <h1 class="article-title" itemprop="name">
-            使用 Arthas 热更新线上代码
+            Arthas | 热更新线上代码
         </h1>
     
 
@@ -246,8 +249,18 @@ ga('send', 'pageview');
 
 
                         
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Arthas/">Arthas</a>
+    </div>
+
                         <!-- 不显示标签 -->
-                        <!--  -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Arthas/">Arthas</a>
+    </div>
+ -->
                     </div>
                 
             </header>
@@ -256,7 +269,8 @@ ga('send', 'pageview');
         <div class="article-entry" itemprop="articleBody">
         
             
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>一般线上问题比开发环境的问题更难解决，一个主要的原因便在于开发态可以任意 debug 断点调试，而线上环境一般不允许远程调试，所以在实践中，我一般习惯用 Arthas 来定位线上的问题。</p>
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文是我介绍 Arthas 系列文章的第一篇。</p>
+<p>一般线上问题比开发环境的问题更难解决，一个主要的原因便在于开发态可以任意 debug 断点调试，而线上环境一般不允许远程调试，所以在实践中，我一般习惯用 Arthas 来定位线上的问题。</p>
 <blockquote>
 <p>Arthas 是阿里巴巴开源的 Java 应用诊断利器</p>
 </blockquote>
@@ -267,7 +281,63 @@ ga('send', 'pageview');
 </ul>
 <p>但有时候也有一些场景可以考虑使用 Arthas 来热更，例如开发环境无法复现的问题、找到修复思路后临时验证等。</p>
 <p>本文以 Arthas 3.1.7 版本为例，主要使用到 <code>jad</code>/<code>mc</code>/<code>redefine</code> 三个指令。</p>
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><h2 id="jad"><a href="#jad" class="headerlink" title="jad"></a>jad</h2><p>参考文章：<a href="https://blog.csdn.net/hengyunabc/article/details/87718469" target="_blank" rel="noopener">https://blog.csdn.net/hengyunabc/article/details/87718469</a></p>
+<a id="more"></a>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>在 arthas-demo 示例中，一共有两个类，一个 HelloService 类，sayHello 方法负责不断的打印 <code>hello world</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"hello world"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>HelloService 用于模拟我们日常开发的一些业务 Service，另外还有一个 Main 函数，负责启动进程，并循环调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        HelloService helloService = <span class="keyword">new</span> HelloService();</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            helloService.sayHello();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>假设这段代码运行在线上，我们希望通过 Arthas 将 <code>hello world</code> 的输出更改为 <code>hello arthas</code>。 </p>
+<p>Arthas 修改热更的逻辑主要分为三步：</p>
+<ul>
+<li>jad 命令反编译出内存中的字节码，生成 class 文件</li>
+<li>修改代码，使用 mc 命令内存编译新的 class 文件</li>
+<li>redefine 重新加载新的 class 文件</li>
+</ul>
+<p>从而达到热更新的效果</p>
+<h2 id="jad-反编译"><a href="#jad-反编译" class="headerlink" title="jad 反编译"></a>jad 反编译</h2><p>当挂载上 Arthas 之后，执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> jad --source-only moe.cnkirito.arthas.demo.HelloService &gt; /tmp/HelloService.java</span><br></pre></td></tr></table></figure>
+<p>将字节码文件输出到指定的位置，查看其内容，与示例中的源码内容一致：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Decompiled with CFR.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">package</span> moe.cnkirito.arthas.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.PrintStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"hello world"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>命令中 <code>--source-only</code> 的含义为，只输出源码部分，如果不加这个参数，在反编译出的内容头部会携带类加载器的信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ClassLoader:</span><br><span class="line">+-sun.misc.Launcher$AppClassLoader@<span class="number">18</span>b4aac2</span><br><span class="line">  +-sun.misc.Launcher$ExtClassLoader@<span class="number">20</span>d5ad12</span><br><span class="line"></span><br><span class="line">Location:</span><br><span class="line">/Users/xujingfeng/IdeaProjects/arthas-demo/target/classes/</span><br></pre></td></tr></table></figure>
+<p>在服务器上可以直接使用 vi 等编辑器对源码进行编辑。将 <code>hello world</code> 改为 <code>hello arthas</code>，为下一步做准备。</p>
+<h2 id="sc-查找类加载器"><a href="#sc-查找类加载器" class="headerlink" title="sc 查找类加载器"></a>sc 查找类加载器</h2><p>mc 命令编译文件需要传入该类对应类加载器的 hash 值，需要先使用 sc 命令查看 HelloService 的累加器信息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> sc -d moe.cnkirito.arthas.demo.HelloService</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">class-info        moe.cnkirito.arthas.demo.HelloService</span><br><span class="line"> code-source       /Users/xujingfeng/IdeaProjects/arthas-demo/target/classes/</span><br><span class="line"> name              moe.cnkirito.arthas.demo.HelloService</span><br><span class="line"> isInterface       false</span><br><span class="line"> isAnnotation      false</span><br><span class="line"> isEnum            false</span><br><span class="line"> isAnonymousClass  false</span><br><span class="line"> isArray           false</span><br><span class="line"> isLocalClass      false</span><br><span class="line"> isMemberClass     false</span><br><span class="line"> isPrimitive       false</span><br><span class="line"> isSynthetic       false</span><br><span class="line"> simple-name       HelloService</span><br><span class="line"> modifier          public</span><br><span class="line"> annotation</span><br><span class="line"> interfaces</span><br><span class="line"> super-class       +-java.lang.Object</span><br><span class="line"> class-loader      +-sun.misc.Launcher$AppClassLoader@18b4aac2</span><br><span class="line">                     +-sun.misc.Launcher$ExtClassLoader@20d5ad12</span><br><span class="line"> classLoaderHash   18b4aac2</span><br></pre></td></tr></table></figure>
+<p>最后一行 <code>classLoaderHash</code> 即为 HelloService 的类加载器 hash 值。</p>
+<blockquote>
+<p>Arthas 支持 grep，你也可以简化该操作为：</p>
+<p>sc -d moe.cnkirito.arthas.demo.HelloService | grep classLoaderHash</p>
+</blockquote>
+<h2 id="mc-内存编译"><a href="#mc-内存编译" class="headerlink" title="mc 内存编译"></a>mc 内存编译</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> mc -c 18b4aac2 /tmp/HelloService.java -d /tmp</span><br><span class="line">Memory compiler output:</span><br><span class="line">/tmp/moe/cnkirito/arthas/demo/HelloService.class</span><br></pre></td></tr></table></figure>
+<p>使用 <code>-c</code> 指定类加载器的 hash 值。编译完成后，/tmp 目录下会生成对应的 class 字节码文件</p>
+<h2 id="redefine-热更新代码"><a href="#redefine-热更新代码" class="headerlink" title="redefine 热更新代码"></a>redefine 热更新代码</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> redefine /tmp/moe/cnkirito/arthas/demo/HelloService.class</span><br></pre></td></tr></table></figure>
+<h2 id="检查结果"><a href="#检查结果" class="headerlink" title="检查结果"></a>检查结果</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">hello world</span><br><span class="line">hello world</span><br><span class="line">hello world</span><br><span class="line">hello world</span><br><span class="line">hello arthas</span><br><span class="line">hello arthas</span><br><span class="line">hello arthas</span><br><span class="line">hello arthas</span><br></pre></td></tr></table></figure>
+<p>热更新成功</p>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="redefine-使用限制"><a href="#redefine-使用限制" class="headerlink" title="redefine 使用限制"></a>redefine 使用限制</h3><ul>
+<li><p>不允许新增或者删除 field/method</p>
+<p>会出现类似下面的提示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redefine error! java.lang.UnsupportedOperationException: class redefinition failed: attempted to change the schema (add/remove fields)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>运行中的方法不会立刻生效，会在下一次进入该方法时才能生效。</p>
+<p>很好理解，并发问题</p>
+</li>
+</ul>
+<h3 id="mc-常见问题"><a href="#mc-常见问题" class="headerlink" title="mc 常见问题"></a>mc 常见问题</h3><ul>
+<li><p>mc 命令有可能失败</p>
+<p>因为运行时环境和编译时环境的 JDK 可能有版本差异，mc 可能会失败。如果编译失败可以在本地编译好 <code>.class</code> 文件，再上传到服务器</p>
+</li>
+<li><p>当存在内部类时，一次会生成多个 class 文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Inner.test();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Inner</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"hello inner"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行 mc</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> mc -c 18b4aac2 /tmp/HelloService.java -d /tmp</span><br><span class="line">Memory compiler output:</span><br><span class="line">/tmp/moe/cnkirito/arthas/demo/HelloService$Inner.class</span><br><span class="line">/tmp/moe/cnkirito/arthas/demo/HelloService.class</span><br></pre></td></tr></table></figure>
+<p>注意 redefine 时也可以同时传入多个入参</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> redefine /tmp/moe/cnkirito/arthas/demo/HelloService$Inner.class /tmp/moe/cnkirito/arthas/demo/HelloService.class</span><br><span class="line">redefine success, size: 2</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://blog.csdn.net/hengyunabc/article/details/87718469" target="_blank" rel="noopener">https://blog.csdn.net/hengyunabc/article/details/87718469</a></p>
+<h2 id="Arthas-交流钉钉群"><a href="#Arthas-交流钉钉群" class="headerlink" title="Arthas 交流钉钉群"></a>Arthas 交流钉钉群</h2><p><img src="https://alibaba.github.io/arthas/_images/dingding_qr.jpg" alt="_images/dingding_qr.jpg"></p>
 
         
         </div>
@@ -278,7 +348,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/arthas-redefine/" data-id="ck6gbnaa1000e6h9evzurotto" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/arthas-redefine/" data-id="ck6m6g3720006vh9eq6cxvxmo" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -425,8 +495,8 @@ ga('send', 'pageview');
                         </div> -->
                         
                         <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/arthas-redefine/" class="title">使用 Arthas 热更新线上代码</a></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/Arthas/">Arthas</a></p>
+                            <p class="item-title"><a href="/arthas-redefine/" class="title">Arthas | 热更新线上代码</a></p>
                             <p class="item-date"><time datetime="2020-02-09T07:42:45.000Z" itemprop="datePublished">2020-02-09</time></p>
                         </div>
                     </li>
@@ -497,7 +567,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -515,7 +585,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 11px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+            <a href="/tags/Arthas/" style="font-size: 10px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 11px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
         </div>
     </div>
 
