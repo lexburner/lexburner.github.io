@@ -166,7 +166,7 @@ ga('send', 'pageview');
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                127
+                128
                 <span>文章</span>
             </div>
             <div class="article-info-block">
@@ -207,6 +207,231 @@ ga('send', 'pageview');
 
             
             <section id="main">
+    <article id="post-orika" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/orika/">打开 orika 的正确方式</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/orika/">
+            <time datetime="2017-11-15T11:09:57.000Z" itemprop="datePublished">2017-11-15</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><h3 id="架构分层"><a href="#架构分层" class="headerlink" title="架构分层"></a>架构分层</h3><p>开发分布式的项目时，DO 持久化对象和 DTO 传输对象的转换是不可避免的。集中式项目中，DO-DAO-SERVICE-WEB 的分层再寻常不过，但分布式架构（或微服务架构）需要拆分模块时，不得不思考一个问题：WEB 层能不能出现 DAO 或者 DO 对象？我给出的答案是否定的。</p>
+<p><img src="https://kirito.iocoder.cn/52029421305_2.gif" alt="新的项目分层结构"></p>
+<p>这张图曾出现在我过去的文章中，其强调了一个分层的要素：服务层 (应用层) 和表现层应当解耦，后者不应当触碰到任何持久化对象，其所有的数据来源，均应当由前者提供。</p>
+<h3 id="DTO-的位置"><a href="#DTO-的位置" class="headerlink" title="DTO 的位置"></a>DTO 的位置</h3><p>就系统的某一个模块，可以大致分成领域层 model，接口定义层 api，接口实现层 / 服务层 service，表现层 web。</p>
+<ul>
+<li>service 依赖 model +  api </li>
+<li>web 依赖 api</li>
+</ul>
+<p>在我们系统构建初期，DTO 对象被想当然的丢到了 model 层，这导致 web 对 model 产生了依赖；而在后期，为了满足前面的架构分层，最终将 DTO 对象移动到了 api 层（没有单独做一层）</p>
+<h3 id="没有-DTO-时的痛点"><a href="#没有-DTO-时的痛点" class="headerlink" title="没有 DTO 时的痛点"></a>没有 DTO 时的痛点</h3><p>激发出 DTO 这样一个新的分层其实还有两个原因。</p>
+<p>其一，便是我们再也不能忍受在 RPC 调用时 JPA/hibernate 懒加载这一特性带来的坑点。如果试图在消费端获取服务端传来的一个懒加载持久化对象，那么很抱歉，下意识就会发现这行不通，懒加载技术本质是使用字节码技术完成对象的代理，然而代理对象无法天然地远程传输，这与你的协议（RPC or HTTP）无关。</p>
+<p>其二，远程调用需要额外注意网络传输的开销，如果生产者方从数据库加载出了一个一对多的依赖，而消费者只需要一这个实体的某个属性，多的实体会使得性能产生下降，并没有很好的方式对其进行控制（忽略手动 set）。可能有更多痛点，由此可见，共享持久层，缺少 DTO 层时，我们的系统灵活性和性能都受到了制约。</p>
+<h2 id="从-DTO-到-Orika"><a href="#从-DTO-到-Orika" class="headerlink" title="从 DTO 到 Orika"></a>从 DTO 到 Orika</h2><p>各类博客不乏对 DTO 的讨论，对领域驱动的理解，但却鲜有文章介绍，如何完成 DO 对象到 DTO 对象的转换。我们期待有一款高性能的，易用的工具来帮助我们完成实体类的转换。便引出了今天的主角：Orika。</p>
+<h3 id="Orika-是什么？"><a href="#Orika-是什么？" class="headerlink" title="Orika 是什么？"></a>Orika 是什么？</h3><blockquote>
+<p>Orika 是一个简单、快速的 JavaBean 拷贝框架，它能够递归地将数据从一个 JavaBean 复制到另一个 JavaBean，这在多层应用开发中是非常有用的。</p>
+</blockquote>
+<h3 id="Orika-的竞品"><a href="#Orika-的竞品" class="headerlink" title="Orika 的竞品"></a>Orika 的竞品</h3><p>相信大多数朋友接触过 apache 的 BeanUtils，直到认识了 spring 的 BeanUtils，前者被后者完爆，后来又出现了 Dozer，Orika 等重量级的 Bean 拷贝工具，在性能和特性上都有了很大的提升。</p>
+<p>先给结论，众多 Bean 拷贝工具中，今天介绍的 Orika 具有想当大的优势。口说无凭，可参考下面文章中的各个工具的对比：<a href="http://tech.dianwoda.com/2017/11/04/gao-xing-neng-te-xing-feng-fu-de-beanying-she-gong-ju-orika/?utm_source=tuicool&amp;utm_medium=referral" target="_blank" rel="noopener">http://tech.dianwoda.com/2017/11/04/gao-xing-neng-te-xing-feng-fu-de-beanying-she-gong-ju-orika/?utm_source=tuicool&amp;utm_medium=referral</a> </p>
+<p>简单整理后，如下所示：</p>
+<ul>
+<li><strong>BeanUtils</strong></li>
+</ul>
+<p>apache 的 <code>BeanUtils</code> 和 spring 的 <code>BeanUtils</code> 中拷贝方法的原理都是先用 jdk 中 <code>java.beans.Introspector</code> 类的 <code>getBeanInfo()</code> 方法获取对象的属性信息及属性 get/set 方法，接着使用反射（<code>Method</code> 的 <code>invoke(Object obj, Object... args)</code>）方法进行赋值。apache 支持名称相同但类型不同的属性的转换，spring 支持忽略某些属性不进行映射，他们都设置了缓存保存已解析过的 <code>BeanInfo</code> 信息。</p>
+<ul>
+<li><strong>BeanCopier</strong></li>
+</ul>
+<p>cglib 的 <code>BeanCopier</code> 采用了不同的方法：它不是利用反射对属性进行赋值，而是直接使用 ASM 的 <code>MethodVisitor</code> 直接编写各属性的 <code>get/set</code> 方法（具体过程可见 <code>BeanCopier</code> 类的 <code>generateClass(ClassVisitor v)</code> 方法）生成 class 文件，然后进行执行。由于是直接生成字节码执行，所以 <code>BeanCopier</code> 的性能较采用反射的 <code>BeanUtils</code> 有较大提高，这一点可在后面的测试中看出。</p>
+<ul>
+<li><strong>Dozer</strong></li>
+</ul>
+<p>使用以上类库虽然可以不用手动编写 <code>get/set</code> 方法，但是他们都不能对不同名称的对象属性进行映射。在定制化的属性映射方面做得比较好的有 <a href="http://note.youdao.com/" target="_blank" rel="noopener">Dozer</a>，Dozer 支持简单属性映射、复杂类型映射、双向映射、隐式映射以及递归映射。可使用 xml 或者注解进行映射的配置，支持自动类型转换，使用方便。但 Dozer 底层是使用 reflect 包下 <code>Field</code> 类的 <code>set(Object obj, Object value)</code> 方法进行属性赋值，执行速度上不是那么理想。</p>
+<ul>
+<li><strong>Orika</strong></li>
+</ul>
+<p>那么有没有特性丰富，速度又快的 Bean 映射工具呢，这就是下面要介绍的 <a href="http://note.youdao.com/" target="_blank" rel="noopener">Orika</a>，Orika 是近期在 github 活跃的项目，底层采用了 javassist 类库生成 Bean 映射的字节码，之后直接加载执行生成的字节码文件，因此在速度上比使用反射进行赋值会快很多，下面详细介绍 Orika 的使用方法。</p>
+<h2 id="Orika-入门"><a href="#Orika-入门" class="headerlink" title="Orika 入门"></a>Orika 入门</h2><h3 id="引入依赖"><a href="#引入依赖" class="headerlink" title="引入依赖"></a>引入依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ma.glasnost.orika<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>orika-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;orika.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h3><ul>
+<li><strong>MapperFactory</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder().build();</span><br></pre></td></tr></table></figure>
+<p>MapperFactory 用于注册字段映射，配置转换器，自定义映射器等，而我们关注的主要是字段映射这个特性，在下面的小节中会介绍。</p>
+<ul>
+<li><strong>MapperFacade</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MapperFacade mapper = mapperFactory.getMapperFacade();</span><br><span class="line">PersonSource source = <span class="keyword">new</span> PersonSource();</span><br><span class="line">PersonDest destination = mapper.map(source, PersonDest.class);</span><br></pre></td></tr></table></figure>
+<p>MapperFacade 和 spring，apache 中的 BeanUtils 具有相同的地位，负责对象间的映射，也是实际使用中，我们使用的最多的类。</p>
+<p>至于转换器，自定义映射器等等概念，属于 Orika 的高级特性，也是 Orika 为什么被称作一个重量级框架的原因，引入 Orika 的初衷是为了高性能，易用的拷贝对象，引入它们会给系统带来一定的侵入性，所以本文暂不介绍，详细的介绍，可参考官方文档：<a href="http://orika-mapper.github.io/orika-docs/intro.html" target="_blank" rel="noopener">http://orika-mapper.github.io/orika-docs/intro.html</a></p>
+<h3 id="映射字段名完全相同的对象"><a href="#映射字段名完全相同的对象" class="headerlink" title="映射字段名完全相同的对象"></a>映射字段名完全相同的对象</h3><p>如果 DO 对象和 DTO 对象的命名遵守一定的规范，那无疑会减少我们很大的工作量。那么，规范是怎么样的呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> String name;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">  <span class="keyword">private</span> Date birthDate;</span><br><span class="line">  List&lt;Address&gt; addresses; <span class="comment">// &lt;1&gt;</span></span><br><span class="line">  <span class="comment">// getters/setters omitted</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PersonDto</span> </span>&#123; </span><br><span class="line">  <span class="keyword">private</span> String name;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">  <span class="keyword">private</span> Date birthDate;</span><br><span class="line">  List&lt;AddressDto&gt; addresses; <span class="comment">// &lt;1&gt;</span></span><br><span class="line">  <span class="comment">// getters/setters omitted</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Address</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AddressDto</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>基本字段类型自不用说，关键是打上 <1> 标签的地方，按照通常的习惯，<code>List&lt;AddressDto&gt;</code> 变量名会被命名为 addressDtos，但我更加推荐与 DO 对象统一命名，命名为 addresses。这样 Orika 在映射时便可以自动映射两者。</1></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder().build();</span><br><span class="line">Person person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="comment">// 一顿赋值</span></span><br><span class="line">PersonDto personDto = mapperFactory.getMapperFacade().map(person, PersonDto.class);</span><br></pre></td></tr></table></figure>
+<p>这样便完成了两个对象之间的拷贝，你可能会思考：需要我们指定两个类的映射关系吗？集合可以自动映射吗？这一切 Orika 都帮助我们完成了，在默认行为下，只要类的字段名相同，Orika 便会尽自己最大的努力帮助我们映射。</p>
+<h3 id="映射字段名不一致的对象"><a href="#映射字段名不一致的对象" class="headerlink" title="映射字段名不一致的对象"></a>映射字段名不一致的对象</h3><p>我对于 DTO 的理解是：DTO 应当尽可能与 DO 的字段保持一致，不增不减不改，但可能出于一些特殊原因，需要映射两个名称不同的字段，Orika 当然也支持这样常见的需求。只需要在 MapperFactory 中事先注册便可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> String id;</span><br><span class="line">  <span class="keyword">private</span> Name name;</span><br><span class="line">  <span class="keyword">private</span> List&lt;Name&gt; knownAliases;</span><br><span class="line">  <span class="keyword">private</span> Date birthDate;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Name</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> String first;</span><br><span class="line">  <span class="keyword">private</span> String last; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonDto</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> String personId;</span><br><span class="line">  <span class="keyword">private</span> String firstName;</span><br><span class="line">  <span class="keyword">private</span> String lastName;</span><br><span class="line">  <span class="keyword">private</span> Date birthDate;</span><br><span class="line">  <span class="keyword">private</span> String[][] aliases;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>完成上述两个结构不甚相似的对象时，则需要我们额外做一些工作，剩下的便和之前一致了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder().build();</span><br><span class="line">factory.classMap(Person.class, PersonDto.class) <span class="comment">// &lt;2&gt;</span></span><br><span class="line">      .field(<span class="string">"id"</span>,<span class="string">"personId"</span>)</span><br><span class="line">      .field(<span class="string">"name.first"</span>, <span class="string">"firstName"</span>)</span><br><span class="line">      .field(<span class="string">"name.last"</span>, <span class="string">"lastName"</span>)</span><br><span class="line">      .field(<span class="string">"knownAliases&#123;first&#125;"</span>, <span class="string">"aliases&#123;[0]&#125;"</span>)</span><br><span class="line">      .field(<span class="string">"knownAliases&#123;last&#125;"</span>, <span class="string">"aliases&#123;[1]&#125;"</span>)</span><br><span class="line">      .byDefault() <span class="comment">//&lt;1&gt;</span></span><br><span class="line">      .register();</span><br></pre></td></tr></table></figure>
+<p>这些 <code>.{}[]</code> 这些略微有点复杂的表达式不需要被掌握，只是想表明：如果你有这样需求，Orika 也能支持。上述连续点的行为被称为 fluent-style ，这再不少框架中有体现。</p>
+<p><1> 注意 byDefault() 这个方法，在指定了 classMap 行为之后，相同字段互相映射这样的默认行为需要调用一次这个方法，才能被继承。</1></p>
+<p><2> classMap()方法返回了一个 ClassMapBuilder 对象，如上所示，我们见识到了它的 field(),byDefault(),register() 方法，这个建造者指定了对象映射的众多行为，还包括几个其他有用的方法：</2></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">classMapBuilder.field(<span class="string">"a"</span>,<span class="string">"b"</span>);<span class="comment">//Person 和 PersonDto 的双向映射</span></span><br><span class="line">classMapBuilder.fieldAToB(<span class="string">"a"</span>,<span class="string">"b"</span>);<span class="comment">// 单向映射  </span></span><br><span class="line">classMapBuilder.fieldBToA(<span class="string">"a"</span>,<span class="string">"b"</span>);<span class="comment">// 单向映射</span></span><br><span class="line">classMapBuilder.exclude(<span class="string">"a"</span>);<span class="comment">// 移除指定的字段映射，即使字段名相同也不会拷贝</span></span><br><span class="line">classMapBuilder.field(<span class="string">"a"</span>,<span class="string">"b"</span>).mapNulls(<span class="keyword">false</span>).mapNullsInReverse(<span class="keyword">false</span>);<span class="comment">// 是否拷贝空属性，默认是 true</span></span><br></pre></td></tr></table></figure>
+<p>更多的 API 可以参见源码</p>
+<h3 id="集合映射"><a href="#集合映射" class="headerlink" title="集合映射"></a>集合映射</h3><p>在类中我们之前已经见识过了 List<address> 与 List<addressdto> 的映射。如果根对象就是一个集合，List<person> 映射为 List<persondto> 也是很常见的需求，这也很方便：</persondto></person></addressdto></address></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder().build();</span><br><span class="line">List&lt;Person&gt; persons = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">List&lt;PersonDto&gt; personDtos = mapperFactory.getMapperFacade().mapAsList(persons, PersonDto.class);</span><br></pre></td></tr></table></figure>
+<h3 id="递归映射"><a href="#递归映射" class="headerlink" title="递归映射"></a>递归映射</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> B b;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> C c;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> D d;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Orika 默认支持递归映射。</p>
+<h3 id="泛型映射"><a href="#泛型映射" class="headerlink" title="泛型映射"></a>泛型映射</h3><p>对泛型的支持是 Orika 的另一强大功能，这点在文档中只是被提及，网上并没有找到任何一个例子，所以在此我想稍微着重的介绍一下。既然文档没有相关的介绍，那如何了解 Orika 是怎样支持泛型映射的呢？只能翻出 Orika 的源码，在其丰富的测试用例中，可以窥见其对各种泛型特性的支持：<a href="https://github.com/orika-mapper/orika/tree/master/tests/src/main/java/ma/glasnost/orika/test/generics" target="_blank" rel="noopener">https://github.com/orika-mapper/orika/tree/master/tests/src/main/java/ma/glasnost/orika/test/generics</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Response</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> T data;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ResponseDto</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> T data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当出现泛型时，按照前面的思路去拷贝，看看结果会如何，泛型示例 1</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">genericTest1</span><span class="params">()</span></span>&#123;</span><br><span class="line">    MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder().build();</span><br><span class="line">    Response&lt;String&gt; response = <span class="keyword">new</span> Response&lt;&gt;();</span><br><span class="line">    response.setData(<span class="string">"test generic"</span>);</span><br><span class="line">    ResponseDto&lt;String&gt; responseDto = mapperFactory.getMapperFacade().map(response, ResponseDto.class);<span class="comment">// *</span></span><br><span class="line">    Assert.assertFalse(<span class="string">"test generic"</span>.equals(responseDto.getData()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>会发现 responseDto 并不会 Copy 成功吗，特别是在 * 处，你会发现无所适从，没办法把 ResponseDto<string> 传递进去 ，同样的，还有下面的泛型示例 2</string></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">genericTest2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder().build();</span><br><span class="line">    Response&lt;Person&gt; response = <span class="keyword">new</span> Response&lt;&gt;();</span><br><span class="line">    Person person = <span class="keyword">new</span> Person();</span><br><span class="line">    person.setName(<span class="string">"test generic"</span>);</span><br><span class="line">    response.setData(person);</span><br><span class="line">    Response&lt;PersonDto&gt; responseDto = mapperFactory.getMapperFacade().map(response, Response.class);</span><br><span class="line">    Assert.assertFalse(responseDto.getData() <span class="keyword">instanceof</span> PersonDto);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Response 中的 String 和 PersonDto 在运行时 (Runtime) 泛型擦除这一特性难住了不少人，那么，Orika 如何解决泛型映射呢？</p>
+<p>我们可以发现 MapperFacade 的具有一系列的重载方法，对各种类型的泛型拷贝进行支持</p>
+<p><img src="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171117093043.png" alt="泛型支持"></p>
+<p>可以看到几乎每个方法都传入了一个 Type，用于获取拷贝类的真实类型，而不是传入.class 字节码，下面介绍正确的打开姿势：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">genericTest1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder().build();</span><br><span class="line">    Response&lt;String&gt; response = <span class="keyword">new</span> Response&lt;&gt;();</span><br><span class="line">    response.setData(<span class="string">"test generic"</span>);</span><br><span class="line">    Type&lt;Response&lt;String&gt;&gt; fromType = <span class="keyword">new</span> TypeBuilder&lt;Response&lt;String&gt;&gt;()&#123;&#125;.build();</span><br><span class="line">    Type&lt;ResponseDto&lt;String&gt;&gt; toType = <span class="keyword">new</span> TypeBuilder&lt;ResponseDto&lt;String&gt;&gt;()&#123;&#125;.build();</span><br><span class="line">    ResponseDto&lt;String&gt; responseDto = mapperFactory.getMapperFacade().map(response, fromType, toType);</span><br><span class="line">    Assert.assertTrue(<span class="string">"test generic"</span>.equals(responseDto.getData()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">genericTest2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder().build();</span><br><span class="line">    Response&lt;Person&gt; response = <span class="keyword">new</span> Response&lt;&gt;();</span><br><span class="line">    Person person = <span class="keyword">new</span> Person();</span><br><span class="line">    person.setName(<span class="string">"test generic"</span>);</span><br><span class="line">    response.setData(person);</span><br><span class="line">    Type&lt;Response&lt;Person&gt;&gt; fromType = <span class="keyword">new</span> TypeBuilder&lt;Response&lt;Person&gt;&gt;()&#123;&#125;.build();</span><br><span class="line">    Type&lt;Response&lt;PersonDto&gt;&gt; toType = <span class="keyword">new</span> TypeBuilder&lt;Response&lt;PersonDto&gt;&gt;()&#123;&#125;.build();</span><br><span class="line">    Response&lt;PersonDto&gt; responseDto = mapperFactory.getMapperFacade().map(response, fromType, toType);</span><br><span class="line">    Assert.assertEquals(<span class="string">"test generic"</span> , responseDto.getData().getName());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="浅拷贝-or-深拷贝"><a href="#浅拷贝-or-深拷贝" class="headerlink" title="浅拷贝 or 深拷贝"></a>浅拷贝 or 深拷贝</h3><p>虽然不值得一提，但职业敏感度还是催使我们想要测试一下，Orika 是深拷贝还是浅拷贝，毕竟浅拷贝有时候会出现一些意想不到的坑点</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deepCloneTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder().build();</span><br><span class="line">    Person person = <span class="keyword">new</span> Person();</span><br><span class="line">    Address address = <span class="keyword">new</span> Address();</span><br><span class="line">    person.setAddress(address);</span><br><span class="line">    PersonDto personDto = mapperFactory.getMapperFacade().map(person, PersonDto.class);</span><br><span class="line">    Assert.assertFalse(personDto.getAddress().hashCode()== person.getAddress().hashCode());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结论：在使用 Orika 时可以放心，其实现的是深拷贝，不用担心原始类和克隆类指向同一个对象的问题。</p>
+<h3 id="更多的特性？"><a href="#更多的特性？" class="headerlink" title="更多的特性？"></a>更多的特性？</h3><p>你如果关心 Orika 是否能完成你某项特殊的需求，在这里可能会对你有所帮助：<a href="http://orika-mapper.github.io/orika-docs/faq.html" target="_blank" rel="noopener">http://orika-mapper.github.io/orika-docs/faq.html</a></p>
+<p>怎么样，你是不是还在使用 BeanUtils 呢？尝试一下 Orika 吧！</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/orika/" data-id="ck6p51pvy006ygn9ej801rgqg" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-spi" class="article article-type-post" itemscope="" itemprop="blogPost">
     <div class="article-inner">
         
@@ -343,7 +568,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spi/" data-id="ck6m6g3d000bivh9e7v88c96t" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spi/" data-id="ck6p51pwn008lgn9eit078loo" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -562,7 +787,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-cloud-sleuth/" data-id="ck6m6g3d300bovh9ea92hkv2t" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-cloud-sleuth/" data-id="ck6p51pwp008sgn9ewq975nmn" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -762,7 +987,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-data-redis-2/" data-id="ck6m6g3df00c5vh9eghvtemc5" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-data-redis-2/" data-id="ck6p51pwr0090gn9exfphbvzs" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -992,7 +1217,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-data-redis-1/" data-id="ck6m6g3db00bxvh9er3faox4m" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-data-redis-1/" data-id="ck6p51pwq008wgn9e84ti1aek" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1160,7 +1385,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/java-skill-1/" data-id="ck6m6g39a004dvh9eckuhoyin" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/java-skill-1/" data-id="ck6p51pup004ngn9etjg5qy50" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1346,7 +1571,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/concurrent-2/" data-id="ck6m6g37l000svh9e0qyg218d" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/concurrent-2/" data-id="ck6p51psy0011gn9esin7p2ml" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1537,7 +1762,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/concurrent-1/" data-id="ck6m6g37o000zvh9erohe5pr6" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/concurrent-1/" data-id="ck6p51psy0014gn9e93zhodsg" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1687,7 +1912,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-security-5/" data-id="ck6m6g3dn00cdvh9exf9gmcpj" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-security-5/" data-id="ck6p51pwy009ggn9e70x20f10" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1889,190 +2114,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-security-4/" data-id="ck6m6g3dl00ccvh9e2fjtm8g4" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-project-rules-2" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/project-rules-2/">警惕不规范的变量命名</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/project-rules-2/">
-            <time datetime="2017-09-23T05:45:56.000Z" itemprop="datePublished">2017-09-23</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/JAVA/">JAVA</a>, <a class="tag-link" href="/tags/技术杂谈/">技术杂谈</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>就在最近，项目组开始强调开发规范了，今天分享一个变量名命名不规范的小案例，强调一下规范的重要性。例子虽小，但却比较有启发意义。</p>
-<h2 id="Boolean-变量名命名规范"><a href="#Boolean-变量名命名规范" class="headerlink" title="Boolean 变量名命名规范"></a>Boolean 变量名命名规范</h2><p>16 年底，阿里公开了《Java 开发规范手册》，其中有一条便是“布尔类型不能以 is 为前缀”。规范中没有举出例子，但是给出了原因：会导致部分序列化框架的无法解析。</p>
-<p>看看错误的示范，会导致什么问题，以 Spring 中的 jdbcTemplate 来进行实验。</p>
-<h3 id="定义实体类"><a href="#定义实体类" class="headerlink" title="定义实体类"></a>定义实体类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Bar</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@GeneratedValue</span></span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> Boolean isSuccess;<span class="comment">// 注意这是错误的命名</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> isSend;<span class="comment">// 注意这是错误的命名</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Boolean <span class="title">getSuccess</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> isSuccess;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSuccess</span><span class="params">(Boolean success)</span> </span>&#123;</span><br><span class="line">        isSuccess = success;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isSend</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> isSend;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSend</span><span class="params">(<span class="keyword">boolean</span> send)</span> </span>&#123;</span><br><span class="line">        isSend = send;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中，isSuccess 使用的是包装类型 Boolean，而 isSend 使用的是原生类型 boolean，而 getter，setter 方法是使用 Intellij IDEA 自动生成的，布尔类型生成 getter，setter 方法时略微特殊，比如原生类型的 getter 方式是以 is 开头的，他们略微有点区别，注意区分。生成 getter，setter 方法之后，其实已经有点奇怪了，不急，继续下面的实验。</p>
-<p>在数据库中，isSuccess 被映射了 is_success，isSend 被映射成了 is_send，这符合我们的预期。并且为了后续的实验，我们事先准备一条记录，用于后续的查询，在 mysql 的方言中，布尔类型被默认自动映射成 byte，1 代表 ture，0 代表 false。</p>
-<table>
-<thead>
-<tr>
-<th>id</th>
-<th>is_success</th>
-<th>is_send</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>1</td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
-<h3 id="使用-JdbcTemplate-查询"><a href="#使用-JdbcTemplate-查询" class="headerlink" title="使用 JdbcTemplate 查询"></a>使用 JdbcTemplate 查询</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">    RowMapper&lt;Bar&gt; barRowMapper = <span class="keyword">new</span> BeanPropertyRowMapper&lt;Bar&gt;(Bar.class);</span><br><span class="line">    Bar bar = jdbcTemplate.queryForObject(<span class="string">"select * from bar where id = ?"</span>, <span class="keyword">new</span> Object[]&#123;id&#125;, barRowMapper);</span><br><span class="line">    System.out.println(bar);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>JdbcTemplate 提供了 BeanPropertyRowMapper 完成数据库到实体类的映射，事先我重写了 Bar 类的 toString 方法，调用 <code>test(1)</code> 看看是否能成功映射。结果如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Bar&#123;id=<span class="number">1</span>, isSuccess=<span class="keyword">null</span>, isSend=<span class="keyword">false</span>&#125;</span><br></pre></td></tr></table></figure>
-<p>数据库中是实际存在这样的字段，并且值都是 true，而使用 JdbcTemplate，却查询不到这样的问题，这边是不遵循规范导致的问题。</p>
-<p>相信这个例子可以让大家更加加深映像，特别是在维护老旧代码时，如果发现有 is 开头的 boolean 值，需要额外地注意。</p>
-<h2 id="包装类型与原生类型"><a href="#包装类型与原生类型" class="headerlink" title="包装类型与原生类型"></a>包装类型与原生类型</h2><p>在回顾一下上述的 demo，原生类型和包装类型都没有封装成功，isSuccess 得到了一个 null 值，isSend 得到了一个 false 值。后者足够引起我们的警惕，如果说前者会引起一个 NullPointerExcepiton 导致程序异常，还可以引起开发者的注意，而后者很有可能一直作为一个隐藏的 bug，不被人所察觉，因为 boolean 的默认值为 false。</p>
-<p>在类变量中，也普遍提倡使用包装类型，而原生类型的不足之处是很明显的。以 Integer num; 字段为例，num=null 代表的含义是 num 字段未被保存，未定义；而 num=0 代表的含义是明确的，数量为 0。原生类型的表达能力有限。所以提倡在局部作用域的计算中使用原生类型，而在类变量中使用包装类型。</p>
-<h2 id="JavaBean-规范"><a href="#JavaBean-规范" class="headerlink" title="JavaBean 规范"></a>JavaBean 规范</h2><p>如今的微服务的时代，都是在聊架构，聊容器编排，竟然还有人聊 JavaBean，但既然说到了规范，顺带提下。</p>
-<p>先来做个选择题，以下选项中符合 JavaBean 命名规范的有哪些？：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">A : ebook</span><br><span class="line">B : eBook</span><br><span class="line">C : Ebook</span><br><span class="line">D : EBook</span><br></pre></td></tr></table></figure>
-<p>.</p>
-<p>.</p>
-<p>.</p>
-<p>.</p>
-<p>正确答案是：A,D</p>
-<p>怎么样，符合你的预想吗？JavaBean 规范并不是像很多人想的那样，首字母小写，之后的每一个单词首字母大写这样的驼峰命名法。正确的命名规范应该是：要么前两个字母都是小写，要么前两个字母都是大写。因为英文单词中有 URL，USA 这样固定形式的大写词汇，所以才有了这样的规范。特别警惕 B 那种形式，一些诸如 sNo，eBook,eMail,cId 这样的命名，都是不规范的。</p>
-<p>由此引申出了 getter，setter 命名的规范，除了第一节中 Boolean 类型的特例之外，网上还有不上文章，强调了这样的概念：eBook 对应的 getter，setter 应当为 geteBook(),seteBook()，即当类变量的首字母是小写，而第二个字母是大写时，生成的 getter，setter 应当是（get/set）+ 类变量名。但上面已经介绍过了，eBook 这样的变量命名本身就是不规范的，在不规范的变量命名下强调规范的 getter，setter 命名，出发点就错了。有兴趣的朋友可以在 eclipse，intellij idea 中试试，这几种规范，不规范的变量命名，各自对应的 getter，setter 方法是如何的。另外需要知晓一点，IDE 提供的自动生成 getter，setter 的机制，以及 lombok 这类框架的机制，都是由默认的设置，在与其他反射框架配合使用时，只有双方都遵循规范，才能够配合使用，而不能笃信框架。这一点上，有部分国产的框架做的并不是很好。</p>
-<p>最后说一个和 JavaBean 相关的取值规范，在 jsp 的 c 标签，freemarker 一类的模板语法，以及一些 el 表达式中，${student.name} 并不是取的 student 的 name 字段，而是调用了 student 的 getName 方法，这也应当被注意，student.name 如何找到对应的 getter 方法，需要解决上一段中提到的同样的问题，建议不确定的地方多测试，尽量采取稳妥的写法。</p>
-<p>可能有人会觉得这样的介绍类似于“茴”字有几种写法，但笔者认为恰恰是这些小的规范，容易被人忽视，才更加需要被注意。</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/project-rules-2/" data-id="ck6m6g3ak007avh9ezl0o2woo" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-security-4/" data-id="ck6p51px0009kgn9eyncs5twn" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -2165,6 +2207,25 @@ public String test(){
                     <li>
                         
                         <!-- <div class="item-thumbnail">
+                            <a href="/arthas-thread/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Arthas/">Arthas</a></p>
+                            <p class="item-title"><a href="/arthas-thread/" class="title">Arthas | 定位线上 Dubbo 线程池满异常</a></p>
+                            <p class="item-date"><time datetime="2020-02-16T11:30:35.000Z" itemprop="datePublished">2020-02-16</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
                             <a href="/middleware-hire/" class="thumbnail">
     
     
@@ -2238,25 +2299,6 @@ public String test(){
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/dubbo-gracefully-startup/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
-                            <p class="item-title"><a href="/dubbo-gracefully-startup/" class="title">一文聊透 Dubbo 优雅上线</a></p>
-                            <p class="item-date"><time datetime="2019-11-17T09:25:04.000Z" itemprop="datePublished">2019-11-17</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2266,7 +2308,7 @@ public String test(){
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2275,7 +2317,7 @@ public String test(){
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -2284,7 +2326,7 @@ public String test(){
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Arthas/" style="font-size: 10px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 11px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+            <a href="/tags/Arthas/" style="font-size: 11px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 11px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
         </div>
     </div>
 
