@@ -166,7 +166,7 @@ ga('send', 'pageview');
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                128
+                130
                 <span>文章</span>
             </div>
             <div class="article-info-block">
@@ -207,6 +207,299 @@ ga('send', 'pageview');
 
             
             <section id="main">
+    <article id="post-jwt-learn" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/jwt-learn/">JSON Web Token - 在 Web 应用间安全地传递信息</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+	
+	
+		<div class="article-type">
+		    <span class="label label-warn" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">转载</span>
+		</div>
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/jwt-learn/">
+            <time datetime="2018-04-14T14:57:45.000Z" itemprop="datePublished">2018-04-14</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JWT/">JWT</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JWT/">JWT</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><blockquote>
+<p>转载自：<a href="http://blog.leapoahead.com/2015/09/06/understanding-jwt/" target="_blank" rel="noopener">http://blog.leapoahead.com/2015/09/06/understanding-jwt/</a></p>
+<p>作者：John Wu</p>
+</blockquote>
+</p><p>JSON Web Token（JWT）是一个非常轻巧的 <a href="https://tools.ietf.org/html/draft-ietf-oauth-json-web-token-32" target="_blank" rel="noopener">规范</a>。这个规范允许我们使用 JWT 在用户和服务器之间传递安全可靠的信息。</p>
+<p>让我们来假想一下一个场景。在 A 用户关注了 B 用户的时候，系统发邮件给 B 用户，并且附有一个链接“点此关注 A 用户”。链接的地址可以是这样的<br></p>
+            <p class="article-more-link">
+                <a href="/jwt-learn/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/jwt-learn/" data-id="ckatyxas5006fna9e9lnxdga8" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-kong-jwt" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/kong-jwt/">Kong 集成 Jwt 插件</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/kong-jwt/">
+            <time datetime="2018-04-11T14:57:45.000Z" itemprop="datePublished">2018-04-11</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Kong/">Kong</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Kong/">Kong</a>, <a class="tag-link" href="/tags/网关/">网关</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p></p><p>上一篇文章使用 Kong 完成了负载均衡的配置，本文介绍下在此基础上如何集成 jwt 插件来保护内部服务的安全。前置知识点：Jwt 基础概念。推荐阅读：<br></p>
+            <p class="article-more-link">
+                <a href="/kong-jwt/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/kong-jwt/" data-id="ckatyxas8006nna9eart790w7" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-kong-loadbalance" class="article article-type-post" itemscope="" itemprop="blogPost">
     <div class="article-inner">
         
@@ -276,7 +569,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/kong-loadbalance/" data-id="ck6p51pve0064gn9eypei3twn" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/kong-loadbalance/" data-id="ckatyxas9006rna9excu5d33k" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -420,7 +713,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/java-how-to-learn/" data-id="ck6p51pul0048gn9eoc29k974" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/java-how-to-learn/" data-id="ckatyxarc004sna9ew13eij2z" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -564,7 +857,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/docker-network-bridge/" data-id="ck6p51pt6001hgn9ec5qk8rui" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/docker-network-bridge/" data-id="ckatyxapu001wna9efmpmorjk" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -711,7 +1004,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/java-eqaulsandhashcode/" data-id="ck6p51puj0044gn9eji1vyp7u" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/java-eqaulsandhashcode/" data-id="ckatyxard004xna9e2ytuf3o2" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -855,7 +1148,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/future-and-promise/" data-id="ck6p51pu2003egn9eyvt0kr30" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/future-and-promise/" data-id="ckatyxaqw0042na9eyf4g2zgi" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1023,7 +1316,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/thinking-1/" data-id="ck6p51q0m00gbgn9ew43lrk2u" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/thinking-1/" data-id="ckatyxaud00bana9ep2nmjbun" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1323,7 +1616,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-cluster/" data-id="ck6p51pwa007pgn9eh57y0068" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-cluster/" data-id="ckatyxat30086na9eofsdgn2i" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1532,603 +1825,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/jpa-ddd/" data-id="ck6p51pv4005jgn9ezzzqt3po" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-instrument" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/instrument/">JAVA 拾遗 --Instrument 机制</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/instrument/">
-            <time datetime="2018-02-04T14:18:51.000Z" itemprop="datePublished">2018-02-04</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>最近在研究 skywalking，发现其作为一个 APM 框架，比起作为 trace 框架的 zipkin 多了一个监控维度：对 JVM 的监控。而 skywalking 集成进系统的方式也和传统的框架不太一样，由于其需要对 JVM 进行无侵入式的监控，所以借助了 JAVA5 提供的 Instrument 机制。关于“Instrument”这个单词，没找到准确的翻译，个人理解为“增强，装配”。</p>
-<p>如果我们想要无侵入式的修改一个方法，大多数人想到的可能是 AOP 技术，Instrument 有异曲同工之处，它可以对方法进行增强，甚至替换整个类。</p>
-<p>下面借助一个 demo，了解下 Instrument 是如何使用的。第一个 demo 很简单，在某一方法调用时，额外打印出其调用时的时间。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"wow wow~"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="keyword">new</span> Dog().hello());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Dog 存在一个 hello 方法，希望在调用该方法时打印出是什么时刻发生的调用。</p>
-<h2 id="实现-Agent"><a href="#实现-Agent" class="headerlink" title="实现 Agent"></a>实现 Agent</h2><p><strong>GreetingTransformer</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GreetingTransformer</span> <span class="keyword">implements</span> <span class="title">ClassFileTransformer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="keyword">byte</span>[] classfileBuffer) <span class="keyword">throws</span> IllegalClassFormatException &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">"moe/cnkirito/agent/Dog"</span>.equals(className)) &#123;</span><br><span class="line">            System.out.println(<span class="string">"Dog's method invoke at\t"</span> + <span class="keyword">new</span> Date());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对类进行装配的第一步是编写一个 GreetingTransformer 类，其继承自：java.lang.instrument.ClassFileTransformer，打印语句便编写在其中。对于入参和返参我们先不去纠结，因为仅仅完成这么一个简单的 AOP 功能，还不需要了解它们。</p>
-<p><strong>GreetingAgent</strong></p>
-<p>除了上述的 Transformer，我们还需要有一个容器去加载它。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GreetingAgent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String options, Instrumentation ins)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (options != <span class="keyword">null</span>) &#123;</span><br><span class="line">            System.out.printf(<span class="string">"I've been called with options: \"%s\"\n"</span>, options);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            System.out.println(<span class="string">"I've been called with no options."</span>);</span><br><span class="line">        ins.addTransformer(<span class="keyword">new</span> GreetingTransformer());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>GreetingAgent 便是我们后面要用的代理，可以发现它只有一个 premain 方法，很简单很形象，它和 main 方法真的很像</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不同的是 main 函数的参数是一个 string[]，而 premain 的入参是一个 String 和一个 Instrumentation。</p>
-<p>前者不用过多赘述，而后者 Instrumentation 便是 JAVA5 的 Instrument 机制的核心，它负责为类添加 ClassFileTransformer 的实现，从而对类进行装配。注意 premain 和它的两个参数不能随意修改，为啥？我们使用 main 函数的时候也没问为啥一定是 public static void main(String[] args) 啊，规定！规定！从 premain 的命名也可以看出，它的运行显然是在 main 函数之前的。</p>
-<p><strong>MANIFEST.MF</strong></p>
-<p>我们最终会把上面的 GreetingTransformer 和 GreetingAgent 打成一个 jar 包，然后让 Main 函数在启动时加载，但想要使用这个 jar 包还得额外做的工作。</p>
-<p>我们得告诉 JVM 在哪儿加载我们的 premain 方法，所以需要在 classpath 下增加一个 resources\META-INF\MANIFEST.MF 文件</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">Manifest-Version: 1.0</span></span><br><span class="line"><span class="section">Premain-Class: moe.cnkirito.agent.GreetingAgent</span></span><br><span class="line"><span class="section">Can-Redefine-Classes: true</span></span><br></pre></td></tr></table></figure>
-<p><strong>MAVEN 插件 </strong></p>
-<p>为了打包 agent 我们需要额外添加 maven 插件，将 mf 文件和两个类一起打包</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">finalName</span>&gt;</span>agent<span class="tag">&lt;/<span class="name">finalName</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-jar-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">archive</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">manifestFile</span>&gt;</span>src/main/resources/META-INF/MANIFEST.MF<span class="tag">&lt;/<span class="name">manifestFile</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">archive</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-assembly-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">outputDirectory</span>&gt;</span>$&#123;basedir&#125;<span class="tag">&lt;/<span class="name">outputDirectory</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">archive</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">index</span>&gt;</span>true<span class="tag">&lt;/<span class="name">index</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">manifest</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">addClasspath</span>&gt;</span>true<span class="tag">&lt;/<span class="name">addClasspath</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">manifestEntries</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">Premain-Class</span>&gt;</span>moe.cnkirito.agent.GreetingAgent<span class="tag">&lt;/<span class="name">Premain-Class</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">manifestEntries</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">archive</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">descriptorRefs</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">descriptorRef</span>&gt;</span>jar-with-dependencies<span class="tag">&lt;/<span class="name">descriptorRef</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">descriptorRefs</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">source</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">target</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>完成上述的配置，使用 maven install 即可得到一个 agent.jar，到这儿一切的准备工作就完成了。</p>
-<h2 id="使用代理运行-Main-方法"><a href="#使用代理运行-Main-方法" class="headerlink" title="使用代理运行 Main 方法"></a>使用代理运行 Main 方法</h2><p>如果不使用代理运行 Main 方法，毫无疑问我们只会得到一行 <code>wow wow~</code>。</p>
-<p>如果你使用的 IDEA，eclipse，只需要添加一行启动参数即可：</p>
-<p><img src="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720180204235047.png" alt="启动参数"></p>
-<p>-javaagent:jar_path=[options] 其中的 jar_path 为 agent.jar 的路径，options 是一个可选参数，其值会被 premain 方法的第一个参数接收 public static void premain(String options, Instrumentation ins).</p>
-<p>当需要装配多个 agent.jar 时，重复书写多次即可 -javaagent:C:\Users\xujingfeng\Desktop\agent.jar=hello -javaagent:C:\Users\xujingfeng\Desktop\agent.jar=hello2 …</p>
-<p>运行 Main.jar 的话就是这样的形式：java -javaagent:C:\Users\xujingfeng\Desktop\agent.jar=hello Main</p>
-<p><strong> 运行结果 </strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">  I&apos;ve been called with options:&quot;hello&quot;</span><br><span class="line">Dog&apos;s method invoke at	Sun Feb 04 23:54:45 CST 2018</span><br><span class="line">wow wow~</span><br></pre></td></tr></table></figure>
-<p>I’ve been called with options:”hello” 代表我们的 premain 已经装载成功，并且正确接收到了启动参数。第二行语句也正常打印出了调用时间，至此便完成了 Dog 的装配。</p>
-<h2 id="Instrument-进阶"><a href="#Instrument-进阶" class="headerlink" title="Instrument 进阶"></a>Instrument 进阶</h2><p>什么？为了打印一行调用时间，我们花了这么大精力，这是要跟自己过不去吗？你可能会有这样的疑惑，但请不要质疑 Instrument 的价值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ClassFileTransformer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">byte</span>[] transform(  ClassLoader         loader,</span><br><span class="line">                String              className,</span><br><span class="line">                Class&lt;?&gt;            classBeingRedefined,</span><br><span class="line">                ProtectionDomain    protectionDomain,</span><br><span class="line">                <span class="keyword">byte</span>[]              classfileBuffer)</span><br><span class="line">        <span class="keyword">throws</span> IllegalClassFormatException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>ClassFileTransformer 可以对所有的方法进行拦截，看见返回值 byte[] 了没有</p>
-<blockquote>
-<p>The implementation of this method may transform the supplied class file and return a new replacement class file.</p>
-<p>这个方法的实现可能会改变提供的类文件并返回一个新的替换类文件。</p>
-</blockquote>
-<p>这给了我们足够的操作自由度，我们甚至可以替换一个类的实现，只要你能够返回一个正确的替换类。ClassLoader 代表被转换类的类加载器，如果是 bootstrap loader 则可以省略，className 代表全类名，注意是以 <code>/</code> 作为分隔符。其他参数我也不是太懂，想深究的同学自行翻看下文档。byte[] 代表被转换后的类的字节，为 null 则代表不转换。</p>
-<h3 id="替换-Dog-的实现"><a href="#替换-Dog-的实现" class="headerlink" title="替换 Dog 的实现"></a>替换 Dog 的实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"miao miao~"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意，这里我修改了 Dog 的实现，不是打印 wow wow~ 而是 miao miao ~，只是为了得到新 Dog 的字节码 Dog.class。我将新的 Dog.class 丢在了我的桌面方便加载：C:/Users/xujingfeng/Desktop</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DogTransformer</span> <span class="keyword">implements</span> <span class="title">ClassFileTransformer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="keyword">byte</span>[] classfileBuffer) <span class="keyword">throws</span> IllegalClassFormatException &#123;</span><br><span class="line">        System.out.println(<span class="string">"className:"</span> + className);</span><br><span class="line">        <span class="keyword">if</span> (!className.equalsIgnoreCase(<span class="string">"moe/cnkirito/agent/Dog"</span>)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> getBytesFromFile(<span class="string">"C:/Users/xujingfeng/Desktop/Dog.class"</span>);<span class="comment">// 新的 Dog</span></span><br><span class="line"><span class="comment">//        return getBytesFromFile("app/target/classes/moe/cnkirito/agent/Dog.class");</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] getBytesFromFile(String fileName) &#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(fileName);</span><br><span class="line">        <span class="keyword">try</span> (InputStream is = <span class="keyword">new</span> FileInputStream(file)) &#123;</span><br><span class="line">            <span class="comment">// precondition</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">long</span> length = file.length();</span><br><span class="line">            <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[(<span class="keyword">int</span>) length];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Read in the bytes</span></span><br><span class="line">            <span class="keyword">int</span> offset = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">int</span> numRead = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span> (offset &lt;bytes.length</span><br><span class="line">                    &amp;&amp; (numRead = is.read(bytes, offset, bytes.length - offset)) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                offset += numRead;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (offset &lt; bytes.length) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Could not completely read file"</span></span><br><span class="line">                        + file.getName());</span><br><span class="line">            &#125;</span><br><span class="line">            is.close();</span><br><span class="line">            <span class="keyword">return</span> bytes;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.out.println(<span class="string">"error occurs in _ClassTransformer!"</span></span><br><span class="line">                    + e.getClass().getName());</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>return getBytesFromFile(“C:/Users/xujingfeng/Desktop/Dog.class”) 一行返回了新的 Dog 试图替换原先的 Dog。注意，这一切都放生在 Agent.jar 之中，我并没有对 Main 函数（也就是我们自己的源代码）做任何改动。</p>
-<p><strong> 控制台输出 </strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">miao miao~</span><br></pre></td></tr></table></figure>
-<p>替换成功！我们并没有对 Main 程序的 Dog 做任何修改，只是加载了一个新的 Dog.class 替换了 Main 程序中的 Dog。</p>
-<h3 id="统计方法运行耗时"><a href="#统计方法运行耗时" class="headerlink" title="统计方法运行耗时"></a>统计方法运行耗时</h3><p>这个需求有点接近我们研究 Instrument 的初衷了，统计方法的运行耗时。由于代码的篇幅问题，在本文中只给出思路，详细的实现，可以参考文末的 github 链接，本文的三个例子：</p>
-<ol>
-<li>打印 hello </li>
-<li>替换 Dog </li>
-<li>统计方法运行耗时</li>
-</ol>
-<p>代码都在其中。</p>
-<p>思路：对每个需要统计耗时的方法替换字节码，在方法开始前插入开始时间，在方法结束时插入结束时间，计算差值，more 你可以连同 methodName 和耗时一起发送出去，给 collector 统一采集…wait，这不就是一个简易的监控吗?!~</p>
-<p>运行结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Call to method hello_timing took 1 ms.</span><br><span class="line">wow wow~</span><br></pre></td></tr></table></figure>
-<h2 id="JAVA6-的-agentmain"><a href="#JAVA6-的-agentmain" class="headerlink" title="JAVA6 的 agentmain"></a>JAVA6 的 agentmain</h2><p>值得一提的是，java6 提供了 public static void agentmain (String agentArgs, Instrumentation inst); 这个新的方法，可以在 main 函数之后装配（premain 是在 main 之前），这使得操控现有程序的自由度变得更高了，有兴趣的朋友可以去了解下 premain 和 agentmain 的特性。</p>
-<h2 id="本文示例代码"><a href="#本文示例代码" class="headerlink" title="本文示例代码"></a>本文示例代码</h2><p><a href="https://github.com/lexburner/java5-Instrumentation-demo" target="_blank" rel="noopener">https://github.com/lexburner/java5-Instrumentation-demo</a></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://www.ibm.com/developerworks/cn/java/j-lo-instrumentation/" target="_blank" rel="noopener">Java 5 特性 Instrumentation 实践</a></p>
-<p><a href="https://www.ibm.com/developerworks/cn/java/j-lo-jse61/index.html" target="_blank" rel="noopener">Java SE 6 的新特性：虚拟机启动后的动态 instrument</a></p>
-<p><a href="https://github.com/YunaiV/learning/tree/master/javaagent01" target="_blank" rel="noopener">芋道源码</a></p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/instrument/" data-id="ck6p51pu9003sgn9eszaub51x" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-chinese-copywriting-guidelines" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/chinese-copywriting-guidelines/">中文文案排版指北</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-	
-	
-		<div class="article-type">
-		    <span class="label label-warn" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">转载</span>
-		</div>
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/chinese-copywriting-guidelines/">
-            <time datetime="2018-01-16T12:16:28.000Z" itemprop="datePublished">2018-01-16</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/中文排版/">中文排版</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>统一中文文案、排版的相关用法，降低团队成员之间的沟通成本，增强网站气质。原文出处：<a href="https://github.com/mzlogin/chinese-copywriting-guidelines" target="_blank" rel="noopener">https://github.com/mzlogin/chinese-copywriting-guidelines</a></p>
-</blockquote>
-<hr>
-<ul>
-<li><h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
-<li>空格<ul>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#中英文之间需要增加空格" target="_blank" rel="noopener">中英文之间需要增加空格</a></li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#中文与数字之间需要增加空格" target="_blank" rel="noopener">中文与数字之间需要增加空格</a></li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#数字与单位之间无需增加空格" target="_blank" rel="noopener">数字与单位之间无需增加空格</a></li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#全角标点与其他字符之间不加空格" target="_blank" rel="noopener">全角标点与其他字符之间不加空格</a></li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#-ms-text-autospace-to-the-rescue" target="_blank" rel="noopener"><code>-ms-text-autospace</code> to the rescue?</a></li>
-</ul>
-</li>
-<li>标点符号<ul>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#不重复使用标点符号" target="_blank" rel="noopener">不重复使用标点符号</a></li>
-</ul>
-</li>
-<li>全角和半角<ul>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#使用全角中文标点" target="_blank" rel="noopener">使用全角中文标点</a></li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#数字使用半角字符" target="_blank" rel="noopener">数字使用半角字符</a></li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#遇到完整的英文整句特殊名词其內容使用半角标点" target="_blank" rel="noopener">遇到完整的英文整句、特殊名词，其內容使用半角标点</a></li>
-</ul>
-</li>
-<li>名词<ul>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#专有名词使用正确的大小写" target="_blank" rel="noopener">专有名词使用正确的大小写</a></li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#不要使用不地道的缩写" target="_blank" rel="noopener">不要使用不地道的缩写</a></li>
-</ul>
-</li>
-<li>争议<ul>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#链接之间增加空格" target="_blank" rel="noopener">链接之间增加空格</a></li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#简体中文使用直角引号" target="_blank" rel="noopener">简体中文使用直角引号</a></li>
-</ul>
-</li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#工具" target="_blank" rel="noopener">工具</a></li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#谁在这样做" target="_blank" rel="noopener">谁在这样做？</a></li>
-<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#参考文献" target="_blank" rel="noopener">参考文献</a></li>
-</ul>
-<h2 id="空格"><a href="#空格" class="headerlink" title="空格"></a>空格</h2><p>「有研究显示，打字的时候不喜欢在中文和英文之间加空格的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟自己不爱的人结婚，而其余三成的人最后只能把遗产留给自己的猫。毕竟爱情跟书写都需要适时地留白。</p>
-<p>与大家共勉之。」——<a href="https://github.com/vinta/pangu.js" target="_blank" rel="noopener">vinta/paranoid-auto-spacing</a></p>
-<h3 id="中英文之间需要增加空格"><a href="#中英文之间需要增加空格" class="headerlink" title="中英文之间需要增加空格"></a>中英文之间需要增加空格</h3><p>正确：</p>
-<blockquote>
-<p>在 LeanCloud 上，数据存储是围绕 <code>AVObject</code> 进行的。</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>在LeanCloud上，数据存储是围绕<code>AVObject</code>进行的。</p>
-</blockquote>
-<blockquote>
-<p>在 LeanCloud上，数据存储是围绕<code>AVObject</code> 进行的。</p>
-</blockquote>
-<p>完整的正确用法：</p>
-<blockquote>
-<p>在 LeanCloud 上，数据存储是围绕 <code>AVObject</code> 进行的。每个 <code>AVObject</code> 都包含了与 JSON 兼容的 key-value 对应的数据。数据是 schema-free 的，你不需要在每个 <code>AVObject</code> 上提前指定存在哪些键，只要直接设定对应的 key-value 即可。</p>
-</blockquote>
-<p>例外：「豆瓣FM」等产品名词，按照官方所定义的格式书写。</p>
-<h3 id="中文与数字之间需要增加空格"><a href="#中文与数字之间需要增加空格" class="headerlink" title="中文与数字之间需要增加空格"></a>中文与数字之间需要增加空格</h3><p>正确：</p>
-<blockquote>
-<p>今天出去买菜花了 5000 元。</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>今天出去买菜花了 5000元。</p>
-</blockquote>
-<blockquote>
-<p>今天出去买菜花了5000元。</p>
-</blockquote>
-<h3 id="数字与单位之间无需增加空格"><a href="#数字与单位之间无需增加空格" class="headerlink" title="数字与单位之间无需增加空格"></a>数字与单位之间无需增加空格</h3><p>正确：</p>
-<blockquote>
-<p>我家的光纤入户宽带有 10Gbps，SSD 一共有 10TB。</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>我家的光纤入户宽带有 10 Gbps，SSD 一共有 20 TB。</p>
-</blockquote>
-<p>另外，度／百分比与数字之间不需要增加空格：</p>
-<p>正确：</p>
-<blockquote>
-<p>今天是 233° 的高温。</p>
-</blockquote>
-<blockquote>
-<p>新 MacBook Pro 有 15% 的 CPU 性能提升。</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>今天是 233 ° 的高温。</p>
-</blockquote>
-<blockquote>
-<p>新 MacBook Pro 有 15 % 的 CPU 性能提升。</p>
-</blockquote>
-<h3 id="全角标点与其他字符之间不加空格"><a href="#全角标点与其他字符之间不加空格" class="headerlink" title="全角标点与其他字符之间不加空格"></a>全角标点与其他字符之间不加空格</h3><p>正确：</p>
-<blockquote>
-<p>刚刚买了一部 iPhone，好开心！</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>刚刚买了一部 iPhone ，好开心！</p>
-</blockquote>
-<h3 id="ms-text-autospace-to-the-rescue"><a href="#ms-text-autospace-to-the-rescue" class="headerlink" title="-ms-text-autospace to the rescue?"></a><code>-ms-text-autospace</code> to the rescue?</h3><p>Microsoft 有个 <a href="http://msdn.microsoft.com/en-us/library/ie/ms531164(v=vs.85" target="_blank" rel="noopener"><code>-ms-text-autospace</code></a>.aspx) 的 CSS 属性可以实现自动为中英文之间增加空白。不过目前并未普及，另外在其他应用场景，例如 OS X、iOS 的用户界面目前并不存在这个特性，所以请继续保持随手加空格的习惯。</p>
-<h2 id="标点符号"><a href="#标点符号" class="headerlink" title="标点符号"></a>标点符号</h2><h3 id="不重复使用标点符号"><a href="#不重复使用标点符号" class="headerlink" title="不重复使用标点符号"></a>不重复使用标点符号</h3><p>正确：</p>
-<blockquote>
-<p>德国队竟然战胜了巴西队！</p>
-</blockquote>
-<blockquote>
-<p>她竟然对你说「喵」？！</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>德国队竟然战胜了巴西队！！</p>
-</blockquote>
-<blockquote>
-<p>德国队竟然战胜了巴西队！！！！！！！！</p>
-</blockquote>
-<blockquote>
-<p>她竟然对你说「喵」？？！！</p>
-</blockquote>
-<blockquote>
-<p>她竟然对你说「喵」？！？！？？！！</p>
-</blockquote>
-<h2 id="全角和半角"><a href="#全角和半角" class="headerlink" title="全角和半角"></a>全角和半角</h2><p>不明白什么是全角（全形）与半角（半形）符号？请查看维基百科词条『<a href="http://zh.wikipedia.org/wiki/全形和半形" target="_blank" rel="noopener">全角和半角</a>』。</p>
-<h3 id="使用全角中文标点"><a href="#使用全角中文标点" class="headerlink" title="使用全角中文标点"></a>使用全角中文标点</h3><p>正确：</p>
-<blockquote>
-<p>嗨！你知道嘛？今天前台的小妹跟我说「喵」了哎！</p>
-</blockquote>
-<blockquote>
-<p>核磁共振成像（NMRI）是什么原理都不知道？JFGI！</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>嗨! 你知道嘛? 今天前台的小妹跟我说 “喵” 了哎!</p>
-</blockquote>
-<blockquote>
-<p>嗨!你知道嘛?今天前台的小妹跟我说”喵”了哎!</p>
-</blockquote>
-<blockquote>
-<p>核磁共振成像 (NMRI) 是什么原理都不知道? JFGI!</p>
-</blockquote>
-<blockquote>
-<p>核磁共振成像(NMRI)是什么原理都不知道?JFGI!</p>
-</blockquote>
-<h3 id="数字使用半角字符"><a href="#数字使用半角字符" class="headerlink" title="数字使用半角字符"></a>数字使用半角字符</h3><p>正确：</p>
-<blockquote>
-<p>这件蛋糕只卖 1000 元。</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>这件蛋糕只卖 １０００ 元。</p>
-</blockquote>
-<p>例外：在设计稿、宣传海报中如出现极少量数字的情形时，为方便文字对齐，是可以使用全角数字的。</p>
-<h3 id="遇到完整的英文整句、特殊名词，其內容使用半角标点"><a href="#遇到完整的英文整句、特殊名词，其內容使用半角标点" class="headerlink" title="遇到完整的英文整句、特殊名词，其內容使用半角标点"></a>遇到完整的英文整句、特殊名词，其內容使用半角标点</h3><p>正确：</p>
-<blockquote>
-<p>乔布斯那句话是怎么说的？「Stay hungry, stay foolish.」</p>
-</blockquote>
-<blockquote>
-<p>推荐你阅读《Hackers &amp; Painters: Big Ideas from the Computer Age》，非常的有趣。</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>乔布斯那句话是怎么说的？「Stay hungry，stay foolish。」</p>
-</blockquote>
-<blockquote>
-<p>推荐你阅读《Hackers＆Painters：Big Ideas from the Computer Age》，非常的有趣。</p>
-</blockquote>
-<h2 id="名词"><a href="#名词" class="headerlink" title="名词"></a>名词</h2><h3 id="专有名词使用正确的大小写"><a href="#专有名词使用正确的大小写" class="headerlink" title="专有名词使用正确的大小写"></a>专有名词使用正确的大小写</h3><p>大小写相关用法原属于英文书写范畴，不属于本 wiki 讨论內容，在这里只对部分易错用法进行简述。</p>
-<p>正确：</p>
-<blockquote>
-<p>使用 GitHub 登录</p>
-</blockquote>
-<blockquote>
-<p>我们的客户有 GitHub、Foursquare、Microsoft Corporation、Google、Facebook, Inc.。</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>使用 github 登录</p>
-</blockquote>
-<blockquote>
-<p>使用 GITHUB 登录</p>
-</blockquote>
-<blockquote>
-<p>使用 Github 登录</p>
-</blockquote>
-<blockquote>
-<p>使用 gitHub 登录</p>
-</blockquote>
-<blockquote>
-<p>使用 gｲんĤЦ8 登录</p>
-</blockquote>
-<blockquote>
-<p>我们的客户有 github、foursquare、microsoft corporation、google、facebook, inc.。</p>
-</blockquote>
-<blockquote>
-<p>我们的客户有 GITHUB、FOURSQUARE、MICROSOFT CORPORATION、GOOGLE、FACEBOOK, INC.。</p>
-</blockquote>
-<blockquote>
-<p>我们的客户有 Github、FourSquare、MicroSoft Corporation、Google、FaceBook, Inc.。</p>
-</blockquote>
-<blockquote>
-<p>我们的客户有 gitHub、fourSquare、microSoft Corporation、google、faceBook, Inc.。</p>
-</blockquote>
-<blockquote>
-<p>我们的客户有 gｲんĤЦ8、ｷouЯƧquﾑгє、๓เςг๏ร๏Ŧt ς๏гק๏гคtเ๏ภn、900913、ƒ4ᄃëв๏๏к, IПᄃ.。</p>
-</blockquote>
-<p>注意：当网页中需要配合整体视觉风格而出现全部大写／小写的情形，HTML 中请使用标准的大小写规范进行书写；并通过 <code>text-transform: uppercase;</code>／<code>text-transform: lowercase;</code> 对表现形式进行定义。</p>
-<h3 id="不要使用不地道的缩写"><a href="#不要使用不地道的缩写" class="headerlink" title="不要使用不地道的缩写"></a>不要使用不地道的缩写</h3><p>正确：</p>
-<blockquote>
-<p>我们需要一位熟悉 JavaScript、HTML5，至少理解一种框架（如 Backbone.js、AngularJS、React 等）的前端开发者。</p>
-</blockquote>
-<p>错误：</p>
-<blockquote>
-<p>我们需要一位熟悉 Js、h5，至少理解一种框架（如 backbone、angular、RJS 等）的 FED。</p>
-</blockquote>
-<h2 id="争议"><a href="#争议" class="headerlink" title="争议"></a>争议</h2><p>以下用法略带有个人色彩，即：无论是否遵循下述规则，从语法的角度来讲都是<strong>正确</strong>的。</p>
-<h3 id="链接之间增加空格"><a href="#链接之间增加空格" class="headerlink" title="链接之间增加空格"></a>链接之间增加空格</h3><p>用法：</p>
-<blockquote>
-<p>请 <a href="https://github.com/mzlogin/chinese-copywriting-guidelines#" target="_blank" rel="noopener">提交一个 issue</a> 并分配给相关同事。</p>
-</blockquote>
-<blockquote>
-<p>访问我们网站的最新动态，请 <a href="https://github.com/mzlogin/chinese-copywriting-guidelines#" target="_blank" rel="noopener">点击这里</a> 进行订阅！</p>
-</blockquote>
-<p>对比用法：</p>
-<blockquote>
-<p>请<a href="https://github.com/mzlogin/chinese-copywriting-guidelines#" target="_blank" rel="noopener">提交一个 issue</a> 并分配给相关同事。</p>
-</blockquote>
-<blockquote>
-<p>访问我们网站的最新动态，请<a href="https://github.com/mzlogin/chinese-copywriting-guidelines#" target="_blank" rel="noopener">点击这里</a>进行订阅！</p>
-</blockquote>
-<h3 id="简体中文使用直角引号"><a href="#简体中文使用直角引号" class="headerlink" title="简体中文使用直角引号"></a>简体中文使用直角引号</h3><p>用法：</p>
-<blockquote>
-<p>「老师，『有条不紊』的『紊』是什么意思？」</p>
-</blockquote>
-<p>对比用法：</p>
-<blockquote>
-<p>“老师，‘有条不紊’的‘紊’是什么意思？”</p>
-</blockquote>
-<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><p>| 仓库                                                         | 语言            |<br>| ———————————————————— | ————— |<br>| <a href="https://github.com/vinta/paranoid-auto-spacing" target="_blank" rel="noopener">vinta/paranoid-auto-spacing</a> | JavaScript      |<br>| <a href="https://github.com/huei90/pangu.node" target="_blank" rel="noopener">huei90/pangu.node</a>    | Node.js         |<br>| <a href="https://github.com/huacnlee/auto-correct" target="_blank" rel="noopener">huacnlee/auto-correct</a> | Ruby            |<br>| <a href="https://github.com/sparanoid/space-lover" target="_blank" rel="noopener">sparanoid/space-lover</a> | PHP (WordPress) |<br>| <a href="https://github.com/NauxLiu/auto-correct" target="_blank" rel="noopener">nauxliu/auto-correct</a> | PHP             |<br>| <a href="https://github.com/ricoa/copywriting-correct" target="_blank" rel="noopener">ricoa/copywriting-correct</a> | PHP             |<br>| <a href="https://github.com/hotoo/pangu.vim" target="_blank" rel="noopener">hotoo/pangu.vim</a>        | Vim             |<br>| <a href="https://github.com/sparanoid/grunt-auto-spacing" target="_blank" rel="noopener">sparanoid/grunt-auto-spacing</a> | Node.js (Grunt) |<br>| <a href="https://github.com/hjiang/scripts/blob/master/add-space-between-latin-and-cjk" target="_blank" rel="noopener">hjiang/scripts/add-space-between-latin-and-cjk</a> | Python          |</p>
-<h2 id="谁在这样做？"><a href="#谁在这样做？" class="headerlink" title="谁在这样做？"></a>谁在这样做？</h2><p>| 网站                                              | 文案 | UGC          |<br>| ————————————————- | —- | ———— |<br>| <a href="http://www.apple.com/cn/" target="_blank" rel="noopener">Apple 中国</a>            | Yes  | N/A          |<br>| <a href="http://www.apple.com/hk/" target="_blank" rel="noopener">Apple 香港</a>            | Yes  | N/A          |<br>| <a href="http://www.apple.com/tw/" target="_blank" rel="noopener">Apple 台湾</a>            | Yes  | N/A          |<br>| <a href="http://www.microsoft.com/zh-cn/" target="_blank" rel="noopener">Microsoft 中国</a> | Yes  | N/A          |<br>| <a href="http://www.microsoft.com/zh-hk/" target="_blank" rel="noopener">Microsoft 香港</a> | Yes  | N/A          |<br>| <a href="http://www.microsoft.com/zh-tw/" target="_blank" rel="noopener">Microsoft 台湾</a> | Yes  | N/A          |<br>| <a href="https://leancloud.cn/" target="_blank" rel="noopener">LeanCloud</a>                | Yes  | N/A          |<br>| <a href="https://www.zhihu.com/" target="_blank" rel="noopener">知乎</a>                    | Yes  | 部分用户达成 |<br>| <a href="https://www.v2ex.com/" target="_blank" rel="noopener">V2EX</a>                     | Yes  | Yes          |<br>| <a href="https://segmentfault.com/" target="_blank" rel="noopener">SegmentFault</a>         | Yes  | 部分用户达成 |<br>| <a href="http://apple4us.com/" target="_blank" rel="noopener">Apple4us</a>                  | Yes  | N/A          |<br>| <a href="https://www.wandoujia.com/" target="_blank" rel="noopener">豌豆荚</a>              | Yes  | N/A          |<br>| <a href="https://ruby-china.org/" target="_blank" rel="noopener">Ruby China</a>             | Yes  | 标题达成     |<br>| <a href="https://phphub.org/" target="_blank" rel="noopener">PHPHub</a>                     | Yes  | 标题达成     |<br>| <a href="http://sspai.com/" target="_blank" rel="noopener">少数派</a>                       | Yes  | N/A          |<br>| <a href="https://leetcode-cn.com/" target="_blank" rel="noopener">力扣 LeetCode</a>         | Yes  | Yes          |</p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
-<li><a href="http://grammar.about.com/od/punctuationandmechanics/a/Guidelines-For-Using-Capital-Letters.htm" target="_blank" rel="noopener">Guidelines for Using Capital Letters</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Letter_case" target="_blank" rel="noopener">Letter case - Wikipedia</a></li>
-<li><a href="http://www.oxforddictionaries.com/words/punctuation" target="_blank" rel="noopener">Punctuation - Oxford Dictionaries</a></li>
-<li><a href="https://owl.english.purdue.edu/owl/section/1/6/" target="_blank" rel="noopener">Punctuation - The Purdue OWL</a></li>
-<li><a href="http://www.wikihow.com/Use-English-Punctuation-Correctly" target="_blank" rel="noopener">How to Use English Punctuation Corrently - wikiHow</a></li>
-<li><a href="https://zh.opensuse.org/index.php?title=Help:格式" target="_blank" rel="noopener">格式 - openSUSE</a></li>
-<li><a href="http://zh.wikipedia.org/wiki/全形和半形" target="_blank" rel="noopener">全角和半角 - 维基百科</a></li>
-<li><a href="http://zh.wikipedia.org/wiki/引號" target="_blank" rel="noopener">引号 - 维基百科</a></li>
-<li><a href="http://zh.wikipedia.org/wiki/疑問驚嘆號" target="_blank" rel="noopener">疑问惊叹号 - 维基百科</a></li>
-</ul>
-</li>
-</ul>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/chinese-copywriting-guidelines/" data-id="ck6p51pst000ogn9evy28j32d" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/jpa-ddd/" data-id="ckatyxas20064na9est4s8p56" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -2221,6 +1918,44 @@ ga('send', 'pageview');
                     <li>
                         
                         <!-- <div class="item-thumbnail">
+                            <a href="/dubbo-migration/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
+                            <p class="item-title"><a href="/dubbo-migration/" class="title">平滑迁移 Dubbo 服务的思考</a></p>
+                            <p class="item-date"><time datetime="2020-05-30T15:17:38.000Z" itemprop="datePublished">2020-05-30</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/arthas-trace/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Arthas/">Arthas</a></p>
+                            <p class="item-title"><a href="/arthas-trace/" class="title">Arthas | 追踪线上耗时方法</a></p>
+                            <p class="item-date"><time datetime="2020-04-09T12:49:30.000Z" itemprop="datePublished">2020-04-09</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
                             <a href="/arthas-thread/" class="thumbnail">
     
     
@@ -2275,44 +2010,6 @@ ga('send', 'pageview');
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/edas-microservice/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
-                            <p class="item-title"><a href="/edas-microservice/" class="title">EDAS 微服务治理解密</a></p>
-                            <p class="item-date"><time datetime="2020-02-01T03:08:59.000Z" itemprop="datePublished">2020-02-01</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/dubbo-nacos-stability/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
-                            <p class="item-title"><a href="/dubbo-nacos-stability/" class="title">Dubbo 稳定性案例：Nacos 注册中心可用性问题复盘</a></p>
-                            <p class="item-date"><time datetime="2019-12-02T13:44:00.000Z" itemprop="datePublished">2019-12-02</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2322,7 +2019,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">26</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2331,7 +2028,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -2340,7 +2037,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Arthas/" style="font-size: 11px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 11px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+            <a href="/tags/Arthas/" style="font-size: 12px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 11px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
         </div>
     </div>
 
