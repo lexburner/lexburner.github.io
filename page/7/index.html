@@ -166,7 +166,7 @@ ga('send', 'pageview');
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                130
+                131
                 <span>文章</span>
             </div>
             <div class="article-info-block">
@@ -207,6 +207,215 @@ ga('send', 'pageview');
 
             
             <section id="main">
+    <article id="post-jpa-ddd" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/jpa-ddd/">JAVA 拾遗 --JPA 二三事</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/jpa-ddd/">
+            <time datetime="2018-02-14T14:18:51.000Z" itemprop="datePublished">2018-02-14</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>记得前几个月，spring4all 社区刚搞过一次技术话题讨论：如何对 JPA 或者 MyBatis 进行技术选型？传送门：<a href="http://www.spring4all.com/article/391" target="_blank" rel="noopener">http://www.spring4all.com/article/391</a> 由于平时工作接触较多的是 JPA，所以对其更熟悉一些，这一篇文章记录下个人在使用 JPA 时的一些小技巧。补充说明：JPA 是一个规范，本文所提到的 JPA，特指 spring-data-jpa。</p>
+<p>tips：<strong>阅读本文之前，建议了解值对象和实体这两个概念的区别。</strong></p>
+<h2 id="使用-Embedded-关联一对一的值对象"><a href="#使用-Embedded-关联一对一的值对象" class="headerlink" title="使用 @Embedded 关联一对一的值对象"></a>使用 @Embedded 关联一对一的值对象</h2><p>现实世界有很多一对一的关联关系，如人和身份证，订单和购买者… 而在 JPA 中表达一对一的关联，通常有三种方式。下面就以订单（Order）和购买者（CustomerVo）为例来介绍这三种方式，这里 CustomerVo 的 Vo 指的是 Value Object。</p>
+<p><strong>字段平铺</strong></p>
+<p>这可能是最简单的方式了，由于一对一关联的特殊性，完全可以在 Order 类中，使用几个字段记录 CustomerVo 的属性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Order</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* 其他字段 */</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* Customer 相关字段 */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> customerId;</span><br><span class="line">    <span class="keyword">private</span> String customerName;</span><br><span class="line">    <span class="keyword">private</span> String customerMobile;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际上大多数人就是这么做的，甚至都没有意识到这三个字段其实是属于同一个实体类。这种形式优点是很明显的：简单；缺点也是很明显的，这不符合 OO 的原则，且不利于统一检索和维护 CustomerVo 信息。</p>
+<p><strong>使用 @OneToOne</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Order</span> </span>&#123;</span><br><span class="line">    <span class="meta">@OneToOne</span></span><br><span class="line">    <span class="keyword">private</span> CustomerVo customerVo;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这么做的确更“面向对象”了，但代价似乎太大了，我们需要在数据库中额外维护一张 CustomerVo 表，关联越多，代码处理起来就越麻烦，得不偿失。</p>
+<p><strong>使用 @Embedded</strong></p>
+<p>那有没有能中和上述矛盾的方案呢？引出 @Embedded 这个注解。分析下初始需求，我们发现：CustomerVo 仅仅是作为一个值对象，并不是一个实体（这里牵扯到一些领域驱动设计的知识，值对象的特点是：作为实体对象的修饰，即 CustomerVo 这个整体是 Order 实体的一个属性；不变性，CustomerVo 一旦生成后便不可被修改，除非被整体替换）</p>
+<p>@Embedded 注解便是内嵌值对象最好的表达形式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Order</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Embedded</span></span><br><span class="line">    <span class="keyword">private</span> CustomerVo customerVo;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Embeddable</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomerVo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> customerId;</span><br><span class="line">    <span class="keyword">private</span> String customerName;</span><br><span class="line">    <span class="keyword">private</span> String customerMobile;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Order 拥有 @Entity 注解，表明其是 DDD 中的实体；而 CustomerVo 拥有 @Embeddable 注解，表明其是 DDD 中的值对象。这也是为什么我一直在表达这样一种观点：JPA 是对 DDD 很好的实践的。</p>
+<p>关于实体类的设计技巧，在曹祖鹏老师的 github 中可以看到很成熟的方案，可能会颠覆你对实体类设计的认知：<a href="https://github.com/JoeCao/qbike/。" target="_blank" rel="noopener">https://github.com/JoeCao/qbike/。</a></p>
+<h2 id="使用-Convert-关联一对多的值对象"><a href="#使用-Convert-关联一对多的值对象" class="headerlink" title="使用 @Convert 关联一对多的值对象"></a>使用 @Convert 关联一对多的值对象</h2><p>说到一对多，第一反应自然是使用 @OneToMany 注解。的确，我自己在项目中也主要使用这个注解来表达一对多的关联，但这里提供另一个思路，来关联一对多的值对象。</p>
+<p>以商品和商品组图来举例。</p>
+<p><strong>使用 @OneToMany</strong></p>
+<p>还是先想想我们原来会怎么做，保存一个 List<string>, 一种方式是这样</string></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Goods</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 以逗号分隔</span></span><br><span class="line">    <span class="keyword">private</span> String pictures;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用字符串存储，保存成 JSON 数组的形式，或者以逗号分隔都行。</p>
+<p>如果图片还要保存顺序，缩略图，那就必须要得使用一对多的关联了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Goods</span> </span>&#123;</span><br><span class="line">    <span class="meta">@OneToMany</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;GoodsPicture&gt; goodsPictures;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GoodsPicture</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String path;</span><br><span class="line">    <span class="keyword">private</span> Integer index;</span><br><span class="line">    <span class="keyword">private</span> String thumbnail;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们应当发现这样的劣势是什么，从设计的角度来看：我们并不想单独为 GoodsPicture 单独建立一张表，正如前面使用 String pictures 来表示 List<string> 一样，这违反了数据库设计的第一范式，但这对于使用者来说非常方便，<strong> 这是关系型数据库的表达能力有限而进行的妥协 </strong> 。关于这一点我曾和芋艿，曹大师都进行过讨论，并达成了一致的结论：数据库中可以保存 JSON，使用时在应用层进行转换。</string></p>
+<p><strong>使用 JSON 存储复杂对象</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Goods</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 图片 JSON</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> GoodsPicture&#125;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Column</span>(columnDefinition = <span class="string">"text"</span>)</span><br><span class="line">    <span class="keyword">private</span> String goodsPictures;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>使用 @Convert</strong></p>
+<p>上述的 String 使得在数据库层面少了一张表，使得 Goods 和 GoodsPictures 的关联更容易维护，但也有缺点：单纯的 String goodsPictures 对于使用者来说毫无含义，必须经过应用层的转换才可以使用。而 JPA 实际上也提供了自定义的转换器来帮我们自动完成这一转换工作，这便到了 @Convert 注解派上用场的时候了。</p>
+<p>1 声明 Convert 类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Goods</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Convert</span>(converter = PicturesWrapperConverter.class)</span><br><span class="line">    <span class="meta">@Column</span>(columnDefinition = <span class="string">"text"</span>)</span><br><span class="line">    <span class="keyword">private</span> PicturesWrapper picturesWrapper;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2 设置转换类  PicturesWrapperConverter</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PicturesWrapperConverter</span> <span class="keyword">implements</span> <span class="title">AttributeConverter</span>&lt;<span class="title">PicturesWrapper</span>, <span class="title">String</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">convertToDatabaseColumn</span><span class="params">(PicturesWrapper picturesWrapper)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> JSON.toJSONString(picturesWrapper);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> PicturesWrapper <span class="title">convertToEntityAttribute</span><span class="params">(String dbData)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> JSON.parseObject(dbData, PicturesWrapper.class);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>PicturesWrapperConverter 实现了 AttributeConverter&lt;X,Y&gt; 接口，它表明了如何将 PicturesWrapper 转换成 String 类型。这样的好处是显而易见的，对于数据库而言，它知道 String 类型如何保存；对于 Goods 的使用者而言，也只关心 PicturesWrapper 的格式，并不关心它如何持久化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PicturesWrapper</span> </span>&#123;</span><br><span class="line">    List&lt;GoodsPicture&gt; goodsPictures;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于 List 的保存，我暂时只找到了这种方式，借助一个 Wrapper 对象去存储一个 List 对象。没有找到直接持久化 List 的方式，如果可以实现这样的方式，会更好一些：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Goods</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Convert</span>(converter = SomeConverter.class)</span><br><span class="line">    <span class="meta">@Column</span>(columnDefinition = <span class="string">"text"</span>)</span><br><span class="line">    List&lt;GoodsPicture&gt; goodsPictures;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但 converter 无法获取到 List 的泛型参数 GoodsPicture，在实践中没找到方案来解决这一问题，只能退而求其次，使用一个 Wrapper 对象。</p>
+<p>与 OneToMany 对比，这样虽然使得维护变得灵活，但也丧失了查找的功能，我们将之保存成了 JSON 的形式，导致其不能作为查询条件被检索。</p>
+<h2 id="使用-orphanRemoval-来删除值对象"><a href="#使用-orphanRemoval-来删除值对象" class="headerlink" title="使用 orphanRemoval 来删除值对象"></a>使用 orphanRemoval 来删除值对象</h2><p>你可能有两个疑问：1 在实际项目中，不是不允许对数据进行物理删除吗？ 2 删除对象还不简单，JPA 自己不是有 delete 方法吗？</p>
+<p>关于第一点，需要区分场景，一般实体不允许做物理删除，而是用标记位做逻辑删除，也有部分不需要追溯历史的实体可以做物理删除，而值对象一般而言是可以做物理删除的，因为它只是属性而已。</p>
+<p>第二点就有意思了，delete 不就可以直接删除对象吗，为什么需要介绍 orphanRemoval  呢？</p>
+<p>以活动和礼包这个一对多的关系来举例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Activity</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@GeneratedValue</span>(strategy = GenerationType.IDENTITY)</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="meta">@OneToMany</span>(cascade = CascadeType.ALL, orphanRemoval = <span class="keyword">true</span>, mappedBy = <span class="string">"activity"</span>)</span><br><span class="line">    <span class="keyword">private</span> List&lt;GiftPackVo&gt; giftPackVos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GiftPackVo</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@GeneratedValue</span>(strategy = GenerationType.IDENTITY)</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="meta">@ManyToOne</span></span><br><span class="line">    <span class="meta">@JoinColumn</span>(name = <span class="string">"activity_id"</span>)</span><br><span class="line">    <span class="keyword">private</span> Activity activity;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是一个再简单不过的一对多关系了，唯一可能觉得陌生的便是这个属性了 orphanRemoval = true 。</p>
+<p>如果想要删除某个活动下的某个礼包，在没有 orphanRemoval 之前，你只能这么做：</p>
+<p>GiftPackVoRepository.delete(GiftPackVo);</p>
+<p>但其实这违反了 DDD 中的聚合根模式，GiftPackVo 只是一个值对象，其不具备实体的生命周期，删除一个礼包其实是一个不准确的做法，应当是删除某一个活动下的某一个礼包，对礼包的维护，应当由活动来负责。也就是说：应该借由 Activity 删除 GiftPackVo。使用 orphanRemoval 便可以完成这一操作，它表达这样的含义：内存中的某个 Activity 对象属于持久化态，对 List<giftpackvo> 的移除操作，将被直接认为是删除操作。</giftpackvo></p>
+<p>于是删除某个“name = 狗年新春大礼包”的礼包便可以这样完成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Activity activity = activityRepository.findOne(<span class="number">1</span>);</span><br><span class="line">activity.getGiftPackVos().removeIf(giftPackVo -&gt; <span class="string">"狗年新春大礼包"</span>.equals(giftPackVo.getName()));</span><br><span class="line">activityRepository.save(activity);</span><br></pre></td></tr></table></figure>
+<p>整个代码中只出现了 activityRepository 这一个仓储接口。</p>
+<h2 id="使用-Version-来实现乐观锁"><a href="#使用-Version-来实现乐观锁" class="headerlink" title="使用 @Version 来实现乐观锁"></a>使用 @Version 来实现乐观锁</h2><p>乐观锁一直是保证并发问题的一个有效途径，spring data jpa 对 @Version 进行了实现，我们给需要做乐观锁控制的对象加上一个 @Version 注解即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Entity</span><br><span class="line">public class Activity &#123;</span><br><span class="line">    @Version</span><br><span class="line">    private Integer version;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们在日常操作 Activity 对象时完全不需要理会 version 这个字段，当做它不存在即可，spring 借助这个字段来做乐观锁控制。每次创建对象时，version 默认值为 0，每次修改时，会检查对象获取时和保存时的 version 是否相差 1，转化为 sql 便是这样的语句：<strong>update activity set xx = xx,yy = yy,version= 10 where id = 1 and version = 9;</strong> 然后通过返回影响行数来判断是否更新成功。</p>
+<p><strong>测试乐观锁</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@Service</span><br><span class="line">public class ActivityService &#123;</span><br><span class="line">    @Autowired</span><br><span class="line">    ActivityRepos activityRepos;</span><br><span class="line"></span><br><span class="line">    public void test()&#123;</span><br><span class="line">        Activity one = activityRepos.findOne(1);</span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep(1000);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        one.setName(&quot;xx&quot;+ new Random().nextInt());</span><br><span class="line">        activityRepos.save(one);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当 test 方法被并发调用时，可能会存在并发问题。控制台打印出了更新信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">2018-02-14 23:44:25.373  INFO 16256 --- [nio-8080-exec-2] jdbc.sqltiming                           : update activity set name=&apos;xx-1863402614&apos;, version=1 </span><br><span class="line">where id=1 and version=0 </span><br><span class="line">2018-02-14 23:44:25.672  INFO 16256 --- [nio-8080-exec-4] jdbc.sqltiming                           : update activity set name=&apos;xx-1095770865&apos;, version=1 </span><br><span class="line">where id=1 and version=0 </span><br><span class="line">org.hibernate.StaleStateException: Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1</span><br></pre></td></tr></table></figure>
+<p>表面上看出现的是 StaleStateException，但实际捕获时，如果你想 catch 该异常，根本没有效果，通过 debug 信息，可以发现，真正的异常其实是 ObjectOptimisticLockingFailureException（以 Mysql 为例，实际可能和数据库方言有关，其他数据库未测试）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/test"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        activityService.test();</span><br><span class="line">    &#125;<span class="keyword">catch</span> (ObjectOptimisticLockingFailureException oolfe)&#123;</span><br><span class="line">        System.out.println(<span class="string">"捕获到乐观锁并发异常"</span>);</span><br><span class="line">        oolfe.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 Controller 层尝试捕获该异常，控制输出如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">捕获到乐观锁并发异常</span><br><span class="line">org.springframework.orm.ObjectOptimisticLockingFailureException: Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1; nested exception is org.hibernate.StaleStateException: Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1</span><br></pre></td></tr></table></figure>
+<p>成功捕获到了并发冲突，这一切都是 @Version 帮我们完成的，非常方便，不需要我们通过编码去实现乐观锁。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文简单聊了几个个人感触比较深的 JPA 小技巧，JPA 真的很强大，也很复杂，可能还有不少“隐藏”的特性等待我们挖掘。它不仅仅是一个技术框架，本文的所有内容即使不被使用，也无伤大雅，但在领域驱动设计等软件设计思想的指导下，它完全可以实践的更好。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/jpa-ddd/" data-id="ckbgqmd0d0065pw9ecgmf3dlc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-instrument" class="article article-type-post" itemscope="" itemprop="blogPost">
     <div class="article-inner">
         
@@ -336,7 +545,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/instrument/" data-id="ckatyxar8004kna9efkp5fzlj" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/instrument/" data-id="ckbgqmczq004jpw9e41n2jwj3" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -727,7 +936,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/chinese-copywriting-guidelines/" data-id="ckatyxapf000wna9eybec8zy0" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/chinese-copywriting-guidelines/" data-id="ckbgqmcyc000upw9e9mfdd9h4" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -951,7 +1160,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/gracefully-shutdown/" data-id="ckatyxar20045na9esvfhi0ie" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/gracefully-shutdown/" data-id="ckbgqmczk0047pw9e5zud7aad" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1223,7 +1432,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-registry/" data-id="ckatyxat9008nna9e3u2cp407" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-registry/" data-id="ckbgqmd16008rpw9e0nwy2x6g" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1437,7 +1646,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-protocol/" data-id="ckatyxat8008kna9ei0w0apx7" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-protocol/" data-id="ckbgqmd14008kpw9ekcoupjeb" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1603,7 +1812,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/motan-async/" data-id="ckatyxasa006vna9e6e5wm8kn" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/motan-async/" data-id="ckbgqmd0l006ypw9eb5werjqe" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1784,7 +1993,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-transport/" data-id="ckatyxatd008yna9eu0sd93h6" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-transport/" data-id="ckbgqmd190091pw9ei8sn2p4p" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1994,7 +2203,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-dynamic-proxy/" data-id="ckatyxat6008dna9ebtco8ih1" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-dynamic-proxy/" data-id="ckbgqmd13008gpw9els3ca8uk" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -2263,247 +2472,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-serialize-2/" data-id="ckatyxatc008una9eir9p7xcc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-NJIAS2017" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/NJIAS2017/">南京 IAS 架构师峰会观后感</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/NJIAS2017/">
-            <time datetime="2017-12-05T17:15:28.000Z" itemprop="datePublished">2017-12-06</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/技术杂谈/">技术杂谈</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p><img src="https://kirito.iocoder.cn/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20171204230556.gif" alt=""></p>
-<p>上周六，周日在南京举办了 IAS 架构师峰会，这么多人的技术分享会还是头一次参加，大佬云集，涨了不少姿势。特此一篇记录下印象深刻的几场分享。由于全凭记忆叙述，故只能以流水账的形式还原出现场的收获。</p>
-<h2 id="大型支付交易平台的演进过程"><a href="#大型支付交易平台的演进过程" class="headerlink" title="大型支付交易平台的演进过程"></a>大型支付交易平台的演进过程</h2><p><img src="https://kirito.iocoder.cn/%E9%99%88%E6%96%8C.jpg" alt="大型支付交易平台的演进过程">   </p>
-<blockquote>
-<p>陈斌，《架构即未来》译者，易宝支付 CTO。</p>
-</blockquote>
-<p>交易系统具备以下特点，交易量大，并发度高，业务敏感度高，响应速度容忍度低… 从而使得支付交易平台需要有以下的特点：</p>
-<ul>
-<li>高可用：7X24*365 随时可用</li>
-<li>高安全：需满足 PCI-DSS 要求</li>
-<li>高效率：每笔交易的成本要低</li>
-<li>高扩展：随业务的快速发展扩张</li>
-</ul>
-<p>从以上几点话题引申出了系统扩展的三个阶段</p>
-<p><strong>X 轴扩展 – 扩展机器 </strong></p>
-<p>也就是通俗意义中集群方案，横向扩展，通过添加多台机器负载均衡，从而扩展计算能力，这是最简单粗暴，也是最直接易用的方案。</p>
-<p><strong>Y 轴扩展 – 拆分服务 </strong></p>
-<p>当水平扩展遇到瓶颈后，可以进行服务的拆分，将系统按照业务模块进行拆分，从而可以选择性定制化地扩展特定的模块。如电商系统中拆分出订单模块，商品模块，会员模块，地址模块… 由于各个模块的职责不同，如订单模块在双 11 时压力很大，可以多部署一些订单模块，而其他压力不大的模块，则进行少量地部署。</p>
-<p><strong>Z 轴扩展 – 拆分数据 </strong></p>
-<p>服务拆分之后仍然无法解决与日俱增的数据量问题，于是引发了第三层扩展，数据的分片，我理解的 sharding，不仅仅存在于数据库，还包含了 redis，文件等。</p>
-<p>另外陈斌老师还聊了一个有意思的话题，系统可用性下降的原因根源是什么？最终他给出的答案是：人。系统升级后引发的事故 80% 是由于人的误操作或者触发了 bug 等人为因素导致的，是人就会手抖。借此引出了单元测试，持续集成，持续交付的重要性。健全这三者是保障系统可用性的最大利器。</p>
-<p>在技术晚宴，陈斌老师又分享了一些管理经验：<strong> 如何打造一支优秀的技术团队 </strong>。</p>
-<p>分析了构成团队的四要素：</p>
-<ul>
-<li>人员：健全职级体系，区别考评，挖掘潜能，及时鼓励，扁平化管理</li>
-<li>组织：面向产出，利于创新，敏捷小团队</li>
-<li>过程：聚集问题的根源，适当地使⽤用 ITIL，不断优化过程，自动化取代人工</li>
-<li>文化：鼓励分享，打破 devops 的边界，鼓励创新，树⽴立正确的技术负债观</li>
-</ul>
-<p>对于技术人员来说可能有点抽象，不过对于立志于要成为 CIO 的人肯定是大有裨益的，具体的理解可以参考《架构即未来》中的具体阐释。(ps：这里的架构并不是指技术架构，别问我为什么知道，问问我看了一半后在落灰的那本书，你什么都明白了)</p>
-<h2 id="轻量级微服务架构实践之路"><a href="#轻量级微服务架构实践之路" class="headerlink" title="轻量级微服务架构实践之路"></a>轻量级微服务架构实践之路</h2><p><img src="https://kirito.iocoder.cn/%E9%BB%84%E5%8B%87.jpg" alt="轻量级微服务架构实践之路"></p>
-<blockquote>
-<p>黄勇，特赞科技 CTO，《轻量级微服务架构》作者。</p>
-</blockquote>
-<p>非常具有人格魅力的一位演讲者，这可能是当天最有价值的一场分享。</p>
-<p>他首先提出了一个问题：什么是微服务？怎么理解这个 ‘微’ 字。随后他给出了自己的理解：微 = 合理。一知半解的微服务实践者可能盲目地拆分服务，微并不是代表颗粒越小越好，用领域驱动的术语来说，微服务模块需要用合适的限界上下文。黄勇老师给出了 4 个微服务拆分的技巧：</p>
-<ol>
-<li>业务先行</li>
-<li>由粗到细</li>
-<li>避免耦合</li>
-<li>持续改进</li>
-</ol>
-<p>非常实用且具有指导意义的 4 个思想，当你还在犹豫到底该如何拆分你的模块时，可以尝试先从单体式开始开发，业务发展会指引你拆分出合适模块，合适的粒度。当一个个业务被剥离出 Monolithic 这个怪物，持续重构，持续改进，这样可以指引你深入理解微服务。</p>
-<p>随后给出了轻量级微服务架构的技术选型，非常有参考价值。</p>
-<p><img src="https://kirito.iocoder.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7%E5%BE%AE%E6%9C%8D%E5%8A%A1.png" alt="轻量级微服务架构"></p>
-<p>其 PPT 总结了很多经验 list，可以在文末链接获取。</p>
-<p>顺带一提，没记错的话黄勇老师介绍到其公司的语言栈有：Java，Node，Go，在后面其他老师的分享中集中介绍多语言栈的意义。</p>
-<p>《轻量级微服务架构》上下册一起购买，赠送“技能图谱”，感兴趣的朋友可以阅读一下他的书籍。<a href="https://detail.tmall.com/item.htm?id=557228266081" target="_blank" rel="noopener">购买链接</a> ps: 谁让我白得了一本上册呢。</p>
-<h2 id="Cloud-Native-架构一致性问题及解决方案"><a href="#Cloud-Native-架构一致性问题及解决方案" class="headerlink" title="Cloud Native 架构一致性问题及解决方案"></a>Cloud Native 架构一致性问题及解决方案</h2><p><img src="https://kirito.iocoder.cn/%E4%B8%80%E8%87%B4%E6%80%A7.jpg" alt="Cloud Native 架构一致性问题及解决方案"></p>
-<blockquote>
-<p>王启军，华为架构部资深架构师。</p>
-</blockquote>
-<p>王启军老师则是带来了如今微服务架构最难的一个技术点的分享：分布式中的一致性问题。</p>
-<p>他的分享中涵盖了很多经典的分布式一致性问题的案例，如两军问题，拜占庭将军问题。引出了经典的 CAP 理论，NWR，Lease，Replicated state machine，Paxos 算法。由于时间问题，45 分钟根本无法详细地介绍他们的流程，实属可惜。</p>
-<p>一致性问题被分成了两类，包括：</p>
-<p><strong> 以数据为中心的一致性模型 </strong></p>
-<ul>
-<li>严格一致性</li>
-<li>顺序一致性</li>
-<li>因果一致性</li>
-<li>FIFO 一致性</li>
-<li>弱一致性</li>
-<li>释放一致性</li>
-<li>入口一致性</li>
-</ul>
-<p><strong> 以用户为中心的一致性模型 </strong></p>
-<ul>
-<li>单调读一致性</li>
-<li>单调写一致性</li>
-<li>写后读一致性</li>
-<li>读后写一致性</li>
-</ul>
-<p>这么多一致性分类太过于学术范，所以业界通常将他们简单的归为了三类：</p>
-<ul>
-<li>弱一致性</li>
-<li>最终一致性</li>
-<li>强一致性</li>
-</ul>
-<p>对于各个一致性模型的科普，以及一些事务模型和解决方案如 2PC，3PC，TCC 型事务，PPT 中都给出了简单的介绍。</p>
-<h2 id="技术架构演变全景图-从单体式到云原生"><a href="#技术架构演变全景图-从单体式到云原生" class="headerlink" title="技术架构演变全景图 - 从单体式到云原生"></a>技术架构演变全景图 - 从单体式到云原生</h2><p><img src="https://kirito.iocoder.cn/%E5%BC%A0%E4%BA%AE&amp;%E6%9B%B9%E7%A5%96%E9%B9%8F.jpg" alt="技术架构演变全景图 - 从单体式到云原生"></p>
-<blockquote>
-<p>千米网首席架构师，曹祖鹏（右） &amp; 当当网首席架构师，张亮（左）。知名开源框架 sharding-jdbc，elastic-job 作者。</p>
-</blockquote>
-<p>别开生面的面向对象技术分享。也是我本次大会最期待的一场分享，分享涵盖的知识点很多，深度和广度得兼，其分享中阐释了云原生，服务编排、治理、调度等 2017 年处于潮流前线的技术热点，通俗易懂地介绍了 service mesh 的概念，让观众在惊叹于互联网技术变化如此之快的同时，也带来了很多思考。</p>
-<p>分享中还对比了 Spring Cloud 和 Dubbo，当当网和千米网的团队都向 Dubbo 贡献过代码，Spring Cloud 又是国内话题最多的框架之一，台下观众对这样的话题自然是非常感兴趣。张亮老师着重介绍了 Spring Cloud 相关的组件，而曹祖鹏老师重点对比了其与 Dubbo 的区别。</p>
-<p>Spring Cloud 的出现同时宣告了 Cloud Native 云原生的首映，其为微服务的构架带来了一整套初具雏形的解决方案，包含了 Zuul 网关，Ribbon 客户端负载均衡，Eureka 服务注册与发现，Hystrix 熔断… 并且有强大的 Spring 终端组件支持，活跃的社区，丰富的文档。</p>
-<p>随后，介绍了云原生的技术全景图：</p>
-<p><img src="https://kirito.iocoder.cn/%E5%9B%BE%E7%89%871.png" alt="技术全景图"></p>
-<p>之后，简单解释了治理，编排，调度的概念后，并重点介绍了服务治理，编排相关的技术栈，老牌的 nginx，netflix ribbon，zuul 等产品，如今风靡的 k8s。尤其是介绍到 service mesh 这一比较新的概念时，分析了服务的治理，编排，调度从应用层转移到基础设施层的趋势，无疑是非常 exciting 的一件事。如 dubbo 等 rpc 框架的服务注册发现依赖于 zk，consul，而 spring cloud 的服务注册发现组件 eureka，以及其客户端路由组件 ribbon，服务端路由组件 zuul 等都是从应用层解决了服务的相关问题，而 service mesh 提供了一个新的思路，从基础设施层解决服务的相关问题：</p>
-<p><img src="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171206002523.png" alt="service mesh"></p>
-<p>如果 service mesh 的开源产品 Linkerd 和 Lstio 能够保持好的势头，配合 k8s 在运维层的大一统，很有可能带来架构的新格局。与此同时，java 一枝独秀的时代即将宣告终结，多语言的优势将会被 service mesh 发扬光大，使用 go 编写高并发的模块，使用 java 编写业务型模块，nodejs 打通前端模块，python 处理性能要求不高模块提升开发效率… 而不用关心多语言交互的问题，这都交由 service mesh 解决，这几乎是 2017 最潮流的知识点，没有之一。</p>
-<p>（引用一张 jimmysong 博客中的图片）</p>
-<p><img src="https://kirito.iocoder.cn/d21919a64f89d6c722688d8c1951fc58.jpg" alt="云原生演进"></p>
-<p>如上图所示，得知 Spring Cloud 竟然是 2015 兴起的技术栈时，可能还会有些吃惊，等到可以预见的 2018，运维层的技术栈开始向上侵蚀应用层的技术栈，不得不感叹互联网技术的日新月异。</p>
-<p>两位老师从可追溯的历史到可预见的未来展现了云原生架构的演进史，着实给小白们好好科普了一番。</p>
-<h2 id="番外"><a href="#番外" class="headerlink" title="番外"></a>番外</h2><p>此次技术分享会收获颇丰，不枉我早上 5 点起来赶高铁去南京了。但还是得吐槽一句，这门票真 tl 的贵啊，就不能便宜点吗！！！[微笑 face]</p>
-<p>其他分享者的话题也很有意思，不仅包含了微服务方向，还囊括了人工智能，机器学习，运维，领导力，架构演变，游戏架构等多个方向，笔者选择性的介绍了一些，全部的 PPT 可以在下方的链接中获得。</p>
-<p><a href="https://pan.baidu.com/s/1eSbCu5c" target="_blank" rel="noopener">https://pan.baidu.com/s/1eSbCu5c</a></p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/NJIAS2017/" data-id="ckatyxaol0002na9e1vwhre58" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-serialize-2/" data-id="ckbgqmd18008ypw9em1wktmz9" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -2580,7 +2549,7 @@ ga('send', 'pageview');
 
 
     <nav id="page-nav">
-        <a class="extend prev" rel="prev" href="/page/6/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/8/">下一页 &raquo;</a>
+        <a class="extend prev" rel="prev" href="/page/6/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/8/">下一页 &raquo;</a>
     </nav>
 </section>
             
@@ -2592,6 +2561,25 @@ ga('send', 'pageview');
         <h3 class="widget-title">最新文章</h3>
         <div class="widget">
             <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/dubbo-app-pubsub/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
+                            <p class="item-title"><a href="/dubbo-app-pubsub/" class="title">Dubbo 迈向云原生的里程碑 | 应用级服务发现</a></p>
+                            <p class="item-date"><time datetime="2020-06-15T16:33:50.000Z" itemprop="datePublished">2020-06-16</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -2669,25 +2657,6 @@ ga('send', 'pageview');
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/arthas-redefine/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Arthas/">Arthas</a></p>
-                            <p class="item-title"><a href="/arthas-redefine/" class="title">Arthas | 热更新线上代码</a></p>
-                            <p class="item-date"><time datetime="2020-02-09T07:42:45.000Z" itemprop="datePublished">2020-02-09</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2697,7 +2666,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">26</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2706,7 +2675,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -2715,7 +2684,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Arthas/" style="font-size: 12px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 11px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+            <a href="/tags/Arthas/" style="font-size: 12px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
         </div>
     </div>
 
