@@ -166,7 +166,7 @@ ga('send', 'pageview');
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                131
+                132
                 <span>文章</span>
             </div>
             <div class="article-info-block">
@@ -207,6 +207,150 @@ ga('send', 'pageview');
 
             
             <section id="main">
+    <article id="post-spring-session-4" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/spring-session-4/">从 Spring-Session 源码看 Session 机制的实现细节</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/spring-session-4/">
+            <time datetime="2018-04-17T12:57:43.000Z" itemprop="datePublished">2018-04-17</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring-Session/">Spring Session</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring/">Spring</a>, <a class="tag-link" href="/tags/Spring-Session/">Spring Session</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p></p><p>去年我曾经写过几篇和 Spring Session 相关的文章，从一个未接触过 Spring Session 的初学者视角介绍了 Spring Session 如何上手，如果你未接触过 Spring Session，推荐先阅读下「从零开始学习 Spring Session」系列（<a href="https://www.cnkirito.moe/categories/Spring-Session/）" target="_blank" rel="noopener">https://www.cnkirito.moe/categories/Spring-Session/）</a> Spring Session 主要解决了分布式场景下 Session 的共享问题，本文将从 Spring Session 的源码出发，来讨论一些 Session 设计的细节。<br></p>
+            <p class="article-more-link">
+                <a href="/spring-session-4/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/spring-session-4/" data-id="ckebecf4m00apbh9ez0tjpen8" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-jwt-learn-2" class="article article-type-post" itemscope="" itemprop="blogPost">
     <div class="article-inner">
         
@@ -279,7 +423,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/jwt-learn-2/" data-id="ckbgqmd0f006apw9ev1f2fxil" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/jwt-learn-2/" data-id="ckebecf2h006abh9elddac0al" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -428,7 +572,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/jwt-learn/" data-id="ckbgqmd0g006dpw9efvp2gpm2" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/jwt-learn/" data-id="ckebecf2j006fbh9e0zg1i6y2" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -572,7 +716,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/kong-jwt/" data-id="ckbgqmd0i006lpw9e00drej1w" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/kong-jwt/" data-id="ckebecf2m006ibh9eauz7cdsm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -717,7 +861,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/kong-loadbalance/" data-id="ckbgqmd0j006qpw9eo9uf8gla" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/kong-loadbalance/" data-id="ckebecf2o006qbh9ez1s8jz5l" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -861,7 +1005,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/java-how-to-learn/" data-id="ckbgqmczv004vpw9e6zvn0qln" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/java-how-to-learn/" data-id="ckebecf1u0050bh9ex9sbkcvi" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1005,7 +1149,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/docker-network-bridge/" data-id="ckbgqmcyn001tpw9ej4s8yu7e" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/docker-network-bridge/" data-id="ckebecf06001xbh9ef1oy4aqu" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1152,7 +1296,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/java-eqaulsandhashcode/" data-id="ckbgqmczx0053pw9eci5bofc3" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/java-eqaulsandhashcode/" data-id="ckebecf1r004vbh9e3590022o" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1296,7 +1440,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/future-and-promise/" data-id="ckbgqmczh0040pw9e5qjtmzj7" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/future-and-promise/" data-id="ckebecf1a0045bh9ey0a3ro13" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1464,307 +1608,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/thinking-1/" data-id="ckbgqmd2200bepw9e3izk0lvu" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-rpc-cluster" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/rpc-cluster/">深入理解 RPC 之集群篇</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/rpc-cluster/">
-            <time datetime="2018-02-27T14:18:51.000Z" itemprop="datePublished">2018-02-27</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/RPC/">RPC</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/RPC/">RPC</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>上一篇文章分析了服务的注册与发现，这一篇文章着重分析下 RPC 框架都会用到的集群的相关知识。</p>
-<p>集群 (Cluster) 本身并不具备太多知识点，在分布式系统中，集群一般涵盖了负载均衡（LoadBalance），高可用（HA），路由（Route）等等概念，每个 RPC 框架对集群支持的程度不同，本文着重分析前两者 – 负载均衡和高可用。</p>
-<h2 id="集群概述"><a href="#集群概述" class="headerlink" title="集群概述"></a>集群概述</h2><p>在此之前的《深入理解 RPC》系列文章，对 RPC 的分析着重还是放在服务之间的点对点调用，而分布式服务中每个服务必然不止一个实例，不同服务的实例和相同服务的多个实例构成了一个错综复杂的分布式环境，在服务治理框架中正是借助了 Cluster 这一层来应对这一难题。还是以博主较为熟悉的 motan 这个框架来介绍 Cluster 的作用。</p>
-<p>先来看看 Cluster 的顶层接口：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Spi</span>(scope = Scope.PROTOTYPE)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Cluster</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Caller</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setUrl</span><span class="params">(URL url)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setLoadBalance</span><span class="params">(LoadBalance&lt;T&gt; loadBalance)</span></span>;<span class="comment">//&lt;1&gt;</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setHaStrategy</span><span class="params">(HaStrategy&lt;T&gt; haStrategy)</span></span>;<span class="comment">//&lt;2&gt;</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onRefresh</span><span class="params">(List&lt;Referer&lt;T&gt;&gt; referers)</span></span>;</span><br><span class="line">    List&lt;Referer&lt;T&gt;&gt; getReferers();</span><br><span class="line">    <span class="function">LoadBalance&lt;T&gt; <span class="title">getLoadBalance</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在概述中，我们只关心 Cluster 接口中的两个方法，它揭示了 Cluster 在服务治理中的地位</p>
-<p><1> 指定负载均衡算法</1></p>
-<p><2> 指定高可用策略（容错机制） </2></p>
-<p><img src="https://kirito.iocoder.cn/TIM%E5%9B%BE%E7%89%8720180227151838.png" alt="https://kirito.iocoder.cn/TIM%E5%9B%BE%E7%89%8720180227151838.png"></p>
-<p>我们需要对所谓的负载均衡策略和高可用策略有一定的理解，才能够搞清楚集群是如何运作的。</p>
-<h2 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h2><p>说到负载均衡，大多数人可能立刻联想到了 nginx。负载均衡可以分为服务端负载均衡和客户端负载均衡，而服务端负载均衡又按照实现方式的不同可以划分为软件负载均衡和硬件负载均衡，nginx 便是典型的软件负载均衡。而我们今天所要介绍的 RPC 中的负载均衡则主要是客户端负载均衡。如何区分也很简单，用笔者自己的话来描述下</p>
-<blockquote>
-<p>在 RPC 调用中，客户端持有所有的服务端节点引用，自行通过负载均衡算法选择一个节点进行访问，这便是客户端负载均衡。</p>
-</blockquote>
-<p>客户端如何获取到所有的服务端节点引用呢？一般是通过配置的方式，或者是从上一篇文章介绍的服务注册与发现组件中获取。</p>
-<h2 id="负载均衡接口分析"><a href="#负载均衡接口分析" class="headerlink" title="负载均衡接口分析"></a>负载均衡接口分析</h2><p>motan 中的负载均衡抽象：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Spi</span>(scope = Scope.PROTOTYPE)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">LoadBalance</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onRefresh</span><span class="params">(List&lt;Referer&lt;T&gt;&gt; referers)</span></span>;</span><br><span class="line">    <span class="function">Referer&lt;T&gt; <span class="title">select</span><span class="params">(Request request)</span></span>;<span class="comment">//&lt;1&gt;</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">selectToHolder</span><span class="params">(Request request, List&lt;Referer&lt;T&gt;&gt; refersHolder)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setWeightString</span><span class="params">(String weightString)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>ribbon 中的负载均衡抽象：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IRule</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(Object key)</span></span>;<span class="comment">//&lt;1&gt;</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setLoadBalancer</span><span class="params">(ILoadBalancer lb)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ILoadBalancer <span class="title">getLoadBalancer</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><1> 对比下两个 RPC 框架对负载均衡的抽象可以发现，其实负载均衡策略干的事很简单，就是根据请求返回一个服务节点。在 motan 中对服务端的点对点调用抽象成了 Referer，而在 ribbon 中则是 Server。</1></p>
-<h2 id="几种负载均衡算法"><a href="#几种负载均衡算法" class="headerlink" title="几种负载均衡算法"></a>几种负载均衡算法</h2><p>负载均衡算法有几种经典实现，已经是老生常谈了，总结后主要有如下几个：</p>
-<ol>
-<li>轮询（Round Robin）</li>
-<li>加权轮询（Weight Round Robin）</li>
-<li>随机（Random）</li>
-<li>加权随机（Weight Random）</li>
-<li>源地址哈希（Hash）</li>
-<li>一致性哈希（ConsistentHash）</li>
-<li>最小连接数（Least Connections）</li>
-<li>低并发优先（Active Weight）</li>
-</ol>
-<p>每个框架支持的实现都不太一样，如 <strong>ribbon 支持的负载均衡策略 </strong>：</p>
-<table>
-<thead>
-<tr>
-<th>策略名</th>
-<th>策略描述</th>
-<th>实现说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>BestAvailableRule</td>
-<td>选择一个最小并发请求的 server</td>
-<td>逐个考察 Server，如果 Server 被 tripped 了，则忽略，在选择其中 ActiveRequestsCount 最小的 server</td>
-</tr>
-<tr>
-<td>AvailabilityFilteringRule</td>
-<td>过滤掉那些因为一直连接失败的被标记为 circuit tripped 的后端 server，并过滤掉那些高并发的的后端 server（active connections 超过配置的阈值）</td>
-<td>使用一个 AvailabilityPredicate 来包含过滤 server 的逻辑，其实就就是检查 status 里记录的各个 server 的运行状态</td>
-</tr>
-<tr>
-<td>WeightedResponseTimeRule</td>
-<td>根据响应时间分配一个 weight，响应时间越长，weight 越小，被选中的可能性越低。</td>
-<td>一个后台线程定期的从 status 里面读取评价响应时间，为每个 server 计算一个 weight。Weight 的计算也比较简单 responsetime 减去每个 server 自己平均的 responsetime 是 server 的权重。当刚开始运行，没有形成 status 时，使用 RoundRobinRule 策略选择 server。</td>
-</tr>
-<tr>
-<td>RetryRule</td>
-<td>对选定的负载均衡策略机上重试机制。</td>
-<td>在一个配置时间段内当选择 server 不成功，则一直尝试使用 subRule 的方式选择一个可用的 server</td>
-</tr>
-<tr>
-<td>RoundRobinRule</td>
-<td>roundRobin 方式轮询选择 server</td>
-<td>轮询 index，选择 index 对应位置的 server</td>
-</tr>
-<tr>
-<td>RandomRule</td>
-<td>随机选择一个 server</td>
-<td>在 index 上随机，选择 index 对应位置的 server</td>
-</tr>
-<tr>
-<td>ZoneAvoidanceRule</td>
-<td>复合判断 server 所在区域的性能和 server 的可用性选择 server</td>
-<td>使用 ZoneAvoidancePredicate 和 AvailabilityPredicate 来判断是否选择某个 server，前一个判断判定一个 zone 的运行性能是否可用，剔除不可用的 zone（的所有 server），AvailabilityPredicate 用于过滤掉连接数过多的 Server。</td>
-</tr>
-</tbody>
-</table>
-<p><strong>motan 支持的负载均衡策略 </strong>：</p>
-<table>
-<thead>
-<tr>
-<th>策略名</th>
-<th>策略描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Random</td>
-<td>随机选择一个 server</td>
-</tr>
-<tr>
-<td>RoundRobin</td>
-<td>roundRobin 方式轮询选择 server</td>
-</tr>
-<tr>
-<td>ConsistentHash</td>
-<td>一致性 Hash，保证同一源地址的请求落到同一个服务端，能够应对服务端机器的动态上下线 (实际上并没有严格做到一致性 hash，motan 的实现只能满足粘滞 hash，只保证 server 节点变更周期内相同对请求落在相同的 server 上，比较适合用在二级缓存场景)</td>
-</tr>
-<tr>
-<td>LocalFirst</td>
-<td>当 server 列表中包含本地暴露的可用服务时，优先使用此服务。否则使用低并发优先 ActiveWeight 负载均衡策略</td>
-</tr>
-<tr>
-<td>ActiveWeight</td>
-<td>并发量越小的 server，优先级越高</td>
-</tr>
-<tr>
-<td>ConfigurableWeight</td>
-<td>加权随机</td>
-</tr>
-</tbody>
-</table>
-<p>算法很多，有些负载均衡算法的实现复杂度也很高，请教了一些朋友，发现用的最多还是 RoundRobin，Random 这两种。可能和他们实现起来很简单有关，很多运用到 RPC 框架的项目也都是保持了默认配置。</p>
-<p>而这两种经典复杂均衡算法实现起来是很简单的，在此给出网上的简易实现，方便大家更直观的了解。</p>
-<p><strong> 服务列表 </strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IpMap</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// 待路由的 Ip 列表，Key 代表 Ip，Value 代表该 Ip 的权重</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> HashMap&lt;String, Integer&gt; serverWeightMap = </span><br><span class="line">            <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line">    <span class="keyword">static</span></span><br><span class="line">    &#123;</span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.100"</span>, <span class="number">1</span>);</span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.101"</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="comment">// 权重为 4</span></span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.102"</span>, <span class="number">4</span>);</span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.103"</span>, <span class="number">1</span>);</span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.104"</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="comment">// 权重为 3</span></span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.105"</span>, <span class="number">3</span>);</span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.106"</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="comment">// 权重为 2</span></span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.107"</span>, <span class="number">2</span>);</span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.108"</span>, <span class="number">1</span>);</span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.109"</span>, <span class="number">1</span>);</span><br><span class="line">        serverWeightMap.put(<span class="string">"192.168.1.110"</span>, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong> 轮询（Round Robin）</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RoundRobin</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Integer pos = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 重建一个 Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line">        Map&lt;String, Integer&gt; serverMap = </span><br><span class="line">                <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line">        serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 取得 Ip 地址 List</span></span><br><span class="line">        Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line">        ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">        keyList.addAll(keySet);</span><br><span class="line">        </span><br><span class="line">        String server = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">synchronized</span> (pos)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (pos &gt; keySet.size())</span><br><span class="line">                pos = <span class="number">0</span>;</span><br><span class="line">            server = keyList.get(pos);</span><br><span class="line">            pos ++;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> server;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong> 随机（Random）</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Random</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 重建一个 Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line">        Map&lt;String, Integer&gt; serverMap = </span><br><span class="line">                <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line">        serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 取得 Ip 地址 List</span></span><br><span class="line">        Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line">        ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">        keyList.addAll(keySet);</span><br><span class="line">        </span><br><span class="line">        java.util.Random random = <span class="keyword">new</span> java.util.Random();</span><br><span class="line">        <span class="keyword">int</span> randomPos = random.nextInt(keyList.size());</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> keyList.get(randomPos);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="高可用策略"><a href="#高可用策略" class="headerlink" title="高可用策略"></a>高可用策略</h2><p>高可用（HA）策略一般也被称作容错机制，分布式系统中出错是常态，但服务却不能停止响应，6 个 9 一直是各个公司的努力方向。当一次请求失败之后，是重试呢？还是继续请求其他机器？抑或是记录下这次失败？下面是集群中的几种常用高可用策略：</p>
-<ol>
-<li><p>失效转移（failover）</p>
-<p>当出现失败，重试其他服务器，通常用于读操作等幂等行为，重试会带来更长延迟。该高可用策略会受到负载均衡算法的限制，比如失效转移强调需要重试其他机器，但一致性 Hash 这类负载均衡算法便会与其存在冲突（个人认为一致性 Hash 在 RPC 的客户端负载均衡中意义不是很大）</p>
-</li>
-<li><p>快速失败（failfast）</p>
-<p>只发起一次调用，失败立即报错，通常用于非幂等性的写操作。</p>
-<p>如果在 motan，dubbo 等配置中设置了重试次数 &gt;0，又配置了该高可用策略，则重试效果也不会生效，由此可见集群中的各个配置可能是会相互影响的。</p>
-</li>
-<li><p>失效安全（failsafe）</p>
-<p>出现异常时忽略，但记录这一次失败，存入日志中。</p>
-</li>
-<li><p>失效自动恢复（failback）</p>
-<p>后台记录失败请求，定时重发。通常用于消息通知操作。</p>
-</li>
-<li><p>并行调用（forking）</p>
-<p>只要一个成功即返回，通常用于实时性要求较高的读操作。需要牺牲一定的服务资源。</p>
-</li>
-<li><p>广播（broadcast）</p>
-<p>广播调用，所有提供逐个调用，任意一台报错则报错。通常用于更新提供方本地状态，速度慢，任意一台报错则报错。</p>
-</li>
-</ol>
-<h2 id="高可用接口分析"><a href="#高可用接口分析" class="headerlink" title="高可用接口分析"></a>高可用接口分析</h2><p>以 motan 的 HaStrategy 为例来介绍高可用在集群中的实现细节</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Spi</span>(scope = Scope.PROTOTYPE)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">HaStrategy</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setUrl</span><span class="params">(URL url)</span></span>;</span><br><span class="line">    <span class="function">Response <span class="title">call</span><span class="params">(Request request, LoadBalance&lt;T&gt; loadBalance)</span></span>;<span class="comment">//&lt;1&gt;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><1> 如我之前所述，高可用策略依赖于请求和一个特定的负载均衡算法，返回一个响应。</1></p>
-<p><strong> 快速失败（failfast）</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpiMeta</span>(name = <span class="string">"failfast"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FailfastHaStrategy</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractHaStrategy</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Response <span class="title">call</span><span class="params">(Request request, LoadBalance&lt;T&gt; loadBalance)</span> </span>&#123;</span><br><span class="line">        Referer&lt;T&gt; refer = loadBalance.select(request);</span><br><span class="line">        <span class="keyword">return</span> refer.call(request);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>motan 实现了两个高可用策略，其一便是 failfast，非常简单，只进行一次负载均衡节点的选取，接着发起点对点的调用。</p>
-<p><strong> 失效转移（failover）</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpiMeta</span>(name = <span class="string">"failover"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FailoverHaStrategy</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractHaStrategy</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> ThreadLocal&lt;List&lt;Referer&lt;T&gt;&gt;&gt; referersHolder = <span class="keyword">new</span> ThreadLocal&lt;List&lt;Referer&lt;T&gt;&gt;&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">protected</span> java.util.List&lt;com.weibo.api.motan.rpc.Referer&lt;T&gt;&gt; initialValue() &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> ArrayList&lt;Referer&lt;T&gt;&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Response <span class="title">call</span><span class="params">(Request request, LoadBalance&lt;T&gt; loadBalance)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        List&lt;Referer&lt;T&gt;&gt; referers = selectReferers(request, loadBalance);</span><br><span class="line">        <span class="keyword">if</span> (referers.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> MotanServiceException(String.format(<span class="string">"FailoverHaStrategy No referers for request:%s, loadbalance:%s"</span>, request,</span><br><span class="line">                    loadBalance));</span><br><span class="line">        &#125;</span><br><span class="line">        URL refUrl = referers.get(<span class="number">0</span>).getUrl();</span><br><span class="line">        <span class="comment">// 先使用 method 的配置</span></span><br><span class="line">        <span class="keyword">int</span> tryCount =</span><br><span class="line">                refUrl.getMethodParameter(request.getMethodName(), request.getParamtersDesc(), URLParamType.retries.getName(),</span><br><span class="line">                        URLParamType.retries.getIntValue());</span><br><span class="line">        <span class="comment">// 如果有问题，则设置为不重试</span></span><br><span class="line">        <span class="keyword">if</span> (tryCount &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            tryCount = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">	   <span class="comment">// 只有 failover 策略才会有重试</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= tryCount; i++) &#123;</span><br><span class="line">            Referer&lt;T&gt; refer = referers.get(i % referers.size());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                request.setRetries(i);</span><br><span class="line">                <span class="keyword">return</span> refer.call(request);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (RuntimeException e) &#123;</span><br><span class="line">                <span class="comment">// 对于业务异常，直接抛出</span></span><br><span class="line">                <span class="keyword">if</span> (ExceptionUtil.isBizException(e)) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> e;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (i &gt;= tryCount) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> e;</span><br><span class="line">                &#125;</span><br><span class="line">                LoggerUtil.warn(String.format(<span class="string">"FailoverHaStrategy Call false for request:%s error=%s"</span>, request, e.getMessage()));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> MotanFrameworkException(<span class="string">"FailoverHaStrategy.call should not come here!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> List&lt;Referer&lt;T&gt;&gt; selectReferers(Request request, LoadBalance&lt;T&gt; loadBalance) &#123;</span><br><span class="line">        List&lt;Referer&lt;T&gt;&gt; referers = referersHolder.get();</span><br><span class="line">        referers.clear();</span><br><span class="line">        loadBalance.selectToHolder(request, referers);</span><br><span class="line">        <span class="keyword">return</span> referers;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其二的高可用策略是 failover，实现相对复杂一些，容忍在重试次数内的失败调用。这也是 motan 提供的默认策略。</p>
-<h2 id="其他集群相关的知识点"><a href="#其他集群相关的知识点" class="headerlink" title="其他集群相关的知识点"></a>其他集群相关的知识点</h2><p>在 Dubbo 中也有 cluster 这一分层，除了 loadbalance 和 ha 这两层之外还包含了路由（Router）用来做读写分离，应用隔离；合并结果（Merger）用来做响应结果的分组聚合。</p>
-<p>在 SpringCloud-Netflix 中整合了 Zuul 来做服务端的负载均衡</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
-<li><a href="http://www.cnblogs.com/xrq730/p/5154340.html" target="_blank" rel="noopener">几种简单的负载均衡算法及其 Java 代码实现</a></li>
-<li><a href="https://www.cnblogs.com/xiexj/p/7071939.html" target="_blank" rel="noopener">搜索业务和技术介绍及容错机制</a></li>
-</ol>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/rpc-cluster/" data-id="ckbgqmd12008dpw9es6vtxcb8" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/thinking-1/" data-id="ckebecf5100bgbh9e80vfw0kg" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1857,6 +1701,25 @@ ga('send', 'pageview');
                     <li>
                         
                         <!-- <div class="item-thumbnail">
+                            <a href="/arthas-lambda-redefine/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Arthas/">Arthas</a></p>
+                            <p class="item-title"><a href="/arthas-lambda-redefine/" class="title">lambda 表达式导致 Arthas 无法 redefine 的问题</a></p>
+                            <p class="item-date"><time datetime="2020-08-26T13:04:52.000Z" itemprop="datePublished">2020-08-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
                             <a href="/dubbo-app-pubsub/" class="thumbnail">
     
     
@@ -1930,25 +1793,6 @@ ga('send', 'pageview');
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/middleware-hire/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
-                            <p class="item-title"><a href="/middleware-hire/" class="title">阿里巴巴中间件技术部春招开始啦</a></p>
-                            <p class="item-date"><time datetime="2020-02-10T10:34:44.000Z" itemprop="datePublished">2020-02-10</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -1958,7 +1802,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -1967,7 +1811,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -1976,7 +1820,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Arthas/" style="font-size: 12px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+            <a href="/tags/Arthas/" style="font-size: 13px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
         </div>
     </div>
 
