@@ -166,11 +166,11 @@ ga('send', 'pageview');
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                132
+                134
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                57
+                58
                 <span>标签</span>
             </div>
         </div>
@@ -207,6 +207,318 @@ ga('send', 'pageview');
 
             
             <section id="main">
+    <article id="post-future-and-promise" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/future-and-promise/">JAVA 拾遗 --Future 模式与 Promise 模式</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/future-and-promise/">
+            <time datetime="2018-03-28T10:22:14.000Z" itemprop="datePublished">2018-03-28</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p></p><p>写这篇文章的动机，是缘起于微信闲聊群的一场讨论，粗略整理下，主要涉及了以下几个具体的问题：<br></p>
+            <p class="article-more-link">
+                <a href="/future-and-promise/#more">查看更多</a>
+            </p>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/future-and-promise/" data-id="ckf41gevd003xfr9e9xw57b4n" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-thinking-1" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/thinking-1/">离开魔都后的一点感想</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/thinking-1/">
+            <time datetime="2018-03-19T14:18:51.000Z" itemprop="datePublished">2018-03-19</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/技术杂谈/">技术杂谈</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>看过我公众号简介的朋友会发现，我公众号的定位是分享一些个人的技术博客和杂谈，这其中的杂谈不仅包括了技术杂谈，也包含了自己的一些感悟。所以借此澄清，这是一篇杂文！总结了我在魔都这一年半不同角度的感悟。</p>
+<h2 id="技术沙龙"><a href="#技术沙龙" class="headerlink" title="技术沙龙"></a>技术沙龙</h2><p>我前几天刚发过一个朋友圈：魔都得天独厚的优势便是各种技术沙龙，其中不乏有很多是免费的。我在魔都这些日子，参加了大概 13-15 场技术沙龙。参加这种技术分享会的动机很单纯，大家都是去学习互联网最前沿的技术的，但隐性的好处也很多：</p>
+<ol>
+<li>你可以认识很多跟你同样有积极性的同行们，试想一下，这样一批放弃了周末休息时间，不睡懒觉，不打游戏，不陪妹子的人，必然是对技术充满了热情的一帮人。我有不少微信好友是在技术分享会上添加的。</li>
+<li>有些朋友身处传统行业，平时的业务接触不到高并发，JVM 这些看似高大上的名词，但是技术沙龙带来了这样的可能性，让你没吃过猪肉，至少见过猪跑。映像比较深刻的是“美团点评技术团队”定期举办的技术沙龙，参加了两次，分享的很棒，而且大多数情况下，只需要在 APP 中报名即可参加。</li>
+<li>同行间的技术方案分享。很有可能你正在负责公司某块业务的技术选型，而沙龙正好涉及了相关的内容，可以静静聆听下别人的解决方案，通过别人落地的架构，来指导自己的选型。这一点我也有例子真实的例子与之对应，大概是 17 年初，有一场 daocloud 举办的 springcloud 社区沙龙，由 DD 带来的 zuul 源码解读以及案例分享，记忆尤为深刻，当时我所在的公司也恰巧在对 zuul 进行改造，而 DD 分享的主题对于我的工作非常有帮助。</li>
+</ol>
+<p>参加过不少沙龙，也踩过不少坑，我甚至误打误撞参加过两次“偏运维的技术分享”，权当作经历吧，总结参加的技术沙龙后，有以下几点建议：选择人数少的沙龙，越大的技术分享，讲师越想着受众面广，从而扼不住主题，会出现很多干货之外的内容；多举手提问，事实上我参加过的沙龙，我都会主动举手提问，并且是主持人刚问完“有没有观众有问题的”，我就立马举手，这时候大家都比较内敛，自己的命中率才会高。为什么要举手提问？期待讲师一句话把你的疑惑讲清楚是不现实的，但是这创造了你们后续交流的话题。分享结束后，主动加讲师的微信，进入深度交流阶段，这时候你便多了一个大牛好友。大牛好友用来干嘛？也不必指望为你解答疑惑，如果可以当然最好，偶尔看看他们的朋友圈都在分享些什么，至少能掌握最前沿的信息；有网红讲师参加的技术分享，尤其需要做好功课，刷几遍讲师最近的博客，提问时简明扼要的说出你提前准备了几天的问题，带上讲师出版的书索要签名，这样做的效果谁用谁知道。</p>
+<p>[活动行] 是一款非常不错的 APP，再算上各个公众号（如 IT 大咖说），各种技术峰会（这个门票可能会有点贵，自费用户比较吃力），周末完全可以很充实。</p>
+<h2 id="博客-公众号与知识付费"><a href="#博客-公众号与知识付费" class="headerlink" title="博客 / 公众号与知识付费"></a>博客 / 公众号与知识付费</h2><p>这几个词放到一起说，作为一个博主 &amp; 公众号作者，我接触到很多这个圈子的人，他们聪明，努力，乐于分享，而且往往是各自领域最厉害的那群人。以公众号粉丝数来评价，有近 10w 粉丝的大 V（在某个专业领域拥有这么多粉丝我认为已经算的上是 V 了，不同于鸡汤文作者受众广）；以努力程度来评价，深夜 1-2 点还在桌边伏案的博主不在少数，就拿「芋艿源码」的博主「芋艿」来说吧，加班回家的地铁上笔记本一摊开就是一顿源码分析，年纪也老大不小了，保持着如同刚开始工作一般的热情，丝毫不给我们这些年轻人一口喘气的机会；还有一些博主，身处互联网公司，加班严重，依旧会挤出时间分享一线互联网的工作经验。身处这样一群人中间，时刻让你体会到什么叫「比你优秀的人还比你努力」。</p>
+<p>介绍完我的所见，来聊聊我的所想，写作到底有什么意义。</p>
+<p>一个直观的体验是成就感，当你的文章确切地帮助到了别人，获得了阅读量与赞，便会由衷地受到鼓舞，从而激发自己的创作欲。你会迸发出下一个目标，去帮助更多的人。收获自然也是会有的，靠公众号和博客积攒出的粉丝，成了那些知名博主的第一批付费粉丝。知名大牛在「极客时间」，「得到」等付费平台活跃，不愿意抛头露面的博主也有「知识星球」这样的平台和自己付费粉丝互动。知识付费是件好事，粉丝出了物力，赞助了自己认同的博主，交过钱后自然会更加用心；博主也有了挣钱的动力，一定会有激励作用，同时也会更加对自己的粉丝负责。未来这一块必然会越来越普及。</p>
+<p>二来还是回到人脉、眼界这样的话题，当有了博主这个身份，被拉进一些社区原创作者交流群便成了顺利成章的事，在大佬云集的群里默默地看着讨论的话题，会提升自己的眼界。收到猎头的邮件也成了日常的习惯，来自 github 的招聘启事和来自博客的猎头，HR 流量可能会让你不堪其扰，那种感到愉悦的骚扰。「先生，游泳健身了解一下」下一份工作机会，可能就是来自于你的博客 &amp; 公众号，毕竟这两个东西比你的简历更会说话。</p>
+<h2 id="魔都的生活"><a href="#魔都的生活" class="headerlink" title="魔都的生活"></a>魔都的生活</h2><p>大四上初到上海寻找实习机会，直到今年 3 月份离开，算是有一年半了，对魔都这个陌生的城市也算了解了不少。年轻时不来魔都闯闯，后面迟早会有这个念头的，不如趁早体验下：高峰时期人潮拥挤的 1 号线，与日常乘坐的 9 号线末站，这都是魔都。跟同事去过人山人海的城隍庙，并没有太多惊喜，反倒是无意间逛到的思南路，仿佛给人穿越到欧洲小镇的错觉，惊喜。高楼林立下的田子坊，和远在厦门的鼓浪屿竟让我难以区分，这种相似只是那种一瞬间的感觉，最后留在脑海中的回忆还是在上海这种繁华的大都市竟然还有这样的净土。无论是浦东图书馆静谧的翻书声还是 MAO Livehouse 震颤到心脏的摇滚声，和同事们在外滩留下的足迹，联洋广场令人流连忘返的捞王… 魔都从不缺少物质享受。</p>
+<p>说回魔都的工作，特指 IT 行业，也有了自己的一点认知，都说一线城市是北上广深，但说到底，上海的 IT/ 互联网并不是原以为的那样发达。美团点评，唯品会，饿了么，携程说大也大，还有金融领域的陆金所，蚂蚁金服（刚搬来）但总体来说肯定比不上北京，但这丝毫阻挡不了江浙沪有志青年的热情，即使有房价这个负面光环加护。</p>
+<p>上海的压力来自于各个方面：孤独，消费，房价，工作额度，任意一个方面都会击垮一个人，再加上互联网的人来人往，都让我感受到上海这座现代化都市背后的冷漠。初到南京，HR 问我为什么不在上海发展，我竟答不出来。是啊，普遍都认为上海机遇更多，但是，机遇的定义没人说的清，正如离开上海的原因说不清一般。值得留恋的景，值得留恋的机遇，值得留恋的人，都带不走。</p>
+<h2 id="应届生的境遇"><a href="#应届生的境遇" class="headerlink" title="应届生的境遇"></a>应届生的境遇</h2><p>到了 18 年的春招，似乎已经挂不上「应届生」的名号了。时隔毕业半年多，同学们的工作也都稳定了下来，校园时光真的只存在于念想中了。曾经的自己仰仗着自己的应届光环，如今办理入职后才发现，自己已经是往届生了，有什么区别？心境真的会变，我自觉认识到再也不能仗着应届那么有恃无恐了。现在的职场上必须得拿能力和那些工作比你早几年接触工作的人去竞争了，应聘时再也不会说：我是来贵司学习的。公司需要为之创造价值的人，说来不怕矫情，以上这种念头最近在脑海中酝酿了很久。</p>
+<p>与应届生相对的是那些工作十几年的老人，为什么放到这儿一起说，主要是在魔都见识到了一些年纪较大的应聘者，简历空有十年工作经验，实际怕是十个一年经验。不知道是否只有我会出现这种情况，刚毕业时知识储备不足每天下班坚持看书，看文章都不觉累，反倒是工作半年后有了熟练度了，这股学习的激情会下降。这点我尤其佩服我原来的老大和朋友圈一些年纪较大的程序员，几年如一日地对技术痴迷。警惕成为一个重复工作的码农。</p>
+<h2 id="学习技巧"><a href="#学习技巧" class="headerlink" title="学习技巧"></a>学习技巧</h2><p>编程技术如何精进？我秉承自上而下的顺序来谈下自己的思考，仅供各位参考。</p>
+<ol>
+<li>业务驱动型。编程是为了解决问题，如果你的程序应用于生产中，这是最锻炼编码水平，无论是导入一个超大的 excel 这种小 case，还是抗住千万级别并发的电商系统，伴随着业务问题而进行的 coding 最有意义。反观我交接的最后一个星期，干不了什么活，都是些零碎琐事，完全提炼不出什么精髓用于写作。如果你的系统日活只有几百，考虑百万级别的并发压力实属是杞人忧天，还是优先把项目上线了更为实在。</li>
+<li>源码阅读型。talk is cheap，show me the code。大多数设计精良的框架源码都伴随着巧妙的设计和丰富的注释，这些是学习编码技巧的绝佳途径，代码不会说谎，他就放在那儿，关键就在于你愿不愿点进去，去分析他。很多人拒绝阅读源码，自认为水平不够，其实实在是妄自菲薄，很多优秀的源码（如 spring）不仅可以提升你对框架工作原理的理解，也有助于自身编码的规范。</li>
+<li>文档型。很多技术博客文章来源于这项技术的官方文档，很多小白喜欢阅读博客，殊不知博客已经是别人二次消化后的产物，存在不少理解的缺失。再者，较为前沿的技术，第一手博客还没出产，只有官方文档，比如 springboot 2.0，其实官方文档已经很细致入微地介绍了各种特性，完全没必要等待别人的翻译。学习一门新的技术，我通常的做法是：博客了解其大概用途，紧接着直接阅读官方文档，同时也避免了版本滞后性等问题。</li>
+<li>博客型、搜索引擎型。这两者放到最下面，并不是排斥它们，也不是在否认 google 和 Stack Overflow 的伟大。而是想提出这样的观点：博客和搜索引擎适用于解决问题，从宏观的了解一项技术。博客和搜索引擎并不向你保证其准确性，他只告诉这样做或许有效，这样做或许正确。但是好处也很明显，经过了博主的梳理，可以更好的帮助读者建立知识体系，毕竟我自己也是写博客的 [微笑 face]，但不要忘了有空去翻一翻 2，3 两点</li>
+</ol>
+<p>夜深了，先写这么多吧。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/thinking-1/" data-id="ckf41gf1800bnfr9eaw1n0tb9" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-rpc-cluster" class="article article-type-post" itemscope="" itemprop="blogPost">
     <div class="article-inner">
         
@@ -431,7 +743,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-cluster/" data-id="ckebecf3j008fbh9espv629hy" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-cluster/" data-id="ckf41geyn008bfr9eitsnox1b" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -640,7 +952,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/jpa-ddd/" data-id="ckebecf2f0067bh9eyj6i7lmz" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/jpa-ddd/" data-id="ckf41gex60066fr9erv2k63hl" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -845,7 +1157,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/instrument/" data-id="ckebecf1n004kbh9erpgo7zir" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/instrument/" data-id="ckf41gevl004cfr9e3drby3id" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1236,7 +1548,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/chinese-copywriting-guidelines/" data-id="ckebecezf000ubh9e97sdum38" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/chinese-copywriting-guidelines/" data-id="ckf41gesr000wfr9etupxyau0" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1460,7 +1772,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/gracefully-shutdown/" data-id="ckebecf1c0048bh9eitb8ynld" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/gracefully-shutdown/" data-id="ckf41gevf0040fr9e6nq65gfw" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1732,7 +2044,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-registry/" data-id="ckebecf3q008tbh9e21llrko6" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-registry/" data-id="ckf41gez4008rfr9eymmxjpr2" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1946,7 +2258,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-protocol/" data-id="ckebecf3n008mbh9e5cz19flb" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-protocol/" data-id="ckf41geyw008jfr9ea9tpuo6k" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -2112,398 +2424,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/motan-async/" data-id="ckebecf2v007bbh9es39pzhrz" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-rpc-transport" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/rpc-transport/">深入理解 RPC 之传输篇</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/rpc-transport/">
-            <time datetime="2017-12-22T12:16:28.000Z" itemprop="datePublished">2017-12-22</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/RPC/">RPC</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/RPC/">RPC</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>RPC 被称为“远程过程调用”，表明了一个方法调用会跨越网络，跨越进程，所以传输层是不可或缺的。一说到网络传输，一堆名词就蹦了出来：TCP、UDP、HTTP，同步 or 异步，阻塞 or 非阻塞，长连接 or 短连接…</p>
-<p>本文介绍两种传输层的实现：使用 Socket 和使用 Netty。前者实现的是阻塞式的通信，是一个较为简单的传输层实现方式，借此可以了解传输层的工作原理及工作内容；后者是非阻塞式的，在一般的 RPC 场景下，性能会表现的很好，所以被很多开源 RPC 框架作为传输层的实现方式。</p>
-<h2 id="RpcRequest-和-RpcResponse"><a href="#RpcRequest-和-RpcResponse" class="headerlink" title="RpcRequest 和 RpcResponse"></a>RpcRequest 和 RpcResponse</h2><p>传输层传输的主要对象其实就是这两个类，它们封装了请求 id，方法名，方法参数，返回值，异常等 RPC 调用中需要的一系列信息。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcRequest</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String interfaceName;</span><br><span class="line">    <span class="keyword">private</span> String methodName;</span><br><span class="line">    <span class="keyword">private</span> String parametersDesc;</span><br><span class="line">    <span class="keyword">private</span> Object[] arguments;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, String&gt; attachments;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> retries = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> requestId;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">byte</span> rpcProtocolVersion;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcResponse</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Object value;</span><br><span class="line">    <span class="keyword">private</span> Exception exception;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> requestId;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> processTime;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> timeout;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, String&gt; attachments;<span class="comment">// rpc 协议版本兼容时可以回传一些额外的信息</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">byte</span> rpcProtocolVersion;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Socket-传输"><a href="#Socket-传输" class="headerlink" title="Socket 传输"></a>Socket 传输</h2><p>Server</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcServerSocketProvider</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 序列化层实现参考之前的章节</span></span><br><span class="line">        Serialization serialization = <span class="keyword">new</span> Hessian2Serialization();</span><br><span class="line"></span><br><span class="line">        ServerSocket serverSocket = <span class="keyword">new</span> ServerSocket(<span class="number">8088</span>);</span><br><span class="line">        ExecutorService executorService = Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">final</span> Socket socket = serverSocket.accept();</span><br><span class="line">            executorService.execute(() -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    InputStream is = socket.getInputStream();</span><br><span class="line">                    OutputStream os = socket.getOutputStream();</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        DataInputStream dis = <span class="keyword">new</span> DataInputStream(is);</span><br><span class="line">                        <span class="keyword">int</span> length = dis.readInt();</span><br><span class="line">                        <span class="keyword">byte</span>[] requestBody = <span class="keyword">new</span> <span class="keyword">byte</span>[length];</span><br><span class="line">                        dis.read(requestBody);</span><br><span class="line">                        <span class="comment">// 反序列化 requestBody =&gt; RpcRequest</span></span><br><span class="line">                        RpcRequest rpcRequest = serialization.deserialize(requestBody, RpcRequest.class);</span><br><span class="line">                        <span class="comment">// 反射调用生成响应 并组装成 rpcResponse</span></span><br><span class="line">                        RpcResponse rpcResponse = invoke(rpcRequest);</span><br><span class="line">                        <span class="comment">// 序列化 rpcResponse =&gt; responseBody</span></span><br><span class="line">                        <span class="keyword">byte</span>[] responseBody = serialization.serialize(rpcResponse);</span><br><span class="line">                        DataOutputStream dos = <span class="keyword">new</span> DataOutputStream(os);</span><br><span class="line">                        dos.writeInt(responseBody.length);</span><br><span class="line">                        dos.write(responseBody);</span><br><span class="line">                        dos.flush();</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        is.close();</span><br><span class="line">                        os.close();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        socket.close();</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RpcResponse <span class="title">invoke</span><span class="params">(RpcRequest rpcRequest)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 模拟反射调用</span></span><br><span class="line">        RpcResponse rpcResponse = <span class="keyword">new</span> RpcResponse();</span><br><span class="line">        rpcResponse.setRequestId(rpcRequest.getRequestId());</span><br><span class="line">        <span class="comment">//... some operation</span></span><br><span class="line">        <span class="keyword">return</span> rpcResponse;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Client</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcSocketConsumer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 序列化层实现参考之前的章节</span></span><br><span class="line">        Serialization serialization = <span class="keyword">new</span> Hessian2Serialization();</span><br><span class="line"></span><br><span class="line">        Socket socket = <span class="keyword">new</span> Socket(<span class="string">"localhost"</span>, <span class="number">8088</span>);</span><br><span class="line">        InputStream is = socket.getInputStream();</span><br><span class="line">        OutputStream os = socket.getOutputStream();</span><br><span class="line">        <span class="comment">// 封装 rpc 请求</span></span><br><span class="line">        RpcRequest rpcRequest = <span class="keyword">new</span> RpcRequest();</span><br><span class="line">        rpcRequest.setRequestId(<span class="number">12345L</span>);</span><br><span class="line">        <span class="comment">// 序列化 rpcRequest =&gt; requestBody</span></span><br><span class="line">        <span class="keyword">byte</span>[] requestBody = serialization.serialize(rpcRequest);</span><br><span class="line">        DataOutputStream dos = <span class="keyword">new</span> DataOutputStream(os);</span><br><span class="line">        dos.writeInt(requestBody.length);</span><br><span class="line">        dos.write(requestBody);</span><br><span class="line">        dos.flush();</span><br><span class="line">        DataInputStream dis = <span class="keyword">new</span> DataInputStream(is);</span><br><span class="line">        <span class="keyword">int</span> length = dis.readInt();</span><br><span class="line">        <span class="keyword">byte</span>[] responseBody = <span class="keyword">new</span> <span class="keyword">byte</span>[length];</span><br><span class="line">        dis.read(responseBody);</span><br><span class="line">        <span class="comment">// 反序列化 responseBody =&gt; rpcResponse</span></span><br><span class="line">        RpcResponse rpcResponse = serialization.deserialize(responseBody, RpcResponse.class);</span><br><span class="line">        is.close();</span><br><span class="line">        os.close();</span><br><span class="line">        socket.close();</span><br><span class="line"></span><br><span class="line">        System.out.println(rpcResponse.getRequestId());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>dis.readInt()和 dis.read(byte[] bytes) 决定了使用 Socket 通信是一种阻塞式的操作，报文头 + 报文体的传输格式是一种常见的格式，除此之外，使用特殊的字符如空行也可以划分出报文结构。在示例中，我们使用一个 int（4 字节）来传递报问题的长度，之后传递报文体，在复杂的通信协议中，报文头除了存储报文体还会额外存储一些信息，包括协议名称，版本，心跳标识等。</p>
-<p>在网络传输中，只有字节能够被识别，所以我们在开头引入了 Serialization 接口，负责完成 RpcRequest 和 RpcResponse 与字节的相互转换。（Serialization 的工作机制可以参考之前的文章）</p>
-<p>使用 Socket 通信可以发现：每次 Server 处理 Client 请求都会从线程池中取出一个线程来处理请求，这样的开销对于一般的 Rpc 调用是不能够接受的，而 Netty 一类的网络框架便派上了用场。</p>
-<h2 id="Netty-传输"><a href="#Netty-传输" class="headerlink" title="Netty 传输"></a>Netty 传输</h2><p>Server 和 ServerHandler</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcNettyProvider</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">        EventLoopGroup bossGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">        EventLoopGroup workerGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 创建并初始化 Netty 服务端 Bootstrap 对象</span></span><br><span class="line">            ServerBootstrap bootstrap = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">            bootstrap.group(bossGroup, workerGroup);</span><br><span class="line">            bootstrap.channel(NioServerSocketChannel.class);</span><br><span class="line">            bootstrap.childHandler(<span class="keyword">new</span> ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel channel)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                    ChannelPipeline pipeline = channel.pipeline();</span><br><span class="line">                    pipeline.addLast(<span class="keyword">new</span> RpcDecoder(RpcRequest.class)); <span class="comment">// 解码 RPC 请求</span></span><br><span class="line">                    pipeline.addLast(<span class="keyword">new</span> RpcEncoder(RpcResponse.class)); <span class="comment">// 编码 RPC 响应</span></span><br><span class="line">                    pipeline.addLast(<span class="keyword">new</span> RpcServerHandler()); <span class="comment">// 处理 RPC 请求</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            bootstrap.option(ChannelOption.SO_BACKLOG, <span class="number">1024</span>);</span><br><span class="line">            bootstrap.childOption(ChannelOption.SO_KEEPALIVE, <span class="keyword">true</span>);</span><br><span class="line">            ChannelFuture future = bootstrap.bind(<span class="string">"127.0.0.1"</span>, <span class="number">8087</span>).sync();</span><br><span class="line">            <span class="comment">// 关闭 RPC 服务器</span></span><br><span class="line">            future.channel().closeFuture().sync();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            workerGroup.shutdownGracefully();</span><br><span class="line">            bossGroup.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcServerHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">RpcRequest</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(<span class="keyword">final</span> ChannelHandlerContext ctx, RpcRequest request)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        RpcResponse rpcResponse = invoke(request);</span><br><span class="line">        <span class="comment">// 写入 RPC 响应对象并自动关闭连接</span></span><br><span class="line">        ctx.writeAndFlush(rpcResponse).addListener(ChannelFutureListener.CLOSE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> RpcResponse <span class="title">invoke</span><span class="params">(RpcRequest rpcRequest)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 模拟反射调用</span></span><br><span class="line">        RpcResponse rpcResponse = <span class="keyword">new</span> RpcResponse();</span><br><span class="line">        rpcResponse.setRequestId(rpcRequest.getRequestId());</span><br><span class="line">        <span class="comment">//... some operation</span></span><br><span class="line">        <span class="keyword">return</span> rpcResponse;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> </span>&#123;</span><br><span class="line">        cause.printStackTrace();</span><br><span class="line">        ctx.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Client 和 ClientHandler</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcNettyConsumer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        EventLoopGroup group = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 创建并初始化 Netty 客户端 Bootstrap 对象</span></span><br><span class="line">            Bootstrap bootstrap = <span class="keyword">new</span> Bootstrap();</span><br><span class="line">            bootstrap.group(group);</span><br><span class="line">            bootstrap.channel(NioSocketChannel.class);</span><br><span class="line">            bootstrap.handler(<span class="keyword">new</span> ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel channel)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                    ChannelPipeline pipeline = channel.pipeline();</span><br><span class="line">                    pipeline.addLast(<span class="keyword">new</span> RpcEncoder(RpcRequest.class)); <span class="comment">// 编码 RPC 请求</span></span><br><span class="line">                    pipeline.addLast(<span class="keyword">new</span> RpcDecoder(RpcResponse.class)); <span class="comment">// 解码 RPC 响应</span></span><br><span class="line">                    pipeline.addLast(<span class="keyword">new</span> RpcClientHandler()); <span class="comment">// 处理 RPC 响应</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            bootstrap.option(ChannelOption.TCP_NODELAY, <span class="keyword">true</span>);</span><br><span class="line">            <span class="comment">// 连接 RPC 服务器</span></span><br><span class="line">            ChannelFuture future = bootstrap.connect(<span class="string">"127.0.0.1"</span>, <span class="number">8087</span>).sync();</span><br><span class="line">            <span class="comment">// 写入 RPC 请求数据并关闭连接</span></span><br><span class="line">            Channel channel = future.channel();</span><br><span class="line"></span><br><span class="line">            RpcRequest rpcRequest = <span class="keyword">new</span> RpcRequest();</span><br><span class="line">            rpcRequest.setRequestId(<span class="number">123456L</span>);</span><br><span class="line"></span><br><span class="line">            channel.writeAndFlush(rpcRequest).sync();</span><br><span class="line">            channel.closeFuture().sync();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            group.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcClientHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">RpcResponse</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, RpcResponse response)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(response.getRequestId());<span class="comment">// 处理响应</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        cause.printStackTrace();</span><br><span class="line">        ctx.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>使用 Netty 的好处是很方便地实现了非阻塞式的调用，关键部分都给出了注释。上述的代码虽然很多，并且和我们熟悉的 Socket 通信代码大相径庭，但大多数都是 Netty 的模板代码，启动服务器，配置编解码器等。真正的 RPC 封装操作大多集中在 Handler 的 channelRead 方法（负责读取）以及 channel.writeAndFlush 方法（负责写入）中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcEncoder</span> <span class="keyword">extends</span> <span class="title">MessageToByteEncoder</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Class&lt;?&gt; genericClass;</span><br><span class="line"></span><br><span class="line">    Serialization serialization = <span class="keyword">new</span> Hessian2Serialization();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RpcEncoder</span><span class="params">(Class&lt;?&gt; genericClass)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.genericClass = genericClass;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">encode</span><span class="params">(ChannelHandlerContext ctx, Object in, ByteBuf out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (genericClass.isInstance(in)) &#123;</span><br><span class="line">            <span class="keyword">byte</span>[] data = serialization.serialize(in);</span><br><span class="line">            out.writeInt(data.length);</span><br><span class="line">            out.writeBytes(data);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcDecoder</span> <span class="keyword">extends</span> <span class="title">ByteToMessageDecoder</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Class&lt;?&gt; genericClass;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RpcDecoder</span><span class="params">(Class&lt;?&gt; genericClass)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.genericClass = genericClass;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Serialization serialization = <span class="keyword">new</span> Hessian2Serialization();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">decode</span><span class="params">(ChannelHandlerContext ctx, ByteBuf in, List&lt;Object&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (in.readableBytes() &lt; <span class="number">4</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        in.markReaderIndex();</span><br><span class="line">        <span class="keyword">int</span> dataLength = in.readInt();</span><br><span class="line">        <span class="keyword">if</span> (in.readableBytes() &lt; dataLength) &#123;</span><br><span class="line">            in.resetReaderIndex();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[dataLength];</span><br><span class="line">        in.readBytes(data);</span><br><span class="line">        out.add(serialization.deserialize(data, genericClass));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>使用 Netty 不能保证返回的字节大小，所以需要加上 in.readableBytes()&lt; 4 这样的判断，以及 in.markReaderIndex() 这样的标记，用来区分报文头和报文体。</p>
-<h2 id="同步与异步-阻塞与非阻塞"><a href="#同步与异步-阻塞与非阻塞" class="headerlink" title="同步与异步 阻塞与非阻塞"></a>同步与异步 阻塞与非阻塞</h2><p>这两组传输特性经常被拿来做对比，很多文章声称 Socket 是同步阻塞的，Netty 是异步非阻塞，其实有点问题。</p>
-<p>其实这两组并没有必然的联系，同步阻塞，同步非阻塞，异步非阻塞都有可能（同步非阻塞倒是没见过），而大多数使用 Netty 实现的 RPC 调用其实应当是同步非阻塞的（当然一般 RPC 也支持异步非阻塞）。</p>
-<blockquote>
-<p>同步和异步关注的是 <strong> 消息通信机制 </strong><br>所谓同步，就是在发出一个 <em> 调用 </em> 时，在没有得到结果之前，该 <em> 调用 </em> 就不返回。但是一旦调用返回，就得到返回值了。<br>换句话说，就是由 <em> 调用者 </em> 主动等待这个 <em> 调用 </em> 的结果。</p>
-<p>而异步则是相反，调用在发出之后，这个调用就直接返回了，所以没有返回结果。换句话说，当一个异步过程调用发出后，调用者不会立刻得到结果。而是在 <em> 调用 </em> 发出后，<em> 被调用者 </em> 通过状态、通知来通知调用者，或通过回调函数处理这个调用。</p>
-</blockquote>
-<p>如果需要 RPC 调用返回一个结果，该结果立刻被使用，那意味着着大概率需要是一个同步调用。如果不关心其返回值，则可以将其做成异步接口，以提升效率。</p>
-<blockquote>
-<p>阻塞和非阻塞关注的是 <strong> 程序在等待调用结果（消息，返回值）时的状态 </strong>.</p>
-<p>阻塞调用是指调用结果返回之前，当前线程会被挂起。调用线程只有在得到结果之后才会返回。<br>非阻塞调用指在不能立刻得到结果之前，该调用不会阻塞当前线程。</p>
-</blockquote>
-<p>在上述的例子中可以看出 Socket 通信我们显示声明了一个包含 10 个线程的线程池，每次请求到来，分配一个线程，等待客户端传递报文头和报文体的行为都会阻塞该线程，可以见得其整体是阻塞的。而在 Netty 通信的例子中，每次请求并没有分配一个线程，而是通过 Handler 的方式处理请求（联想 NIO 中 Selector），是非阻塞的。</p>
-<p>使用同步非阻塞方式的通信机制并不一定同步阻塞式的通信强，所谓没有最好，只有更合适，而一般的同步非阻塞 通信适用于 1. 网络连接数量多 2. 每个连接的 io 不频繁 的场景，与 RPC 调用较为契合。而成熟的 RPC 框架的传输层和协议层通常也会提供多种选择，以应对不同的场景。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文堆砌了一些代码，而难点主要是对 Socket 的理解，和 Netty 框架的掌握。Netty 的学习有一定的门槛，但实际需要掌握的知识点其实并不多（仅仅针对 RPC 框架所涉及的知识点而言），学习 Netty ，个人推荐《Netty IN ACTION》以及 <a href="https://waylau.gitbooks.io/netty-4-user-guide/Getting%20Started/Before%20Getting%20Started.html" target="_blank" rel="noopener">https://waylau.gitbooks.io/netty-4-user-guide/Getting%20Started/Before%20Getting%20Started.html</a> 该网站的例子。</p>
-<p>参考资料：</p>
-<p><a href="http://javatar.iteye.com/blog/1123915" target="_blank" rel="noopener">http://javatar.iteye.com/blog/1123915</a> – 梁飞</p>
-<p><a href="https://gitee.com/huangyong/rpc" target="_blank" rel="noopener">https://gitee.com/huangyong/rpc</a> – 黄勇</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/rpc-transport/" data-id="ckebecf3v0094bh9ec8zwsbnc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-rpc-dynamic-proxy" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/rpc-dynamic-proxy/">深入理解 RPC 之动态代理篇</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/rpc-dynamic-proxy/">
-            <time datetime="2017-12-15T12:16:28.000Z" itemprop="datePublished">2017-12-15</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/RPC/">RPC</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/RPC/">RPC</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>提到 JAVA 中的动态代理，大多数人都不会对 JDK 动态代理感到陌生，Proxy，InvocationHandler 等类都是 J2SE 中的基础概念。动态代理发生在服务调用方 / 客户端，RPC 框架需要解决的一个问题是：像调用本地接口一样调用远程的接口。于是如何组装数据报文，经过网络传输发送至服务提供方，屏蔽远程接口调用的细节，便是动态代理需要做的工作了。RPC 框架中的代理层往往是单独的一层，以方便替换代理方式（如 motan 代理层位于 <code>com.weibo.api.motan.proxy</code> ，dubbo 代理层位于 <code>com.alibaba.dubbo.common.bytecode</code> ）。</p>
-<p>实现动态代理的方案有下列几种：</p>
-<ul>
-<li>jdk 动态代理</li>
-<li>cglib 动态代理</li>
-<li>javassist 动态代理</li>
-<li>ASM 字节码</li>
-<li>javassist 字节码</li>
-</ul>
-<p>其中 cglib 底层实现依赖于 ASM，javassist 自成一派。由于 ASM 和 javassist 需要程序员直接操作字节码，导致使用门槛相对较高，但实际上他们的应用是非常广泛的，如 Hibernate 底层使用了 javassist（默认）和 cglib，Spring 使用了 cglib 和 jdk 动态代理。</p>
-<p>RPC 框架无论选择何种代理技术，所需要完成的任务其实是固定的，不外乎‘整理报文’，‘确认网络位置’，‘序列化’,’网络传输’，‘反序列化’，’返回结果’…</p>
-<h2 id="技术选型的影响因素"><a href="#技术选型的影响因素" class="headerlink" title="技术选型的影响因素"></a>技术选型的影响因素</h2><p>框架中使用何种动态代理技术，影响因素也不少。</p>
-<h3 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h3><p>从早期 dubbo 的作者梁飞的博客 <a href="http://javatar.iteye.com/blog/814426" target="_blank" rel="noopener">http://javatar.iteye.com/blog/814426</a> 中可以得知 dubbo 选择使用 javassist 作为动态代理方案主要考虑的因素是 <strong> 性能 </strong>。</p>
-<p>从其博客的测试结果来看 javassist &gt; cglib &gt; jdk 。但实际上他的测试过程稍微有点瑕疵：在 cglib 和 jdk 代理对象调用时，走的是反射调用，而在 javassist 生成的代理对象调用时，走的是直接调用（可以先阅读下梁飞大大的博客）。这意味着 cglib 和 jdk 慢的原因并不是由动态代理产生的，而是由反射调用产生的（顺带一提，很多人认为 jdk 动态代理的原理是反射，其实它的底层也是使用的字节码技术）。而最终我的测试结果，结论如下： javassist ≈ cglib &gt; jdk 。javassist 和 cglib 的效率基本持平 ，而他们两者的执行效率基本可以达到 jdk 动态代理的 2 倍（这取决于测试的机器以及 jdk 的版本，jdk1.8 相较于 jdk1.6 动态代理技术有了质的提升，所以并不是传闻中的那样：cglib 比 jdk 快 10 倍）。文末会给出我的测试代码。</p>
-<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><blockquote>
-<p>motan 默认的实现是 jdk 动态代理，代理方案支持 SPI 扩展，可以自行扩展其他实现方式。</p>
-<p>使用 jdk 做为默认，主要是减少 core 包依赖，性能不是唯一考虑因素。另外使用字节码方式 javaassist 性能比较优秀，动态代理模式下 jdk 性能也不会差多少。</p>
-<p>– <strong>rayzhang0603</strong>(motan 贡献者)</p>
-</blockquote>
-<p>motan 选择使用 jdk 动态代理，原因主要有两个：减少 motan-core 的依赖，方便。至于扩展性，dubbo 并没有预留出动态代理的扩展接口，而是写死了 bytecode ，这点上 motan 做的较好。</p>
-<h3 id="易用性"><a href="#易用性" class="headerlink" title="易用性"></a>易用性</h3><p>从 dubbo 和 motan 的源码中便可以直观的看出两者的差距了，dubbo 为了使用 javassist 技术花费不少的精力，而 motan 使用 jdk 动态代理只用了一个类。dubbo 的设计者为了追求极致的性能而做出的工作是值得肯定的，motan 也预留了扩展机制，两者各有千秋。</p>
-<h2 id="动态代理入门指南"><a href="#动态代理入门指南" class="headerlink" title="动态代理入门指南"></a>动态代理入门指南</h2><p>为了方便对比几种动态代理技术，先准备一个统一接口。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BookApi</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">sell</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="JDK-动态代理"><a href="#JDK-动态代理" class="headerlink" title="JDK 动态代理"></a>JDK 动态代理</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> BookApi <span class="title">createJdkDynamicProxy</span><span class="params">(<span class="keyword">final</span> BookApi delegate)</span> </span>&#123;</span><br><span class="line">        BookApi jdkProxy = (BookApi) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),</span><br><span class="line">                <span class="keyword">new</span> Class[]&#123;BookApi.class&#125;, <span class="keyword">new</span> JdkHandler(delegate));</span><br><span class="line">        <span class="keyword">return</span> jdkProxy;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">JdkHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> Object delegate;</span><br><span class="line"></span><br><span class="line">        JdkHandler(Object delegate) &#123;</span><br><span class="line">            <span class="keyword">this</span>.delegate = delegate;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object object, Method method, Object[] objects)</span></span></span><br><span class="line"><span class="function">                <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">            <span class="comment">// 添加代理逻辑 &lt;1&gt;</span></span><br><span class="line">            <span class="keyword">if</span>(method.getName().equals(<span class="string">"sell"</span>))&#123;</span><br><span class="line">                System.out.print(<span class="string">""</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"><span class="comment">//            return method.invoke(delegate, objects);</span></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-<p><1> 在真正的 RPC 调用中 ，需要填充‘整理报文’，‘确认网络位置’，‘序列化’,’网络传输’，‘反序列化’，’返回结果’ 等逻辑。</1></p>
-<h3 id="Cglib-动态代理"><a href="#Cglib-动态代理" class="headerlink" title="Cglib 动态代理"></a>Cglib 动态代理</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> BookApi <span class="title">createCglibDynamicProxy</span><span class="params">(<span class="keyword">final</span> BookApi delegate)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Enhancer enhancer = <span class="keyword">new</span> Enhancer();</span><br><span class="line">        enhancer.setCallback(<span class="keyword">new</span> CglibInterceptor(delegate));</span><br><span class="line">        enhancer.setInterfaces(<span class="keyword">new</span> Class[]&#123;BookApi.class&#125;);</span><br><span class="line">        BookApi cglibProxy = (BookApi) enhancer.create();</span><br><span class="line">        <span class="keyword">return</span> cglibProxy;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">CglibInterceptor</span> <span class="keyword">implements</span> <span class="title">MethodInterceptor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> Object delegate;</span><br><span class="line"></span><br><span class="line">        CglibInterceptor(Object delegate) &#123;</span><br><span class="line">            <span class="keyword">this</span>.delegate = delegate;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object object, Method method, Object[] objects,</span></span></span><br><span class="line"><span class="function"><span class="params">                                MethodProxy methodProxy)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">            <span class="comment">// 添加代理逻辑</span></span><br><span class="line">            <span class="keyword">if</span>(method.getName().equals(<span class="string">"sell"</span>)) &#123;</span><br><span class="line">                System.out.print(<span class="string">""</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"><span class="comment">//            return methodProxy.invoke(delegate, objects);</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>和 JDK 动态代理的操作步骤没有太大的区别，只不过是替换了 cglib 的 API 而已。</p>
-<p>需要引入 cglib 依赖：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>cglib<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>cglib<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.2.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="Javassist-字节码"><a href="#Javassist-字节码" class="headerlink" title="Javassist 字节码"></a>Javassist 字节码</h3><p>到了 javassist，稍微有点不同了。因为它是通过直接操作字节码来生成代理对象。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> BookApi <span class="title">createJavassistBytecodeDynamicProxy</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    ClassPool mPool = <span class="keyword">new</span> ClassPool(<span class="keyword">true</span>);</span><br><span class="line">    CtClass mCtc = mPool.makeClass(BookApi.class.getName() + <span class="string">"JavaassistProxy"</span>);</span><br><span class="line">    mCtc.addInterface(mPool.get(BookApi.class.getName()));</span><br><span class="line">    mCtc.addConstructor(CtNewConstructor.defaultConstructor(mCtc));</span><br><span class="line">    mCtc.addMethod(CtNewMethod.make(</span><br><span class="line">            <span class="string">"public void sell()&#123; System.out.print(\"\") ; &#125;"</span>, mCtc));</span><br><span class="line">    Class&lt;?&gt; pc = mCtc.toClass();</span><br><span class="line">    BookApi bytecodeProxy = (BookApi) pc.newInstance();</span><br><span class="line">    <span class="keyword">return</span> bytecodeProxy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>需要引入 javassist 依赖：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.javassist<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javassist<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.21.0-GA<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="动态代理测试"><a href="#动态代理测试" class="headerlink" title="动态代理测试"></a>动态代理测试</h2><p>测试环境：window i5 8g jdk1.8 cglib3.2.5 javassist3.21.0-GA</p>
-<p>动态代理其实分成了两步：代理对象的创建，代理对象的调用。坊间流传的动态代理性能对比主要指的是后者；前者一般不被大家考虑，如果远程 Refer 的对象是单例的，其只会被创建一次，而如果是原型模式，多例对象的创建其实也是性能损耗的一个考虑因素（只不过远没有调用占比大）。</p>
-<blockquote>
-<p>Create JDK Proxy: 21 ms</p>
-<p>Create CGLIB Proxy: 342 ms</p>
-<p>Create Javassist Bytecode Proxy: 419 ms</p>
-</blockquote>
-<p>可能出乎大家的意料，JDK 创建动态代理的速度比后两者要快 10 倍左右。</p>
-<p>下面是调用速度的测试：</p>
-<blockquote>
-<p>case 1:</p>
-<p>JDK Proxy invoke cost 1912 ms</p>
-<p>CGLIB Proxy invoke cost 1015 ms</p>
-<p>JavassistBytecode Proxy invoke cost 1280 ms</p>
-</blockquote>
-<blockquote>
-<p>case 2:</p>
-<p>JDK Proxy invoke cost 1747 ms</p>
-<p>CGLIB Proxy invoke cost 1234 ms</p>
-<p>JavassistBytecode Proxy invoke cost 1175 ms</p>
-</blockquote>
-<blockquote>
-<p>case 3:</p>
-<p>JDK Proxy invoke cost 2616 ms</p>
-<p>CGLIB Proxy invoke cost 1373 ms</p>
-<p>JavassistBytecode Proxy invoke cost 1335 ms</p>
-</blockquote>
-<p>Jdk 的执行速度一定会慢于 Cglib 和 Javassist，但最慢也就 2 倍，并没有达到数量级的差距；Cglib 和 Javassist 不相上下，差距不大（测试中偶尔发现 Cglib 实行速度会比平时慢 10 倍，不清楚是什么原因）</p>
-<p>所以出于易用性和性能，私以为使用 Cglib 是一个很好的选择（性能和 Javassist 持平，易用性和 Jdk 持平）。</p>
-<h2 id="反射调用"><a href="#反射调用" class="headerlink" title="反射调用"></a>反射调用</h2><p>既然提到了动态代理和 cglib ，顺带提一下反射调用如何加速的问题。RPC 框架中在 Provider 服务端需要根据客户端传递来的 className + method + param 来找到容器中的实际方法执行反射调用。除了反射调用外，还可以使用 Cglib 来加速。</p>
-<h3 id="JDK-反射调用"><a href="#JDK-反射调用" class="headerlink" title="JDK 反射调用"></a>JDK 反射调用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Method method = serviceClass.getMethod(methodName, <span class="keyword">new</span> Class[]&#123;&#125;);</span><br><span class="line">method.invoke(delegate, <span class="keyword">new</span> Object[]&#123;&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="Cglib-调用"><a href="#Cglib-调用" class="headerlink" title="Cglib 调用"></a>Cglib 调用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FastClass serviceFastClass = FastClass.create(serviceClass);</span><br><span class="line">FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, <span class="keyword">new</span> Class[]&#123;&#125;);</span><br><span class="line">serviceFastMethod.invoke(delegate, <span class="keyword">new</span> Object[]&#123;&#125;);</span><br></pre></td></tr></table></figure>
-<p>但实测效果发现 Cglib 并不一定比 JDK 反射执行速度快，还会跟具体的方法实现有关 (大雾)。</p>
-<h2 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h2><p>略长…</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        BookApi delegate = <span class="keyword">new</span> BookApiImpl();</span><br><span class="line">        <span class="keyword">long</span> time = System.currentTimeMillis();</span><br><span class="line">        BookApi jdkProxy = createJdkDynamicProxy(delegate);</span><br><span class="line">        time = System.currentTimeMillis() - time;</span><br><span class="line">        System.out.println(<span class="string">"Create JDK Proxy:"</span> + time + <span class="string">"ms"</span>);</span><br><span class="line"></span><br><span class="line">        time = System.currentTimeMillis();</span><br><span class="line">        BookApi cglibProxy = createCglibDynamicProxy(delegate);</span><br><span class="line">        time = System.currentTimeMillis() - time;</span><br><span class="line">        System.out.println(<span class="string">"Create CGLIB Proxy:"</span> + time + <span class="string">"ms"</span>);</span><br><span class="line"></span><br><span class="line">        time = System.currentTimeMillis();</span><br><span class="line">        BookApi javassistBytecodeProxy = createJavassistBytecodeDynamicProxy();</span><br><span class="line">        time = System.currentTimeMillis() - time;</span><br><span class="line">        System.out.println(<span class="string">"Create JavassistBytecode Proxy:"</span> + time + <span class="string">"ms"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            jdkProxy.sell();<span class="comment">//warm</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++) &#123;</span><br><span class="line">            jdkProxy.sell();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"JDK Proxy invoke cost"</span> + (System.currentTimeMillis() - start)+ <span class="string">"ms"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            cglibProxy.sell();<span class="comment">//warm</span></span><br><span class="line">        &#125;</span><br><span class="line">        start = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++) &#123;</span><br><span class="line">            cglibProxy.sell();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"CGLIB Proxy invoke cost"</span> + (System.currentTimeMillis() - start)+ <span class="string">"ms"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            javassistBytecodeProxy.sell();<span class="comment">//warm</span></span><br><span class="line">        &#125;</span><br><span class="line">        start = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++) &#123;</span><br><span class="line">            javassistBytecodeProxy.sell();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"JavassistBytecode Proxy invoke cost"</span> + (System.currentTimeMillis() - start)+ <span class="string">"ms"</span>);</span><br><span class="line"></span><br><span class="line">        Class&lt;?&gt; serviceClass = delegate.getClass();</span><br><span class="line">        String methodName = <span class="string">"sell"</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            cglibProxy.sell();<span class="comment">//warm</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 执行反射调用</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;<span class="comment">//warm</span></span><br><span class="line">            Method method = serviceClass.getMethod(methodName, <span class="keyword">new</span> Class[]&#123;&#125;);</span><br><span class="line">            method.invoke(delegate, <span class="keyword">new</span> Object[]&#123;&#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        start = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++) &#123;</span><br><span class="line">            Method method = serviceClass.getMethod(methodName, <span class="keyword">new</span> Class[]&#123;&#125;);</span><br><span class="line">            method.invoke(delegate, <span class="keyword">new</span> Object[]&#123;&#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"反射 invoke cost"</span> + (System.currentTimeMillis() - start)+ <span class="string">"ms"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 使用 CGLib 执行反射调用</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;<span class="comment">//warm</span></span><br><span class="line">            FastClass serviceFastClass = FastClass.create(serviceClass);</span><br><span class="line">            FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, <span class="keyword">new</span> Class[]&#123;&#125;);</span><br><span class="line">            serviceFastMethod.invoke(delegate, <span class="keyword">new</span> Object[]&#123;&#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        start = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++) &#123;</span><br><span class="line">            FastClass serviceFastClass = FastClass.create(serviceClass);</span><br><span class="line">            FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, <span class="keyword">new</span> Class[]&#123;&#125;);</span><br><span class="line">            serviceFastMethod.invoke(delegate, <span class="keyword">new</span> Object[]&#123;&#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"CGLIB invoke cost"</span> + (System.currentTimeMillis() - start)+ <span class="string">"ms"</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> BookApi <span class="title">createJdkDynamicProxy</span><span class="params">(<span class="keyword">final</span> BookApi delegate)</span> </span>&#123;</span><br><span class="line">        BookApi jdkProxy = (BookApi) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),</span><br><span class="line">                <span class="keyword">new</span> Class[]&#123;BookApi.class&#125;, <span class="keyword">new</span> JdkHandler(delegate));</span><br><span class="line">        <span class="keyword">return</span> jdkProxy;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">JdkHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> Object delegate;</span><br><span class="line"></span><br><span class="line">        JdkHandler(Object delegate) &#123;</span><br><span class="line">            <span class="keyword">this</span>.delegate = delegate;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object object, Method method, Object[] objects)</span></span></span><br><span class="line"><span class="function">                <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">            <span class="comment">// 添加代理逻辑</span></span><br><span class="line">            <span class="keyword">if</span>(method.getName().equals(<span class="string">"sell"</span>))&#123;</span><br><span class="line">                System.out.print(<span class="string">""</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"><span class="comment">//            return method.invoke(delegate, objects);</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> BookApi <span class="title">createCglibDynamicProxy</span><span class="params">(<span class="keyword">final</span> BookApi delegate)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Enhancer enhancer = <span class="keyword">new</span> Enhancer();</span><br><span class="line">        enhancer.setCallback(<span class="keyword">new</span> CglibInterceptor(delegate));</span><br><span class="line">        enhancer.setInterfaces(<span class="keyword">new</span> Class[]&#123;BookApi.class&#125;);</span><br><span class="line">        BookApi cglibProxy = (BookApi) enhancer.create();</span><br><span class="line">        <span class="keyword">return</span> cglibProxy;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">CglibInterceptor</span> <span class="keyword">implements</span> <span class="title">MethodInterceptor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> Object delegate;</span><br><span class="line"></span><br><span class="line">        CglibInterceptor(Object delegate) &#123;</span><br><span class="line">            <span class="keyword">this</span>.delegate = delegate;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object object, Method method, Object[] objects,</span></span></span><br><span class="line"><span class="function"><span class="params">                                MethodProxy methodProxy)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">            <span class="comment">// 添加代理逻辑</span></span><br><span class="line">            <span class="keyword">if</span>(method.getName().equals(<span class="string">"sell"</span>)) &#123;</span><br><span class="line">                System.out.print(<span class="string">""</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"><span class="comment">//            return methodProxy.invoke(delegate, objects);</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> BookApi <span class="title">createJavassistBytecodeDynamicProxy</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ClassPool mPool = <span class="keyword">new</span> ClassPool(<span class="keyword">true</span>);</span><br><span class="line">        CtClass mCtc = mPool.makeClass(BookApi.class.getName() + <span class="string">"JavaassistProxy"</span>);</span><br><span class="line">        mCtc.addInterface(mPool.get(BookApi.class.getName()));</span><br><span class="line">        mCtc.addConstructor(CtNewConstructor.defaultConstructor(mCtc));</span><br><span class="line">        mCtc.addMethod(CtNewMethod.make(</span><br><span class="line">                <span class="string">"public void sell()&#123; System.out.print(\"\") ; &#125;"</span>, mCtc));</span><br><span class="line">        Class&lt;?&gt; pc = mCtc.toClass();</span><br><span class="line">        BookApi bytecodeProxy = (BookApi) pc.newInstance();</span><br><span class="line">        <span class="keyword">return</span> bytecodeProxy;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/rpc-dynamic-proxy/" data-id="ckebecf3m008jbh9e4tz0s1ms" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/motan-async/" data-id="ckf41gexr0071fr9eyg8dl9cq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -2596,6 +2517,44 @@ ga('send', 'pageview');
                     <li>
                         
                         <!-- <div class="item-thumbnail">
+                            <a href="/serialize-practice/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/JAVA/">JAVA</a></p>
+                            <p class="item-title"><a href="/serialize-practice/" class="title">gson 替换 fastjson 引发的线上问题分析</a></p>
+                            <p class="item-date"><time datetime="2020-09-15T10:37:56.000Z" itemprop="datePublished">2020-09-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/three-thinking-ways/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/随笔/">随笔</a></p>
+                            <p class="item-title"><a href="/three-thinking-ways/" class="title">三种思维，让我脱胎换骨</a></p>
+                            <p class="item-date"><time datetime="2020-08-30T13:04:52.000Z" itemprop="datePublished">2020-08-30</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
                             <a href="/arthas-lambda-redefine/" class="thumbnail">
     
     
@@ -2650,44 +2609,6 @@ ga('send', 'pageview');
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/arthas-trace/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Arthas/">Arthas</a></p>
-                            <p class="item-title"><a href="/arthas-trace/" class="title">Arthas | 追踪线上耗时方法</a></p>
-                            <p class="item-date"><time datetime="2020-04-09T12:49:30.000Z" itemprop="datePublished">2020-04-09</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/arthas-thread/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Arthas/">Arthas</a></p>
-                            <p class="item-title"><a href="/arthas-thread/" class="title">Arthas | 定位线上 Dubbo 线程池满异常</a></p>
-                            <p class="item-date"><time datetime="2020-02-16T11:30:35.000Z" itemprop="datePublished">2020-02-16</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2697,7 +2618,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">23</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2706,7 +2627,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -2715,7 +2636,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Arthas/" style="font-size: 13px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+            <a href="/tags/Arthas/" style="font-size: 13px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/思维方式/" style="font-size: 10px;">思维方式</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
         </div>
     </div>
 

@@ -166,11 +166,11 @@ ga('send', 'pageview');
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                132
+                134
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                57
+                58
                 <span>标签</span>
             </div>
         </div>
@@ -207,6 +207,404 @@ ga('send', 'pageview');
 
             
             <section id="main">
+    <article id="post-spring-data-redis-1" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/spring-data-redis-1/">Spring Data Redis（一）-- 解析 RedisTemplate</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/spring-data-redis-1/">
+            <time datetime="2017-10-27T08:10:55.000Z" itemprop="datePublished">2017-10-27</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring-Data-Redis/">Spring Data Redis</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>谈及系统优化，缓存一直是不可或缺的一点。在缓存中间件层面，我们有 MemCache，Redis 等选择；在系统分层层面，又需要考虑多级缓存；在系统可用性层面，又要考虑到缓存雪崩，缓存穿透，缓存失效等常见的缓存问题… 缓存的使用与优化值得我们花费一定的精力去深入理解。《Spring Data Redis》这个系列打算围绕 spring-data-redis 来进行分析，从 hello world 到源码分析，夹杂一些不多实战经验（经验有限），不止限于 spring-data-redis 本身，也会扩展谈及缓存这个大的知识点。</p>
+<p>至于为何选择 redis，相信不用我赘述，redis 如今非常流行，几乎成了项目必备的组件之一。而 spring-boot-starter-data-redis 模块又为我们在 spring 集成的项目中提供了开箱即用的功能，更加便捷了我们开发。系列的第一篇便是简单介绍下整个组件最常用的一个工具类：RedisTemplate。</p>
+<h2 id="1-引入依赖"><a href="#1-引入依赖" class="headerlink" title="1 引入依赖"></a>1 引入依赖</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>springboot 的老用户会发现 redis 依赖名称发生了一点小的变化，在 springboot1.4 之前，redis 依赖的名称为：spring-boot-starter-redis，而在之后较新的版本中，使用 spring-boot-starter-redis 依赖，则会在项目启动时得到一个过期警告。意味着，我们应该彻底放弃旧的依赖。spring-data 这个项目定位为 spring 提供一个统一的数据仓库接口，如（spring-boot-starter-data-jpa,spring-boot-starter-data-mongo,spring-boot-starter-data-rest），将 redis 纳入后，改名为了 spring-boot-starter-data-redis。</p>
+<h2 id="2-配置-redis-连接"><a href="#2-配置-redis-连接" class="headerlink" title="2 配置 redis 连接"></a>2 配置 redis 连接</h2><p><code>resources/application.yml</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  redis:</span></span><br><span class="line"><span class="attr">    host:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">    database:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">6379</span></span><br><span class="line"><span class="attr">    password:</span></span><br></pre></td></tr></table></figure>
+<p>本机启动一个单点的 redis 即可，使用 redis 的 0 号库作为默认库（默认有 16 个库），在生产项目中一般会配置 redis 集群和哨兵保证 redis 的高可用，同样可以在 application.yml 中修改，非常方便。</p>
+<h2 id="3-编写测试类"><a href="#3-编写测试类" class="headerlink" title="3 编写测试类"></a>3 编写测试类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.assertj.core.api.Assertions;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.core.RedisTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ApplicationTests</span> </span>&#123;</span><br><span class="line">   <span class="meta">@Autowired</span></span><br><span class="line">   <span class="keyword">private</span> RedisTemplate redisTemplate;<span class="comment">// &lt;1&gt;</span></span><br><span class="line"></span><br><span class="line">   <span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">     redisTemplate.opsForValue().set(<span class="string">"student:1"</span>, <span class="string">"kirito"</span>); <span class="comment">// &lt;2&gt;</span></span><br><span class="line">     Assertions.assertThat(redisTemplate.opsForValue().get(<span class="string">"student:1"</span>)).isEqualTo(<span class="string">"kirito"</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><1> 引入了 RedisTemplate，这个类是 spring-starter-data-redis 提供给应用直接访问 redis 的入口。从其命名就可以看出，其是模板模式在 spring 中的体现，与 restTemplate，jdbcTemplate 类似，而 springboot 为我们做了自动的配置，具体会在下文详解。</1></p>
+<p><2> redisTemplate 通常不直接操作键值，而是通过 opsForXxx() 访问，在本例中，key 和 value 均为字符串类型。绑定字符串在实际开发中也是最为常用的操作类型。</2></p>
+<h2 id="4-详解-RedisTemplate-的-API"><a href="#4-详解-RedisTemplate-的-API" class="headerlink" title="4 详解 RedisTemplate 的 API"></a>4 详解 RedisTemplate 的 API</h2><p>RedisTemplate 为我们操作 Redis 提供了丰富的 API，可以将他们简单进行下归类。</p>
+<h3 id="4-1-常用数据操作"><a href="#4-1-常用数据操作" class="headerlink" title="4.1 常用数据操作"></a>4.1 常用数据操作</h3><p>这一类 API 也是我们最常用的一类。</p>
+<p>众所周知，redis 存在 5 种数据类型：</p>
+<p>字符串类型（string），散列类型（hash），列表类型（list），集合类型（set），有序集合类型（zset）</p>
+<p>而 redisTemplate 实现了 RedisOperations 接口，在其中，定义了一系列与 redis 相关的基础数据操作接口，数据类型分别于下来 API 对应：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 非绑定 key 操作</span></span><br><span class="line"><span class="function">ValueOperations&lt;K, V&gt; <span class="title">opsForValue</span><span class="params">()</span></span>;</span><br><span class="line">&lt;HK, HV&gt; <span class="function">HashOperations&lt;K, HK, HV&gt; <span class="title">opsForHash</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">ListOperations&lt;K, V&gt; <span class="title">opsForList</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">SetOperations&lt;K, V&gt; <span class="title">opsForSet</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">ZSetOperations&lt;K, V&gt; <span class="title">opsForZSet</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 绑定 key 操作</span></span><br><span class="line"><span class="function">BoundValueOperations&lt;K, V&gt; <span class="title">boundValueOps</span><span class="params">(K key)</span></span>;</span><br><span class="line">&lt;HK, HV&gt; <span class="function">BoundHashOperations&lt;K, HK, HV&gt; <span class="title">boundHashOps</span><span class="params">(K key)</span></span>;</span><br><span class="line"><span class="function">BoundListOperations&lt;K, V&gt; <span class="title">boundListOps</span><span class="params">(K key)</span></span>;</span><br><span class="line"><span class="function">BoundSetOperations&lt;K, V&gt; <span class="title">boundSetOps</span><span class="params">(K key)</span></span>;</span><br><span class="line"><span class="function">BoundZSetOperations&lt;K, V&gt; <span class="title">boundZSetOps</span><span class="params">(K key)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>若以 bound 开头，则意味着在操作之初就会绑定一个 key，后续的所有操作便默认认为是对该 key 的操作，算是一个小优化。</p>
+<h3 id="4-2-对原生-Redis-指令的支持"><a href="#4-2-对原生-Redis-指令的支持" class="headerlink" title="4.2 对原生 Redis 指令的支持"></a>4.2 对原生 Redis 指令的支持</h3><p>Redis 原生指令中便提供了一些很有用的操作，如设置 key 的过期时间，判断 key 是否存在等等…</p>
+<p>常用的 API 列举：</p>
+<table>
+<thead>
+<tr>
+<th>RedisTemplate API</th>
+<th>原生 Redis 指令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public void delete(K key)</td>
+<td>DEL key [key …]</td>
+<td>删除给定的一个或多个 <code>key</code></td>
+</tr>
+<tr>
+<td>public Boolean hasKey(K key)</td>
+<td>EXISTS key</td>
+<td>检查给定 <code>key</code> 是否存在</td>
+</tr>
+<tr>
+<td>public Boolean expire/expireAt(…)</td>
+<td>EXPIRE key seconds</td>
+<td>为给定 <code>key</code> 设置生存时间，当 <code>key</code> 过期时 (生存时间为 <code>0</code>)，它会被自动删除。</td>
+</tr>
+<tr>
+<td>public Long getExpire(K key)</td>
+<td>TTL key</td>
+<td>以秒为单位，返回给定 <code>key</code> 的剩余生存时间 (TTL, time to live)。</td>
+</tr>
+</tbody>
+</table>
+<p>更多的原生 Redis 指令支持可以参考 javadoc</p>
+<h3 id="4-3-CAS-操作"><a href="#4-3-CAS-操作" class="headerlink" title="4.3 CAS 操作"></a>4.3 CAS 操作</h3><p>CAS（Compare and Swap）通常有 3 个操作数，内存值 V，旧的预期值 A，要修改的新值 B。当且仅当预期值 A 和内存值 V 相同时，将内存值 V 修改为 B，否则什么都不做。CAS 也通常与并发，乐观锁，非阻塞，机器指令等关键词放到一起讲解。可能会有很多朋友在秒杀场景的架构设计中见到了 Redis，本质上便是利用了 Redis 分布式共享内存的特性以及一系列的 CAS 指令。还记得在 4.1 中通过 redisTemplate.opsForValue()或者 redisTemplate.boundValueOps() 可以得到一个 ValueOperations 或 BoundValueOperations 接口 (以值为字符串的操作接口为例)，这些接口除了提供了基础操作外，还提供了一系列 CAS 操作，也可以放到 RedisTemplate 中一起理解。</p>
+<p>常用的 API 列举：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">ValueOperations API</th>
+<th style="text-align:left">原生 Redis 指令</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Boolean setIfAbsent(K key, V value)</td>
+<td style="text-align:left">SETNX key value</td>
+<td style="text-align:left">将 <code>key</code> 的值设为 <code>value</code> ，当且仅当 <code>key</code> 不存在。设置成功，返回 <code>1</code> ， 设置失败，返回 <code>0</code> 。</td>
+</tr>
+<tr>
+<td style="text-align:left">V getAndSet(K key, V value)</td>
+<td style="text-align:left">GETSET key value</td>
+<td style="text-align:left">将给定 <code>key</code> 的值设为 <code>value</code> ，并返回 <code>key</code> 的旧值 (old value)。</td>
+</tr>
+<tr>
+<td style="text-align:left">Long increment(K key, long delta)/Double increment(K key, double delta)</td>
+<td style="text-align:left">INCR/INCRBY/INCRBYFLOAT</td>
+<td style="text-align:left">将 <code>key</code> 所储存的值加上增量 <code>increment</code> 。 如果 <code>key</code> 不存在，那么 <code>key</code> 的值会先被初始化为 <code>0</code> ，然后再执行 INCR/INCRBY/INCRBYFLOAT 命令。线程安全的 +</td>
+</tr>
+</tbody>
+</table>
+<p>关于 CAS 的理解可以参考我之前的文章 <a href="https://www.cnkirito.moe/2017/03/12/java%E5%B9%B6%E5%8F%91%E5%AE%9E%E8%B7%B5--ConcurrentHashMap%E4%B8%8ECAS/" target="_blank" rel="noopener">java 并发实践 –CAS</a> 或者其他博文。</p>
+<h3 id="4-4-发布订阅"><a href="#4-4-发布订阅" class="headerlink" title="4.4 发布订阅"></a>4.4 发布订阅</h3><p>redis 之所以被冠以银弹，万金油的称号，关键在于其实现的功能真是太多了，甚至实现了一部分中间件队列的功能，其内置的 channel 机制，可以用于实现分布式的队列和广播。</p>
+<p>RedisTemplate 提供了 convertAndSend()功能，用于发送消息，与 RedisMessageListenerContainer 配合接收，便实现了一个简易的发布订阅。如果想要使用 Redis 实现发布订阅，可以参考我之前的文章。<a href="https://www.cnkirito.moe/2017/09/13/event-2/" target="_blank" rel="noopener"> 浅析分布式下的事件驱动机制</a></p>
+<h3 id="4-5-Lua-脚本"><a href="#4-5-Lua-脚本" class="headerlink" title="4.5 Lua 脚本"></a>4.5 Lua 脚本</h3><p>RedisTemplate 中包含了这样一个 Lua 执行器，意味着我们可以使用 RedisTemplate 执行 Lua 脚本。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ScriptExecutor&lt;K&gt; scriptExecutor;</span><br></pre></td></tr></table></figure>
+<p>Lua 这门语言也非常有意思，小巧而精悍，有兴趣的朋友可以去了解一下 nginx+lua 开发，使用 openResty 框架。而 Redis 内置了 Lua 的解析器，由于 Redis 单线程的特性（不严谨），可以使用 Lua 脚本，完成一些线程安全的符合操作（CAS 操作仅仅只能保证单个操作的线程安全，无法保证复合操作，如果你有这样的需求，可以考虑使用 Redis+Lua 脚本）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">execute</span><span class="params">(RedisScript&lt;T&gt; script, List&lt;K&gt; keys, Object... args)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> scriptExecutor.execute(script, keys, args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述操作便可以完成对 Lua 脚本的调用。这儿有一个简单的示例，使用 Redis+Lua 脚本实现分布式的应用限流。<a href="https://www.cnkirito.moe/2017/03/18/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/" target="_blank" rel="noopener">分布式限流</a></p>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5 总结"></a>5 总结</h3><p>Spring Data Redis 系列的第一篇，介绍了 spring-data 对 redis 操作的封装，顺带了解 redis 具备的一系列特性，如果你对 redis 的理解还仅仅停留在它是一个分布式的 key-value 数据库，那么相信现在你一定会感叹其竟然如此强大。后续将会对缓存在项目中的应用以及 spring-boot-starter-data-redis 进一步解析。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/spring-data-redis-1/" data-id="ckf41gezt009kfr9e4u11q92k" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-java-skill-1" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/java-skill-1/">java 小技巧 (一)-- 远程 debug</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/java-skill-1/">
+            <time datetime="2017-10-25T09:24:48.000Z" itemprop="datePublished">2017-10-25</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>该系列介绍一些 java 开发中常用的一些小技巧，多小呢，从不会到会只需要一篇文章这么小。这一篇介绍如何使用 jdk 自带的扩展包配合 Intellij IDEA 实现远程 debug。</p>
+<p>项目中经常会有出现这样的问题，会令程序员抓狂：关键代码段没有打印日志，本地环境正常生产环境却又问题… 这时候，远程 debug 可能会启动作用。</p>
+<h2 id="1-准备用于-debug-的代码"><a href="#1-准备用于-debug-的代码" class="headerlink" title="1 准备用于 debug 的代码"></a>1 准备用于 debug 的代码</h2><p>准备一个 RestController 用于接收请求，最后可以通过本地断点验证是否成功开启了远程 debug</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/test"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">        i++;</span><br><span class="line">        i++;</span><br><span class="line">        i++;</span><br><span class="line">        i++;</span><br><span class="line">        i++;</span><br><span class="line">        <span class="keyword">return</span> i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>项目使用 springboot 和 maven 构建，依赖就省略了，使用 springboot 提供的 maven 打包插件，方便我们打包成可运行的 jar。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">executable</span>&gt;</span>true<span class="tag">&lt;/<span class="name">executable</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">source</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">target</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="2-使用-maven-插件打包成-jar"><a href="#2-使用-maven-插件打包成-jar" class="headerlink" title="2 使用 maven 插件打包成 jar"></a>2 使用 maven 插件打包成 jar</h2><p><img src="https://kirito.iocoder.cn/maven_install.png" alt="maven 插件"></p>
+<h2 id="3-准备启动脚本"><a href="#3-准备启动脚本" class="headerlink" title="3 准备启动脚本"></a>3 准备启动脚本</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=64057 remote-debug-1.0-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
+<ol>
+<li>使用 java -jar 的方式启动程序，并且添加了一串特殊的参数，这是我们能够开启远程 debug 的关键，以 <code>-</code> 开头的参数是 jvm 的标准启动参数，关于 jvm 启动参数相关的知识可以先去其他博客了解。</li>
+<li>-agentlib:libname[=options], 用于装载本地 lib 包。在这条指令中便是加载了 jdwp(Java Debug Wire Protocol) 这个用于远程调试 java 的扩展包。而 <code>transport=dt_socket,server=y,suspend=n,address=64057</code> 这些便是 jdwp 装载时的定制参数，详细的参数作用可以搜索 jdwp 进行了解。我们需要关心的只有 address=64057 这个参数选项，本地调试程序使用 64057 端口与其通信，从而远程调试。</li>
+</ol>
+<h2 id="4-配置-IDEA"><a href="#4-配置-IDEA" class="headerlink" title="4 配置 IDEA"></a>4 配置 IDEA</h2><p><img src="https://kirito.iocoder.cn/%E8%BF%9C%E7%A8%8Bdebug_idea%E9%85%8D%E7%BD%AE.png" alt="IDEA 配置"></p>
+<ol>
+<li>与脚本中的指令完全一致</li>
+<li>远程 jar 包运行的 host，由于我的 jar 运行在本地，所以使用的是 localhost，一般线上环境自然是修改为线上的地址</li>
+<li>与远程 jar 包进行交互的端口号，idea 会根据指令自动帮我们输入</li>
+<li>选择与远程 jar 包一致的本地代码</li>
+</ol>
+<p><strong> 请务必保证远程 jar 包的代码与本地代码一致！！！</strong></p>
+<h2 id="5-验证"><a href="#5-验证" class="headerlink" title="5 验证"></a>5 验证</h2><p>保存第 4 步的配置后，先执行脚本让远程的 jar 包跑起来，再在 IDEA 中运行 remote-debug</p>
+<p><img src="https://kirito.iocoder.cn/%E8%BF%90%E8%A1%8Cremote.png" alt="运行 remote-jar"></p>
+<p>如上便代表连接运行成功了</p>
+<p>在本地打上断点，访问 <code>localhost:8080/test</code></p>
+<p><img src="https://kirito.iocoder.cn/debug%E4%BF%A1%E6%81%AF%E5%B1%95%E7%A4%BA.png" alt="远程 debug 信息展示"></p>
+<p>可以在本地看到堆栈信息，大功告成。一行指令便完成了远程调试。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/java-skill-1/" data-id="ckf41gewl005efr9ek66tbo9c" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-concurrent-2" class="article article-type-post" itemscope="" itemprop="blogPost">
     <div class="article-inner">
         
@@ -317,7 +715,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/concurrent-2/" data-id="ckebecezt001abh9eljwi4uzb" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/concurrent-2/" data-id="ckf41gesx0017fr9euzw1izhj" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -508,7 +906,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/concurrent-1/" data-id="ckebecezs0017bh9ebfsh6btc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/concurrent-1/" data-id="ckf41gest0010fr9ebrnkdgep" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -658,7 +1056,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-security-5/" data-id="ckebecf4e00a5bh9e3cufsj05" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-security-5/" data-id="ckf41gf0600a7fr9ea1veo93b" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -860,7 +1258,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-security-4/" data-id="ckebecf4d00a1bh9eiwyty9qs" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-security-4/" data-id="ckf41gf04009zfr9e8datznhq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1043,7 +1441,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/project-rules-2/" data-id="ckebecf39007vbh9e5r4eg96x" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/project-rules-2/" data-id="ckf41geya007vfr9e5ksv91sm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1190,7 +1588,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-security-2/" data-id="ckebecf46009tbh9epw70hcs3" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-security-2/" data-id="ckf41gf03009wfr9e5s61bsjk" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1403,7 +1801,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-security-3/" data-id="ckebecf49009xbh9ez6w2icgx" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-security-3/" data-id="ckf41gf0600a4fr9e1f9azl2v" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1554,334 +1952,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-security-1/" data-id="ckebecf44009pbh9ecbk6wert" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-event-2" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/event-2/">浅析分布式下的事件驱动机制（PubSub 模式）</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/event-2/">
-            <time datetime="2017-09-13T14:49:23.000Z" itemprop="datePublished">2017-09-13</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Spring/">Spring</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/Spring/">Spring</a>, <a class="tag-link" href="/tags/架构设计/">架构设计</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            <p></p><p>上一篇文章《浅析 Spring 中的事件驱动机制》简单介绍了 Spring 对事件的支持。Event 的整个生命周期，从 publisher 发出，经过 applicationContext 容器通知到 EventListener，都是发生在单个 Spring 容器中，而在分布式场景下，有些时候一个事件的产生，可能需要被多个实例响应，本文主要介绍分布式场景下的事件驱动机制，由于使用了 Redis，ActiveMQ，也可以换一个名词来理解：分布式下的发布订阅模式。</p>
-<h2 id="JMS-规范"><a href="#JMS-规范" class="headerlink" title="JMS 规范"></a>JMS 规范</h2><p>在日常项目开发中，我们或多或少的发现一些包一些类位于 java 或 javax 中，他们主要提供抽象类，接口，提供了一种规范，如 JPA，JSR，JNDI，JTA，JMS，他们是由 java 指定的标准规范，一流企业做标准、二流企业做品牌、三流企业做产品，虽然有点调侃的意味，但也可以见得它的重要意义。而 JMS 就是 java 在消息服务上指定的标准</p>
-<blockquote>
-<p>The Java Message Service (JMS) API is a messaging standard that allows application components based on the Java Platform Enterprise Edition (Java EE) to create, send, receive, and read messages. It enables distributed communication that is loosely coupled, reliable, and asynchronous.</p>
-<p>JMS（JAVA Message Service,java 消息服务）API 是一个消息服务的标准或者说是规范，允许应用程序组件基于 JavaEE 平台创建、发送、接收和读取消息。它使分布式通信耦合度更低，消息服务更加可靠以及异步性。</p>
-</blockquote>
-<p>消息中间件有非常多的实现，如 ActiveMQ，RabbitMQ，RocketMQ，而他们同一遵循的接口规范，便是 JMS。在下文中即将出现的 ConnectionFactory，Destination，Connection，Session，MessageListener，Topic，Queue 等等名词，都是 JMS 核心的接口，由于本文的初衷并不是讲解 MQ&amp;JMS，所以这些机制暂且跳过。</p>
-<h2 id="定义分布式事件需求"><a href="#定义分布式事件需求" class="headerlink" title="定义分布式事件需求"></a>定义分布式事件需求</h2><p>在上一个项目中，我们对接了外网的 http 接口，而安全性的保障则是交给 OAuth2 来完成，作为 OAuth2 的客户端，我们需要获取服务端返回的 token，而 token 接口的获取次数每个月是有限制的，于是我们选择使用 Redis 来保存，定时刷新。由于每次发起请求时都要携带 token，为了更高的性能减少一次 redis io，我们在 TokenService 中使用了本地变量缓存 token。于是形成如下的 token 获取机制：</p>
-<p><img src="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720170913232959.png" alt="token 获取流程"></p>
-<p>这个图并不复杂，只是为了方便描述需求：首先去本地变量中加载 token，若 token==null，则去 Redis 加载，若 Redis 未命中（token 过期了），则最终调用外部的 http 接口获取实时的 token，同时存入 redis 中和本地变量中。</p>
-<p>这个需求设计到这样一个问题：大多数情况下是单个实例中发现 redis 中的 token 为空，而它需要同时获取最新 token，并通知其他的实例也去加载最新的 token，这个时候事件广播就可以派上用场了。</p>
-<p>由于 token 缓存在了 Redis 中，我们首先介绍 Redis 的发布订阅机制。</p><p></p>
-            <p class="article-more-link">
-                <a href="/event-2/#more">查看更多</a>
-            </p>
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/event-2/" data-id="ckebecf16003wbh9eeykq1693" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-rethink-1" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/rethink-1/">上一个电商项目的反思</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/rethink-1/">
-            <time datetime="2017-09-11T13:02:43.000Z" itemprop="datePublished">2017-09-11</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/技术杂谈/">技术杂谈</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>加入中科软已经有了一个年头，从去年实习到今年转正，陆陆续续接触了大概四个项目。有电商类，互联网保险类，也经历过管理系统。幸运的是，这些项目都是从零开始，避免了让我去维护不堪入目的老旧系统。而这么多项目中令我印象最深刻的，就要属上一个电商项目了。这也是我接触到的真正意义的第一个微服务项目，到今天回首去看曾经的这个项目，有很多突破性地尝试，同时不可避免地也踩入了一些坑点，毕竟摸着石头过河。今天想聊聊我对上一个电商项目的反思。</p>
-<h2 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a>项目简介</h2><p>准确的说是一个第三方的电商项目，商品来源是由主流电商的 http 接口提供（目前接入了京东，苏宁），打造我们自己的商城体系。使用的技术包括 springboot，jpa，rpc 框架使用的是 motan，数据库使用的是 oracle，基本都还算是主流的技术。</p>
-<h2 id="盲目地拆分微服务"><a href="#盲目地拆分微服务" class="headerlink" title="盲目地拆分微服务"></a>盲目地拆分微服务</h2><p>使用了 springboot 就是微服务了吗？使用 rpc 通信就是微服务了吗？刚接触到所谓的微服务架构时，无疑是让人兴奋的，但也没有太多的经验，以至于每提出一个新的需求，几乎就会新建一个服务。没有从宏观去思考如何拆分服务，那时还没有项目组成员尝试去使用领域驱动设计的思想去划分服务的边界，会议室中讨论最多的话题也是：我们的数据库该如何设计，而不是我们的领域该如何划分。项目初期，使用单体式的思想开发着分布式项目，新技术的引入还只是使人有点稍微的不顺手，但是项目越做越大后，越来越大的不适感逐渐侵蚀着我们的开发速度。</p>
-<p>说道微服务的拆分，有很多个维度，这里主要谈两个维度：</p>
-<ul>
-<li>系统维度：业务功能不同的需求，交给不同的系统完成，如订单，商品，地址，用户等系统需要拆分。</li>
-<li>模块维度：基础架构层（如公用 util），领域层，接口层，服务层，表现层的拆分。</li>
-</ul>
-<p>在项目的初期，我们错误地认为微服务的拆分仅仅是系统维度的拆分，如商品系统和订单系统，而在模块维度上，缺少拆分的意识，如订单模块的表现层和服务层，我们虽然做了隔离（两个独立的 tomcat）。但在后来，业务添加了一个新的需求：商城增加积分支持，让用户可以使用积分购买商品。我们突然发现，所谓的服务层和表现层严重的耦合，仅仅是在物理上进行了隔离，逻辑层面并没有拆分，这导致新的积分服务模块从原先的订单服务层拷贝了大量的代码。吸取了这个教训后，我们新的项目中采取了如下的分层方式：</p>
-<p><img src="https://kirito.iocoder.cn/52029421305_2.gif" alt="新的架构分层"></p>
-<p>其中比较关键的一点便是表现层与应用层的完全分离，交互完全使用 DTO 对象。不少同事产生了困惑，抱怨在表现层不能访问数据库，这让他们获取数据变得十分“麻烦”，应用层和表现层还多了一次数据拷贝的工作，用于将 DO 持久化对象转换成 DTO 对象。但这样的好处从长远来看，是不言而喻的。总结为以下几点：</p>
-<p>1 应用层高度重用，没有表现形式的阻碍，PC 端，移动端，外部服务都可以同时接入，需要组装什么样的数据，请自行组装。</p>
-<p>2 应用层和领域层可以交由经验较为丰富的程序员负责，避免了一些低性能的数据操作，错误的并发控制等等。</p>
-<p>3 解决远程调用数据懒加载的问题。从前的设计中，表现层拿到了领域层的对象，而领域层会使用懒加载技术，当表现层想要获取懒加载属性时，或得到一个 no session 的异常。在没有这个分层之前，如何方便地解决这个问题一度困扰了我们很长的一段时间。</p>
-<h2 id="数据库的滥用"><a href="#数据库的滥用" class="headerlink" title="数据库的滥用"></a>数据库的滥用</h2><p>项目使用了 oracle，我们所有的数据都存在于同一个 oracle 实例中，各个系统模块并没有做到物理层面的数据库隔离。这并不符合设计，一方面这给那些想要跨模块执行 join 操作的人留了后门，如执行订单模块和用户模块的级联查询；另一方面，还困扰了一部分对微服务架构不甚了解的程序员，在他们的想法中，同一个数据库实例反而方便了他们的数据操作。</p>
-<p>严格意义上，不仅仅是不同系统之间的数据库不能互相访问。同一个系统维度的不同模块也应当限制，正如前面一节的分层架构中，表现层（web 层）是不应该出现 DAO 的，pom 文件中也不应该出现任何 JPA，Hibernate，Mybatis 一类的依赖，它所有的数据来源，必须是应用层。</p>
-<p>另外一方面，由于历史遗留问题，需要对接一个老系统，他们的表和这个电商的 oracle 实例是同一个，而我竟然在他们的表上发现了触发器这种操作… 在新的项目中，我们已经禁止使用数据库层面的触发器和物理约束。</p>
-<p>在新的项目中，我们采用了阿里云的 RDS(mysql) 作为 oracle 的替代品，核心业务数据则放到了分布式数据库 DRDS 中，严格做到了数据库层面的拆分。</p>
-<h2 id="并发的控制"><a href="#并发的控制" class="headerlink" title="并发的控制"></a>并发的控制</h2><p>电商系统不同于 OA 系统，CMS 系统，余额，订单等等操作都是敏感操作，实实在在跟钱打交道的东西容不得半点马虎，然而即使是一些有经验的程序员，也写出了这样的扣减余额操作：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reduce</span><span class="params">(String accountId,BigDecimal cost)</span></span>&#123;</span><br><span class="line">    Account account = accountService.findOne(accountId);</span><br><span class="line">    BigDecimal balance = account.getBalance();</span><br><span class="line">    <span class="keyword">if</span>(balance &gt; cost)</span><br><span class="line">      balance = balance - cost;<span class="comment">// 用四则运算代替 BigDecimal 的 api，方便表达</span></span><br><span class="line">    account.setBalance(balance);</span><br><span class="line">    accountService.save(account);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>很多人没有控制并发的意识，即使意识到了，也不知道如何根据业务场景采取合适的手段控制并发，是使用 JPA 中的乐观锁，还是使用数据库的行级自旋锁完成简单并发控制，还是 for update 悲观锁（这不建议被使用），还是基于 redis 或 zookeeper 一类的分布式锁？</p>
-<p>这种错误甚至都不容许等到 code revivew 时才被发现，而应该是尽力地杜绝。</p>
-<h2 id="代码规范"><a href="#代码规范" class="headerlink" title="代码规范"></a>代码规范</h2><p>小到 java 的变量的驼峰命名法，数据库中用‘_’分割单词，到业务代码该如何规范的书写，再到并发规范，性能调优。准确的说，没有人管理这些事，这样的工作落到了每个有悟性的开发者身上。模块公用的常量，系统公用的常量应当区分放置，禁止使用魔鬼数字，bool 变量名不能以 is 开头等等细小的但是重要的规范，大量的条件查询 findByxxx 污染了 DAO 层，完全可以被 predicates，criteria 替代，RESTFUL 规范指导设计 web 接口等等…</p>
-<p>在新的项目中，一条条规范被逐渐添加到了项目单独的模块 READ.me 中。作为公司的一个 junior developer，在建议其他成员使用规范开发项目时，得到的回应通常是：我的功能都已经实现了，干嘛要改；不符合规范又怎么样，要改你改时。有时候也是挺无力的，算是个人的一点牢骚吧。</p>
-<h2 id="软件设计的一点不足"><a href="#软件设计的一点不足" class="headerlink" title="软件设计的一点不足"></a>软件设计的一点不足</h2><p>还是拿订单系统和商品系统来说事，虽然两个系统在物理上被拆分开了，但如果需要展示订单列表，订单详情，如今系统的设计会发起多次的远程调用，用于查询订单的归属商品，这是违背领域驱动设计的。订单中的商品就应当是归属于订单模块，正确的设计应该是使用冗余，代替频繁的跨网络节点远程调用。</p>
-<p>另外一点便是高可用，由于机器内存的限制，所有的系统都只部署了单个实例，这其实并不是微服务的最佳实践。从系统应用，到 zookeeper，redis，mq 等中间件，都应当保证高可用，避免单点问题。没有真正实现做到横向扩展（知识理论上实现了），实在是有点遗憾。</p>
-<p>系统没有熔断，降级处理，在新的项目中，由于我们引入了 Spring Cloud，很多地方都可以 out of box 式使用框架提供的 fallback 处理，而这上一个电商项目由于框架的限制以及接口设计之初就没有预想到要做这样的操作，使得可靠性再减了几分。</p>
-<h2 id="自动化运维的缺失"><a href="#自动化运维的缺失" class="headerlink" title="自动化运维的缺失"></a>自动化运维的缺失</h2><p>单体式应用的美好时代，只需要发布同一份 war 包。而微服务项目中，一切都变得不同，在我们这个不算特别庞大的电商系统中，需要被运行的服务模块也到达了 30-40 个。由于这个电商系统是部署在甲方自己的服务器中，一方面是业务部门的业务审批流程，一方面是如此众多的 jar 包运行，没有自动发布，没有持续集成。令我比较难忘的是初期发布版本，始终有一两个服务莫名奇妙的挂掉，对着终端中的服务列表，一个个排查，这种痛苦的经历。至今，这个系统仍然依靠运维人员，手动管理版本。</p>
-<p>上一个项目有一些不可控的项目因素，而新的项目中，系统服务全部在阿里云上部署，也引入了 Jenkins，一切都在逐渐变好，其他的 devops 工具仍然需要完善，以及 docker 一类的容器技术还未在计划日程之内，这些都是我们今年努力的目标。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>原本积累了很多自己的想法，可惜落笔之后能够捕捉到一些点，便只汇聚成了上述这些，而这上一个电商项目在逐渐的迭代开发之后也变得越来越好了（我去了新的项目组后，其他同事负责了后续的开发）。这个经历，于我是非常珍贵的，它比那些大牛直接告诉我微服务设计的要素要更加有意义。知道了不足之处，经历了自己解决问题的过程，才会了解到好的方案的优势，了解到开源方案到底是为了解决什么样的问题而设计的。</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/rethink-1/" data-id="ckebecf3h008bbh9ep0h8kwgt" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-security-1/" data-id="ckf41gf01009sfr9esjoabifr" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1974,6 +2045,44 @@ public String test(){
                     <li>
                         
                         <!-- <div class="item-thumbnail">
+                            <a href="/serialize-practice/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/JAVA/">JAVA</a></p>
+                            <p class="item-title"><a href="/serialize-practice/" class="title">gson 替换 fastjson 引发的线上问题分析</a></p>
+                            <p class="item-date"><time datetime="2020-09-15T10:37:56.000Z" itemprop="datePublished">2020-09-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/three-thinking-ways/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/随笔/">随笔</a></p>
+                            <p class="item-title"><a href="/three-thinking-ways/" class="title">三种思维，让我脱胎换骨</a></p>
+                            <p class="item-date"><time datetime="2020-08-30T13:04:52.000Z" itemprop="datePublished">2020-08-30</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
                             <a href="/arthas-lambda-redefine/" class="thumbnail">
     
     
@@ -2028,44 +2137,6 @@ public String test(){
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/arthas-trace/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Arthas/">Arthas</a></p>
-                            <p class="item-title"><a href="/arthas-trace/" class="title">Arthas | 追踪线上耗时方法</a></p>
-                            <p class="item-date"><time datetime="2020-04-09T12:49:30.000Z" itemprop="datePublished">2020-04-09</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/arthas-thread/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Arthas/">Arthas</a></p>
-                            <p class="item-title"><a href="/arthas-thread/" class="title">Arthas | 定位线上 Dubbo 线程池满异常</a></p>
-                            <p class="item-date"><time datetime="2020-02-16T11:30:35.000Z" itemprop="datePublished">2020-02-16</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2075,7 +2146,7 @@ public String test(){
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">23</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2084,7 +2155,7 @@ public String test(){
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -2093,7 +2164,7 @@ public String test(){
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Arthas/" style="font-size: 13px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+            <a href="/tags/Arthas/" style="font-size: 13px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/思维方式/" style="font-size: 10px;">思维方式</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
         </div>
     </div>
 
