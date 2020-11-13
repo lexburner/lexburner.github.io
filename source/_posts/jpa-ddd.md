@@ -9,13 +9,13 @@ categories:
 
 记得前几个月，spring4all 社区刚搞过一次技术话题讨论：如何对 JPA 或者 MyBatis 进行技术选型？传送门：http://www.spring4all.com/article/391 由于平时工作接触较多的是 JPA，所以对其更熟悉一些，这一篇文章记录下个人在使用 JPA 时的一些小技巧。补充说明：JPA 是一个规范，本文所提到的 JPA，特指 spring-data-jpa。
 
-tips：** 阅读本文之前，建议了解值对象和实体这两个概念的区别。**
+tips：**阅读本文之前，建议了解值对象和实体这两个概念的区别。**
 
 ## 使用 @Embedded 关联一对一的值对象
 
 现实世界有很多一对一的关联关系，如人和身份证，订单和购买者... 而在 JPA 中表达一对一的关联，通常有三种方式。下面就以订单（Order）和购买者（CustomerVo）为例来介绍这三种方式，这里 CustomerVo 的 Vo 指的是 Value Object。
 
-** 字段平铺 **
+**字段平铺**
 
 这可能是最简单的方式了，由于一对一关联的特殊性，完全可以在 Order 类中，使用几个字段记录 CustomerVo 的属性。
 
@@ -32,7 +32,7 @@ public class Order {
 
 实际上大多数人就是这么做的，甚至都没有意识到这三个字段其实是属于同一个实体类。这种形式优点是很明显的：简单；缺点也是很明显的，这不符合 OO 的原则，且不利于统一检索和维护 CustomerVo 信息。
 
-** 使用 @OneToOne**
+**使用 @OneToOne**
 
 ```java
 public class Order {
@@ -43,7 +43,7 @@ public class Order {
 
 这么做的确更“面向对象”了，但代价似乎太大了，我们需要在数据库中额外维护一张 CustomerVo 表，关联越多，代码处理起来就越麻烦，得不偿失。
 
-** 使用 @Embedded**
+**使用 @Embedded**
 
 那有没有能中和上述矛盾的方案呢？引出 @Embedded 这个注解。分析下初始需求，我们发现：CustomerVo 仅仅是作为一个值对象，并不是一个实体（这里牵扯到一些领域驱动设计的知识，值对象的特点是：作为实体对象的修饰，即 CustomerVo 这个整体是 Order 实体的一个属性；不变性，CustomerVo 一旦生成后便不可被修改，除非被整体替换）
 
@@ -76,7 +76,7 @@ Order 拥有 @Entity 注解，表明其是 DDD 中的实体；而 CustomerVo 拥
 
 以商品和商品组图来举例。
 
-** 使用 @OneToMany**
+**使用 @OneToMany**
 
 还是先想想我们原来会怎么做，保存一个 List<String>, 一种方式是这样
 
@@ -110,7 +110,7 @@ public class GoodsPicture {
 
 我们应当发现这样的劣势是什么，从设计的角度来看：我们并不想单独为 GoodsPicture 单独建立一张表，正如前面使用 String pictures 来表示 List<String> 一样，这违反了数据库设计的第一范式，但这对于使用者来说非常方便，** 这是关系型数据库的表达能力有限而进行的妥协 ** 。关于这一点我曾和芋艿，曹大师都进行过讨论，并达成了一致的结论：数据库中可以保存 JSON，使用时在应用层进行转换。
 
-** 使用 JSON 存储复杂对象 **
+**使用 JSON 存储复杂对象**
 
 ```java
 @Entity
@@ -124,7 +124,7 @@ public class Goods {
 }
 ```
 
-** 使用 @Convert**
+**使用 @Convert**
 
 上述的 String 使得在数据库层面少了一张表，使得 Goods 和 GoodsPictures 的关联更容易维护，但也有缺点：单纯的 String goodsPictures 对于使用者来说毫无含义，必须经过应用层的转换才可以使用。而 JPA 实际上也提供了自定义的转换器来帮我们自动完成这一转换工作，这便到了 @Convert 注解派上用场的时候了。
 
@@ -243,7 +243,7 @@ public class Activity {
 
 我们在日常操作 Activity 对象时完全不需要理会 version 这个字段，当做它不存在即可，spring 借助这个字段来做乐观锁控制。每次创建对象时，version 默认值为 0，每次修改时，会检查对象获取时和保存时的 version 是否相差 1，转化为 sql 便是这样的语句：**update activity set xx = xx,yy = yy,version= 10 where id = 1 and version = 9;** 然后通过返回影响行数来判断是否更新成功。
 
-** 测试乐观锁 **
+**测试乐观锁**
 
 ```
 @Service
