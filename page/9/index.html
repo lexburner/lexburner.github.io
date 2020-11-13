@@ -166,11 +166,11 @@ ga('send', 'pageview');
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                134
+                136
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                58
+                59
                 <span>标签</span>
             </div>
         </div>
@@ -207,6 +207,425 @@ ga('send', 'pageview');
 
             
             <section id="main">
+    <article id="post-spring-cloud-sleuth" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/spring-cloud-sleuth/">使用 Spring Cloud Sleuth 实现链路监控</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/spring-cloud-sleuth/">
+            <time datetime="2017-11-07T08:58:01.000Z" itemprop="datePublished">2017-11-07</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring-Cloud/">Spring Cloud</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring-Cloud/">Spring Cloud</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>在服务比较少的年代，一个系统的接口响应缓慢通常能够迅速被发现，但如今的微服务模块，大多具有规模大，依赖关系复杂等特性，错综复杂的网状结构使得我们不容易定位到某一个执行缓慢的接口。分布式的服务跟踪组件就是为了解决这一个问题。其次，它解决了另一个难题，在没有它之前，我们客户会一直询问：你们的系统有监控吗？你们的系统有监控吗？你们的系统有监控吗？现在，谢天谢地，他们终于不问了。是有点玩笑的成分，但可以肯定的一点是，实现全链路监控是保证系统健壮性的关键因子。</p>
+<p>介绍 Spring Cloud Sleuth 和 Zipkin 的文章在网上其实并不少，所以我打算就我目前的系统来探讨一下，如何实现链路监控。全链路监控这个词意味着只要是不同系统模块之间的调用都应当被监控，这就包括了如下几种常用的交互方式：</p>
+<p>1 Http 协议，如 RestTemplate，Feign，Okhttp3，HttpClient…</p>
+<p>2 Rpc 远程调用，如 Motan，Dubbo，GRPC…</p>
+<p>3 分布式 Event，如 RabbitMq，Kafka…</p>
+<p>而我们项目目前混合使用了 Http 协议，Motan Rpc 协议，所以本篇文章会着墨于实现这两块的链路监控。</p>
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p><img src="https://kirito.iocoder.cn/sleuth%E9%93%BE%E8%B7%AF%E7%9B%91%E6%8E%A7.png" alt="项目结构"></p>
+<p>上面的项目结构是本次 demo 的核心结构，其中</p>
+<ol>
+<li>zipkin-server 作为服务跟踪的服务端，记录各个模块发送而来的调用请求，最终形成调用链路的报告。</li>
+<li>order,goods 两个模块为用来做测试的业务模块，分别实现了 http 形式和 rpc 形式的远程调用，最终我们会在 zipkin-server 的 ui 页面验证他们的调用记录。</li>
+<li>interface 存放了 order 和 goods 模块的公用接口，rpc 调用需要一个公用的接口。</li>
+<li>filter-opentracing 存放了自定义的 motan 扩展代码，用于实现 motan rpc 调用的链路监控。</li>
+</ol>
+<h2 id="Zipkin-服务端"><a href="#Zipkin-服务端" class="headerlink" title="Zipkin 服务端"></a>Zipkin 服务端</h2><p><strong> 添加依赖 </strong></p>
+<p><a href="https://github.com/lexburner/sleuth-starter/blob/master/zipkin-server/pom.xml" target="_blank" rel="noopener">全部依赖</a></p>
+<p><strong> 核心依赖 </strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.zipkin.java<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zipkin-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.zipkin.java<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zipkin-autoconfigure-ui<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.zipkin.java<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zipkin-storage-mysql<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.28.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>zipkin-autoconfigure-ui</code> 提供了默认了 UI 页面，<code>zipkin-storage-mysql</code> 选择将链路调用信息存储在 mysql 中，更多的选择可以有 <a href="https://github.com/openzipkin/zipkin/tree/master/zipkin-storage/elasticsearch" target="_blank" rel="noopener">elasticsearch</a>，<a href="https://github.com/openzipkin/zipkin/tree/master/zipkin-storage/cassandra" target="_blank" rel="noopener">cassandra</a>。</p>
+<p><strong>zipkin-server/src/main/resources/application.yml</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  application:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">zipkin-server</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line"><span class="attr">    url:</span> <span class="attr">jdbc:mysql://localhost:3306/zipkin</span></span><br><span class="line"><span class="attr">    username:</span> <span class="string">root</span></span><br><span class="line"><span class="attr">    password:</span> <span class="string">root</span></span><br><span class="line"><span class="attr">    driver-class-name:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line"><span class="attr">zipkin:</span></span><br><span class="line"><span class="attr">   storage:</span></span><br><span class="line"><span class="attr">      type:</span> <span class="string">mysql</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">9411</span></span><br></pre></td></tr></table></figure>
+<p><strong> 创建启动类 </strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableZipkinServer</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ZipkinServerApp</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MySQLStorage <span class="title">mySQLStorage</span><span class="params">(DataSource datasource)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> MySQLStorage.builder().datasource(datasource).executor(Runnable::run).build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(ZipkinServerApp.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当前版本在手动配置数据库之后才不会启动报错，可能与版本有关。mysql 相关的脚本可以在此处下载：<a href="https://github.com/lexburner/sleuth-starter/blob/master/zipkin-server/src/main/resources/mysql.sql" target="_blank" rel="noopener">mysql 初始化脚本</a>。</p>
+<p>zipkin-server 单独启动后，就可以看到链路监控页面了，此时由于没有收集到任何链路调用记录，显示如下：</p>
+<p><img src="https://kirito.iocoder.cn/zipkin_blank.png" alt="zipkin 服务端页面"></p>
+<h2 id="HTTP-链路监控"><a href="#HTTP-链路监控" class="headerlink" title="HTTP 链路监控"></a>HTTP 链路监控</h2><p>编写 order 和 goods 两个服务，在 order 暴露一个 http 端口，在 goods 中使用 RestTemplate 远程调用，之后查看在 zipkin 服务端查看调用信息。</p>
+<p>首先添加依赖，让普通的应用具备收集和发送报告的能力，这一切在 spring cloud sleuth 的帮助下都变得很简单</p>
+<p><strong> 添加依赖 </strong></p>
+<p><a href="">全部依赖</a></p>
+<p><strong> 核心依赖 </strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-zipkin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>spring-cloud-starter-zipkin</code> 依赖内部包含了两个依赖，等于同时引入了 <code>spring-cloud-starter-sleuth</code>，<code>spring-cloud-sleuth-zipkin</code> 两个依赖。名字特别像，注意区分。</p>
+<p>以 order 为例介绍配置文件</p>
+<p><strong>order/src/main/resources/application.yml</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  application:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">order</span> <span class="comment"># 1</span></span><br><span class="line"><span class="attr">  zipkin:</span></span><br><span class="line"><span class="attr">    base-url:</span> <span class="attr">http://localhost:9411</span> <span class="comment"># 2</span></span><br><span class="line"><span class="attr">  sleuth:</span></span><br><span class="line"><span class="attr">    enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">    sampler:</span></span><br><span class="line"><span class="attr">      percentage:</span> <span class="number">1</span> <span class="comment"># 3</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">8060</span></span><br></pre></td></tr></table></figure>
+<p><1> 指定项目名称可以方便的标记应用，在之后的监控页面可以看到这里的配置名称</1></p>
+<p><2> 指定 zipkin 的服务端，用于发送链路调用报告</2></p>
+<p><3> 采样率，值为 [0,1] 之间的任意实数，顾名思义，这里代表 100% 采集报告。</3></p>
+<p><strong> 编写调用类 </strong></p>
+<p>服务端 order</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/api"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Logger logger = LoggerFactory.getLogger(OrderController.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/order/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> MainOrder <span class="title">getOrder</span><span class="params">(@PathVariable(<span class="string">"id"</span>)</span> String id) </span>&#123;</span><br><span class="line">        logger.info(<span class="string">"order invoking ..."</span>); <span class="comment">//&lt;1&gt;</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MainOrder(id, <span class="keyword">new</span> BigDecimal(<span class="number">200</span>D), <span class="keyword">new</span> Date());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>客户端 goods</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> MainOrder <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">    ResponseEntity&lt;MainOrder&gt; mainOrderResponseEntity = restTemplate.getForEntity(<span class="string">"http://localhost:8060/api/order/1144"</span>, MainOrder.class);</span><br><span class="line">    MainOrder body = mainOrderResponseEntity.getBody();</span><br><span class="line">    <span class="keyword">return</span> body;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><1> 首先观察这一行日志在控制台是如何输出的</1></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2017-11-08 09:54:00.633  INFO [order,d251f40af64361d2,e46132755dc395e1,true] 2780 --- [nio-8060-exec-1] m.c.sleuth.order.web.OrderController     : order invoking ...</span><br></pre></td></tr></table></figure>
+<p>比没有引入 sleuth 之前多了一些信息，其中 <code>order,d251f40af64361d2,e46132755dc395e1,true</code> 分别代表了应用名称，traceId，spanId，当前调用是否被采集，关于 trace，span 这些专业词语，强烈建议去看看 Dapper 这篇论文，有很多中文翻译版本，并不是想象中的学术范，非常容易理解，很多链路监控文章中的截图都来自于这篇论文，我在此就不再赘述概念了。</p>
+<p>紧接着，回到 zipkin-server 的监控页面，查看变化</p>
+<p><img src="https://kirito.iocoder.cn/%E5%BA%94%E7%94%A8%E5%90%8D%E7%A7%B0%E8%A2%AB%E8%AE%B0%E5%BD%95.png" alt="应用名称"></p>
+<p><img src="https://kirito.iocoder.cn/%E6%9F%A5%E7%9C%8B%E8%B0%83%E7%94%A8%E8%AF%A6%E7%BB%86%E8%AE%B0%E5%BD%95.png" alt="调用详细记录"></p>
+<p><img src="https://kirito.iocoder.cn/%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB%E6%9F%A5%E7%9C%8B.png" alt="依赖关系"></p>
+<p>到这里，Http 监控就已经完成了，如果你的应用使用了其他的 Http 工具，如 okhttp3，也可以去 [opentracing，zipkin 相关的文档中寻找依赖。</p>
+<h2 id="RPC-链路监控"><a href="#RPC-链路监控" class="headerlink" title="RPC 链路监控"></a>RPC 链路监控</h2><p>虽说 spring cloud 是大势所趋，其推崇的 http 调用方式也是链路监控的主要对象，但不得不承认目前大多数的系统内部调用仍然是 RPC 的方式，至少我们内部的系统是如此，由于我们内部采用的 RPC 框架是 weibo 开源的 motan，这里以此为例，介绍 RPC 的链路监控。motan 使用 SPI 机制，实现了对链路监控的支持，<a href="https://github.com/weibocom/motan/issues/304" target="_blank" rel="noopener">https://github.com/weibocom/motan/issues/304</a> 这条 issue 中可以得知其加入了 opentracing 标准化追踪。但目前只能通过自己添加组件的方式才能配合 spring-cloud-sleuth 使用，下面来看看实现步骤。</p>
+<p><strong>filter-opentracing</strong></p>
+<p>实现思路：引入 SleuthTracingFilter，作为全局的 motan 过滤器，给每一次 motan 的调用打上 traceId 和 spanId，并编写一个 SleuthTracingContext，持有一个 SleuthTracerFactory 工厂，用于适配不同的 Tracer 实现。</p>
+<p>具体的实现可以参考文末的地址</p>
+<p><strong>order/src/main/resources/META-INF/services/com.weibo.api.motan.filter.Filter</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.weibo.api.motan.filter.sleuth.SleuthTracingFilter</span><br></pre></td></tr></table></figure>
+<p>添加一行过滤器的声明，使得项目能够识别</p>
+<p><strong> 配置 SleuthTracingContext</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function">SleuthTracingContext <span class="title">sleuthTracingContext</span><span class="params">(@Autowired(required = <span class="keyword">false</span>)</span>  org.springframework.cloud.sleuth.Tracer tracer)</span>&#123;</span><br><span class="line">    SleuthTracingContext context = <span class="keyword">new</span> SleuthTracingContext();</span><br><span class="line">    context.setTracerFactory(<span class="keyword">new</span> SleuthTracerFactory() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> org.springframework.cloud.sleuth.<span class="function">Tracer <span class="title">getTracer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> tracer;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> context;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 spring-cloud-sleuth 的 Tracer 作为 motan 调用的收集器</p>
+<p><strong> 为服务端和客户端配置过滤器 </strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">basicServiceConfigBean.setFilter(<span class="string">"sleuth-tracing"</span>);</span><br><span class="line"></span><br><span class="line">basicRefererConfigBean.setFilter(<span class="string">"sleuth-tracing"</span>);</span><br></pre></td></tr></table></figure>
+<p><strong> 编写调用测试类 </strong></p>
+<p>order 作为客户端</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@MotanReferer</span></span><br><span class="line">GoodsApi goodsApi;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/goods"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getGoodsList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    logger.info(<span class="string">"getGoodsList invoking ..."</span>);</span><br><span class="line">    <span class="keyword">return</span> goodsApi.getGoodsList();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>goods 作为服务端</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@MotanService</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GoodsApiImpl</span> <span class="keyword">implements</span> <span class="title">GoodsApi</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Logger logger = LoggerFactory.getLogger(GoodsApiImpl.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getGoodsList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        logger.info(<span class="string">"GoodsApi invoking ..."</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"success"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong> 查看调用关系 </strong></p>
+<p><img src="https://kirito.iocoder.cn/%E9%93%BE%E8%B7%AF%E8%B0%83%E7%94%A8%E4%BF%A1%E6%81%AF.png" alt="motan 调用详细信息"></p>
+<p><img src="https://kirito.iocoder.cn/motan_%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB.png" alt="依赖关系"></p>
+<p>第一张图中，使用前缀 http 和 motan 来区别调用的类型，第二张图中，依赖变成了双向的，因为一开始的 http 调用 goods 依赖于 order，而新增了 motan rpc 调用之后 order 又依赖于 goods。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>系统间交互的方式除了 http，rpc，还有另外的方式如 mq，以后还可能会有更多的方式，但实现的监控的思路都是一致的，即如何无侵入式地给调用打上标签，记录报告。Dapper 给实现链路监控提供了一个思路，而 OpenTracing 为各个框架不同的调用方式提供了适配接口….Spring Cloud Sleuth 则是遵循了 Spring 一贯的风格，整合了丰富的资源，为我们的系统集成链路监控提供了很大的便捷性。</p>
+<p>关于 motan 具体实现链路监控的代码由于篇幅限制，将源码放在了我的 github 中，如果你的系统使用了 motan，可以用于参考：<a href="https://github.com/lexburner/sleuth-starter" target="_blank" rel="noopener">https://github.com/lexburner/sleuth-starter</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>《Spring Cloud 微服务实战》– 翟永超</p>
+<p>黄桂钱老师的指导</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/spring-cloud-sleuth/" data-id="ckhfuvqqj009evp9eoa9ztsuj" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-spring-data-redis-2" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/spring-data-redis-2/">Spring Data Redis（二）-- 序列化</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/spring-data-redis-2/">
+            <time datetime="2017-10-28T08:10:55.000Z" itemprop="datePublished">2017-10-28</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring-Data-Redis/">Spring Data Redis</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="默认序列化方案"><a href="#默认序列化方案" class="headerlink" title="默认序列化方案"></a>默认序列化方案</h2><p>在上一篇文章《Spring Data Redis（一）》中，我们执行了这样一个操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redisTemplate.opsForValue().set(<span class="string">"student:1"</span>,<span class="string">"kirito"</span>);</span><br></pre></td></tr></table></figure>
+<p>试图使用 RedisTemplate 在 Redis 中存储一个键为“student:1”，值为“kirito”的 String 类型变量（redis 中通常使用‘:’作为键的分隔符）。那么是否真的如我们所预想的那样，在 Redis 中存在这样的键值对呢？</p>
+<p>这可以说是 Redis 中最基础的操作了，但严谨起见，还是验证一下为妙，使用 RedisDesktopManager 可视化工具，或者 redis-cli 都可以查看 redis 中的数据。</p>
+<p><img src="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171028125803.png" alt="查看 redis"></p>
+<p>emmmmm，大概能看出是我们的键值对，但前面似乎多了一些奇怪的 16 进制字符，在不了解 RedisTemplate 工作原理的情况下，自然会对这个现象产生疑惑。</p>
+<p>首先看看 springboot 如何帮我们自动完成 RedisTemplate 的配置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisConfiguration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">     <span class="meta">@Bean</span></span><br><span class="line">     <span class="meta">@ConditionalOnMissingBean</span>(name = <span class="string">"redisTemplate"</span>)</span><br><span class="line">     <span class="function"><span class="keyword">public</span> RedisTemplate&lt;Object, Object&gt; <span class="title">redisTemplate</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">           RedisConnectionFactory redisConnectionFactory)</span></span></span><br><span class="line"><span class="function">                 <span class="keyword">throws</span> UnknownHostException </span>&#123;</span><br><span class="line">        RedisTemplate&lt;Object, Object&gt; template = <span class="keyword">new</span> RedisTemplate&lt;Object, Object&gt;();</span><br><span class="line">        template.setConnectionFactory(redisConnectionFactory);</span><br><span class="line">        <span class="keyword">return</span> template;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>没看出什么特殊的设置，于是我们进入 RedisTemplate 自身的源码中一窥究竟。</p>
+<p>首先是在类开头声明了一系列的序列化器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">boolean</span> enableDefaultSerializer = <span class="keyword">true</span>;<span class="comment">// 配置默认序列化器</span></span><br><span class="line"><span class="keyword">private</span> RedisSerializer&lt;?&gt; defaultSerializer;</span><br><span class="line"><span class="keyword">private</span> ClassLoader classLoader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> RedisSerializer keySerializer = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">private</span> RedisSerializer valueSerializer = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">private</span> RedisSerializer hashKeySerializer = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">private</span> RedisSerializer hashValueSerializer = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">private</span> RedisSerializer&lt;String&gt; stringSerializer = <span class="keyword">new</span> StringRedisSerializer();</span><br></pre></td></tr></table></figure>
+<p>看到了我们关心的 <code>keySerializer</code> 和 <code>valueSerializer</code>，在 RedisTemplate.afterPropertiesSet() 方法中，可以看到，默认的序列化方案:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterPropertiesSet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="keyword">super</span>.afterPropertiesSet();</span><br><span class="line">     <span class="keyword">boolean</span> defaultUsed = <span class="keyword">false</span>;</span><br><span class="line">     <span class="keyword">if</span> (defaultSerializer == <span class="keyword">null</span>) &#123;</span><br><span class="line">        defaultSerializer = <span class="keyword">new</span> JdkSerializationRedisSerializer(</span><br><span class="line">              classLoader != <span class="keyword">null</span> ? classLoader : <span class="keyword">this</span>.getClass().getClassLoader());</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">if</span> (enableDefaultSerializer) &#123;</span><br><span class="line">        <span class="keyword">if</span> (keySerializer == <span class="keyword">null</span>) &#123;</span><br><span class="line">           keySerializer = defaultSerializer;</span><br><span class="line">           defaultUsed = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (valueSerializer == <span class="keyword">null</span>) &#123;</span><br><span class="line">           valueSerializer = defaultSerializer;</span><br><span class="line">           defaultUsed = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (hashKeySerializer == <span class="keyword">null</span>) &#123;</span><br><span class="line">           hashKeySerializer = defaultSerializer;</span><br><span class="line">           defaultUsed = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (hashValueSerializer == <span class="keyword">null</span>) &#123;</span><br><span class="line">           hashValueSerializer = defaultSerializer;</span><br><span class="line">           defaultUsed = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	...</span><br><span class="line">    initialized = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>默认的方案是使用了 <code>JdkSerializationRedisSerializer</code>，所以导致了前面的结果，注意：字符串和使用 jdk 序列化之后的字符串是两个概念。</p>
+<p>我们可以查看 set 方法的源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">final</span> <span class="keyword">byte</span>[] rawValue = rawValue(value);</span><br><span class="line">   execute(<span class="keyword">new</span> ValueDeserializingRedisCallback(key) &#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">protected</span> <span class="keyword">byte</span>[] inRedis(<span class="keyword">byte</span>[] rawKey, RedisConnection connection) &#123;</span><br><span class="line">         connection.set(rawKey, rawValue);</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终与 Redis 交互使用的是原生的 connection，键值则全部是字节数组，意味着所有的序列化都依赖于应用层完成，Redis 只认字节！这也是引出本节介绍的初衷，序列化是与 Redis 打交道很关键的一个环节。</p>
+<h2 id="StringRedisSerializer"><a href="#StringRedisSerializer" class="headerlink" title="StringRedisSerializer"></a>StringRedisSerializer</h2><p>在我不长的使用 Redis 的时间里，其实大多数操作是字符串操作，键值均为字符串，String.getBytes() 即可满足需求。spring-data-redis 也考虑到了这一点，其一，提供了 StringRedisSerializer 的实现，其二，提供了 StringRedisTemplate，继承自 RedisTemplate。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringRedisTemplate</span> <span class="keyword">extends</span> <span class="title">RedisTemplate</span>&lt;<span class="title">String</span>, <span class="title">String</span>&gt;</span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">StringRedisTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        RedisSerializer&lt;String&gt; stringSerializer = <span class="keyword">new</span> StringRedisSerializer();</span><br><span class="line">        setKeySerializer(stringSerializer);</span><br><span class="line">        setValueSerializer(stringSerializer);</span><br><span class="line">        setHashKeySerializer(stringSerializer);</span><br><span class="line">        setHashValueSerializer(stringSerializer);</span><br><span class="line">    &#125;</span><br><span class="line">  	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>即只能存取字符串。尝试执行如下的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">StringRedisTemplate stringRedisTemplate;</span><br><span class="line"></span><br><span class="line">stringRedisTemplate.opsForValue().set(<span class="string">"student:2"</span>, <span class="string">"SkYe"</span>);</span><br></pre></td></tr></table></figure>
+<p>再同样观察 RedisDesktopManager 中的变化：</p>
+<p><img src="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171028140012.png" alt="查看 redis"></p>
+<p>由于更换了序列化器，我们得到的结果也不同了。</p>
+<h2 id="项目中序列化器使用的注意点"><a href="#项目中序列化器使用的注意点" class="headerlink" title="项目中序列化器使用的注意点"></a>项目中序列化器使用的注意点</h2><p>理论上，字符串（本质是字节）其实是万能格式，是否可以使用 StringRedisTemplate 将复杂的对象存入 Redis 中，答案当然是肯定的。可以在应用层手动将对象序列化成字符串，如使用 fastjson，jackson 等工具，反序列化时也是通过字符串还原出原来的对象。而如果是用 <code>redisTemplate.opsForValue().set(&quot;student:3&quot;,new Student(3,&quot;kirito&quot;));</code> 便是依赖于内部的序列化器帮我们完成这样的一个流程，和使用 <code>stringRedisTemplate.opsForValue().set(&quot;student:3&quot;,JSON.toJSONString(new Student(3,&quot;kirito&quot;)));</code></p>
+<p>其实是一个等价的操作。但有两点得时刻记住两点:</p>
+<ol>
+<li>Redis 只认字节。</li>
+<li>使用什么样的序列化器序列化，就必须使用同样的序列化器反序列化。</li>
+</ol>
+<p>曾经在 review 代码时发现，项目组的两位同事操作 redis，一个使用了 RedisTemplate，一个使用了 StringRedisTemplate，当他们操作同一个键时，key 虽然相同，但由于序列化器不同，导致无法获取成功。差异虽小，但影响是非常可怕的。</p>
+<p>另外一点是，微服务不同模块连接了同一个 Redis，在共享内存中交互数据，可能会由于版本升级，模块差异，导致相互的序列化方案不一致，也会引起问题。如果项目中途切换了序列化方案，也可能会引起 Redis 中老旧持久化数据的反序列化异常，同样需要引起注意。最优的方案自然是在项目初期就统一好序列化方案，所有模块引用同一份依赖，避免不必要的麻烦（或者干脆全部使用默认配置）。</p>
+<h2 id="序列化接口-RedisSerializer"><a href="#序列化接口-RedisSerializer" class="headerlink" title="序列化接口 RedisSerializer"></a>序列化接口 RedisSerializer</h2><p>无论是 RedisTemplate 中默认使用的 <code>JdkSerializationRedisSerializer</code>，还是 StringRedisTemplate 中使用的 <code>StringRedisSerializer</code> 都是实现自统一的接口 <code>RedisSerializer</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RedisSerializer</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">   <span class="keyword">byte</span>[] serialize(T t) <span class="keyword">throws</span> SerializationException;</span><br><span class="line">   <span class="function">T <span class="title">deserialize</span><span class="params">(<span class="keyword">byte</span>[] bytes)</span> <span class="keyword">throws</span> SerializationException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 spring-data-redis 中提供了其他的默认实现，用于替换默认的序列化方案。</p>
+<ul>
+<li>GenericToStringSerializer 依赖于内部的 ConversionService，将所有的类型转存为字符串</li>
+<li>GenericJackson2JsonRedisSerializer 和 Jackson2JsonRedisSerializer 以 JSON 的形式序列化对象</li>
+<li>OxmSerializer 以 XML 的形式序列化对象</li>
+</ul>
+<p>我们可能出于什么样的目的修改序列化器呢？按照个人理解可以总结为以下几点：</p>
+<ol>
+<li>各个工程间约定了数据格式，如使用 JSON 等通用数据格式，可以让异构的系统接入 Redis 同样也能识别数据，而 JdkSerializationRedisSerializer 则不具备这样灵活的特性</li>
+<li>数据的可视化，在项目初期我曾经偏爱 JSON 序列化，在运维时可以清晰地查看各个 value 的值，非常方便。</li>
+<li>效率问题，如果需要将大的对象存入 Value 中，或者 Redis IO 非常频繁，替换合适的序列化器便可以达到优化的效果。</li>
+</ol>
+<h2 id="替换默认的序列化器"><a href="#替换默认的序列化器" class="headerlink" title="替换默认的序列化器"></a>替换默认的序列化器</h2><p>可以将全局的 RedisTemplate 覆盖，也可以在使用时在局部实例化一个 RedisTemplate 替换（不依赖于 IOC 容器）需要根据实际的情况选择替换的方式，以 Jackson2JsonRedisSerializer 为例介绍全局替换的方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> RedisTemplate <span class="title">redisTemplate</span><span class="params">(RedisConnectionFactory redisConnectionFactory)</span> </span>&#123;</span><br><span class="line">    RedisTemplate redisTemplate = <span class="keyword">new</span> RedisTemplate();</span><br><span class="line">    redisTemplate.setConnectionFactory(redisConnectionFactory);</span><br><span class="line">    Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = <span class="keyword">new</span> Jackson2JsonRedisSerializer(Object.class);</span><br><span class="line"></span><br><span class="line">    ObjectMapper objectMapper = <span class="keyword">new</span> ObjectMapper();<span class="comment">// &lt;1&gt;</span></span><br><span class="line">    objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);</span><br><span class="line">    objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);</span><br><span class="line"></span><br><span class="line">    jackson2JsonRedisSerializer.setObjectMapper(objectMapper);</span><br><span class="line"></span><br><span class="line">    redisTemplate.setKeySerializer(<span class="keyword">new</span> StringRedisSerializer()); <span class="comment">// &lt;2&gt;</span></span><br><span class="line">    redisTemplate.setValueSerializer(jackson2JsonRedisSerializer); <span class="comment">// &lt;2&gt;</span></span><br><span class="line"></span><br><span class="line">    redisTemplate.afterPropertiesSet();</span><br><span class="line">    <span class="keyword">return</span> redisTemplate;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><1> 修改 Jackson 序列化时的默认行为</1></p>
+<p><2> 手动指定 RedisTemplate 的 Key 和 Value 的序列化器</2></p>
+<p>然后使用 RedisTemplate 进行保存：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">StringRedisTemplate stringRedisTemplate;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Student student3 = <span class="keyword">new</span> Student();</span><br><span class="line">    student3.setName(<span class="string">"kirito"</span>);</span><br><span class="line">    student3.setId(<span class="string">"3"</span>);</span><br><span class="line">    student3.setHobbies(Arrays.asList(<span class="string">"coding"</span>,<span class="string">"write blog"</span>,<span class="string">"eat chicken"</span>));</span><br><span class="line">    redisTemplate.opsForValue().set(<span class="string">"student:3"</span>,student3);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>紧接着，去 RedisDesktopManager 中查看结果：</p>
+<p><img src="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171028225412.png" alt="查看 Redis"></p>
+<p>标准的 JSON 格式</p>
+<h2 id="实现-Kryo-序列化"><a href="#实现-Kryo-序列化" class="headerlink" title="实现 Kryo 序列化"></a>实现 Kryo 序列化</h2><p>我们也可以考虑根据自己项目和需求的特点，扩展序列化器，这是非常方便的。比如前面提到的，为了追求性能，可能考虑使用 Kryo 序列化器替换缓慢的 JDK 序列化器，如下是一个参考实现（为了 demo 而写，未经过生产验证）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KryoRedisSerializer</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">RedisSerializer</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> Logger logger = LoggerFactory.getLogger(KryoRedisSerializer.class);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Kryo&gt; kryos = <span class="keyword">new</span> ThreadLocal&lt;Kryo&gt;() &#123;</span><br><span class="line">        <span class="function"><span class="keyword">protected</span> Kryo <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            Kryo kryo = <span class="keyword">new</span> Kryo();</span><br><span class="line">            <span class="keyword">return</span> kryo;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] serialize(Object obj) <span class="keyword">throws</span> SerializationException &#123;</span><br><span class="line">        <span class="keyword">if</span> (obj == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"serialize param must not be null"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        Kryo kryo = kryos.get();</span><br><span class="line">        Output output = <span class="keyword">new</span> Output(<span class="number">64</span>, -<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            kryo.writeClassAndObject(output, obj);</span><br><span class="line">            <span class="keyword">return</span> output.toBytes();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            closeOutputStream(output);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">deserialize</span><span class="params">(<span class="keyword">byte</span>[] bytes)</span> <span class="keyword">throws</span> SerializationException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bytes == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Kryo kryo = kryos.get();</span><br><span class="line">        Input input = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            input = <span class="keyword">new</span> Input(bytes);</span><br><span class="line">            <span class="keyword">return</span> (T) kryo.readClassAndObject(input);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            closeInputStream(input);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">closeOutputStream</span><span class="params">(OutputStream output)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (output != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                output.flush();</span><br><span class="line">                output.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                logger.error(<span class="string">"serialize object close outputStream exception"</span>, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">closeInputStream</span><span class="params">(InputStream input)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (input != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                input.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                logger.error(<span class="string">"serialize object close inputStream exception"</span>, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于 Kyro 是线程不安全的，所以使用了一个 ThreadLocal 来维护，也可以挑选其他高性能的序列化方案如 Hessian，Protobuf…</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/spring-data-redis-2/" data-id="ckhfuvqqs009mvp9ea4jddv6l" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-spring-data-redis-1" class="article article-type-post" itemscope="" itemprop="blogPost">
     <div class="article-inner">
         
@@ -361,7 +780,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-data-redis-1/" data-id="ckf41gezt009kfr9e4u11q92k" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-data-redis-1/" data-id="ckhfuvqqq009hvp9e6roikepq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -529,7 +948,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/java-skill-1/" data-id="ckf41gewl005efr9ek66tbo9c" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/java-skill-1/" data-id="ckhfuvqod0056vp9eummho8p9" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -715,7 +1134,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/concurrent-2/" data-id="ckf41gesx0017fr9euzw1izhj" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/concurrent-2/" data-id="ckhfuvqls000xvp9egjfgov7d" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -906,7 +1325,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/concurrent-1/" data-id="ckf41gest0010fr9ebrnkdgep" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/concurrent-1/" data-id="ckhfuvqlr000tvp9e0c5us38c" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1056,7 +1475,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-security-5/" data-id="ckf41gf0600a7fr9ea1veo93b" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-security-5/" data-id="ckhfuvqso00dbvp9eku8cr7bd" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1258,7 +1677,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-security-4/" data-id="ckf41gf04009zfr9e8datznhq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-security-4/" data-id="ckhfuvqsn00davp9eq1233hqc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1441,7 +1860,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/project-rules-2/" data-id="ckf41geya007vfr9e5ksv91sm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/project-rules-2/" data-id="ckhfuvqpo007pvp9e329yumec" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1588,371 +2007,7 @@ public String test(){
 
 </div>
 
-    <a data-url="https://lexburner.github.io/spring-security-2/" data-id="ckf41gf03009wfr9e5s61bsjk" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-spring-security-3" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/spring-security-3/">Spring Security(三)-- 核心配置解读</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/spring-security-3/">
-            <time datetime="2017-09-20T15:25:34.000Z" itemprop="datePublished">2017-09-20</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Spring-Security/">Spring Security</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/Spring-Security/">Spring Security</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>上一篇文章《Spring Security(二)–Guides》，通过 Spring Security 的配置项了解了 Spring Security 是如何保护我们的应用的，本篇文章对上一次的配置做一个分析。</p>
-<p>[TOC]</p>
-<h2 id="3-核心配置解读"><a href="#3-核心配置解读" class="headerlink" title="3 核心配置解读"></a>3 核心配置解读</h2><h3 id="3-1-功能介绍"><a href="#3-1-功能介绍" class="headerlink" title="3.1 功能介绍"></a>3.1 功能介绍</h3><p>这是 Spring Security 入门指南中的配置项：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSecurity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebSecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">      http</span><br><span class="line">          .authorizeRequests()</span><br><span class="line">              .antMatchers(<span class="string">"/"</span>, <span class="string">"/home"</span>).permitAll()</span><br><span class="line">              .anyRequest().authenticated()</span><br><span class="line">              .and()</span><br><span class="line">          .formLogin()</span><br><span class="line">              .loginPage(<span class="string">"/login"</span>)</span><br><span class="line">              .permitAll()</span><br><span class="line">              .and()</span><br><span class="line">          .logout()</span><br><span class="line">              .permitAll();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Autowired</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configureGlobal</span><span class="params">(AuthenticationManagerBuilder auth)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">      auth</span><br><span class="line">          .inMemoryAuthentication()</span><br><span class="line">              .withUser(<span class="string">"admin"</span>).password(<span class="string">"admin"</span>).roles(<span class="string">"USER"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>当配置了上述的 javaconfig 之后，我们的应用便具备了如下的功能：</p>
-<ul>
-<li>除了“/”,”/home”(首页),”/login”(登录),”/logout”(注销), 之外，其他路径都需要认证。</li>
-<li>指定“/login”该路径为登录页面，当未认证的用户尝试访问任何受保护的资源时，都会跳转到“/login”。</li>
-<li>默认指定“/logout”为注销页面</li>
-<li>配置一个内存中的用户认证器，使用 admin/admin 作为用户名和密码，具有 USER 角色</li>
-</ul>
-<ul>
-<li>防止 CSRF 攻击</li>
-<li><a href="https://en.wikipedia.org/wiki/Session_fixation" target="_blank" rel="noopener">Session Fixation</a> protection(可以参考我之前讲解 Spring Session 的文章，防止别人篡改 sessionId)</li>
-<li>Security Header(添加一系列和 Header 相关的控制)<ul>
-<li><a href="https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security" target="_blank" rel="noopener">HTTP Strict Transport Security</a> for secure requests</li>
-<li>集成 X-Content-Type-Options</li>
-<li>缓存控制</li>
-<li>集成 <a href="https://msdn.microsoft.com/en-us/library/dd565647(v=vs.85" target="_blank" rel="noopener">X-XSS-Protection</a>.aspx) </li>
-<li>X-Frame-Options integration to help prevent <a href="https://en.wikipedia.org/wiki/Clickjacking" target="_blank" rel="noopener">Clickjacking</a>(iframe 被默认禁止使用)</li>
-</ul>
-</li>
-<li>为 Servlet API 集成了如下的几个方法<ul>
-<li><a href="https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html#getRemoteUser(" target="_blank" rel="noopener">HttpServletRequest#getRemoteUser()</a>)</li>
-<li><a href="https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html#getUserPrincipal(" target="_blank" rel="noopener">HttpServletRequest.html#getUserPrincipal()</a>)</li>
-<li><a href="https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html#isUserInRole(java.lang.String" target="_blank" rel="noopener">HttpServletRequest.html#isUserInRole(java.lang.String)</a>)</li>
-<li><a href="https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html#login(java.lang.String,%20java.lang.String" target="_blank" rel="noopener">HttpServletRequest.html#login(java.lang.String, java.lang.String)</a>)</li>
-<li><a href="https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html#logout(" target="_blank" rel="noopener">HttpServletRequest.html#logout()</a>)</li>
-</ul>
-</li>
-</ul>
-<h3 id="3-2-EnableWebSecurity"><a href="#3-2-EnableWebSecurity" class="headerlink" title="3.2 @EnableWebSecurity"></a>3.2 @EnableWebSecurity</h3><p>我们自己定义的配置类 WebSecurityConfig 加上了 @EnableWebSecurity 注解，同时继承了 WebSecurityConfigurerAdapter。你可能会在想谁的作用大一点，毫无疑问 @EnableWebSecurity 起到决定性的配置作用，它其实是个组合注解。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Import</span>(&#123; WebSecurityConfiguration.class, <span class="comment">// &lt;2&gt;</span></span><br><span class="line">      SpringWebMvcImportSelector.class &#125;) <span class="comment">// &lt;1&gt;</span></span><br><span class="line"><span class="meta">@EnableGlobalAuthentication</span> <span class="comment">// &lt;3&gt;</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnableWebSecurity &#123;</span><br><span class="line">   <span class="function"><span class="keyword">boolean</span> <span class="title">debug</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">false</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>@Import 是 springboot 提供的用于引入外部的配置的注解，可以理解为：@EnableWebSecurity 注解激活了 @Import 注解中包含的配置类。</p>
-<p><1> <code>SpringWebMvcImportSelector</code> 的作用是判断当前的环境是否包含 springmvc，因为 spring security 可以在非 spring 环境下使用，为了避免 DispatcherServlet 的重复配置，所以使用了这个注解来区分。</1></p>
-<p><2> <code>WebSecurityConfiguration</code> 顾名思义，是用来配置 web 安全的，下面的小节会详细介绍。</2></p>
-<p><3> <code>@EnableGlobalAuthentication</code> 注解的源码如下：</3></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Import</span>(AuthenticationConfiguration.class)</span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnableGlobalAuthentication &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意点同样在 @Import 之中，它实际上激活了 AuthenticationConfiguration 这样的一个配置类，用来配置认证相关的核心类。</p>
-<p>也就是说：@EnableWebSecurity 完成的工作便是加载了 WebSecurityConfiguration，AuthenticationConfiguration 这两个核心配置类，也就此将 spring security 的职责划分为了配置安全信息，配置认证信息两部分。</p>
-<h4 id="WebSecurityConfiguration"><a href="#WebSecurityConfiguration" class="headerlink" title="WebSecurityConfiguration"></a>WebSecurityConfiguration</h4><p>在这个配置类中，有一个非常重要的 Bean 被注册了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebSecurityConfiguration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//DEFAULT_FILTER_NAME = "springSecurityFilterChain"</span></span><br><span class="line">	<span class="meta">@Bean</span>(name = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Filter <span class="title">springSecurityFilterChain</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    	...</span><br><span class="line">    &#125;</span><br><span class="line">   </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-<p>在未使用 springboot 之前，大多数人都应该对“springSecurityFilterChain”这个名词不会陌生，他是 spring security 的核心过滤器，是整个认证的入口。在曾经的 XML 配置中，想要启用 spring security，需要在 web.xml 中进行如下配置：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Spring Security --&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>springSecurityFilterChain<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.springframework.web.filter.DelegatingFilterProxy<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line"></span><br><span class="line">   <span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>springSecurityFilterChain<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>而在 springboot 集成之后，这样的 XML 被 java 配置取代。WebSecurityConfiguration 中完成了声明 springSecurityFilterChain 的作用，并且最终交给 DelegatingFilterProxy 这个代理类，负责拦截请求（注意 DelegatingFilterProxy 这个类不是 spring security 包中的，而是存在于 web 包中，spring 使用了代理模式来实现安全过滤的解耦）。</p>
-<h4 id="AuthenticationConfiguration"><a href="#AuthenticationConfiguration" class="headerlink" title="AuthenticationConfiguration"></a>AuthenticationConfiguration</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@Import</span>(ObjectPostProcessorConfiguration.class)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthenticationConfiguration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  	<span class="meta">@Bean</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> AuthenticationManagerBuilder <span class="title">authenticationManagerBuilder</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">			ObjectPostProcessor&lt;Object&gt; objectPostProcessor)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> AuthenticationManagerBuilder(objectPostProcessor);</span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">  	<span class="function"><span class="keyword">public</span> AuthenticationManager <span class="title">getAuthenticationManager</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    	...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>AuthenticationConfiguration 的主要任务，便是负责生成全局的身份认证管理者 AuthenticationManager。还记得在《Spring Security(一)–Architecture Overview》中，介绍了 Spring Security 的认证体系，AuthenticationManager 便是最核心的身份认证管理器。</p>
-<h3 id="3-3-WebSecurityConfigurerAdapter"><a href="#3-3-WebSecurityConfigurerAdapter" class="headerlink" title="3.3 WebSecurityConfigurerAdapter"></a>3.3 WebSecurityConfigurerAdapter</h3><p>适配器模式在 spring 中被广泛的使用，在配置中使用 Adapter 的好处便是，我们可以选择性的配置想要修改的那一部分配置，而不用覆盖其他不相关的配置。WebSecurityConfigurerAdapter 中我们可以选择自己想要修改的内容，来进行重写，而其提供了三个 configure 重载方法，是我们主要关心的：</p>
-<p><img src="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720170924215436.png" alt="WebSecurityConfigurerAdapter 中的 configure"></p>
-<p>由参数就可以知道，分别是对 AuthenticationManagerBuilder，WebSecurity，HttpSecurity 进行个性化的配置。</p>
-<h4 id="HttpSecurity-常用配置"><a href="#HttpSecurity-常用配置" class="headerlink" title="HttpSecurity 常用配置"></a>HttpSecurity 常用配置</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSecurity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomWebSecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        http</span><br><span class="line">            .authorizeRequests()</span><br><span class="line">                .antMatchers(<span class="string">"/resources/**"</span>, <span class="string">"/signup"</span>, <span class="string">"/about"</span>).permitAll()</span><br><span class="line">                .antMatchers(<span class="string">"/admin/**"</span>).hasRole(<span class="string">"ADMIN"</span>)</span><br><span class="line">                .antMatchers(<span class="string">"/db/**"</span>).access(<span class="string">"hasRole('ADMIN') and hasRole('DBA')"</span>)</span><br><span class="line">                .anyRequest().authenticated()</span><br><span class="line">                .and()</span><br><span class="line">            .formLogin()</span><br><span class="line">                .usernameParameter(<span class="string">"username"</span>)</span><br><span class="line">                .passwordParameter(<span class="string">"password"</span>)</span><br><span class="line">                .failureForwardUrl(<span class="string">"/login?error"</span>)</span><br><span class="line">                .loginPage(<span class="string">"/login"</span>)</span><br><span class="line">                .permitAll()</span><br><span class="line">                .and()</span><br><span class="line">            .logout()</span><br><span class="line">                .logoutUrl(<span class="string">"/logout"</span>)</span><br><span class="line">                .logoutSuccessUrl(<span class="string">"/index"</span>)</span><br><span class="line">                .permitAll()</span><br><span class="line">                .and()</span><br><span class="line">            .httpBasic()</span><br><span class="line">                .disable();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上述是一个使用 Java Configuration 配置 HttpSecurity 的典型配置，其中 http 作为根开始配置，每一个 and()对应了一个模块的配置（等同于 xml 配置中的结束标签），并且 and() 返回了 HttpSecurity 本身，于是可以连续进行配置。他们配置的含义也非常容易通过变量本身来推测，</p>
-<ul>
-<li>authorizeRequests() 配置路径拦截，表明路径访问所对应的权限，角色，认证信息。</li>
-<li>formLogin() 对应表单认证相关的配置</li>
-<li>logout() 对应了注销相关的配置</li>
-<li>httpBasic() 可以配置 basic 登录</li>
-<li>etc</li>
-</ul>
-<p>他们分别代表了 http 请求相关的安全配置，这些配置项无一例外的返回了 Configurer 类，而所有的 http 相关配置可以通过查看 HttpSecurity 的主要方法得知：</p>
-<p><img src="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720170924223252.png" alt="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720170924223252.png"></p>
-<p>需要对 http 协议有一定的了解才能完全掌握所有的配置，不过，springboot 和 spring security 的自动配置已经足够使用了。其中每一项 Configurer（e.g.FormLoginConfigurer,CsrfConfigurer）都是 HttpConfigurer 的细化配置项。</p>
-<h4 id="WebSecurityBuilder"><a href="#WebSecurityBuilder" class="headerlink" title="WebSecurityBuilder"></a>WebSecurityBuilder</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSecurity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebSecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(WebSecurity web)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        web</span><br><span class="line">            .ignoring()</span><br><span class="line">            .antMatchers(<span class="string">"/resources/**"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以笔者的经验，这个配置中并不会出现太多的配置信息。</p>
-<h4 id="AuthenticationManagerBuilder"><a href="#AuthenticationManagerBuilder" class="headerlink" title="AuthenticationManagerBuilder"></a>AuthenticationManagerBuilder</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSecurity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebSecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(AuthenticationManagerBuilder auth)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        auth</span><br><span class="line">            .inMemoryAuthentication()</span><br><span class="line">            .withUser(<span class="string">"admin"</span>).password(<span class="string">"admin"</span>).roles(<span class="string">"USER"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>想要在 WebSecurityConfigurerAdapter 中进行认证相关的配置，可以使用 configure(AuthenticationManagerBuilder auth) 暴露一个 AuthenticationManager 的建造器：AuthenticationManagerBuilder 。如上所示，我们便完成了内存中用户的配置。</p>
-<p>细心的朋友会发现，在前面的文章中我们配置内存中的用户时，似乎不是这么配置的，而是：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSecurity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebSecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configureGlobal</span><span class="params">(AuthenticationManagerBuilder auth)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        auth</span><br><span class="line">            .inMemoryAuthentication()</span><br><span class="line">                .withUser(<span class="string">"admin"</span>).password(<span class="string">"admin"</span>).roles(<span class="string">"USER"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果你的应用只有唯一一个 WebSecurityConfigurerAdapter，那么他们之间的差距可以被忽略，从方法名可以看出两者的区别：使用 @Autowired 注入的 AuthenticationManagerBuilder 是全局的身份认证器，作用域可以跨越多个 WebSecurityConfigurerAdapter，以及影响到基于 Method 的安全控制；而 <code>protected configure()</code> 的方式则类似于一个匿名内部类，它的作用域局限于一个 WebSecurityConfigurerAdapter 内部。关于这一点的区别，可以参考我曾经提出的 issue<a href="https://github.com/spring-projects/spring-security/issues/4571" target="_blank" rel="noopener">spring-security#issues4571</a>。官方文档中，也给出了配置多个 WebSecurityConfigurerAdapter 的场景以及 demo，将在该系列的后续文章中解读。</p>
-<p><strong> 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。</strong></p>
-<p><img src="https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg" alt="关注微信公众号"></p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/spring-security-3/" data-id="ckf41gf0600a4fr9e1f9azl2v" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-spring-security-1" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/spring-security-1/">Spring Security(一)--Architecture Overview</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/spring-security-1/">
-            <time datetime="2017-09-19T12:12:55.000Z" itemprop="datePublished">2017-09-19</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Spring-Security/">Spring Security</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/Spring-Security/">Spring Security</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            <p></p><p>一直以来我都想写一写 Spring Security 系列的文章，但是整个 Spring Security 体系强大却又繁杂。陆陆续续从最开始的 guides 接触它，到项目中看了一些源码，到最近这个月为了写一写这个系列的文章，阅读了好几遍文档，最终打算尝试一下，写一个较为完整的系列文章。</p>
-<p>较为简单或者体量较小的技术，完全可以参考着 demo 直接上手，但系统的学习一门技术则不然。以我的认知，一般的文档大致有两种风格：Architecture First 和 Code First。前者致力于让读者先了解整体的架构，方便我们对自己的认知有一个宏观的把控，而后者以特定的 demo 配合讲解，可以让读者在解决问题的过程中顺便掌握一门技术。关注过我博客或者公众号的朋友会发现，我之前介绍技术的文章，大多数是 Code First，提出一个需求，介绍一个思路，解决一个问题，分析一下源码，大多如此。而学习一个体系的技术，我推荐 Architecture First，正如本文标题所言，这篇文章是我 Spring Security 系列的第一篇，主要是根据 Spring Security 文档选择性 ~~ 翻译 ~~ 整理而成的一个架构概览，配合自己的一些注释方便大家理解。写作本系列文章时，参考版本为 Spring Security 4.2.3.RELEASE。</p>
-<p>[TOC]</p>
-<h1 id="1-核心组件"><a href="#1-核心组件" class="headerlink" title="1 核心组件"></a>1 核心组件</h1><p>这一节主要介绍一些在 Spring Security 中常见且核心的 Java 类，它们之间的依赖，构建起了整个框架。想要理解整个架构，最起码得对这些类眼熟。</p>
-<h3 id="1-1-SecurityContextHolder"><a href="#1-1-SecurityContextHolder" class="headerlink" title="1.1 SecurityContextHolder"></a>1.1 SecurityContextHolder</h3><p><code>SecurityContextHolder</code> 用于存储安全上下文（security context）的信息。当前操作的用户是谁，该用户是否已经被认证，他拥有哪些角色权限… 这些都被保存在 SecurityContextHolder 中。<code>SecurityContextHolder</code> 默认使用 <code>ThreadLocal</code> 策略来存储认证信息。看到 <code>ThreadLocal</code> 也就意味着，这是一种与线程绑定的策略。Spring Security 在用户登录时自动绑定认证信息到当前线程，在用户退出时，自动清除当前线程的认证信息。但这一切的前提，是你在 web 场景下使用 Spring Security，而如果是 Swing 界面，Spring 也提供了支持，<code>SecurityContextHolder</code> 的策略则需要被替换，鉴于我的初衷是基于 web 来介绍 Spring Security，所以这里以及后续，非 web 的相关的内容都一笔带过。</p>
-<h4 id="获取当前用户的信息"><a href="#获取当前用户的信息" class="headerlink" title="获取当前用户的信息"></a>获取当前用户的信息</h4><p>因为身份信息是与线程绑定的，所以可以在程序的任何地方使用静态方法获取用户信息。一个典型的获取当前登录用户的姓名的例子如下所示：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (principal <span class="keyword">instanceof</span> UserDetails) &#123;</span><br><span class="line">String username = ((UserDetails)principal).getUsername();</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">String username = principal.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>getAuthentication()返回了认证信息，再次 getPrincipal() 返回了身份信息，UserDetails 便是 Spring 对身份信息封装的一个接口。Authentication 和 UserDetails 的介绍在下面的小节具体讲解，本节重要的内容是介绍 SecurityContextHolder 这个容器。</p><p></p>
-            <p class="article-more-link">
-                <a href="/spring-security-1/#more">查看更多</a>
-            </p>
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/spring-security-1/" data-id="ckf41gf01009sfr9esjoabifr" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/spring-security-2/" data-id="ckhfuvqsj00d4vp9erogro9mk" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -2045,6 +2100,44 @@ public String test(){
                     <li>
                         
                         <!-- <div class="item-thumbnail">
+                            <a href="/jpa-and-mybatis/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/JAVA/">JAVA</a></p>
+                            <p class="item-title"><a href="/jpa-and-mybatis/" class="title">鱼和熊掌兼得：同时使用 JPA 和 Mybatis</a></p>
+                            <p class="item-date"><time datetime="2020-11-12T04:30:01.000Z" itemprop="datePublished">2020-11-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/talk-about-algorithm/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a></p>
+                            <p class="item-title"><a href="/talk-about-algorithm/" class="title">聊聊算法在面试中的地位</a></p>
+                            <p class="item-date"><time datetime="2020-10-08T07:43:47.000Z" itemprop="datePublished">2020-10-08</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
                             <a href="/serialize-practice/" class="thumbnail">
     
     
@@ -2099,44 +2192,6 @@ public String test(){
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/dubbo-app-pubsub/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
-                            <p class="item-title"><a href="/dubbo-app-pubsub/" class="title">Dubbo 迈向云原生的里程碑 | 应用级服务发现</a></p>
-                            <p class="item-date"><time datetime="2020-06-15T16:33:50.000Z" itemprop="datePublished">2020-06-16</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/dubbo-migration/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/RPC/">RPC</a></p>
-                            <p class="item-title"><a href="/dubbo-migration/" class="title">平滑迁移 Dubbo 服务的思考</a></p>
-                            <p class="item-date"><time datetime="2020-05-30T15:17:38.000Z" itemprop="datePublished">2020-05-30</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2146,7 +2201,7 @@ public String test(){
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">23</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">24</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">18</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2155,7 +2210,7 @@ public String test(){
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">十月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -2164,7 +2219,7 @@ public String test(){
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Arthas/" style="font-size: 13px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/思维方式/" style="font-size: 10px;">思维方式</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+            <a href="/tags/Arthas/" style="font-size: 13px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/思维方式/" style="font-size: 10px;">思维方式</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 11px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
         </div>
     </div>
 
