@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://kirito.iocoder.cn/image-20201220181056737.png">
 <meta property="og:image" content="https://kirito.iocoder.cn/image-20201220181330884.png">
 <meta property="og:image" content="https://www.cnkirito.moe/css/images/wechat_public.jpg">
-<meta property="og:updated_time" content="2020-12-20T10:30:13.976Z">
+<meta property="og:updated_time" content="2020-12-20T10:36:26.134Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一文详解 Nacos 高可用特性">
 <meta name="twitter:description" content="前言服务注册发现是一个经久不衰的话题，Dubbo 早期开源时默认的注册中心 Zookeeper 最早进入人们的视线，并且在很长一段时间里，人们将注册中心和 Zookeeper 划上了等号，可能 Zookeeper 的设计者都没有想到这款产品对微服务领域造成了如此深厚的影响，直到 SpringCloud 开始流行，其自带的 Eureka 进入了人们的视野，人们这才意识到原来注册中心还可以有其他的选择">
@@ -296,7 +296,7 @@ ga('send', 'pageview');
 <p>在生产环境，我们往往需要搭建 Nacos 集群，在 Dubbo 也需要显式地配置上集群地址：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:registry</span> <span class="attr">protocol</span>=<span class="string">"nacos"</span> <span class="attr">address</span>=<span class="string">"192.168.0.1:8848,192.168.0.2:8848,192.168.0.3:8848"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
 <p>当其中一台机器宕机时，为了不影响整体运行，客户端会存在重试机制</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220151901675.png" alt="image-20201220151901675"></p>
+<p><img src="https://kirito.iocoder.cn/image-20201220151901675.png" alt="轮询 server"></p>
 <p>逻辑非常简单，拿到地址列表，在请求成功之前逐个尝试，直到成功为止。</p>
 <p>该可用性保证存在于 nacos-client 端。</p>
 <h2 id="一致性协议-distro"><a href="#一致性协议-distro" class="headerlink" title="一致性协议 distro"></a>一致性协议 distro</h2><p>首先给各位读者打个强心剂，不用看到”一致性协议“这几个字就被劝退，本节不会探讨一致性协议的实现过程，而是重点介绍其余高可用相关的特性。有的文章介绍 Nacos 的一致性模型是 AP + CP，这么说很容易让人误解，其实 Nacos 并不是支持两种一致性模型，也并不是支持两种模型的切换，介绍一致性模型之前，需要先了解到 Nacos 中的两个概念：临时服务和持久化服务。</p>
@@ -311,23 +311,23 @@ ga('send', 'pageview');
 <li>Nacos 每个节点是平等的都可以处理写入请求，同时把新数据同步到其他节点</li>
 <li>每个节点只负责部分数据，定时发送自己负责数据校验值到其他节点来保持数据一致性</li>
 </ul>
-<p><img src="https://kirito.iocoder.cn/image-20201220162434565.png" alt="image-20201220162434565"></p>
+<p><img src="https://kirito.iocoder.cn/image-20201220162434565.png" alt="集群正常状态"></p>
 <p>如上图所示，每个节点服务一部分服务的读写，但每个节点都可以接收到读写请求，这时就存在两种读写情况：</p>
 <ol>
 <li>当该节点接收到属于该节点负责的服务时，直接读写。</li>
 <li>当该节点接收到不属于该节点负责的服务时，将在集群内部路由，转发给对应的节点，从而完成读写。</li>
 </ol>
 <p>而当节点发生宕机后，原本该节点负责的一部分服务的读写任务会转移到其他节点，从而保证 Nacos 集群整体的可用性。</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220162345826.png" alt="image-20201220162345826"></p>
+<p><img src="https://kirito.iocoder.cn/image-20201220162345826.png" alt="部分节点宕机"></p>
 <p>一个比较复杂的情况是，节点没有宕机，但是出现了网络分区，即下图所示：</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220162936471.png" alt="image-20201220162936471"></p>
+<p><img src="https://kirito.iocoder.cn/image-20201220162936471.png" alt="网络分区"></p>
 <p>这个情况会损害可用性，客户端会表现为有时候服务存在有时候服务不存在。</p>
 <p>综上，Nacos 的 distro 一致性协议可以保证在大多数情况下，集群中的机器宕机后依旧不损害整体的可用性。该可用性保证存在于 nacos-server 端。</p>
 <h2 id="本地缓存文件-Failover-机制"><a href="#本地缓存文件-Failover-机制" class="headerlink" title="本地缓存文件 Failover 机制"></a>本地缓存文件 Failover 机制</h2><p>注册中心发生故障最坏的一个情况是整个 Server 端宕机，这时候 Nacos 依旧有高可用机制做兜底。</p>
 <p>一道经典的 Dubbo 面试题：当 Dubbo 应用运行时，Nacos 注册中心宕机，会不会影响 RPC 调用。这个题目大多数应该都能回答出来，因为 Dubbo 内存里面是存了一份地址的，一方面这样的设计是为了性能，因为不可能每次 RPC 调用时都读取一次注册中心，另一面，这也起到了可用性的保障（尽管可能 Dubbo 设计者并没有考虑这个因素）。</p>
 <p>那如果，我在此基础上再出一道 Dubbo 面试题：Nacos 注册中心宕机，Dubbo 应用发生重启，会不会影响 RPC 调用。如果了解了 Nacos 的 Failover 机制，应当得到和上一题同样的回答：不会。</p>
 <p>Nacos 存在本地文件缓存机制，nacos-client 在接收到 nacos-server 的服务推送之后，会在内存中保存一份，随后会落盘存储一份快照。snapshot 默认的存储路径为：{USER_HOME}/nacos/naming/ 中</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220165548542.png" alt="image-20201220165548542"></p>
+<p><img src="https://kirito.iocoder.cn/image-20201220165548542.png" alt="Nacos snapshot 文件目录"></p>
 <p>这份文件有两种价值，一是用来排查服务端是否正常推送了服务；二是当客户端加载服务时，如果无法从服务端拉取到数据，会默认从本地文件中加载。</p>
 <blockquote>
 <p>前提是构建 NacosNaming 时传入了该参数：namingLoadCacheAtStart=true</p>
@@ -342,9 +342,9 @@ ga('send', 'pageview');
 <li>nacos-server 出现网络分区。由于心跳可以创建服务，从而在极端网络故障下，依旧保证基础的可用性。</li>
 </ul>
 <p>以下是对心跳同步服务的测试，使用阿里云 MSE 提供 Nacos 集群进行测试</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220173117425.png" alt="image-20201220173117425"></p>
+<p><img src="https://kirito.iocoder.cn/image-20201220173117425.png" alt=""></p>
 <p>调用 OpenApi：<code>curl -X &quot;DELETE mse-xxx-p.nacos-ans.mse.aliyuncs.com:8848/nacos/v1/ns/service?serviceName=providers:com.alibaba.edas.boot.EchoService:1.0.0:DUBBO&amp;groupName=DEFAULT_GROUP&quot;</code> 依次删除各个服务</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220173637589.png" alt="image-20201220173637589"></p>
+<p><img src="https://kirito.iocoder.cn/image-20201220173637589.png" alt=""></p>
 <p>过 5s 后刷新，服务又再次被注册了上来，符合我们对心跳注册服务的预期。</p>
 <h2 id="集群部署模式高可用"><a href="#集群部署模式高可用" class="headerlink" title="集群部署模式高可用"></a>集群部署模式高可用</h2><p>最后给大家分享的 Nacos 高可用特性来自于其部署架构。</p>
 <h3 id="节点数量"><a href="#节点数量" class="headerlink" title="节点数量"></a>节点数量</h3><p>我们知道在生产集群中肯定不能以单机模式运行 Nacos，那么第一个问题便是：我应该部署几台机器？前面我们提到 Nacos 有两个一致性协议：distro 和 raft，distro 协议不会有脑裂问题，所以理论来说，节点数大于等于 2 即可；raft 协议的投票选举机制则建议是 2n+1 个节点。综合来看，选择 3 个节点是起码的，其次处于吞吐量和更高可用性的考量，可以选择 5 个，7 个，甚至 9 个节点的集群。</p>
@@ -364,11 +364,11 @@ ga('send', 'pageview');
 </ul>
 <p>下面模拟一个节点宕机的场景，来看看 K8s 如何实现自恢复。</p>
 <p>一个三节点的 Nacos 集群：</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220180757477.png" alt="image-20201220180757477"></p>
+<p><img src="https://kirito.iocoder.cn/image-20201220180757477.png" alt="正常状态"></p>
 <p>执行 <code>kubectl delete pod mse-7654c960-1605278296312-reg-center-0-2</code> 以模拟部分节点宕机的场景。</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220181056737.png" alt="image-20201220181056737"></p>
+<p><img src="https://kirito.iocoder.cn/image-20201220181056737.png" alt="恢复中"></p>
 <p>大概 2 分钟后，节点恢复，并且角色发生了转换，Leader 从杀死的 2 号节点转给 1 号节点</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220181330884.png" alt="image-20201220181330884"></p>
+<p><img src="https://kirito.iocoder.cn/image-20201220181330884.png" alt="恢复后 leader 重选"></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文从多个角度出发，总结了一下 Nacos 是如何保障高可用的。高可用特性绝不是靠服务端多部署几个节点就可以获得的，而是要结合客户端使用方式、服务端部署模式、使用场景综合来考虑的一件事。</p>
 <p>特别是在服务注册发现场景，Nacos 为可用性做了非常多的努力，而这些保障，Zookeeper 是不一定有的。在做注册中心选型时，可用性保障上，Nacos 绝对是优秀的。</p>
 <p><img src="https://www.cnkirito.moe/css/images/wechat_public.jpg" alt="微信公众号"></p>
@@ -383,7 +383,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/nacos-high-available/" data-id="ckiwzouet007nms9ecmm3h945" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/nacos-high-available/" data-id="ckix06csi007p5z9eey1ialwr" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
