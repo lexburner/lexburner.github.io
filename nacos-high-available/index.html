@@ -13,8 +13,8 @@
 <meta property="og:site_name" content="徐靖峰|个人博客">
 <meta property="og:description" content="前言服务注册发现是一个经久不衰的话题，Dubbo 早期开源时默认的注册中心 Zookeeper 最早进入人们的视线，并且在很长一段时间里，人们将注册中心和 Zookeeper 划上了等号，可能 Zookeeper 的设计者都没有想到这款产品对微服务领域造成了如此深厚的影响，直到 SpringCloud 开始流行，其自带的 Eureka 进入了人们的视野，人们这才意识到原来注册中心还可以有其他的选择">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://kirito.iocoder.cn/image-20201220140934757.png">
-<meta property="og:image" content="https://kirito.iocoder.cn/image-20201220151901675.png">
+<meta property="og:image" content="http://kirito.iocoder.cn/image-20201220140934757.png">
+<meta property="og:image" content="http://kirito.iocoder.cn/image-20201220151901675.png">
 <meta property="og:image" content="https://kirito.iocoder.cn/image-20201220204422195.png">
 <meta property="og:image" content="https://kirito.iocoder.cn/image-20201220204436097.png">
 <meta property="og:image" content="https://kirito.iocoder.cn/image-20201220204446690.png">
@@ -25,11 +25,11 @@
 <meta property="og:image" content="https://kirito.iocoder.cn/image-20201220181056737.png">
 <meta property="og:image" content="https://kirito.iocoder.cn/image-20201220181330884.png">
 <meta property="og:image" content="https://www.cnkirito.moe/css/images/wechat_public.jpg">
-<meta property="og:updated_time" content="2020-12-20T12:46:50.206Z">
+<meta property="og:updated_time" content="2020-12-22T14:05:54.002Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一文详解 Nacos 高可用特性">
 <meta name="twitter:description" content="前言服务注册发现是一个经久不衰的话题，Dubbo 早期开源时默认的注册中心 Zookeeper 最早进入人们的视线，并且在很长一段时间里，人们将注册中心和 Zookeeper 划上了等号，可能 Zookeeper 的设计者都没有想到这款产品对微服务领域造成了如此深厚的影响，直到 SpringCloud 开始流行，其自带的 Eureka 进入了人们的视野，人们这才意识到原来注册中心还可以有其他的选择">
-<meta name="twitter:image" content="https://kirito.iocoder.cn/image-20201220140934757.png">
+<meta name="twitter:image" content="http://kirito.iocoder.cn/image-20201220140934757.png">
     
 
     
@@ -281,8 +281,8 @@ ga('send', 'pageview');
         
             
             <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>服务注册发现是一个经久不衰的话题，Dubbo 早期开源时默认的注册中心 Zookeeper 最早进入人们的视线，并且在很长一段时间里，人们将注册中心和 Zookeeper 划上了等号，可能 Zookeeper 的设计者都没有想到这款产品对微服务领域造成了如此深厚的影响，直到 SpringCloud 开始流行，其自带的 Eureka 进入了人们的视野，人们这才意识到原来注册中心还可以有其他的选择。再到后来，热衷于开源的阿里把目光也聚焦在了注册中心这个领域，Nacos 横空出世。</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220140934757.png" alt="注册中心"></p>
-<p>Kirito 在做注册中心选型时的思考：曾经我没得选，现在我只想选择一个好的注册中心，它最好是开源的，这样开放透明，有自我的掌控力；不仅要开源，它还要有活跃的社区，以确保特性演进能够满足日益增长的业务需求，出现问题也能即使修复；最好…它的功能还要很强大，除了满足注册服务、推送服务外，还要有完善的微服务体系中所需的功能；最重要的，它还要稳定，最好有大厂的实际使用场景背书，证明这是一个经得起实战考验的产品；当然，云原生特性，安全特性也是很重要的…</p>
+<p><img src="http://kirito.iocoder.cn/image-20201220140934757.png" alt="注册中心"></p>
+<p>Kirito 在做注册中心选型时的思考：曾经我没得选，现在我只想选择一个好的注册中心，它最好是开源的，这样开放透明，有自我的掌控力；不仅要开源，它还要有活跃的社区，以确保特性演进能够满足日益增长的业务需求，出现问题也能及时修复；最好…它的功能还要很强大，除了满足注册服务、推送服务外，还要有完善的微服务体系中所需的功能；最重要的，它还要稳定，最好有大厂的实际使用场景背书，证明这是一个经得起实战考验的产品；当然，云原生特性，安全特性也是很重要的…</p>
 <p>似乎 Kirito 对注册中心的要求实在是太高了，但这些五花八门的注册中心呈现在用户眼前，总是免不了一番比较。正如上面所言，功能特性、成熟度、可用性、用户体验度、云原生特性、安全都是可以拉出来做比较的话题。今天这篇文章重点介绍的是 Nacos 在可用性上体现，希望借助于这篇文章，能够让你对 Nacos 有一个更加深刻的认识。</p>
 <a id="more"></a>
 <h2 id="高可用介绍"><a href="#高可用介绍" class="headerlink" title="高可用介绍"></a>高可用介绍</h2><p>当我们在聊高可用时，我们在聊什么？</p>
@@ -296,7 +296,7 @@ ga('send', 'pageview');
 <p>在生产环境，我们往往需要搭建 Nacos 集群，在 Dubbo 也需要显式地配置上集群地址：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:registry</span> <span class="attr">protocol</span>=<span class="string">"nacos"</span> <span class="attr">address</span>=<span class="string">"192.168.0.1:8848,192.168.0.2:8848,192.168.0.3:8848"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
 <p>当其中一台机器宕机时，为了不影响整体运行，客户端会存在重试机制</p>
-<p><img src="https://kirito.iocoder.cn/image-20201220151901675.png" alt="轮询 server"></p>
+<p><img src="http://kirito.iocoder.cn/image-20201220151901675.png" alt="轮询 server"></p>
 <p>逻辑非常简单，拿到地址列表，在请求成功之前逐个尝试，直到成功为止。</p>
 <p>该可用性保证存在于 nacos-client 端。</p>
 <h2 id="一致性协议-distro"><a href="#一致性协议-distro" class="headerlink" title="一致性协议 distro"></a>一致性协议 distro</h2><p>首先给各位读者打个强心剂，不用看到”一致性协议“这几个字就被劝退，本节不会探讨一致性协议的实现过程，而是重点介绍其余高可用相关的特性。有的文章介绍 Nacos 的一致性模型是 AP + CP，这么说很容易让人误解，其实 Nacos 并不是支持两种一致性模型，也并不是支持两种模型的切换，介绍一致性模型之前，需要先了解到 Nacos 中的两个概念：临时服务和持久化服务。</p>
@@ -384,7 +384,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/nacos-high-available/" data-id="ckix4kf8o007f2v9ev6o2ryp0" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/nacos-high-available/" data-id="ckj029xqh006t759eci9fvxz2" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
