@@ -166,7 +166,7 @@ ga('send', 'pageview');
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                138
+                140
                 <span>文章</span>
             </div>
             <div class="article-info-block">
@@ -207,6 +207,602 @@ ga('send', 'pageview');
 
             
             <section id="main">
+    <article id="post-instrument" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/instrument/">JAVA 拾遗 --Instrument 机制</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+		<div class="article-type">
+		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
+		</div>
+	
+	
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/instrument/">
+            <time datetime="2018-02-04T14:18:51.000Z" itemprop="datePublished">2018-02-04</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>最近在研究 skywalking，发现其作为一个 APM 框架，比起作为 trace 框架的 zipkin 多了一个监控维度：对 JVM 的监控。而 skywalking 集成进系统的方式也和传统的框架不太一样，由于其需要对 JVM 进行无侵入式的监控，所以借助了 JAVA5 提供的 Instrument 机制。关于“Instrument”这个单词，没找到准确的翻译，个人理解为“增强，装配”。</p>
+<p>如果我们想要无侵入式的修改一个方法，大多数人想到的可能是 AOP 技术，Instrument 有异曲同工之处，它可以对方法进行增强，甚至替换整个类。</p>
+<p>下面借助一个 demo，了解下 Instrument 是如何使用的。第一个 demo 很简单，在某一方法调用时，额外打印出其调用时的时间。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"wow wow~"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="keyword">new</span> Dog().hello());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Dog 存在一个 hello 方法，希望在调用该方法时打印出是什么时刻发生的调用。</p>
+<h2 id="实现-Agent"><a href="#实现-Agent" class="headerlink" title="实现 Agent"></a>实现 Agent</h2><p><strong>GreetingTransformer</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GreetingTransformer</span> <span class="keyword">implements</span> <span class="title">ClassFileTransformer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="keyword">byte</span>[] classfileBuffer) <span class="keyword">throws</span> IllegalClassFormatException &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">"moe/cnkirito/agent/Dog"</span>.equals(className)) &#123;</span><br><span class="line">            System.out.println(<span class="string">"Dog's method invoke at\t"</span> + <span class="keyword">new</span> Date());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对类进行装配的第一步是编写一个 GreetingTransformer 类，其继承自：java.lang.instrument.ClassFileTransformer，打印语句便编写在其中。对于入参和返参我们先不去纠结，因为仅仅完成这么一个简单的 AOP 功能，还不需要了解它们。</p>
+<p><strong>GreetingAgent</strong></p>
+<p>除了上述的 Transformer，我们还需要有一个容器去加载它。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GreetingAgent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String options, Instrumentation ins)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (options != <span class="keyword">null</span>) &#123;</span><br><span class="line">            System.out.printf(<span class="string">"I've been called with options: \"%s\"\n"</span>, options);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            System.out.println(<span class="string">"I've been called with no options."</span>);</span><br><span class="line">        ins.addTransformer(<span class="keyword">new</span> GreetingTransformer());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>GreetingAgent 便是我们后面要用的代理，可以发现它只有一个 premain 方法，很简单很形象，它和 main 方法真的很像</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不同的是 main 函数的参数是一个 string[]，而 premain 的入参是一个 String 和一个 Instrumentation。</p>
+<p>前者不用过多赘述，而后者 Instrumentation 便是 JAVA5 的 Instrument 机制的核心，它负责为类添加 ClassFileTransformer 的实现，从而对类进行装配。注意 premain 和它的两个参数不能随意修改，为啥？我们使用 main 函数的时候也没问为啥一定是 public static void main(String[] args) 啊，规定！规定！从 premain 的命名也可以看出，它的运行显然是在 main 函数之前的。</p>
+<p><strong>MANIFEST.MF</strong></p>
+<p>我们最终会把上面的 GreetingTransformer 和 GreetingAgent 打成一个 jar 包，然后让 Main 函数在启动时加载，但想要使用这个 jar 包还得额外做的工作。</p>
+<p>我们得告诉 JVM 在哪儿加载我们的 premain 方法，所以需要在 classpath 下增加一个 resources\META-INF\MANIFEST.MF 文件</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">Manifest-Version: 1.0</span></span><br><span class="line"><span class="section">Premain-Class: moe.cnkirito.agent.GreetingAgent</span></span><br><span class="line"><span class="section">Can-Redefine-Classes: true</span></span><br></pre></td></tr></table></figure>
+<p><strong>MAVEN 插件 </strong></p>
+<p>为了打包 agent 我们需要额外添加 maven 插件，将 mf 文件和两个类一起打包</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">finalName</span>&gt;</span>agent<span class="tag">&lt;/<span class="name">finalName</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-jar-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">archive</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">manifestFile</span>&gt;</span>src/main/resources/META-INF/MANIFEST.MF<span class="tag">&lt;/<span class="name">manifestFile</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">archive</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-assembly-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">outputDirectory</span>&gt;</span>$&#123;basedir&#125;<span class="tag">&lt;/<span class="name">outputDirectory</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">archive</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">index</span>&gt;</span>true<span class="tag">&lt;/<span class="name">index</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">manifest</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">addClasspath</span>&gt;</span>true<span class="tag">&lt;/<span class="name">addClasspath</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">manifestEntries</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">Premain-Class</span>&gt;</span>moe.cnkirito.agent.GreetingAgent<span class="tag">&lt;/<span class="name">Premain-Class</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">manifestEntries</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">archive</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">descriptorRefs</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">descriptorRef</span>&gt;</span>jar-with-dependencies<span class="tag">&lt;/<span class="name">descriptorRef</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">descriptorRefs</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">source</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">target</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>完成上述的配置，使用 maven install 即可得到一个 agent.jar，到这儿一切的准备工作就完成了。</p>
+<h2 id="使用代理运行-Main-方法"><a href="#使用代理运行-Main-方法" class="headerlink" title="使用代理运行 Main 方法"></a>使用代理运行 Main 方法</h2><p>如果不使用代理运行 Main 方法，毫无疑问我们只会得到一行 <code>wow wow~</code>。</p>
+<p>如果你使用的 IDEA，eclipse，只需要添加一行启动参数即可：</p>
+<p><img src="https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720180204235047.png" alt="启动参数"></p>
+<p>-javaagent:jar_path=[options] 其中的 jar_path 为 agent.jar 的路径，options 是一个可选参数，其值会被 premain 方法的第一个参数接收 public static void premain(String options, Instrumentation ins).</p>
+<p>当需要装配多个 agent.jar 时，重复书写多次即可 -javaagent:C:\Users\xujingfeng\Desktop\agent.jar=hello -javaagent:C:\Users\xujingfeng\Desktop\agent.jar=hello2 …</p>
+<p>运行 Main.jar 的话就是这样的形式：java -javaagent:C:\Users\xujingfeng\Desktop\agent.jar=hello Main</p>
+<p><strong> 运行结果 </strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">  I&apos;ve been called with options:&quot;hello&quot;</span><br><span class="line">Dog&apos;s method invoke at	Sun Feb 04 23:54:45 CST 2018</span><br><span class="line">wow wow~</span><br></pre></td></tr></table></figure>
+<p>I’ve been called with options:”hello” 代表我们的 premain 已经装载成功，并且正确接收到了启动参数。第二行语句也正常打印出了调用时间，至此便完成了 Dog 的装配。</p>
+<h2 id="Instrument-进阶"><a href="#Instrument-进阶" class="headerlink" title="Instrument 进阶"></a>Instrument 进阶</h2><p>什么？为了打印一行调用时间，我们花了这么大精力，这是要跟自己过不去吗？你可能会有这样的疑惑，但请不要质疑 Instrument 的价值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ClassFileTransformer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">byte</span>[] transform(  ClassLoader         loader,</span><br><span class="line">                String              className,</span><br><span class="line">                Class&lt;?&gt;            classBeingRedefined,</span><br><span class="line">                ProtectionDomain    protectionDomain,</span><br><span class="line">                <span class="keyword">byte</span>[]              classfileBuffer)</span><br><span class="line">        <span class="keyword">throws</span> IllegalClassFormatException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ClassFileTransformer 可以对所有的方法进行拦截，看见返回值 byte[] 了没有</p>
+<blockquote>
+<p>The implementation of this method may transform the supplied class file and return a new replacement class file.</p>
+<p>这个方法的实现可能会改变提供的类文件并返回一个新的替换类文件。</p>
+</blockquote>
+<p>这给了我们足够的操作自由度，我们甚至可以替换一个类的实现，只要你能够返回一个正确的替换类。ClassLoader 代表被转换类的类加载器，如果是 bootstrap loader 则可以省略，className 代表全类名，注意是以 <code>/</code> 作为分隔符。其他参数我也不是太懂，想深究的同学自行翻看下文档。byte[] 代表被转换后的类的字节，为 null 则代表不转换。</p>
+<h3 id="替换-Dog-的实现"><a href="#替换-Dog-的实现" class="headerlink" title="替换 Dog 的实现"></a>替换 Dog 的实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"miao miao~"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意，这里我修改了 Dog 的实现，不是打印 wow wow~ 而是 miao miao ~，只是为了得到新 Dog 的字节码 Dog.class。我将新的 Dog.class 丢在了我的桌面方便加载：C:/Users/xujingfeng/Desktop</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DogTransformer</span> <span class="keyword">implements</span> <span class="title">ClassFileTransformer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="keyword">byte</span>[] classfileBuffer) <span class="keyword">throws</span> IllegalClassFormatException &#123;</span><br><span class="line">        System.out.println(<span class="string">"className:"</span> + className);</span><br><span class="line">        <span class="keyword">if</span> (!className.equalsIgnoreCase(<span class="string">"moe/cnkirito/agent/Dog"</span>)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> getBytesFromFile(<span class="string">"C:/Users/xujingfeng/Desktop/Dog.class"</span>);<span class="comment">// 新的 Dog</span></span><br><span class="line"><span class="comment">//        return getBytesFromFile("app/target/classes/moe/cnkirito/agent/Dog.class");</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] getBytesFromFile(String fileName) &#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(fileName);</span><br><span class="line">        <span class="keyword">try</span> (InputStream is = <span class="keyword">new</span> FileInputStream(file)) &#123;</span><br><span class="line">            <span class="comment">// precondition</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">long</span> length = file.length();</span><br><span class="line">            <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[(<span class="keyword">int</span>) length];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Read in the bytes</span></span><br><span class="line">            <span class="keyword">int</span> offset = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">int</span> numRead = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span> (offset &lt;bytes.length</span><br><span class="line">                    &amp;&amp; (numRead = is.read(bytes, offset, bytes.length - offset)) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                offset += numRead;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (offset &lt; bytes.length) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Could not completely read file"</span></span><br><span class="line">                        + file.getName());</span><br><span class="line">            &#125;</span><br><span class="line">            is.close();</span><br><span class="line">            <span class="keyword">return</span> bytes;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.out.println(<span class="string">"error occurs in _ClassTransformer!"</span></span><br><span class="line">                    + e.getClass().getName());</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>return getBytesFromFile(“C:/Users/xujingfeng/Desktop/Dog.class”) 一行返回了新的 Dog 试图替换原先的 Dog。注意，这一切都放生在 Agent.jar 之中，我并没有对 Main 函数（也就是我们自己的源代码）做任何改动。</p>
+<p><strong> 控制台输出 </strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">miao miao~</span><br></pre></td></tr></table></figure>
+<p>替换成功！我们并没有对 Main 程序的 Dog 做任何修改，只是加载了一个新的 Dog.class 替换了 Main 程序中的 Dog。</p>
+<h3 id="统计方法运行耗时"><a href="#统计方法运行耗时" class="headerlink" title="统计方法运行耗时"></a>统计方法运行耗时</h3><p>这个需求有点接近我们研究 Instrument 的初衷了，统计方法的运行耗时。由于代码的篇幅问题，在本文中只给出思路，详细的实现，可以参考文末的 github 链接，本文的三个例子：</p>
+<ol>
+<li>打印 hello </li>
+<li>替换 Dog </li>
+<li>统计方法运行耗时</li>
+</ol>
+<p>代码都在其中。</p>
+<p>思路：对每个需要统计耗时的方法替换字节码，在方法开始前插入开始时间，在方法结束时插入结束时间，计算差值，more 你可以连同 methodName 和耗时一起发送出去，给 collector 统一采集…wait，这不就是一个简易的监控吗?!~</p>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Call to method hello_timing took 1 ms.</span><br><span class="line">wow wow~</span><br></pre></td></tr></table></figure>
+<h2 id="JAVA6-的-agentmain"><a href="#JAVA6-的-agentmain" class="headerlink" title="JAVA6 的 agentmain"></a>JAVA6 的 agentmain</h2><p>值得一提的是，java6 提供了 public static void agentmain (String agentArgs, Instrumentation inst); 这个新的方法，可以在 main 函数之后装配（premain 是在 main 之前），这使得操控现有程序的自由度变得更高了，有兴趣的朋友可以去了解下 premain 和 agentmain 的特性。</p>
+<h2 id="本文示例代码"><a href="#本文示例代码" class="headerlink" title="本文示例代码"></a>本文示例代码</h2><p><a href="https://github.com/lexburner/java5-Instrumentation-demo" target="_blank" rel="noopener">https://github.com/lexburner/java5-Instrumentation-demo</a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://www.ibm.com/developerworks/cn/java/j-lo-instrumentation/" target="_blank" rel="noopener">Java 5 特性 Instrumentation 实践</a></p>
+<p><a href="https://www.ibm.com/developerworks/cn/java/j-lo-jse61/index.html" target="_blank" rel="noopener">Java SE 6 的新特性：虚拟机启动后的动态 instrument</a></p>
+<p><a href="https://github.com/YunaiV/learning/tree/master/javaagent01" target="_blank" rel="noopener">芋道源码</a></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/instrument/" data-id="ckjgh2hzs0046509e4b9wql3d" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-chinese-copywriting-guidelines" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/chinese-copywriting-guidelines/">中文文案排版指北</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        <!-- 增加文章类型 -->
+                        
+	
+	
+	
+		<div class="article-type">
+		    <span class="label label-warn" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">转载</span>
+		</div>
+	
+		
+	
+
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/chinese-copywriting-guidelines/">
+            <time datetime="2018-01-16T12:16:28.000Z" itemprop="datePublished">2018-01-16</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/技术杂谈/">技术杂谈</a>
+    </div>
+
+                        <!-- 不显示标签 -->
+                        <!-- 
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/中文排版/">中文排版</a>
+    </div>
+ -->
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>统一中文文案、排版的相关用法，降低团队成员之间的沟通成本，增强网站气质。原文出处：<a href="https://github.com/mzlogin/chinese-copywriting-guidelines" target="_blank" rel="noopener">https://github.com/mzlogin/chinese-copywriting-guidelines</a></p>
+</blockquote>
+<hr>
+<ul>
+<li><h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li>空格<ul>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#中英文之间需要增加空格" target="_blank" rel="noopener">中英文之间需要增加空格</a></li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#中文与数字之间需要增加空格" target="_blank" rel="noopener">中文与数字之间需要增加空格</a></li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#数字与单位之间无需增加空格" target="_blank" rel="noopener">数字与单位之间无需增加空格</a></li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#全角标点与其他字符之间不加空格" target="_blank" rel="noopener">全角标点与其他字符之间不加空格</a></li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#-ms-text-autospace-to-the-rescue" target="_blank" rel="noopener"><code>-ms-text-autospace</code> to the rescue?</a></li>
+</ul>
+</li>
+<li>标点符号<ul>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#不重复使用标点符号" target="_blank" rel="noopener">不重复使用标点符号</a></li>
+</ul>
+</li>
+<li>全角和半角<ul>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#使用全角中文标点" target="_blank" rel="noopener">使用全角中文标点</a></li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#数字使用半角字符" target="_blank" rel="noopener">数字使用半角字符</a></li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#遇到完整的英文整句特殊名词其內容使用半角标点" target="_blank" rel="noopener">遇到完整的英文整句、特殊名词，其內容使用半角标点</a></li>
+</ul>
+</li>
+<li>名词<ul>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#专有名词使用正确的大小写" target="_blank" rel="noopener">专有名词使用正确的大小写</a></li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#不要使用不地道的缩写" target="_blank" rel="noopener">不要使用不地道的缩写</a></li>
+</ul>
+</li>
+<li>争议<ul>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#链接之间增加空格" target="_blank" rel="noopener">链接之间增加空格</a></li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#简体中文使用直角引号" target="_blank" rel="noopener">简体中文使用直角引号</a></li>
+</ul>
+</li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#工具" target="_blank" rel="noopener">工具</a></li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#谁在这样做" target="_blank" rel="noopener">谁在这样做？</a></li>
+<li><a href="https://github.com/mzlogin/chinese-copywriting-guidelines#参考文献" target="_blank" rel="noopener">参考文献</a></li>
+</ul>
+<h2 id="空格"><a href="#空格" class="headerlink" title="空格"></a>空格</h2><p>「有研究显示，打字的时候不喜欢在中文和英文之间加空格的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟自己不爱的人结婚，而其余三成的人最后只能把遗产留给自己的猫。毕竟爱情跟书写都需要适时地留白。</p>
+<p>与大家共勉之。」——<a href="https://github.com/vinta/pangu.js" target="_blank" rel="noopener">vinta/paranoid-auto-spacing</a></p>
+<h3 id="中英文之间需要增加空格"><a href="#中英文之间需要增加空格" class="headerlink" title="中英文之间需要增加空格"></a>中英文之间需要增加空格</h3><p>正确：</p>
+<blockquote>
+<p>在 LeanCloud 上，数据存储是围绕 <code>AVObject</code> 进行的。</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>在LeanCloud上，数据存储是围绕<code>AVObject</code>进行的。</p>
+</blockquote>
+<blockquote>
+<p>在 LeanCloud上，数据存储是围绕<code>AVObject</code> 进行的。</p>
+</blockquote>
+<p>完整的正确用法：</p>
+<blockquote>
+<p>在 LeanCloud 上，数据存储是围绕 <code>AVObject</code> 进行的。每个 <code>AVObject</code> 都包含了与 JSON 兼容的 key-value 对应的数据。数据是 schema-free 的，你不需要在每个 <code>AVObject</code> 上提前指定存在哪些键，只要直接设定对应的 key-value 即可。</p>
+</blockquote>
+<p>例外：「豆瓣FM」等产品名词，按照官方所定义的格式书写。</p>
+<h3 id="中文与数字之间需要增加空格"><a href="#中文与数字之间需要增加空格" class="headerlink" title="中文与数字之间需要增加空格"></a>中文与数字之间需要增加空格</h3><p>正确：</p>
+<blockquote>
+<p>今天出去买菜花了 5000 元。</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>今天出去买菜花了 5000元。</p>
+</blockquote>
+<blockquote>
+<p>今天出去买菜花了5000元。</p>
+</blockquote>
+<h3 id="数字与单位之间无需增加空格"><a href="#数字与单位之间无需增加空格" class="headerlink" title="数字与单位之间无需增加空格"></a>数字与单位之间无需增加空格</h3><p>正确：</p>
+<blockquote>
+<p>我家的光纤入户宽带有 10Gbps，SSD 一共有 10TB。</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>我家的光纤入户宽带有 10 Gbps，SSD 一共有 20 TB。</p>
+</blockquote>
+<p>另外，度／百分比与数字之间不需要增加空格：</p>
+<p>正确：</p>
+<blockquote>
+<p>今天是 233° 的高温。</p>
+</blockquote>
+<blockquote>
+<p>新 MacBook Pro 有 15% 的 CPU 性能提升。</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>今天是 233 ° 的高温。</p>
+</blockquote>
+<blockquote>
+<p>新 MacBook Pro 有 15 % 的 CPU 性能提升。</p>
+</blockquote>
+<h3 id="全角标点与其他字符之间不加空格"><a href="#全角标点与其他字符之间不加空格" class="headerlink" title="全角标点与其他字符之间不加空格"></a>全角标点与其他字符之间不加空格</h3><p>正确：</p>
+<blockquote>
+<p>刚刚买了一部 iPhone，好开心！</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>刚刚买了一部 iPhone ，好开心！</p>
+</blockquote>
+<h3 id="ms-text-autospace-to-the-rescue"><a href="#ms-text-autospace-to-the-rescue" class="headerlink" title="-ms-text-autospace to the rescue?"></a><code>-ms-text-autospace</code> to the rescue?</h3><p>Microsoft 有个 <a href="http://msdn.microsoft.com/en-us/library/ie/ms531164(v=vs.85" target="_blank" rel="noopener"><code>-ms-text-autospace</code></a>.aspx) 的 CSS 属性可以实现自动为中英文之间增加空白。不过目前并未普及，另外在其他应用场景，例如 OS X、iOS 的用户界面目前并不存在这个特性，所以请继续保持随手加空格的习惯。</p>
+<h2 id="标点符号"><a href="#标点符号" class="headerlink" title="标点符号"></a>标点符号</h2><h3 id="不重复使用标点符号"><a href="#不重复使用标点符号" class="headerlink" title="不重复使用标点符号"></a>不重复使用标点符号</h3><p>正确：</p>
+<blockquote>
+<p>德国队竟然战胜了巴西队！</p>
+</blockquote>
+<blockquote>
+<p>她竟然对你说「喵」？！</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>德国队竟然战胜了巴西队！！</p>
+</blockquote>
+<blockquote>
+<p>德国队竟然战胜了巴西队！！！！！！！！</p>
+</blockquote>
+<blockquote>
+<p>她竟然对你说「喵」？？！！</p>
+</blockquote>
+<blockquote>
+<p>她竟然对你说「喵」？！？！？？！！</p>
+</blockquote>
+<h2 id="全角和半角"><a href="#全角和半角" class="headerlink" title="全角和半角"></a>全角和半角</h2><p>不明白什么是全角（全形）与半角（半形）符号？请查看维基百科词条『<a href="http://zh.wikipedia.org/wiki/全形和半形" target="_blank" rel="noopener">全角和半角</a>』。</p>
+<h3 id="使用全角中文标点"><a href="#使用全角中文标点" class="headerlink" title="使用全角中文标点"></a>使用全角中文标点</h3><p>正确：</p>
+<blockquote>
+<p>嗨！你知道嘛？今天前台的小妹跟我说「喵」了哎！</p>
+</blockquote>
+<blockquote>
+<p>核磁共振成像（NMRI）是什么原理都不知道？JFGI！</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>嗨! 你知道嘛? 今天前台的小妹跟我说 “喵” 了哎!</p>
+</blockquote>
+<blockquote>
+<p>嗨!你知道嘛?今天前台的小妹跟我说”喵”了哎!</p>
+</blockquote>
+<blockquote>
+<p>核磁共振成像 (NMRI) 是什么原理都不知道? JFGI!</p>
+</blockquote>
+<blockquote>
+<p>核磁共振成像(NMRI)是什么原理都不知道?JFGI!</p>
+</blockquote>
+<h3 id="数字使用半角字符"><a href="#数字使用半角字符" class="headerlink" title="数字使用半角字符"></a>数字使用半角字符</h3><p>正确：</p>
+<blockquote>
+<p>这件蛋糕只卖 1000 元。</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>这件蛋糕只卖 １０００ 元。</p>
+</blockquote>
+<p>例外：在设计稿、宣传海报中如出现极少量数字的情形时，为方便文字对齐，是可以使用全角数字的。</p>
+<h3 id="遇到完整的英文整句、特殊名词，其內容使用半角标点"><a href="#遇到完整的英文整句、特殊名词，其內容使用半角标点" class="headerlink" title="遇到完整的英文整句、特殊名词，其內容使用半角标点"></a>遇到完整的英文整句、特殊名词，其內容使用半角标点</h3><p>正确：</p>
+<blockquote>
+<p>乔布斯那句话是怎么说的？「Stay hungry, stay foolish.」</p>
+</blockquote>
+<blockquote>
+<p>推荐你阅读《Hackers &amp; Painters: Big Ideas from the Computer Age》，非常的有趣。</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>乔布斯那句话是怎么说的？「Stay hungry，stay foolish。」</p>
+</blockquote>
+<blockquote>
+<p>推荐你阅读《Hackers＆Painters：Big Ideas from the Computer Age》，非常的有趣。</p>
+</blockquote>
+<h2 id="名词"><a href="#名词" class="headerlink" title="名词"></a>名词</h2><h3 id="专有名词使用正确的大小写"><a href="#专有名词使用正确的大小写" class="headerlink" title="专有名词使用正确的大小写"></a>专有名词使用正确的大小写</h3><p>大小写相关用法原属于英文书写范畴，不属于本 wiki 讨论內容，在这里只对部分易错用法进行简述。</p>
+<p>正确：</p>
+<blockquote>
+<p>使用 GitHub 登录</p>
+</blockquote>
+<blockquote>
+<p>我们的客户有 GitHub、Foursquare、Microsoft Corporation、Google、Facebook, Inc.。</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>使用 github 登录</p>
+</blockquote>
+<blockquote>
+<p>使用 GITHUB 登录</p>
+</blockquote>
+<blockquote>
+<p>使用 Github 登录</p>
+</blockquote>
+<blockquote>
+<p>使用 gitHub 登录</p>
+</blockquote>
+<blockquote>
+<p>使用 gｲんĤЦ8 登录</p>
+</blockquote>
+<blockquote>
+<p>我们的客户有 github、foursquare、microsoft corporation、google、facebook, inc.。</p>
+</blockquote>
+<blockquote>
+<p>我们的客户有 GITHUB、FOURSQUARE、MICROSOFT CORPORATION、GOOGLE、FACEBOOK, INC.。</p>
+</blockquote>
+<blockquote>
+<p>我们的客户有 Github、FourSquare、MicroSoft Corporation、Google、FaceBook, Inc.。</p>
+</blockquote>
+<blockquote>
+<p>我们的客户有 gitHub、fourSquare、microSoft Corporation、google、faceBook, Inc.。</p>
+</blockquote>
+<blockquote>
+<p>我们的客户有 gｲんĤЦ8、ｷouЯƧquﾑгє、๓เςг๏ร๏Ŧt ς๏гק๏гคtเ๏ภn、900913、ƒ4ᄃëв๏๏к, IПᄃ.。</p>
+</blockquote>
+<p>注意：当网页中需要配合整体视觉风格而出现全部大写／小写的情形，HTML 中请使用标准的大小写规范进行书写；并通过 <code>text-transform: uppercase;</code>／<code>text-transform: lowercase;</code> 对表现形式进行定义。</p>
+<h3 id="不要使用不地道的缩写"><a href="#不要使用不地道的缩写" class="headerlink" title="不要使用不地道的缩写"></a>不要使用不地道的缩写</h3><p>正确：</p>
+<blockquote>
+<p>我们需要一位熟悉 JavaScript、HTML5，至少理解一种框架（如 Backbone.js、AngularJS、React 等）的前端开发者。</p>
+</blockquote>
+<p>错误：</p>
+<blockquote>
+<p>我们需要一位熟悉 Js、h5，至少理解一种框架（如 backbone、angular、RJS 等）的 FED。</p>
+</blockquote>
+<h2 id="争议"><a href="#争议" class="headerlink" title="争议"></a>争议</h2><p>以下用法略带有个人色彩，即：无论是否遵循下述规则，从语法的角度来讲都是<strong>正确</strong>的。</p>
+<h3 id="链接之间增加空格"><a href="#链接之间增加空格" class="headerlink" title="链接之间增加空格"></a>链接之间增加空格</h3><p>用法：</p>
+<blockquote>
+<p>请 <a href="https://github.com/mzlogin/chinese-copywriting-guidelines#" target="_blank" rel="noopener">提交一个 issue</a> 并分配给相关同事。</p>
+</blockquote>
+<blockquote>
+<p>访问我们网站的最新动态，请 <a href="https://github.com/mzlogin/chinese-copywriting-guidelines#" target="_blank" rel="noopener">点击这里</a> 进行订阅！</p>
+</blockquote>
+<p>对比用法：</p>
+<blockquote>
+<p>请<a href="https://github.com/mzlogin/chinese-copywriting-guidelines#" target="_blank" rel="noopener">提交一个 issue</a> 并分配给相关同事。</p>
+</blockquote>
+<blockquote>
+<p>访问我们网站的最新动态，请<a href="https://github.com/mzlogin/chinese-copywriting-guidelines#" target="_blank" rel="noopener">点击这里</a>进行订阅！</p>
+</blockquote>
+<h3 id="简体中文使用直角引号"><a href="#简体中文使用直角引号" class="headerlink" title="简体中文使用直角引号"></a>简体中文使用直角引号</h3><p>用法：</p>
+<blockquote>
+<p>「老师，『有条不紊』的『紊』是什么意思？」</p>
+</blockquote>
+<p>对比用法：</p>
+<blockquote>
+<p>“老师，‘有条不紊’的‘紊’是什么意思？”</p>
+</blockquote>
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><p>| 仓库                                                         | 语言            |<br>| ———————————————————— | ————— |<br>| <a href="https://github.com/vinta/paranoid-auto-spacing" target="_blank" rel="noopener">vinta/paranoid-auto-spacing</a> | JavaScript      |<br>| <a href="https://github.com/huei90/pangu.node" target="_blank" rel="noopener">huei90/pangu.node</a>    | Node.js         |<br>| <a href="https://github.com/huacnlee/auto-correct" target="_blank" rel="noopener">huacnlee/auto-correct</a> | Ruby            |<br>| <a href="https://github.com/sparanoid/space-lover" target="_blank" rel="noopener">sparanoid/space-lover</a> | PHP (WordPress) |<br>| <a href="https://github.com/NauxLiu/auto-correct" target="_blank" rel="noopener">nauxliu/auto-correct</a> | PHP             |<br>| <a href="https://github.com/ricoa/copywriting-correct" target="_blank" rel="noopener">ricoa/copywriting-correct</a> | PHP             |<br>| <a href="https://github.com/hotoo/pangu.vim" target="_blank" rel="noopener">hotoo/pangu.vim</a>        | Vim             |<br>| <a href="https://github.com/sparanoid/grunt-auto-spacing" target="_blank" rel="noopener">sparanoid/grunt-auto-spacing</a> | Node.js (Grunt) |<br>| <a href="https://github.com/hjiang/scripts/blob/master/add-space-between-latin-and-cjk" target="_blank" rel="noopener">hjiang/scripts/add-space-between-latin-and-cjk</a> | Python          |</p>
+<h2 id="谁在这样做？"><a href="#谁在这样做？" class="headerlink" title="谁在这样做？"></a>谁在这样做？</h2><p>| 网站                                              | 文案 | UGC          |<br>| ————————————————- | —- | ———— |<br>| <a href="http://www.apple.com/cn/" target="_blank" rel="noopener">Apple 中国</a>            | Yes  | N/A          |<br>| <a href="http://www.apple.com/hk/" target="_blank" rel="noopener">Apple 香港</a>            | Yes  | N/A          |<br>| <a href="http://www.apple.com/tw/" target="_blank" rel="noopener">Apple 台湾</a>            | Yes  | N/A          |<br>| <a href="http://www.microsoft.com/zh-cn/" target="_blank" rel="noopener">Microsoft 中国</a> | Yes  | N/A          |<br>| <a href="http://www.microsoft.com/zh-hk/" target="_blank" rel="noopener">Microsoft 香港</a> | Yes  | N/A          |<br>| <a href="http://www.microsoft.com/zh-tw/" target="_blank" rel="noopener">Microsoft 台湾</a> | Yes  | N/A          |<br>| <a href="https://leancloud.cn/" target="_blank" rel="noopener">LeanCloud</a>                | Yes  | N/A          |<br>| <a href="https://www.zhihu.com/" target="_blank" rel="noopener">知乎</a>                    | Yes  | 部分用户达成 |<br>| <a href="https://www.v2ex.com/" target="_blank" rel="noopener">V2EX</a>                     | Yes  | Yes          |<br>| <a href="https://segmentfault.com/" target="_blank" rel="noopener">SegmentFault</a>         | Yes  | 部分用户达成 |<br>| <a href="http://apple4us.com/" target="_blank" rel="noopener">Apple4us</a>                  | Yes  | N/A          |<br>| <a href="https://www.wandoujia.com/" target="_blank" rel="noopener">豌豆荚</a>              | Yes  | N/A          |<br>| <a href="https://ruby-china.org/" target="_blank" rel="noopener">Ruby China</a>             | Yes  | 标题达成     |<br>| <a href="https://phphub.org/" target="_blank" rel="noopener">PHPHub</a>                     | Yes  | 标题达成     |<br>| <a href="http://sspai.com/" target="_blank" rel="noopener">少数派</a>                       | Yes  | N/A          |<br>| <a href="https://leetcode-cn.com/" target="_blank" rel="noopener">力扣 LeetCode</a>         | Yes  | Yes          |</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a href="http://grammar.about.com/od/punctuationandmechanics/a/Guidelines-For-Using-Capital-Letters.htm" target="_blank" rel="noopener">Guidelines for Using Capital Letters</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Letter_case" target="_blank" rel="noopener">Letter case - Wikipedia</a></li>
+<li><a href="http://www.oxforddictionaries.com/words/punctuation" target="_blank" rel="noopener">Punctuation - Oxford Dictionaries</a></li>
+<li><a href="https://owl.english.purdue.edu/owl/section/1/6/" target="_blank" rel="noopener">Punctuation - The Purdue OWL</a></li>
+<li><a href="http://www.wikihow.com/Use-English-Punctuation-Correctly" target="_blank" rel="noopener">How to Use English Punctuation Corrently - wikiHow</a></li>
+<li><a href="https://zh.opensuse.org/index.php?title=Help:格式" target="_blank" rel="noopener">格式 - openSUSE</a></li>
+<li><a href="http://zh.wikipedia.org/wiki/全形和半形" target="_blank" rel="noopener">全角和半角 - 维基百科</a></li>
+<li><a href="http://zh.wikipedia.org/wiki/引號" target="_blank" rel="noopener">引号 - 维基百科</a></li>
+<li><a href="http://zh.wikipedia.org/wiki/疑問驚嘆號" target="_blank" rel="noopener">疑问惊叹号 - 维基百科</a></li>
+</ul>
+</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://lexburner.github.io/chinese-copywriting-guidelines/" data-id="ckjgh2hy6000w509eg0827hlh" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-gracefully-shutdown" class="article article-type-post" itemscope="" itemprop="blogPost">
     <div class="article-inner">
         
@@ -355,7 +951,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/gracefully-shutdown/" data-id="ckj5z3hup003yjr9e75ruttx7" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/gracefully-shutdown/" data-id="ckjgh2hzk003u509eegrc8ea4" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -627,7 +1223,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-registry/" data-id="ckj5z3hxg008wjr9eq465o6dm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-registry/" data-id="ckjgh2i1l008r509e1iohy26o" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -841,7 +1437,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-protocol/" data-id="ckj5z3hxf008tjr9effan2a5p" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-protocol/" data-id="ckjgh2i1i008l509euv84fscc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1007,7 +1603,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/motan-async/" data-id="ckj5z3hwk0075jr9e7952xaqq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/motan-async/" data-id="ckjgh2i0v006w509e4tgwql61" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1188,7 +1784,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-transport/" data-id="ckj5z3hxj0097jr9ei3qiukmb" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-transport/" data-id="ckjgh2i1q0091509eksgie7qn" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1398,7 +1994,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-dynamic-proxy/" data-id="ckj5z3hx9008mjr9ely8nyoqu" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-dynamic-proxy/" data-id="ckjgh2i1e008d509e7fj6lchh" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1667,7 +2263,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/rpc-serialize-2/" data-id="ckj5z3hxh0093jr9ehbzyejep" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/rpc-serialize-2/" data-id="ckjgh2i1n008u509eovah5g8x" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1907,551 +2503,7 @@ ga('send', 'pageview');
 
 </div>
 
-    <a data-url="https://lexburner.github.io/NJIAS2017/" data-id="ckj5z3hrz0003jr9es3xasoeq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-rpc-serialize-1" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/rpc-serialize-1/">深入理解 RPC 之序列化篇 --Kryo</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/rpc-serialize-1/">
-            <time datetime="2017-11-28T14:15:28.000Z" itemprop="datePublished">2017-11-28</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/RPC/">RPC</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/RPC/">RPC</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>一年前，笔者刚刚接触 RPC 框架，从单体式应用向分布式应用的变革无疑是让人兴奋的，同时也对 RPC 背后到底做了哪些工作产生了兴趣，但其底层的设计对新手而言并不是很友好，其涉及的一些常用技术点都有一定的门槛。如传输层常常使用的 netty，之前完全没听过，想要学习它，需要掌握前置知识点 nio；协议层，包括了很多自定义的协议，而每个 RPC 框架的实现都有差异；代理层的动态代理技术，如 jdk 动态代理，虽然实战经验不多，但至少还算会用，而 cglib 则又有一个盲区；序列化层倒还算是众多层次中相对简单的一环，但 RPC 为了追求可扩展性，性能等诸多因素，通常会支持多种序列化方式以供使用者插拔使用，一些常用的序列化方案 hessian，kryo，Protobuf 又得熟知…</p>
-<p>这个系列打算就 RPC 框架涉及到的一些知识点进行探讨，本篇先从序列化层的一种选择 –kryo 开始进行介绍。</p>
-<h2 id="序列化概述"><a href="#序列化概述" class="headerlink" title="序列化概述"></a>序列化概述</h2><p>大白话介绍下 RPC 中序列化的概念，可以简单理解为对象 –&gt; 字节的过程，同理，反序列化则是相反的过程。为什么需要序列化？因为网络传输只认字节。所以互信的过程依赖于序列化。有人会问，FastJson 转换成字符串算不算序列化？对象持久化到数据库算不算序列化？没必要较真，广义上理解即可。</p>
-<h2 id="JDK-序列化"><a href="#JDK-序列化" class="headerlink" title="JDK 序列化"></a>JDK 序列化</h2><p>可能你没用过 kryo，没用过 hessian，但你一定用过 jdk 序列化。我最早接触 jdk 序列化，是在大二的 JAVA 大作业中，《XX 管理系统》需要把对象保存到文件中（那时还没学数据库），jdk 原生支持的序列化方式用起来也很方便。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span>&#123;  </span><br><span class="line">   <span class="keyword">private</span> String name;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;  </span><br><span class="line">      <span class="comment">// create a Student</span></span><br><span class="line">      Student st = <span class="keyword">new</span> Student(<span class="string">"kirito"</span>);  </span><br><span class="line">     <span class="comment">// serialize the st to student.db file  </span></span><br><span class="line">     ObjectOutputStream oos = <span class="keyword">new</span> ObjectOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">"student.db"</span>));  </span><br><span class="line">     oos.writeObject(st);  </span><br><span class="line">     oos.close();  </span><br><span class="line">     <span class="comment">// deserialize the object from student.db</span></span><br><span class="line">     ObjectInputStream ois = <span class="keyword">new</span> ObjectInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">"student.db"</span>));  </span><br><span class="line">     Student kirito = (Student) ois.readObject();  </span><br><span class="line">     ois.close();  </span><br><span class="line">    <span class="comment">// assert</span></span><br><span class="line">    <span class="keyword">assert</span> <span class="string">"kirito"</span>.equals(kirito.getName());  </span><br><span class="line">   &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Student 实体类需要实现 Serializable 接口，以告知其可被序列化。</p>
-<p>序列化协议的选择通常有下列一些常用的指标：</p>
-<ol>
-<li>通用性。是否只能用于 java 间序列化 / 反序列化，是否跨语言，跨平台。</li>
-<li>性能。分为空间开销和时间开销。序列化后的数据一般用于存储或网络传输，其大小是很重要的一个参数；解析的时间也影响了序列化协议的选择，如今的系统都在追求极致的性能。</li>
-<li>可扩展性。系统升级不可避免，某一实体的属性变更，会不会导致反序列化异常，也应该纳入序列化协议的考量范围。</li>
-<li>易用性。API 使用是否复杂，会影响开发效率。</li>
-</ol>
-<p>容易用的模型通常性能不好，性能好的模型通常用起来都比较麻烦。显然，JDK 序列化属于前者。我们不过多介绍它，直接引入今天的主角 kryo 作为它的替代品。</p>
-<h2 id="Kryo-入门"><a href="#Kryo-入门" class="headerlink" title="Kryo 入门"></a>Kryo 入门</h2><h3 id="引入依赖"><a href="#引入依赖" class="headerlink" title="引入依赖"></a>引入依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.esotericsoftware<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>kryo<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>由于其底层依赖于 ASM 技术，与 Spring 等框架可能会发生 ASM 依赖的版本冲突（文档中表示这个冲突还挺容易出现）所以提供了另外一个依赖以供解决此问题</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.esotericsoftware<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>kryo-shaded<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span>&#123;  </span><br><span class="line">   <span class="keyword">private</span> String name;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Kryo kryo = <span class="keyword">new</span> Kryo();</span><br><span class="line">        Output output = <span class="keyword">new</span> Output(<span class="keyword">new</span> FileOutputStream(<span class="string">"student.db"</span>));</span><br><span class="line">        Student kirito = <span class="keyword">new</span> Student(<span class="string">"kirito"</span>);</span><br><span class="line">        kryo.writeObject(output, kirito);</span><br><span class="line">        output.close();</span><br><span class="line">        Input input = <span class="keyword">new</span> Input(<span class="keyword">new</span> FileInputStream(<span class="string">"student.db"</span>));</span><br><span class="line">        Student kiritoBak = kryo.readObject(input, Student.class);</span><br><span class="line">        input.close();</span><br><span class="line">        <span class="keyword">assert</span> <span class="string">"kirito"</span>.equals(kiritoBak.getName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不需要注释也能理解它的执行流程，和 jdk 序列化差距并不是很大。</p>
-<h3 id="三种读写方式"><a href="#三种读写方式" class="headerlink" title="三种读写方式"></a>三种读写方式</h3><p>Kryo 共支持三种读写方式</p>
-<ol>
-<li>如果知道 class 字节码，并且对象不为空</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kryo.writeObject(output, someObject);</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">SomeClass someObject = kryo.readObject(input, SomeClass.class);</span><br></pre></td></tr></table></figure>
-<p>快速入门中的序列化 / 反序列化的方式便是这一种。而 Kryo 考虑到 someObject 可能为 null，也会导致返回的结果为 null，所以提供了第二套读写方式。</p>
-<ol>
-<li>如果知道 class 字节码，并且对象可能为空</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kryo.writeObjectOrNull(output, someObject);</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">SomeClass someObject = kryo.readObjectOrNull(input, SomeClass.class);</span><br></pre></td></tr></table></figure>
-<p>但这两种方法似乎都不能满足我们的需求，在 RPC 调用中，序列化和反序列化分布在不同的端点，对象的类型确定，我们不想依赖于手动指定参数，最好是…emmmmm… 将字节码的信息直接存放到序列化结果中，在反序列化时自行读取字节码信息。Kryo 考虑到了这一点，于是提供了第三种方式。</p>
-<ol>
-<li>如果实现类的字节码未知，并且对象可能为 null</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kryo.writeClassAndObject(output, object);</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">Object object = kryo.readClassAndObject(input);</span><br><span class="line"><span class="keyword">if</span> (object <span class="keyword">instanceof</span> SomeClass) &#123;</span><br><span class="line">   <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们牺牲了一些空间一些性能去存放字节码信息，但这种方式是我们在 RPC 中应当使用的方式。</p>
-<h3 id="我们关心的问题"><a href="#我们关心的问题" class="headerlink" title="我们关心的问题"></a>我们关心的问题</h3><p>继续介绍 Kryo 特性之前，不妨让我们先思考一下，一个序列化工具或者一个序列化协议，应当需要考虑哪些问题。比如，支持哪些类型的序列化？循环引用会不会出现问题？在某个类增删字段之后反序列化会报错吗？等等等等….</p>
-<p>带着我们考虑到的这些疑惑，以及我们暂时没考虑到的，但 Kryo 帮我们考虑到的，来看看 Kryo 到底支持哪些特性。</p>
-<h3 id="支持的序列化类型"><a href="#支持的序列化类型" class="headerlink" title="支持的序列化类型"></a>支持的序列化类型</h3><table>
-<thead>
-<tr>
-<th>boolean</th>
-<th>Boolean</th>
-<th>byte</th>
-<th>Byte</th>
-<th>char</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Character</td>
-<td>short</td>
-<td>Short</td>
-<td>int</td>
-<td>Integer</td>
-</tr>
-<tr>
-<td>long</td>
-<td>Long</td>
-<td>float</td>
-<td>Float</td>
-<td>double</td>
-</tr>
-<tr>
-<td>Double</td>
-<td>byte[]</td>
-<td>String</td>
-<td>BigInteger</td>
-<td>BigDecimal</td>
-</tr>
-<tr>
-<td>Collection</td>
-<td>Date</td>
-<td>Collections.emptyList</td>
-<td>Collections.singleton</td>
-<td>Map</td>
-</tr>
-<tr>
-<td>StringBuilder</td>
-<td>TreeMap</td>
-<td>Collections.emptyMap</td>
-<td>Collections.emptySet</td>
-<td>KryoSerializable</td>
-</tr>
-<tr>
-<td>StringBuffer</td>
-<td>Class</td>
-<td>Collections.singletonList</td>
-<td>Collections.singletonMap</td>
-<td>Currency</td>
-</tr>
-<tr>
-<td>Calendar</td>
-<td>TimeZone</td>
-<td>Enum</td>
-<td>EnumSet</td>
-</tr>
-</tbody>
-</table>
-<p>表格中支持的类型一览无余，这都是其默认支持的。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Kryo kryo = <span class="keyword">new</span> Kryo();</span><br><span class="line">kryo.addDefaultSerializer(SomeClass.class, SomeSerializer.class);</span><br></pre></td></tr></table></figure>
-<p>这样的方式，也可以为一个 Kryo 实例扩展序列化器。</p>
-<p>总体而言，Kryo 支持以下的类型：</p>
-<ul>
-<li>枚举</li>
-<li>集合、数组</li>
-<li>子类 / 多态</li>
-<li>循环引用</li>
-<li>内部类</li>
-<li>泛型</li>
-</ul>
-<p>但需要注意的是，<strong>Kryo 不支持 Bean 中增删字段 </strong>。如果使用 Kryo 序列化了一个类，存入了 Redis，对类进行了修改，会导致反序列化的异常。</p>
-<p>另外需要注意的一点是使用反射创建的一些类序列化的支持。如使用 Arrays.asList(); 创建的 List 对象，会引起序列化异常。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; com.esotericsoftware.kryo.KryoException: Class cannot be created (missing no-arg constructor): java.util.Arrays$ArrayList</span><br></pre></td></tr></table></figure>
-<p>但 new ArrayList() 创建的 List 对象则不会，使用时需要注意，可以使用第三方库对 Kryo 进行序列化类型的扩展。如 <a href="https://github.com/magro/kryo-serializers" target="_blank" rel="noopener">https://github.com/magro/kryo-serializers</a> 所提供的。</p>
-<p><strong> 不支持包含无参构造器类的反序列化 </strong>，尝试反序列化一个不包含无参构造器的类将会得到以下的异常：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; com.esotericsoftware.kryo.KryoException: Class cannot be created (missing no-arg constructor): moe.cnkirito.Xxx</span><br></pre></td></tr></table></figure>
-<p>保证每个类具有无参构造器是应当遵守的编程规范，但实际开发中一些第三库的相关类不包含无参构造，的确是有点麻烦。</p>
-<h3 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a>线程安全</h3><p>Kryo 是线程不安全的，意味着每当需要序列化和反序列化时都需要实例化一次，或者借助 ThreadLocal 来维护以保证其线程安全。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Kryo&gt; kryos = <span class="keyword">new</span> ThreadLocal&lt;Kryo&gt;() &#123;</span><br><span class="line">	<span class="function"><span class="keyword">protected</span> Kryo <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		Kryo kryo = <span class="keyword">new</span> Kryo();</span><br><span class="line">		<span class="comment">// configure kryo instance, customize settings</span></span><br><span class="line">		<span class="keyword">return</span> kryo;</span><br><span class="line">	&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Somewhere else, use Kryo</span></span><br><span class="line">Kryo k = kryos.get();</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<h3 id="Kryo-相关配置参数详解"><a href="#Kryo-相关配置参数详解" class="headerlink" title="Kryo 相关配置参数详解"></a>Kryo 相关配置参数详解</h3><p>每个 Kryo 实例都可以拥有两个配置参数，这值得被拉出来单独聊一聊。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kryo.setRegistrationRequired(<span class="keyword">false</span>);<span class="comment">// 关闭注册行为</span></span><br><span class="line">kryo.setReferences(<span class="keyword">true</span>);<span class="comment">// 支持循环引用</span></span><br></pre></td></tr></table></figure>
-<p>Kryo 支持对注册行为，如 <code>kryo.register(SomeClazz.class);</code>, 这会赋予该 Class 一个从 0 开始的编号，但 Kryo 使用注册行为最大的问题在于，其不保证同一个 Class 每一次注册的号码想用，这与注册的顺序有关，也就意味着在不同的机器、同一个机器重启前后都有可能拥有不同的编号，这会导致序列化产生问题，所以在分布式项目中，一般关闭注册行为。</p>
-<p>第二个注意点在于循环引用，Kryo 为了追求高性能，可以关闭循环引用的支持。不过我并不认为关闭它是一件好的选择，大多数情况下，请保持 <code>kryo.setReferences(true)</code>。</p>
-<h3 id="常用-Kryo-工具类"><a href="#常用-Kryo-工具类" class="headerlink" title="常用 Kryo 工具类"></a>常用 Kryo 工具类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KryoSerializer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] serialize(Object obj) &#123;</span><br><span class="line">        Kryo kryo = kryoLocal.get();</span><br><span class="line">        ByteArrayOutputStream byteArrayOutputStream = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        Output output = <span class="keyword">new</span> Output(byteArrayOutputStream);<span class="comment">//&lt;1&gt;</span></span><br><span class="line">        kryo.writeClassAndObject(output, obj);<span class="comment">//&lt;2&gt;</span></span><br><span class="line">        output.close();</span><br><span class="line">        <span class="keyword">return</span> byteArrayOutputStream.toByteArray();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">deserialize</span><span class="params">(<span class="keyword">byte</span>[] bytes)</span> </span>&#123;</span><br><span class="line">        Kryo kryo = kryoLocal.get();</span><br><span class="line">        ByteArrayInputStream byteArrayInputStream = <span class="keyword">new</span> ByteArrayInputStream(bytes);</span><br><span class="line">        Input input = <span class="keyword">new</span> Input(byteArrayInputStream);<span class="comment">// &lt;1&gt;</span></span><br><span class="line">        input.close();</span><br><span class="line">        <span class="keyword">return</span> (T) kryo.readClassAndObject(input);<span class="comment">//&lt;2&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Kryo&gt; kryoLocal = <span class="keyword">new</span> ThreadLocal&lt;Kryo&gt;() &#123;<span class="comment">//&lt;3&gt;</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> Kryo <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            Kryo kryo = <span class="keyword">new</span> Kryo();</span><br><span class="line">            kryo.setReferences(<span class="keyword">true</span>);<span class="comment">// 默认值为 true, 强调作用</span></span><br><span class="line">            kryo.setRegistrationRequired(<span class="keyword">false</span>);<span class="comment">// 默认值为 false, 强调作用</span></span><br><span class="line">            <span class="keyword">return</span> kryo;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><1> Kryo 的 Input 和 Output 接收一个 InputStream 和 OutputStream，Kryo 通常完成字节数组和对象的转换，所以常用的输入输出流实现为 ByteArrayInputStream/ByteArrayOutputStream。</1></p>
-<p><2> writeClassAndObject 和 readClassAndObject 配对使用在分布式场景下是最常见的，序列化时将字节码存入序列化结果中，便可以在反序列化时不必要传入字节码信息。</2></p>
-<p><3> 使用 ThreadLocal 维护 Kryo 实例，这样减少了每次使用都实例化一次 Kryo 的开销又可以保证其线程安全。</3></p>
-<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p><a href="https://github.com/EsotericSoftware/kryo" target="_blank" rel="noopener">https://github.com/EsotericSoftware/kryo</a></p>
-<p><a href="http://www.cnblogs.com/hntyzgn/p/7122709.html" target="_blank" rel="noopener">Kryo 使用指南</a></p>
-<p><a href="https://kb.cnblogs.com/page/515982/" target="_blank" rel="noopener">序列化与反序列化</a></p>
-<hr>
-<p>更多的序列化方案，和 RPC 其他层次中会涉及到的技术，在后续的文章中进行逐步介绍。</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/rpc-serialize-1/" data-id="ckj5z3hxh0090jr9e60ht5gh5" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-view-1" class="article article-type-post" itemscope="" itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/view-1/">给初中级 JAVA 准备的面试题</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        <!-- 增加文章类型 -->
-                        
-	
-		<div class="article-type">
-		    <span class="label label-success" style="float: left;padding: 3px 5px 3px 5px;margin-right: 15px;margin-top: 2px;">原创</span>
-		</div>
-	
-	
-	
-		
-	
-
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/view-1/">
-            <time datetime="2017-11-28T14:15:28.000Z" itemprop="datePublished">2017-11-28</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
-    </div>
-
-                        <!-- 不显示标签 -->
-                        <!-- 
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/JAVA/">JAVA</a>
-    </div>
- -->
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>笔者作为一个今年刚毕业的初级 JAVA，根据群里水友的讨论，也结合自己刚毕业时的一些面经，加上近期一点点在公司面试别人的经验，总结了如下的常见面试问题，适用于初级和中级 JAVA。</p>
-<h2 id="JAVA"><a href="#JAVA" class="headerlink" title="JAVA"></a>JAVA</h2><ol>
-<li>HashMap 相关</li>
-</ol>
-<p>HashMap 一直是经典的面试题，所有面试官都喜欢问他，因为它可以牵扯出非常多的知识点，而面试者到底能了解到何种程度，则一定程度反映其综合能力。</p>
-<p>细节聊扩容因子 LoadFactor=0.75，初始大小 InitailCapacity=16</p>
-<p>纵向聊其底层实现，数据结构是数组 + 链表，提到 jdk1.8 之后对链表节点到达 8 之后转换为红黑树加分。继续追问的话便是引申出常用的数据结构：队列，栈，树，图。</p>
-<p>横向聊线程安全，HashMap 为线程不安全，一般问多线程操作会导致其死循环的原因。与线程安全的 ConcurrentHashMap 对比，又扩展到 ConcurrentHashMap 的实现。继续追问的话便是引申出线程安全的定义，问一些常用的并发容器，考察面试者对 java.util.concurrent 包的掌握情况。那么至少可以牵扯出如下的问题：</p>
-<ol>
-<li>ConcurrentHashMap 相关</li>
-</ol>
-<p>面试者可以先说历史，1.8 之前采用分段锁，核心就是一句话：尽量降低同步锁的粒度。1.8 之后使用 CAS 思想代替冗杂的分段锁实现。不出意料，面试者答出 CAS 之后必定会被追问其思想以及应用，换做我自己的话会有如下思路作答：CAS 采用乐观锁思想达到 lock free，提一下 sun.misc.Unsafe 中的 native 方法，至于 CAS 的其他应用可以聊一聊 Atomic 原子类和一些无锁并发框架（如 Amino），提到 ABA 问题加分。</p>
-<ol>
-<li>线程安全与锁</li>
-</ol>
-<p>线程安全这个词也是面试的高频词，说完上面的并发容器，回头说一说线程安全的定义，按照周志明大大的话回答私以为是极好的：</p>
-<blockquote>
-<p>当多个线程访问某个类时，不管运行时环境采用何种调度方式或者这些线程将如何交替进行，并且在主调代码中不需要任何额外的同步或协同，这个类都能表现出正确的行为，那么称这个类是线程安全的</p>
-</blockquote>
-<p>通常与锁一起出现：除了 synchronized 之外，还经常被问起的是 juc 中的 Lock 接口，其具体实现主要有两种：可重入锁，读写锁。这些都没问题的话，还会被询问到分布式下的同步锁，一般借助于中间件实现，如 Redis，Zookeeper 等，开源的 Redis 分布式锁实现有 Redisson，回答注意点有两点：一是注意锁的可重入性（借助于线程编号），二是锁的粒度问题。除此之外就是一些 juc 的常用工具类如：CountdownLatch，CyclicBarrir，信号量</p>
-<ol>
-<li>线程</li>
-</ol>
-<p>创建线程有几种方式：这个时候应该毫不犹豫的回答 1 种。面试官会有些惊讶于你的回答，因为似乎他已经习惯了听到 Thread 和 Runnable2 种方式的“标准答案”。其实，仔细审题会发现，java 创建线程只有一种方式：Thread。Runnable 是代表任务，无论是 Callable，Runnable，ThreadPool，最终都是 Thread，所以 2 种的回答一定是错误的。</p>
-<ol>
-<li>设计模式</li>
-</ol>
-<p>如经典的单利模式。当被问到单例模式时，私以为在有准备的前提下，回答使用双检锁的方式实现可以很好地诱导面试官。双检锁实现线程安全的单利模式有两块注意点：1 锁的粒度问题 2 静态变量需要被 volatile 修饰。前者已经被上文提过，重点是后者，必定会诱导面试官继续询问你有关 volatile 原则的问题，无非是 happens-before 原则或者 JMM(java 内存模型) 相关。前者只需要熟记几条关键性的原则即可，而后者回答的重点便是需要提到主存与工作内存的关系。</p>
-<p>工厂模式，观察者模式，模板方法模式，策略模式，职责链模式等等，通常会结合 Spring 和 UML 类图提问。</p>
-<ol>
-<li>JVM 相关</li>
-</ol>
-<p>说实话，我自己对 JVM 的掌握几乎完全来自于《深入理解 java 虚拟机》，加上一点点线上的经验。初级岗位常问的问题也是固定的那么几个。</p>
-<p>内存分区：主要就是堆和栈，严谨点回答可以答方法区，虚拟机栈，本地方法栈，堆，程序计数器。聊一聊 Hotspot 在 jdk1.7 中将常量池移到了堆中，jdk1.8 移除永久代用 MetaSpace 代替起码可以佐证：你喜欢在一些 JAVA 群里面吹水。</p>
-<p>垃圾回收算法：新生代由于对象朝生夕死使用标记 - 清除 (or 标记 - 整理) 算法，老年代生命力强使用复制算法。提到一句分代收集即可。</p>
-<p>垃圾回收器一两个名字还是得叫的上来：Serial，Parallel，CMS，G1…</p>
-<p>如何判断一个对象可以被回收：引用计数（可以提到 Netty 中的使用案例），可达性分析（JVM 使用）</p>
-<ol>
-<li>IO 相关</li>
-</ol>
-<p>bio，nio 区别要熟知，了解 nio 中的 ByteBuffer，Selector，Channel 可以帮助面试者度过不少难关。几乎提到 nio 必定会问 netty，其实我分析了一下，问这个的面试官自己也不一定会，但就是有人喜欢问，所以咱们适当应付一下就好：一个封装很好扩展很好的 nio 框架，常用于 RPC 框架之间的传输层通信。</p>
-<ol>
-<li>反射</li>
-</ol>
-<p>聊一聊你对 JAVA 中反射的理解：运行时操作一个类的神器，可以获取构造器，方法，成员变量，参数化类型… 使用案例如 Hibernate，BeanUtils。</p>
-<ol>
-<li>动态代理</li>
-</ol>
-<p>jdk 动态代理和 cglib 动态代理的区别：前者需要实现一个接口，后者不需要；前者依赖于 jdk 提供的 InvocationHandler，后者依赖于字节码技术；前者我还能写一些代码，后者完全不会。大概就这些差别了。</p>
-<h2 id="开源框架"><a href="#开源框架" class="headerlink" title="开源框架"></a>开源框架</h2><h3 id="Tomcat"><a href="#Tomcat" class="headerlink" title="Tomcat"></a>Tomcat</h3><p>我没看过源码，除了老生常谈的双亲委托类加载机制，似乎只能问一些相关参数了。</p>
-<h3 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h3><p>在我不长的面试官生涯中，比较烦的一件事便是：当我还没问全：“聊一聊你对 Spring 的理解”这句话时，部分面试者的脸上已经浮现出了笑容，并迫不及待的回答：AOP 和 IOC。这本无可厚非，但一旦这成了条件反射式的回答，便违背了面试的初衷。</p>
-<p>在面试中，Spring 从狭义上可以被理解成 Spring Framework&amp;SpringMVC。而广义上包含了 Spring 众多的开源项目，如果面试者连 spring.io 都没有访问过，私以为是不应该的扣分项。</p>
-<p>Spring 常见的问题包括：Spring Bean 的 scope 取值，BeanFactory 的地位，@Transactionl 相关（传播机制和隔离级别），SpringMVC 工作流程</p>
-<h3 id="SpringBoot"><a href="#SpringBoot" class="headerlink" title="SpringBoot"></a>SpringBoot</h3><p>SpringBoot 是当今最火的框架之一了，其 starter 模块自动配置的思想是面试中经常被问到的。如 spring-boot-starter-data-jpa 模块会默认配置 JpaTransactionManager 事务管理器，而 spring-boot-starter-jdbc 则会默认配置 DataSourceTransactionManager 事务管理器，两者的差异经常被用来做对比。@ConditionalOnMissingBean，@ConditionalOnBean 等注解作用也需要被掌握。</p>
-<h3 id="JPA-amp-Hibernate"><a href="#JPA-amp-Hibernate" class="headerlink" title="JPA&amp;Hibernate"></a>JPA&amp;Hibernate</h3><p>ORM 的思想</p>
-<p>懒加载如何配置以及意义</p>
-<p>级联如何配置，什么时候应该使用级联</p>
-<p>一级缓存：Session 级别的缓存</p>
-<p>@Version 的使用：数据库的乐观锁</p>
-<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><p>这里的数据库还是以传统的 RDBMS 为主，由于存储过程，触发器等操作一般在互联网公司禁止使用，所以基本传统数据库能问的东西也并不多。</p>
-<ol>
-<li>索引的分类有哪些？面试者可以尝试自己分类回答。索引和唯一索引；聚集索引和非聚集索引；数据结构可以分为 Hash 和 B+ 树索引；单列索引和联合索引。常见的索引问题还包括（A,B,C）的联合索引，查询 (B,C) 时会不会走索引等一些数据库的小细节。</li>
-<li>事务 ACID 的描述和隔离级别。</li>
-<li>mysql 的 explain 查询分析也是面试的重点对象，一条分析结果的查询时间，影响行数，走了哪些索引都是分析的依据。</li>
-<li>如果面试官问到存储引擎，说实话也有点为了面试而面试的感觉，掌握基本的 InnoDB 和 Myisam 的区别即可。</li>
-<li>互联网公司可能会比较关心面试者对分库分表的掌握：mysql 自带的 sharding 为什么一般不使用？中间件级别和驱动级别的分库分表，sharding-jdbc，cobar，mycat 等开源组件的使用，分布式 ID 和分库键的选择也备受面试官的青睐。</li>
-</ol>
-<h3 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h3><p>这个的确很热，这年头不熟悉 Redis 真不好意思说自己是干互联网的。</p>
-<ol>
-<li>Redis 的常用数据结构，这不用赘述了。</li>
-<li>Redis 的持久化策略。了解 RDB 和 AOF 的使用场景即可。</li>
-<li>Redis 的发布订阅。</li>
-<li>列举 Redis 的使用场景。这个可以自由发挥，除了主要功能缓存之外，还包括 session 共享，基于 Redis 的分布式锁，简易的消息队列等。</li>
-<li>了解 Redis 的集群和哨兵机制。</li>
-<li>高级话题包括：缓存雪崩，缓存失效，缓存穿透，预热等。</li>
-</ol>
-<h3 id="MQ"><a href="#MQ" class="headerlink" title="MQ"></a>MQ</h3><p>至少掌握一种常用的消息队列中间件：RabbitMQ，ActiveMQ，RocketMQ，Kafka，了解 MQ 解耦，提高吞吐量，平滑处理消息的主要思想。常见的面试问题包括如下几点：</p>
-<ol>
-<li>列举 MQ 在项目中的使用场景</li>
-<li>消息的可靠投递。每当要发生不可靠的操作（如 RPC 远程调用之前或者本地事务之中），保证消息的落地，然后同步发送。当失败或者不知道成功失败（比如超时）时，消息状态是待发送，定时任务轮询待发送消息表，最终一定可以送达。同时消费端保证幂等。也有朋友告诉过我 RocketMQ 中事务消息的概念，不过没有深入研究。</li>
-<li>消息的 ACK 机制。如较为常用的事务机制和客户端 ACK。</li>
-<li>DLQ 的设计。</li>
-</ol>
-<h3 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h3><ol>
-<li>解释反向代理。</li>
-<li>常用的负载均衡算法。掌握 ip_hash ，轮询，weight，fair 即可。</li>
-<li>配置动静分离。</li>
-</ol>
-<h3 id="RPC-框架"><a href="#RPC-框架" class="headerlink" title="RPC 框架"></a>RPC 框架</h3><p>Dubbo，Motan 等主流 rpc 框架的设计思想也是面试中宠儿。</p>
-<ol>
-<li>说一说 RPC 的原理？可初步回答动态代理 + 网络通信，进一步补充 RPC 的主要分层：协议层，序列化层，通信层，代理层。每一层拉出来都可以被问很久：如序列化方式的选择，通信层的选择等。</li>
-<li>注册中心的作用和选择。Zookeeper，Consul，Eureka 等注册中心完成了什么工作，以及他们的对比。</li>
-<li>netty 相关的提问。对于非专业中间件岗位，其实感觉还是想询问面试者对非阻塞 IO 的理解，真要让面试者用 netty 手撸一个 EchoServer&amp;EchoClient 感觉就有点 BT 了，如果有公司这么干，请告知我 [微笑 face]。</li>
-</ol>
-<h3 id="SpringCloud"><a href="#SpringCloud" class="headerlink" title="SpringCloud"></a>SpringCloud</h3><p>就我所了解的情况，国内 SpringCloud 的普及程度还不是很高，但是 SpringCloud 的相关组件会被部分引用，这倒是很常见，所以简历中出现 SpringCloud 也会是一个初级 JAVA 的亮点。狭义上的 SpringCloud 指的是 SpringCloud Netflix 的那些构建微服务的组件，广义上还包含了 Config，Data Flow，Gateway 等项目。</p>
-<ol>
-<li>Feign，Ribbon，Eureka，Zuul 的使用。了解各个组件的作用，会问一些常遇到的问题如 Feign 的重试机制，Eureka 的保护机制，Zuul 的路由机制等。</li>
-<li>Spring Cloud 使用的 restful http 通信与 RPC 通信的对比。毕竟… 这是一个经久不衰的辩题，可以从耦合性，通信性能，异构系统的互信等角度对比。</li>
-</ol>
-<h2 id="分布式"><a href="#分布式" class="headerlink" title="分布式"></a>分布式</h2><ol>
-<li>CAP 和 BASE 原理。了解 CAP 只能同时保证两个的结论，以及 CP 和 AP 的选择依据。了解 BASE 的最终一致性原理。</li>
-<li>重试和幂等性。如在支付场景中的异步支付回调，内外部系统对接保证一致性通常采取的保障手段。</li>
-<li>分布式链路跟踪。Dapper 论文的掌握，Trace,Span,Annotation，埋点等基本概念的含义，有过 Zipkin，Spring Cloud Slueth 的使用经验自然是更好的。</li>
-<li>分布式事务。虽然我认为这本身并不是一种值得提倡的东西，出现分布式事务应当考虑一下你的限界上下文划分的是否合理。那既然有人会问，或许也有他的道理，可以尝试了解二阶段提交，三阶段提交，Paxos。</li>
-<li>一致性 Hash。抓住一致性 hash 环和虚拟节点两个关键点作答即可。</li>
-<li>熔断、降级。两者的对比，以及分布式中为何两者地位很重要。</li>
-<li>谷歌的三驾马车：分布式文件系统（如开源实现 HDFS），分布式存储系统（如开源实现 HBASE），分布式计算框架（Map-Reduce 模型）。市面上绝大多数的海量数据问题，最终都是在考着三个东西。典型问题：2 个 1T 的文本文件存储着 URL，筛选出其中相同的 URL。海量文件的 word count…</li>
-</ol>
-<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><ol>
-<li>常用指令 cd(进入)，ls(列表显示)，rm -f /*(优化系统) 这些指令当然是必须会的</li>
-<li>Linux 中的 CoreUtils 相关问题。如 linux 下对文本进行排序并取前十个这些面试题 sort xx.txt | tail -n 10，基本都是在围绕其在设计。</li>
-<li>常用脚本的书写</li>
-<li>高级话题：Linux 下的 IO 模型，epoll 和 poll 的区别等。</li>
-</ol>
-<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><p>通常考的算法题会是一些较为简单的算法或者经典算法。ACM 经验会让你如鱼得水。</p>
-<p>复杂度的概念，二分查找，快排的实现，一些贪心算法，DP，数据结构，树和图论，位操作，字符串。</p>
-<p>总的来说不会很难，要么是考验思维的算法，要么是可以直接套用经典算法的模板，主要是考研面试者的算法思维，毕竟不是算法岗。</p>
-<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><ol>
-<li>业务场景的设计。诸如让你设计一个抢红包的流程，做一个秒杀的系统等等，重点考察的是一个面试者综合考虑问题的能力。</li>
-<li>你项目中最有挑战的一个技术点。</li>
-<li>HTTP 协议，TCP/IP 协议</li>
-<li>容器技术 Docker，k8s。这一块笔者没接触，不妄加讨论。</li>
-</ol>
-<h3 id="HR"><a href="#HR" class="headerlink" title="HR"></a>HR</h3><ol>
-<li>你的职业规划是什么？emmmmm</li>
-<li>期望薪资。别不好意思，你自己能拿多少心里没有点 B+ 树吗！</li>
-<li>你有没有女朋友？喵喵喵？</li>
-</ol>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="https://lexburner.github.io/view-1/" data-id="ckj5z3hzc00ctjr9ecefri8qm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://lexburner.github.io/NJIAS2017/" data-id="ckjgh2i5t00i7509eg2bu15ol" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -2544,6 +2596,25 @@ ga('send', 'pageview');
                     <li>
                         
                         <!-- <div class="item-thumbnail">
+                            <a href="/calendar-versioning/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Spring-Cloud/">Spring Cloud</a></p>
+                            <p class="item-title"><a href="/calendar-versioning/" class="title">Spring Cloud 终于改了，为什么要用日期来做版本号？</a></p>
+                            <p class="item-date"><time datetime="2020-12-22T20:01:22.000Z" itemprop="datePublished">2020-12-23</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
                             <a href="/nacos-cluster-mode/" class="thumbnail">
     
     
@@ -2617,25 +2688,6 @@ ga('send', 'pageview');
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/serialize-practice/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/JAVA/">JAVA</a></p>
-                            <p class="item-title"><a href="/serialize-practice/" class="title">gson 替换 fastjson 引发的线上问题分析</a></p>
-                            <p class="item-date"><time datetime="2020-09-15T10:37:56.000Z" itemprop="datePublished">2020-09-15</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2645,7 +2697,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">24</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Nacos/">Nacos</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">26</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">18</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Arthas/">Arthas</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevOps/">DevOps</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA/">JAVA</a><span class="category-list-count">24</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JAVA-并发合集/">JAVA 并发合集</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JWT/">JWT</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kong/">Kong</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Nacos/">Nacos</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/RPC/">RPC</a><span class="category-list-count">26</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Data-Redis/">Spring Data Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security/">Spring Security</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Security-OAuth2/">Spring Security OAuth2</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Session/">Spring Session</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/响应式编程/">响应式编程</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能挑战赛/">性能挑战赛</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术杂谈/">技术杂谈</a><span class="category-list-count">19</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构设计/">架构设计</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/规则引擎/">规则引擎</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/领域驱动设计/">领域驱动设计</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2654,7 +2706,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">十月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">十月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -2663,7 +2715,7 @@ ga('send', 'pageview');
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Arthas/" style="font-size: 13px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Nacos/" style="font-size: 12px;">Nacos</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 12px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/思维方式/" style="font-size: 10px;">思维方式</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 11px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
+            <a href="/tags/Arthas/" style="font-size: 13px;">Arthas</a> <a href="/tags/Cloud-Toolkit/" style="font-size: 10px;">Cloud Toolkit</a> <a href="/tags/DUBBO/" style="font-size: 12px;">DUBBO</a> <a href="/tags/DevOps/" style="font-size: 11px;">DevOps</a> <a href="/tags/DirectIO/" style="font-size: 10px;">DirectIO</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Dubbo/" style="font-size: 17px;">Dubbo</a> <a href="/tags/EDAS/" style="font-size: 10px;">EDAS</a> <a href="/tags/JAVA/" style="font-size: 20px;">JAVA</a> <a href="/tags/JMM/" style="font-size: 10px;">JMM</a> <a href="/tags/JMeter/" style="font-size: 10px;">JMeter</a> <a href="/tags/JNA/" style="font-size: 10px;">JNA</a> <a href="/tags/JWT/" style="font-size: 12px;">JWT</a> <a href="/tags/Kong/" style="font-size: 12px;">Kong</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/Nacos/" style="font-size: 12px;">Nacos</a> <a href="/tags/Network/" style="font-size: 10px;">Network</a> <a href="/tags/PolarDB-性能挑战赛/" style="font-size: 10px;">PolarDB 性能挑战赛</a> <a href="/tags/RPC/" style="font-size: 19px;">RPC</a> <a href="/tags/Reactor/" style="font-size: 10px;">Reactor</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 18px;">Spring</a> <a href="/tags/Spring-Cloud/" style="font-size: 13px;">Spring Cloud</a> <a href="/tags/Spring-Cloud-Zuul/" style="font-size: 11px;">Spring Cloud Zuul</a> <a href="/tags/Spring-Data-Redis/" style="font-size: 11px;">Spring Data Redis</a> <a href="/tags/Spring-Security/" style="font-size: 15px;">Spring Security</a> <a href="/tags/Spring-Security-OAuth2/" style="font-size: 12px;">Spring Security OAuth2</a> <a href="/tags/Spring-Session/" style="font-size: 13px;">Spring Session</a> <a href="/tags/TCP/" style="font-size: 11px;">TCP</a> <a href="/tags/Validation/" style="font-size: 11px;">Validation</a> <a href="/tags/XML/" style="font-size: 11px;">XML</a> <a href="/tags/Zipkin/" style="font-size: 10px;">Zipkin</a> <a href="/tags/drools/" style="font-size: 13px;">drools</a> <a href="/tags/live2d/" style="font-size: 10px;">live2d</a> <a href="/tags/lua/" style="font-size: 10px;">lua</a> <a href="/tags/motan/" style="font-size: 10px;">motan</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/中文排版/" style="font-size: 10px;">中文排版</a> <a href="/tags/事务/" style="font-size: 11px;">事务</a> <a href="/tags/代码规范/" style="font-size: 10px;">代码规范</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/微服务/" style="font-size: 11px;">微服务</a> <a href="/tags/心跳/" style="font-size: 10px;">心跳</a> <a href="/tags/思维方式/" style="font-size: 10px;">思维方式</a> <a href="/tags/技术杂谈/" style="font-size: 16px;">技术杂谈</a> <a href="/tags/招聘/" style="font-size: 11px;">招聘</a> <a href="/tags/数据库/" style="font-size: 12px;">数据库</a> <a href="/tags/文件-IO/" style="font-size: 11px;">文件 IO</a> <a href="/tags/日本旅游攻略/" style="font-size: 10px;">日本旅游攻略</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/架构设计/" style="font-size: 13px;">架构设计</a> <a href="/tags/求职/" style="font-size: 10px;">求职</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网关/" style="font-size: 11px;">网关</a> <a href="/tags/网卡/" style="font-size: 10px;">网卡</a> <a href="/tags/规则引擎/" style="font-size: 13px;">规则引擎</a> <a href="/tags/领域驱动设计/" style="font-size: 11px;">领域驱动设计</a>
         </div>
     </div>
 
@@ -2708,7 +2760,7 @@ ga('send', 'pageview');
         <footer id="footer">
     <div class="outer">
         <div id="footer-info" class="inner">
-            &copy; 2020 徐靖峰<br>
+            &copy; 2021 徐靖峰<br>
             Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
         </div>
     </div>
