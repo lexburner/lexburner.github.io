@@ -1,5 +1,5 @@
 ---
-title: JAVA 拾遗--JPA 二三事
+title: JAVA 拾遗 --JPA 二三事
 date: 2018-02-14 22:18:51
 tags:
 - JAVA
@@ -13,17 +13,17 @@ tips：**阅读本文之前，建议了解值对象和实体这两个概念的�
 
 ## 使用 @Embedded 关联一对一的值对象
 
-现实世界有很多一对一的关联关系，如人和身份证，订单和购买者...而在 JPA 中表达一对一的关联，通常有三种方式。下面就以订单（Order）和购买者（CustomerVo）为例来介绍这三种方式，这里 CustomerVo 的 Vo 指的是 Value Object。
+现实世界有很多一对一的关联关系，如人和身份证，订单和购买者... 而在 JPA 中表达一对一的关联，通常有三种方式。下面就以订单（Order）和购买者（CustomerVo）为例来介绍这三种方式，这里 CustomerVo 的 Vo 指的是 Value Object。
 
 **字段平铺**
 
-这可能是最简单的方式了，由于一对一关联的特殊性，完全可以在 Order 类中，使用几个字段记录 CustomerVo的属性。
+这可能是最简单的方式了，由于一对一关联的特殊性，完全可以在 Order 类中，使用几个字段记录 CustomerVo 的属性。
 
 ```java
 public class Order {
-    /*其他字段*/
+    /* 其他字段 */
     ...
-    /* Customer相关字段 */
+    /* Customer 相关字段 */
     private int customerId;
     private String customerName;
     private String customerMobile;
@@ -108,7 +108,7 @@ public class GoodsPicture {
 }
 ```
 
-我们应当发现这样的劣势是什么，从设计的角度来看：我们并不想单独为 GoodsPicture 单独建立一张表，正如前面使用 String pictures 来表示 List<String> 一样，这违反了数据库设计的第一范式，但这对于使用者来说非常方便，**这是关系型数据库的表达能力有限而进行的妥协** 。关于这一点我曾和芋艿，曹大师都进行过讨论，并达成了一致的结论：数据库中可以保存 JSON，使用时在应用层进行转换。
+我们应当发现这样的劣势是什么，从设计的角度来看：我们并不想单独为 GoodsPicture 单独建立一张表，正如前面使用 String pictures 来表示 List<String> 一样，这违反了数据库设计的第一范式，但这对于使用者来说非常方便，** 这是关系型数据库的表达能力有限而进行的妥协 ** 。关于这一点我曾和芋艿，曹大师都进行过讨论，并达成了一致的结论：数据库中可以保存 JSON，使用时在应用层进行转换。
 
 **使用 JSON 存储复杂对象**
 
