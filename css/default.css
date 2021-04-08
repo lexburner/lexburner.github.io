@@ -11363,6 +11363,10 @@ figure.highlight .section {
 .level.is-multiline {
   flex-wrap: wrap;
 }
+#toc {
+  max-height: calc(100vh - 22px);
+  overflow-y: scroll;
+}
 @media screen and (max-width: 768px) {
   .widget.card#toc {
     display: none;
@@ -11622,6 +11626,10 @@ figure.highlight .section {
   background-color: #276cda;
 }
 @media screen and (min-width: 1280px) {
+  .is-3-column .container {
+    max-width: 1216px;
+    width: 1216px;
+  }
   .is-1-column .container,
   .is-2-column .container {
     max-width: 960px;
@@ -11629,6 +11637,10 @@ figure.highlight .section {
   }
 }
 @media screen and (min-width: 1472px) {
+  .is-3-column .container {
+    max-width: 1344px;
+    width: 1344px;
+  }
   .is-2-column .container {
     max-width: 1152px;
     width: 1152px;
