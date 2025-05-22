@@ -13,7 +13,7 @@ tags:
 
 今天要聊的技术是序列化，这不是我第一次写序列化相关的文章了，今天动笔之前，我还特地去博客翻了下我博客早期的一篇序列化文章（如下图），竟然都过去 4 年了。
 
-![历史记录](https://kirito.iocoder.cn/image-20210815193159089.png)
+![历史记录](https://image.cnkirito.cn/image-20210815193159089.png)
 
 为什么又想聊序列化了呢？因为最近的工作用到了序列化相关的内容，其次，这几年 Dubbo 也发生了翻天覆地的变化，其中 Dubbo 3.0 主推的 Tripple 协议，更是打着下一代 RPC 通信协议的旗号，有取代 Dubbo 协议的势头。而 Tripple 协议使用的便是 Protobuf 序列化方案。
 
@@ -58,7 +58,7 @@ System.out.println(System.currentTimeMillis()-start);
 
 事实上，Dubbo 社区的贡献者们早就搭建了一个比较完备的 Dubbo 序列化基础测试工程：https://github.com/apache/dubbo-benchmark.git。
 
-![dubbo-benchmark](https://kirito.iocoder.cn/image-20210815203229668.png)
+![dubbo-benchmark](https://image.cnkirito.cn/image-20210815203229668.png)
 
 你只要具备基本的 JMH 和 Dubbo 的知识，就可以测试出在 Dubbo 场景下各个序列化框架的表现。
 

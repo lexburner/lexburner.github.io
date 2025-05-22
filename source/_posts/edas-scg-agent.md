@@ -33,7 +33,7 @@ EDAS 建议为 Spring Cloud Gateway 应用配置 `spring.cloud.gateway.fail-on-r
 
 众所周知，在 EDAS 中部署的 Java 应用都会挂载一个 Java Agent，通过 Java Agent 技术，EDAS 提供了丰富的微服务治理以及可观测性的能力，此次介绍的 Spring Cloud Gateway 增强能力，同样通过该 Java Agent 实现。
 
-![](https://kirito.iocoder.cn/image-20231016151952343.png)
+![](https://image.cnkirito.cn/image-20231016151952343.png)
 
 EDAS 增强 Spring Cloud Gateway 带来的最直观的变化便是提供了一个白屏控制台，方便用户进行操作，同时提供了诸多的增强能力：
 
@@ -47,13 +47,13 @@ EDAS 增强 Spring Cloud Gateway 带来的最直观的变化便是提供了一�
 
 ### 部署 Spring Cloud Gateway
 
-![](https://kirito.iocoder.cn/image-20231016153906037.png)
+![](https://image.cnkirito.cn/image-20231016153906037.png)
 
 用户可以将已有的 Spring Cloud Gateway 打包成 jar 包或者镜像，在 EDAS 中进行部署，或者也可以使用 EDAS 提供 Demo 部署包进行部署。如上图所示，EDAS 新增支持了 Spring Cloud Gateway 应用的 Demo 部署包，在该部署包中，事先配置好了一个 Nacos 注册中心，会自动连接到当前部署的微服务空间，并未配置任何路由，因为接下来将会进行动态路由配置的演示，所以无需事先在配置文件中配置。整个部署过程和部署一个普通的微服务应用没有任何差异。
 
 ### 创建路由并测试
 
-![](https://kirito.iocoder.cn/image-20231016154842110.png)
+![](https://image.cnkirito.cn/image-20231016154842110.png)
 
 EDAS 会识别到 Spring Cloud Gateway 应用的特征，并在菜单栏中动态增加应用网关的菜单。在快速入门中，示例创建了两条路由，分别是 http:// 格式的直接请求场景和 lb:// 格式的服务发现场景。为方便测试，可以在应用总览中为该网关应用配置一个公网的 SLB，通过 curl 请求测试：
 
@@ -114,7 +114,7 @@ EDAS 提供的 Spring Cloud Gateway 增强方案解耦了网关的业务属性�
 
 ### 动态配置能力
 
-![](https://kirito.iocoder.cn/image-20231016183215958.png)
+![](https://image.cnkirito.cn/image-20231016183215958.png)
 
 EDAS 为 Spring Cloud Gateway 的路由（Route）和插件（Gateway Filter）提供了动态配置能力，以白屏化的形式呈现，方便用户进行配置。
 
@@ -122,7 +122,7 @@ EDAS 为 Spring Cloud Gateway 的路由（Route）和插件（Gateway Filter）�
 
 ### 配置导入&导出
 
-![](https://kirito.iocoder.cn/image-20231017095051605.png)
+![](https://image.cnkirito.cn/image-20231017095051605.png)
 
 路由和全局插件均支持通过 Yaml 创建，Yaml 的格式遵循开源 Spring Cloud Gateway 的 schema 规范，以下是两个配置示例：
 
@@ -164,7 +164,7 @@ spring:
 
 同时也支持批量查看路由的 Yaml 定义：
 
-![](https://kirito.iocoder.cn/image-20231017095551499.png)
+![](https://image.cnkirito.cn/image-20231017095551499.png)
 
 Yaml 创建和查看的设计，是为了尽可能地对齐到开源 Spring Cloud Gateway 的规范，如果用户是 Spring Cloud Gateway 开源的资深用户，这会保留用户原有的使用体验。
 
@@ -176,7 +176,7 @@ Yaml 创建和查看的设计，是为了尽可能地对齐到开源 Spring Clou
 
 Spring Cloud Gateway 提供了非常丰富的插件（GatewayFilter）机制，允许配置在路由和全局级别，EDAS 在此基础上提升了插件的易用性。
 
-![](https://kirito.iocoder.cn/image-20231017100248106.png)
+![](https://image.cnkirito.cn/image-20231017100248106.png)
 
 Spring Cloud Gateway 原生的插件配置采用的是精简配置的方式，对于一些不太常用的插件，很难直观地去判断如何添加参数，在 EDAS 中则没有这样的烦恼，EDAS 会将插件的解释、参数是否必填、参数含义、参数个数进行拆解，避免误用。
 
@@ -209,7 +209,7 @@ Spring Cloud Gateway 原生的插件配置采用的是精简配置的方式，�
 
 ### 快速测试
 
-![](https://kirito.iocoder.cn/image-20231017100933394.png)
+![](https://image.cnkirito.cn/image-20231017100933394.png)
 
 针对于 Spring Cloud Gateway 应用，EDAS 会列举出控制台中的路由路径，供用户进行路由测试，借助于快速测试的能力，可以在路由配置完毕后快速进行验证，从而判断配置是否正确。
 
@@ -217,7 +217,7 @@ Spring Cloud Gateway 原生的插件配置采用的是精简配置的方式，�
 
 开源 Spring Cloud Gateway 并未配备网关应有的 accessLog，EDAS 补齐了这部分必备能力，任何经过网关的请求，都会打印在 `/home/admin/.opt/ArmsAgent/logs/scg-access.log` 路径下，用户可以在应用详情的日志中心中进行查看：
 
-![](https://kirito.iocoder.cn/image-20231017101531498.png)
+![](https://image.cnkirito.cn/image-20231017101531498.png)
 
 用户可以选择将这份数据采集至 SLS 或者自定义的日志中心，用作监控。
 

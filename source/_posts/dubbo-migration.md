@@ -18,7 +18,7 @@ toc: true
 
 上面的条款里只提到了商业软件，那么开源的 Consul 是否受到影响呢？在 Github 的 Consul 仓库上，可以得知项目的 license 是 `Mozilla Public License 2.0` ，这款许可证在 Apache 官网上是 `Category B` , 属于 `Weak Copy Left` 许可，那么它有哪些特点呢？
 
-![License](https://kirito.iocoder.cn/1590754178611.png)
+![License](https://image.cnkirito.cn/1590754178611.png)
 
 1. 任何可以使用，复制，修改，重新分发该代码，包括商业目的使用。
 2. 如果修改了 MPL 协议许可下的源码，再重新发布这部分源码的话，必须保留原来 MPL 许可证不得更换。
@@ -76,11 +76,11 @@ dubbo.registries.second.address=mse-kirito-p.nacos-ans.mse.aliyuncs.com:8848
 
 在 Consul 控制台可以看到服务已经注册成功：
 
-![Consul](https://kirito.iocoder.cn/222.png)
+![Consul](https://image.cnkirito.cn/222.png)
 
 在 MSE 控制台可以看到 Nacos 服务也已经注册成功
 
-![MSE Nacos](https://kirito.iocoder.cn/111.png)
+![MSE Nacos](https://image.cnkirito.cn/111.png)
 
 并且，服务调用一切正常。你可能回想：前面讲了一堆，你告诉我改了两行配置就是平滑迁移了？我还是得好好纠正下这种想法，改代码从来都是最轻松的事，难的是在迁移中，时刻观察业务状况，确保服务不因为迁移有损。除此之外，还需要注意的是，Dubbo 自带的多注册中心方案因为框架实现的问题，存在一定的缺陷。
 
@@ -105,7 +105,7 @@ dubbo.registries.second.address=mse-kirito-p.nacos-ans.mse.aliyuncs.com:8848
 
 为了让读者有一个直观的感受，我用文末的 demo 进行了测试，让服务提供者 A1（端口号 12346） 只注册到 Nacos，服务提供者 A2（端口号为 12345） 只注册到 Consul，消费者 B 双订阅 Nacos 和 Consul。如下图所示，在测试初期，可以发现，稳定调用到 A1；期间，我手动 kill 了 A1，图中也清晰地打印出了一条地址下线通知，之后稳定调用到 A2。
 
-![multi-registry](https://kirito.iocoder.cn/image-20200531012739193.png)
+![multi-registry](https://image.cnkirito.cn/image-20200531012739193.png)
 
 这样的缺陷，会导致我们在平滑迁移过程中无法对未迁移应用和迁移中应用进行充分的测试。
 
@@ -154,7 +154,7 @@ dubbo.registry.address = edas-migration://30.5.124.15:9999?service-registry=cons
 
 验证该方案：
 
-![migration](https://kirito.iocoder.cn/image-20200531015410936.png)
+![migration](https://image.cnkirito.cn/image-20200531015410936.png)
 
 已经变成了随机调用，解决了多注册中心的缺陷。
 
@@ -174,7 +174,7 @@ dubbo.registry.address = edas-migration://30.5.124.15:9999?service-registry=cons
 - 满足应用调用中权限控制的需求。当您的某个微服务应用有权限控制要求，不希望其它所有应用都能调用。比如优惠券部门的优惠券查询接口是默认内部的部门都是可以调用的，但是优惠券发放接口只允许特定的部门的应用才可以调用。这时候您需要使用 微服务治理中心，微服务治理中心提供的服务鉴权功能，既能够对整个应用做一些权限控制，也能对应用中的某个接口和 URL 进行权限控制，满足您不同场景下的权限控制需求
 - 解决不健康实例影响业务对问题，当节点出现 Full GC、网络分区、机器异常等问题时，这种情况下会导致调用此应用的流量出现异常、影响业务。但是运维人员又很难及时发现问题，且无法判断应该采取何种措施，如重启或者单纯地等待应用恢复。这时候您需要使用微服务治理中心，微服务治理中心 提供的离群实例摘除功能，能够根据您配置的规则自动摘服务调用列表中不健康的应用实例，以免异常的节点影响您的业务。同时还能自动地探测实例是否恢复并恢复流量，以及将实例异常信息触发监控报警，保护您的业务，提升稳定性。
 
-![MSC](https://kirito.iocoder.cn/1590756935648.png)
+![MSC](https://image.cnkirito.cn/1590756935648.png)
 
 ## 附录
 

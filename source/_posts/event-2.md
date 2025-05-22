@@ -25,7 +25,7 @@ toc: true
 
 在上一个项目中，我们对接了外网的 http 接口，而安全性的保障则是交给 OAuth2 来完成，作为 OAuth2 的客户端，我们需要获取服务端返回的 token，而 token 接口的获取次数每个月是有限制的，于是我们选择使用 Redis 来保存，定时刷新。由于每次发起请求时都要携带 token，为了更高的性能减少一次 redis io，我们在 TokenService 中使用了本地变量缓存 token。于是形成如下的 token 获取机制：
 
-![token 获取流程](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720170913232959.png)
+![token 获取流程](https://image.cnkirito.cn/QQ%E5%9B%BE%E7%89%8720170913232959.png)
 
 这个图并不复杂，只是为了方便描述需求：首先去本地变量中加载 token，若 token==null，则去 Redis 加载，若 Redis 未命中（token 过期了），则最终调用外部的 http 接口获取实时的 token，同时存入 redis 中和本地变量中。
 
@@ -247,7 +247,7 @@ public class ActivemqPubSubConfig {
 
 省略了发送消息的过程，实际上可以得到和 Redis PubSub 一样的效果。来看一下 ActiveMQ 自带的监控端，在发送消息后，发生了什么变化，访问本地端口 `http://localhost:8161/admin` ，可以看到消息被消费了。
 
-![ActiveMQ 监控端](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720170914001552.png)
+![ActiveMQ 监控端](https://image.cnkirito.cn/QQ%E5%9B%BE%E7%89%8720170914001552.png)
 
 ## 总结
 

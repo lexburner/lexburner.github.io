@@ -19,4 +19,4 @@ layout: "page"
 
 **Kirito的技术分享**
 
-![欢迎关注微信公众号](http://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![欢迎关注微信公众号](http://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

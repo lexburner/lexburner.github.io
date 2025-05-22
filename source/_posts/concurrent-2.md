@@ -106,7 +106,7 @@ try {
 
 为了保证发生并发，实际测试中我加入了 Thread.sleep(1000)，使竞争得以发生。测试结果：
 
-![测试结果](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171015115902.png)
+![测试结果](https://image.cnkirito.cn/QQ%E5%9B%BE%E7%89%8720171015115902.png)
 
 Redis 分布式锁的确起了作用。
 

@@ -10,7 +10,7 @@ toc: true
 
 天池中间件大赛的初赛在今早终于正式结束了，公众号停更了一个月，主要原因就是博主的空余时间几乎全花在这个比赛上，第一赛季结束，做下参赛总结，总的来说，收获不小。
 
-![最终排名](https://kirito.iocoder.cn/image-20180619190732570.png)
+![最终排名](https://image.cnkirito.cn/image-20180619190732570.png)
 <!-- more -->
 先说结果，最终榜单排名是第 15 名（除去前排大佬的两个小号，加上作弊的第一名，勉强能算是第 12 名），说实话是挺满意的成绩。这篇文章主要是分享给以下读者：比赛中使用了 netty 却没有达到理想 qps 的朋友，netty 刚入门的朋友，对 dubbo mesh 感兴趣的朋友。
 
@@ -34,7 +34,7 @@ toc: true
 
 官方提供了一个 qps 并不是很高的 demo，来方便选手们理解题意，可以说是非常贴心了，来回顾一下最简易的 dubbo mesh 实现：
 
-![dubbo mesh 初始方案](https://kirito.iocoder.cn/image-20180619200219464.png)
+![dubbo mesh 初始方案](https://image.cnkirito.cn/image-20180619200219464.png)
 
 如上图所示，是整个初始 dubbo mesh 的架构图，其中 consumer 和 provider 以灰色表示，因为选手是不能修改其实现的，绿色部分的 agent 是可以由选手们自由发挥的部分。比赛中 consumer，consumer-agent 为 单个实例，provider、provider-agent 分别启动了三个性能不一的实例：small，medium，large，这点我没有在图中表示出来，大家自行脑补。所以所有选手都需要完成以下几件事：
 
@@ -206,7 +206,7 @@ private void initThreadBoundClient(EventLoopGroup workerGroup) {
 
 到了这一步，整体架构已经清晰了，c->ca，ca->pa，pa->p 都实现了异步非阻塞的 reactor 模型，qps 在 256 并发下，也达到了 4400 qps。
 
-![优化后的 dubbo mesh 方案](https://kirito.iocoder.cn/image-20180619214121418.png)
+![优化后的 dubbo mesh 方案](https://image.cnkirito.cn/image-20180619214121418.png)
 
 ### 正式赛 512 连接带来的新格局
 
@@ -351,4 +351,4 @@ https://code.aliyun.com/250577914/agent-demo.git
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

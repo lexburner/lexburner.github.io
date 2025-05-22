@@ -15,7 +15,7 @@ tags:
 
 首先看用户反馈的报错，日志如下：
 
-![](https://kirito.iocoder.cn/image-20210527201838722.png)
+![](https://image.cnkirito.cn/image-20210527201838722.png)
 
 并且用户反馈业务日志也出现了大量的服务地址找不到的报错，说明 Nacos 服务都下线了。
 
@@ -33,17 +33,17 @@ tags:
 
 在问题发生时，Nacos 1.x 最新的版本已经是 Nacos 1.4.2 了，将源码 checkout 到 1.4.1 版本，追踪堆栈附近的问题，
 
-![](https://kirito.iocoder.cn/image-20210527204942162.png)
+![](https://image.cnkirito.cn/image-20210527204942162.png)
 
 上述这段代码是 Nacos 访问服务端的一段代码，进入 595 行，一探究竟。
 
-![](https://kirito.iocoder.cn/image-20210527205751308.png)
+![](https://image.cnkirito.cn/image-20210527205751308.png)
 
 我们成功找到了堆栈中的直接报错，就是这段 IsIPv4 的判断触发。splitIPPortStr 这个方法的主要逻辑是从 Nacos 的连接串筛选出连接地址，主要是为了做默认端口号的判断，如果用户没有携带 8848，会默认带上 8848。
 
 但问题恰恰便是出现在这儿：
 
-![](https://kirito.iocoder.cn/image-20210527210716610.png)
+![](https://image.cnkirito.cn/image-20210527210716610.png)
 
 InetAddress.getByName(addr) 是一个内置的方法，描述如下：
 
@@ -55,13 +55,13 @@ Given the name of a host, returns an array of its IP addresses, based on the con
 
 我们看看 1.4.2，已经修复了这个逻辑了，直接改成了正则判断。
 
-![](https://kirito.iocoder.cn/image-20210527211141214.png)
+![](https://image.cnkirito.cn/image-20210527211141214.png)
 
 但疑问还是存在的，域名解析短暂失败了，为啥会导致服务全都下线了，并且解析恢复后，服务依旧没有上线呢？
 
 继续追踪这段代码，发现 callServer 这段代码会被 com.alibaba.nacos.client.naming.beat.BeatReactor 持有，用于维持自身和 Nacos 的心跳。
 
-![](https://kirito.iocoder.cn/image-20210527211801891.png)
+![](https://image.cnkirito.cn/image-20210527211801891.png)
 
 而由于上述域名解析失败，抛出的异常是 `IllegalArgumentException`，并没有被里层方法转换成 NacosException，从而导致心跳线程没有 catch 住异常，彻底停止发送心跳了！
 
@@ -72,7 +72,7 @@ Given the name of a host, returns an array of its IP addresses, based on the con
 1. 修改 isIPv6 和 isIPv4 的判断方式，改为正则匹配。上文提及，这点已经在 1.4.2 修复了。
 2. 心跳线程要保证不被异常中断下一次心跳的提交。
 
-![](https://kirito.iocoder.cn/image-20210527212347213.png)
+![](https://image.cnkirito.cn/image-20210527212347213.png)
 
 第二点，也已经被修复了。
 

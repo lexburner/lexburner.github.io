@@ -48,7 +48,7 @@ Kong 的插件机制是其高可扩展性的根源，Kong 可以很方便地为�
 
 ### Kong 的架构
 
-![image-20180712184740981](https://kirito.iocoder.cn/image-20180712184740981.png)
+![image-20180712184740981](https://image.cnkirito.cn/image-20180712184740981.png)
 
 
 
@@ -62,7 +62,7 @@ Kong 的插件机制是其高可扩展性的根源，Kong 可以很方便地为�
 
 从上述文件夹浏览下来，大概可以看到它和 Nginx 的相似之处，并在此基础之上借助于 Lua 对自身的功能进行了拓展，除了 nginx.conf 中的配置，和相对固定的文件层级，Kong 还需要连接一个数据库来管理路由配置，服务配置，upstream 配置等信息，是的，由于 Kong 支持动态路由的特性，所以几乎所有动态的配置都不是配置在文件中，而是借助于 Postgres 或者 Cassandra 进行管理。
 
-![postgres](https://kirito.iocoder.cn/image-20180712192742718.png)
+![postgres](https://image.cnkirito.cn/image-20180712192742718.png)
 
 Kong 对外暴露了 Restful API，最终的配置便是落地在了数据库之中。
 
@@ -157,7 +157,7 @@ curl -X POST http://localhost:8001/routes/{routeId}/plugins \
 
 在官方文档中，我们可以获取全部的插件 https://konghq.com/plugins/，部分插件需要收费的企业版才可使用。
 
-![kong 插件](https://kirito.iocoder.cn/image-20180712200520739.png)
+![kong 插件](https://image.cnkirito.cn/image-20180712200520739.png)
 
 ### 总结
 
@@ -173,4 +173,4 @@ Kong 集成 Jwt 插件 https://www.cnkirito.moe/kong-jwt/
 
 **欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

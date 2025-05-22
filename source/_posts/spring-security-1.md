@@ -200,7 +200,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 
 AuthenticationProvider 最最最常用的一个实现便是 DaoAuthenticationProvider。顾名思义，Dao 正是数据访问层的缩写，也暗示了这个身份认证器的实现思路。由于本文是一个 Overview，姑且只给出其 UML 类图：
 
-![DaoAuthenticationProvider UML](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720170919204228.png)
+![DaoAuthenticationProvider UML](https://image.cnkirito.cn/QQ%E5%9B%BE%E7%89%8720170919204228.png)
 
 按照我们最直观的思路，怎么去认证一个用户呢？用户前台提交了用户名和密码，而数据库中保存了用户名和密码，认证便是负责比对同一个用户名，提交的密码和保存的密码是否相同便是了。在 Spring Security 中。提交的用户名和密码，被封装成了 UsernamePasswordAuthenticationToken，而根据用户名加载用户的任务则是交给了 UserDetailsService，在 DaoAuthenticationProvider 中，对应的方法便是 retrieveUser，虽然有两个参数，但是 retrieveUser 只有第一个参数起主要作用，返回一个 UserDetails。还需要完成 UsernamePasswordAuthenticationToken 和 UserDetails 密码的比对，这便是交给 additionalAuthenticationChecks 方法完成的，如果这个 void 方法没有抛异常，则认为比对成功。比对密码的过程，用到了 PasswordEncoder 和 SaltSource，密码加密和盐的概念相信不用我赘述了，它们为保障安全而设计，都是比较基础的概念。
 
@@ -243,14 +243,14 @@ UserDetailsService 和 AuthenticationProvider 两者的职责常常被人们搞�
 
 为了更加形象的理解上述我介绍的这些核心类，附上一张按照我的理解，所画出 Spring Security 的一张非典型的 UML 图
 
-![架构概览图](https://kirito.iocoder.cn/spring%20security%20architecture.png)
+![架构概览图](https://image.cnkirito.cn/spring%20security%20architecture.png)
 
 如果对 Spring Security 的这些概念感到理解不能，不用担心，因为这是 Architecture First 导致的必然结果，先过个眼熟。后续的文章会秉持 Code First 的理念，陆续详细地讲解这些实现类的使用场景，源码分析，以及最基本的：如何配置 Spring Security，在后面的文章中可以不时翻看这篇文章，找到具体的类在整个架构中所处的位置，这也是本篇文章的定位。另外，一些 Spring Security 的过滤器还未囊括在架构概览中，如将表单信息包装成 UsernamePasswordAuthenticationToken 的过滤器，考虑到这些虽然也是架构的一部分，但是真正重写他们的可能性较小，所以打算放到后面的章节讲解。
 
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 
 
 

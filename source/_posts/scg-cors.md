@@ -12,7 +12,7 @@ tags:
 
 作为一个 Web 开发，一定不会对下面的跨域报错陌生。
 
-![](https://kirito.iocoder.cn/1700038114106-33ab73bd-ddc0-45ba-b0eb-0e17862f8d24.png)
+![](https://image.cnkirito.cn/1700038114106-33ab73bd-ddc0-45ba-b0eb-0e17862f8d24.png)
 
 当一个资源从与该资源本身所在的服务器不同的域或端口请求一个资源时，资源会发起一个跨域 HTTP 请求。例如站点 http://www.aliyun.com 的某 HTML 页面请求 http://www.alibaba.com/image.jpg。
 
@@ -69,7 +69,7 @@ CORS 被定义在 w3c 规范中：https://fetch.spec.whatwg.org/#http-cors-proto
 
 浏览器在出现跨域请求时，会自动给请求携带 Origin 请求头，以下图为例，是 http://edasnext.aliyun.com 发往 http://edas.aliyun.com 的一个跨域请求
 
-![](https://kirito.iocoder.cn/2222.png)
+![](https://image.cnkirito.cn/2222.png)
 
 服务端如果要正常支持跨域请求，在判断当前请求为跨域请求时，需要在响应中携带 Access-Control-Allow-Origin、Access-Control-Allow-Methods 等相关的响应头。如果 edasnext.aliyun.com 该来源不在服务端的跨域配置列表中，则返回 403 拒绝该请求。浏览器会检查 Access 相关的响应头，如果没有携带，则会出现文章最开始的跨域报错。
 
@@ -127,7 +127,7 @@ public class IndexController {
 
 **跨域测试**
 
-![](https://kirito.iocoder.cn/3.png)
+![](https://image.cnkirito.cn/3.png)
 
 ![img](https://intranetproxy.alipay.com/skylark/lark/0/2023/png/156306/1700107788534-81665f92-5798-44ec-a941-8ae5d5ee2300.png)
 
@@ -135,7 +135,7 @@ public class IndexController {
 
 而如果通过 postman 重放这次请求，请求成功：
 
-![](https://kirito.iocoder.cn/4.png)
+![](https://image.cnkirito.cn/4.png)
 
 这个实验得出了两个结论：
 
@@ -166,13 +166,13 @@ public class CorsConfig implements WebMvcConfigurer {
 
 再次发起跨域请求测试成功
 
-![](https://kirito.iocoder.cn/5.png)
+![](https://image.cnkirito.cn/5.png)
 
 至此简单请求模式介绍完毕。
 
 ### 预检请求模式
 
-![](https://kirito.iocoder.cn/6.png)
+![](https://image.cnkirito.cn/6.png)
 
 预检请求模式相比简单请求模式会多出一个 OPTIONS 请求的流程，这个行为也是浏览器自主产生的。预检请求的必要性主要在于更加安全，方便服务端针对复杂跨域请求进行自主的校验，并且减少了不必要的非正常跨域请求，缺点自然是加大了 CORS 的复杂度。
 
@@ -204,7 +204,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
 测试非简单请求
 
-![](https://kirito.iocoder.cn/7.png)
+![](https://image.cnkirito.cn/7.png)
 
 由于服务端已经配置过跨域了，能够配合浏览器正常处理预检，可以看到浏览器先发送了一次预检请求，后发送了实际请求。
 
@@ -371,7 +371,7 @@ spring:
 
 simpleRequestPassbyGateway，preflightedRequestPassbyGateway 会经过网关路由转发至后端服务，根据同源策略 origin=127.0.0.1:8080，而前端域名为 http://edasnext.aliyun.com，这同样是一个跨域请求。
 
-![](https://kirito.iocoder.cn/8.png)
+![](https://image.cnkirito.cn/8.png)
 
 至此，只需要在网关进行统一配置跨域，后端服务就不用关注跨域问题了。所以，跨域的支持也是主流网关的常用功能之一。
 
@@ -383,7 +383,7 @@ Access to XMLHttpRequest at 'http://127.0.0.1:8080/testCors' from origin 'http:/
 
 这是因为网关和服务端都会给响应追加跨域请求头，导致浏览器无法识别。
 
-![](https://kirito.iocoder.cn/9.png)
+![](https://image.cnkirito.cn/9.png)
 
 一个比较简单的开源解决方案是在网关上配置一个过滤器：
 

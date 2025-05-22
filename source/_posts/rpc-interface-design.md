@@ -10,7 +10,7 @@ toc: true
 
 RPC 框架的讨论一直是各个技术交流群中的热点话题，阿里的 dubbo，新浪微博的 motan，谷歌的 grpc，以及不久前蚂蚁金服开源的 sofa，都是比较出名的 RPC 框架。RPC 框架，或者一部分人习惯称之为服务治理框架，更多的讨论是存在于其技术架构，比如 RPC 的实现原理，RPC 各个分层的意义，具体 RPC 框架的源码分析…但却并没有太多话题和“如何设计 RPC 接口”这样的业务架构相关。
 <!-- more -->
-![段子](https://kirito.iocoder.cn/image-20180627182932069.png)
+![段子](https://image.cnkirito.cn/image-20180627182932069.png)
 
 可能很多小公司程序员还是比较关心这个问题的，这篇文章主要分享下一些个人眼中 RPC 接口设计的最佳实践。
 
@@ -152,7 +152,7 @@ public interface SomeProvider {
 
 自动生成 TestNG 集成测试代码和缺省测试用例，这使得服务端接口集成测试变得异常简单，程序员更能集中精力设计业务用例，结合缺省用例、JPA 自动建表和 PowerMock 模拟外部依赖接口实现本机环境。
 
-![TestNg 自动化测试](https://kirito.iocoder.cn/image-20180628103929293.png)
+![TestNg 自动化测试](https://image.cnkirito.cn/image-20180628103929293.png)
 
 这块涉及到了公司内部的代码，只做下简单介绍，我们一般通过内部项目 com.qianmi.codegenerator:api-dubbo-2-restful ，com.qianmi.codegenerator:api-request-json 生成自动化的测试用例，方便测试。而这些自动化工具中大量使用了反射，而由于单参数的设计，反射用起来比较方便。
 
@@ -287,4 +287,4 @@ public class ModuleAProviderProxy {
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

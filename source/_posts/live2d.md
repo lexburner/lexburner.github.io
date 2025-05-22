@@ -10,7 +10,7 @@ toc: true
 
 最近在浏览别人博客时，一个萌物给了我意外的惊喜，原来博客还可以这么玩
 
-![小恶魔](https://kirito.iocoder.cn/%E5%B0%8F%E6%81%B6%E9%AD%94)
+![小恶魔](https://image.cnkirito.cn/%E5%B0%8F%E6%81%B6%E9%AD%94)
 
 于是果断审查元素，发现这个萌萌哒的看板娘背后使用的是一个叫 live2d 的技术，并且凭借 Google 迅速找到对应的开源代码：https://github.com/xiazeyu/live2d-widget.js，https://github.com/EYHN/hexo-helper-live2d
 

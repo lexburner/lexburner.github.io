@@ -62,7 +62,7 @@ FileChannel 大多数时候是和 ByteBuffer 这个类打交道，你可以将�
 
 FileChannel 为什么比普通 IO 要快呢？这么说可能不严谨，因为你要用对它，FileChannel 只有在一次写入 4kb 的整数倍时，才能发挥出实际的性能，这得益于 FileChannel 采用了 ByteBuffer 这样的内存缓冲区，让我们可以非常精准的控制写盘的大小，这是普通 IO 无法实现的。4kb 一定快吗？也不严谨，这主要取决你机器的磁盘结构，并且受到操作系统，文件系统，CPU 的影响，例如中间件性能挑战赛时的那块盘，一次至少写入 64kb 才能发挥出最高的 IOPS。
 
-![中间件性能挑战复赛的盘](https://kirito.iocoder.cn/image-20180714180739936.png)
+![中间件性能挑战复赛的盘](https://image.cnkirito.cn/image-20180714180739936.png)
 
 然而 PolarDB 这块盘就完全不一样了，可谓是异常彪悍，具体是如何的表现由于比赛仍在进行中，不予深究，但凭借着 benchmark everyting 的技巧，我们完全可以测出来。
 
@@ -206,7 +206,7 @@ public synchronized void write(byte[] data){
 
 在来分析原理，顺序读为什么会比随机读要快？顺序写为什么比随机写要快？这两个对比其实都是一个东西在起作用：PageCache，前面我们已经提到了，它是位于 application buffer(用户内存) 和 disk file(磁盘) 之间的一层缓存。
 
-![PageCache](https://kirito.iocoder.cn/1364556742_9652.gif)
+![PageCache](https://image.cnkirito.cn/1364556742_9652.gif)
 
 以顺序读为例，当用户发起一个 fileChannel.read(4kb) 之后，实际发生了两件事
 
@@ -287,7 +287,7 @@ copyMemory 方法可以实现内存之间的拷贝，无论是堆内和堆外，
 
 ### Direct IO
 
-![linux io](https://kirito.iocoder.cn/linux-io.png)
+![linux io](https://image.cnkirito.cn/linux-io.png)
 
 最后我们来探讨一下之前从没提到的一种 IO 方式，Direct IO，什么，Java 还有这东西？博主你骗我？之前怎么告诉我只有三种 IO 方式！别急着骂我，严谨来说，这并不是 JAVA 原生支持的方式，但可以通过 JNA/JNI 调用 native 方法做到。从上图我们可以看到 ：Direct IO 绕过了 PageCache，但我们前面说到过，PageCache 可是个好东西啊，干嘛不用他呢？再仔细推敲一下，还真有一些场景下，Direct IO 可以发挥作用，没错，那就是我们前面没怎么提到的：** 随机读 **。当使用 fileChannel.read() 这类会触发 PageCache 预读的 IO 方式时，我们其实并不希望操作系统帮我们干太多事，除非真的踩了狗屎运，随机读都能命中 PageCache，但几率可想而知。Direct IO 虽然被 Linus 无脑喷过，但在随机读的场景下，依旧存在其价值，减少了 Block IO Layed（近似理解为磁盘） 到 Page Cache 的 overhead。
 
@@ -312,4 +312,4 @@ directFile.close();
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

@@ -118,11 +118,11 @@ for (int i = 0; i < 20; i++) {
 
 客户端
 
-![客户端异常](https://kirito.iocoder.cn/image-20200216211204396.png)
+![客户端异常](https://image.cnkirito.cn/image-20200216211204396.png)
 
 服务端
 
-![服务端异常](https://kirito.iocoder.cn/image-20200216211047140.png)
+![服务端异常](https://image.cnkirito.cn/image-20200216211047140.png)
 
 问题得以复现，保留该现场，并假设我们并不知晓 sleep 的耗时逻辑，使用 Arthas 来进行排查。
 
@@ -134,7 +134,7 @@ $ dashboard
 
 执行效果
 
-![dashboard](https://kirito.iocoder.cn/image-20200216211837229.png)
+![dashboard](https://image.cnkirito.cn/image-20200216211837229.png)
 
 可以看到如上所示的面板，显示了一些系统的运行信息，这里主要关注 THREAD 面板，介绍一下各列的含义：
 
@@ -168,7 +168,7 @@ thread 使用示例：
    $ thread -n 3
    ```
 
-   ![thread -n](https://kirito.iocoder.cn/image-20200216220111905.png)
+   ![thread -n](https://image.cnkirito.cn/image-20200216220111905.png)
 
 2. 显示所有线程信息
 
@@ -194,7 +194,7 @@ thread 使用示例：
    $ thread --state TIMED_WAITING
    ```
 
-   ![thread --state](https://kirito.iocoder.cn/image-20200216215300465.png)
+   ![thread --state](https://image.cnkirito.cn/image-20200216215300465.png)
 
    线程状态一共有 [RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, NEW, TERMINATED] 6 种
 
@@ -204,7 +204,7 @@ thread 使用示例：
    $ thread 46
    ```
 
-   ![thread ${thread_id}](https://kirito.iocoder.cn/image-20200216220024931.png)
+   ![thread ${thread_id}](https://image.cnkirito.cn/image-20200216220024931.png)
 
 介绍了几种常见的用法，在实际排查中需要针对我们的现场做针对性的分析，也同时考察了我们对线程状态的了解程度。我这里列举了几种常见的线程状态：
 
@@ -244,7 +244,7 @@ Java 线程将就绪（ready）和运行中（running）两种状态笼统的称
 
 ### 状态流转图
 
-![线程状态](https://kirito.iocoder.cn/2018070117435683.jpeg)
+![线程状态](https://image.cnkirito.cn/2018070117435683.jpeg)
 
 ### 问题分析
 

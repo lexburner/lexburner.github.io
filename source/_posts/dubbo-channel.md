@@ -149,7 +149,7 @@ Client.listUser    thrpt    3   6581.876 ±  469.831  ops/s
 
 经过和闪电侠的讨论，他的一席话最终让我定位到了问题的所在。
 
-![闪电侠的对话](https://kirito.iocoder.cn/image-20210907212036374.png)
+![闪电侠的对话](https://image.cnkirito.cn/image-20210907212036374.png)
 
 不知道大家看完我和闪电侠的对话，有没有立刻定位到问题所在。
 

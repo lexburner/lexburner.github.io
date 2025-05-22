@@ -18,7 +18,7 @@ JDK 提供的 SPI(Service Provider Interface)机制，可能很多人不太熟�
 
 ### 1 项目结构
 
-![SPI 项目结构](https://kirito.iocoder.cn/spi_%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84.png)
+![SPI 项目结构](https://image.cnkirito.cn/spi_%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84.png)
 
 1. invoker 是我们的用来测试的主项目。
 2. interface 是针对厂商和插件商定义的接口项目，只提供接口，不提供实现。

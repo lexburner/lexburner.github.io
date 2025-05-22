@@ -16,7 +16,7 @@ toc: true
 
 ## 2 分支介绍
 
-![分支](https://kirito.iocoder.cn/image-20190321153455566.png)
+![分支](https://image.cnkirito.cn/image-20190321153455566.png)
 
 Dubbo 目前有如图所示的 5 个分支，其中 2.7.1-release 只是一个临时分支，忽略不计，对其他 4 个分支进行介绍。
 
@@ -39,7 +39,7 @@ Dubbo 2.7.x 作为 Apache 的孵化版本，除了代码优化之外，还新增
 
 ### 4.1 几种调用方式
 
-![调用方式](https://kirito.iocoder.cn/image-20190321160844133.png)
+![调用方式](https://image.cnkirito.cn/image-20190321160844133.png)
 
 在远程方法调用中，大致可以分为这 4 种调用方式。oneway 指的是客户端发送消息后，不需要接受响应。对于那些不关心服务端响应的请求，比较适合使用 oneway 通信。
 
@@ -177,7 +177,7 @@ timestamp=1552975501873
 
 对于那些非必要的服务信息，仍然全量存储在元数据中心之中：
 
-![元数据](https://kirito.iocoder.cn/image-20190321175852034.png)
+![元数据](https://image.cnkirito.cn/image-20190321175852034.png)
 
 > 元数据中心的数据可以被用于服务测试，服务 MOCK 等功能。目前注册中心配置中 simplified 的默认值为 false，因为考虑到了迁移的兼容问题，在后续迭代中，默认值将会改为 true。
 
@@ -207,7 +207,7 @@ Spring Cloud Config, Apollo, Nacos 等分布式配置中心组件都对上述功
 
 引入配置中心后，需要注意配置项的覆盖问题，优先级如图所示
 
-![配置覆盖优先级](https://kirito.iocoder.cn/configuration.jpg)
+![配置覆盖优先级](https://image.cnkirito.cn/configuration.jpg)
 
 ## 6 服务治理增强
 
@@ -217,7 +217,7 @@ Spring Cloud Config, Apollo, Nacos 等分布式配置中心组件都对上述功
 
 在很长的一段时间内，Dubbo 社区经常有人提的一个问题是：Dubbo 如何实现流量隔离和灰度发布，直到 2.7 提供了标签路由，用户可以使用这个功能，来实现上述的需求。
 
-![标签路由](https://kirito.iocoder.cn/image-20190321191620078.png)
+![标签路由](https://image.cnkirito.cn/image-20190321191620078.png)
 
 标签路由提供了这样一个能力，当调用链路为 A -> B -> C -> D 时，用户给请求打标，最典型的打标方式可以借助 attachment（他可以在分布式调用中传递下去），调用会优先请求那些匹配的服务端，如 A -> B，C -> D，由于集群中未部署 C 节点，则会降级到普通节点。
 
@@ -225,7 +225,7 @@ Spring Cloud Config, Apollo, Nacos 等分布式配置中心组件都对上述功
 
 新版的 Dubbo Admin 提供了标签路由的配置项：
 
-![标签路由配置](https://kirito.iocoder.cn/image-20190321192540774.png)
+![标签路由配置](https://image.cnkirito.cn/image-20190321192540774.png)
 
 Dubbo 用户可以在自己系统的基础上对标签路由进行二次扩展，或者借鉴标签路由的设计，实现自己系统的流量隔离，灰度发布。
 
@@ -237,4 +237,4 @@ Dubbo 用户可以在自己系统的基础上对标签路由进行二次扩展�
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

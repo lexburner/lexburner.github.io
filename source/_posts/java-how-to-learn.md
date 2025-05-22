@@ -24,9 +24,9 @@ toc: true
 
 搜索 neo4j 关键词时大概率会搜索到官网，但作为一门技术的初学者，我更习惯于阅读下中文博客，教程，以对这个陌生的技术有一个宏观的了解。虽然大家都很赞同一个观点：英文文档更加权威，但是我个人还是觉得，中文教程更加直观，实际上我读中文文档的速度是英文文档的 2-3 倍。
 
-![w3cschool](https://kirito.iocoder.cn/ECEBE70F-4DEF-43AD-9F9C-B58A8FA9324D.png)
+![w3cschool](https://image.cnkirito.cn/ECEBE70F-4DEF-43AD-9F9C-B58A8FA9324D.png)
 
-不需要细读每个语法，我一般习惯看下概览，再看下目录对整体的知识点有个宏观的掌握。这种入门级的网站有很多，大多出现在搜索引擎的第一页。而官方的 overview 通常也是很适合入门的手段。![官方网站](https://kirito.iocoder.cn/image-201804041758280.png)
+不需要细读每个语法，我一般习惯看下概览，再看下目录对整体的知识点有个宏观的掌握。这种入门级的网站有很多，大多出现在搜索引擎的第一页。而官方的 overview 通常也是很适合入门的手段。![官方网站](https://image.cnkirito.cn/image-201804041758280.png)
 
 英文阅读能力强的读者可以直接上手官方的 guides，overview，get started 等入门教程，它们比中文教程强在很多方面 (** 技术精进的第二层关卡：你可能需要一定的英语阅读能力 **)：
 
@@ -38,7 +38,7 @@ toc: true
 
 再比如 spring 体系的知识点，有一个通用的学习路线。还是以 neo4j 为例，得知 spring 对 neo4j 有二次封装之后，便熟练地来到了 spring 的 guides 专栏 (https://spring.io/guides)，spring 对所有的知识点提供了两个维度的学习文档，其中 https://spring.io/guides 一般都是一个 15 分钟上手的 hello world，让你快速上手一门新的技术；另一个是较为完善的文档：https://spring.io/docs/reference，成体系地介绍技术细节。第一阶段主要关注前者，一般它长这样：
 
-![guides](https://kirito.iocoder.cn/image-201804081521333.png)
+![guides](https://image.cnkirito.cn/image-201804081521333.png)
 
 敲完 hello world，一般就可以对应简历上「了解 XXXX」的描述了 ( 斜眼笑。
 
@@ -50,11 +50,11 @@ toc: true
 
 首先来看看宇宙级开源项目 spring 的官方文档，它长这样：
 
-![mage-20180408153613](https://kirito.iocoder.cn/image-201804081536131.png)
+![mage-20180408153613](https://image.cnkirito.cn/image-201804081536131.png)
 
 琳琅满目的项目，所有与 spring 相关的技术都可以在这儿获取最权威的解读，怎么学习 springboot，springcloud 还需要问吗？平时经常接触 spring 的同学如果这个页面都没见过，私以为在学习认知上是有所欠缺的。
 
-![refrence](https://kirito.iocoder.cn/image-201804081543569.png)
+![refrence](https://image.cnkirito.cn/image-201804081543569.png)
 
 文档除了主体知识内容之外还有整体介绍，新旧版本迭代的改动，新特性，依赖分析，性能测试等，文档内容一般都是非常多的，可以撷取其中核心的几节，将主要用法和注意事项掌握，至于不常用的特性，可以在碰到时再翻阅。
 
@@ -74,7 +74,7 @@ toc: true
 
 还是以 neo4j 为例，我们在 github 找到 spring-data-neo4j 的源码，然后 git clone 到本地，在本地 idea 中打开。
 
-![test](https://kirito.iocoder.cn/neo4j.gif)
+![test](https://image.cnkirito.cn/neo4j.gif)
 
 和源码相关的第一点介绍的便是源码中的测试用例，对于大多数的开源项目而言，测试覆盖率是一个质量衡量的指标。大部分 Java 相关开源项目会包含测试用例，项目的一些功能特性可能在文档中无法一一介绍，通常可以在  `src/test/java` 中找到对应的用法，比如 neo4j 是怎么支持事务的，怎么维护边和边的关系的，在测试用例中都可以看到官方是怎么使用的。再举个例子，之前在使用 orika 这个拷贝工具时，一开始不知道怎么实现泛型的拷贝（泛型的运行时擦除特性），谷歌搜索和 Stack Overflow 提问无果之后，终于在源码的诸多测试用例中找到了我需要的代码。
 
@@ -82,7 +82,7 @@ toc: true
 
 我猜测有人拒绝阅读源码的一个原因：源码注释量不够，压根不知道一段代码是干嘛用的。的确，我在阅读有些源码时也会出现这样的情况：这儿会什么要加锁？为什么要用 AtomicReference 这个类？为什么这个方法放在父类，而另外看似功能差不多的代码放在子类实现？框架编写者不会像培训班的老师一样跟你讲解他为什么要这么写，也不是所有的源码都能像 HashMap 的源码那样被大家泛滥地解读，是的，可能大多数情况下你的境地是「虽然不懂，还没法问！」气不气，尴不尴尬？没办法，因为这已经是第三境了，曲高和寡，但还是有些方法规避这样的情况的，那就是：主要关心核心接口，通过接口暴露的方法，猜测出作者的意图。据我不多的源码阅读经验，一个实现类的注释可能不多，但接口的注释通常会很多，毕竟一个原则是面向接口编程。
 
-![spring security](https://kirito.iocoder.cn/spring%20security%20architecture.png)
+![spring security](https://image.cnkirito.cn/spring%20security%20architecture.png)
 
 上图是我分析 spring security 源码时，根据接口间的关系整理出来的 UML 类图，对于绿色实现类的细节我可能并不是特别关注，浅蓝色代表的接口才是我们理解整个架构体系的切入点，配合 idea 这些优秀的集成开发环境，可以很方便的整理出 UML 类图。接口是全局架构，实现类是源码细节。
 
@@ -90,7 +90,7 @@ toc: true
 
 再比如我在阅读 motan 这款 rpc 框架源码时遵循的顺序是其包结构的层次关系。
 
-![motan](https://kirito.iocoder.cn/image-201804081711318.png)
+![motan](https://image.cnkirito.cn/image-201804081711318.png)
 
 写源码分析文章时基本就是按照一个包一篇文章来分析，从而化繁为简。无论是模块结构，包结构，还是代码层面的接口结构，重点都是在强调：我们需要从宏观掌握一个框架，再去扣细节，否则我个人感觉学习状态就是很迷，不知道学到哪儿了。
 

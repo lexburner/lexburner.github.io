@@ -26,7 +26,7 @@ toc: true
 
 花了一定的篇幅介绍 Nacos 为什么需要设计「服务模型」，再来看看实际的 Nacos 模型是个啥，其实没那么玄乎，一张图就能表达清楚：
 
-![服务模型](https://kirito.iocoder.cn/image-20210314161429839.png)
+![服务模型](https://image.cnkirito.cn/image-20210314161429839.png)
 
 与 Consul、Eureka 设计有别，Nacos 服务发现使用的领域模型是命名空间-分组-服务-集群-实例这样的多层结构。服务 Service 和实例 Instance 是核心模型，命名空间 Namespace 、分组 Group、集群 Cluster 则是在不同粒度实现了服务的隔离。
 
@@ -43,7 +43,7 @@ toc: true
 
 需要部署一个 Nacos Server 用于测试，我这里选择直接在 https://mse.console.aliyun.com/ 购买一个 MSE 托管的 Nacos，读者们可以选择购买 MSE Nacos 或者自行搭建一个 Nacos Server。
 
-![MSE](https://kirito.iocoder.cn/image-20210314163510445.png)
+![MSE](https://image.cnkirito.cn/image-20210314163510445.png)
 
 MSE Nacos 提供的可视化控制台，也可以帮助我们更好的理解 Nacos 的服务模型。下文的一些截图，均来自 MSE Nacos 的商业化控制台。
 
@@ -66,9 +66,9 @@ System.out.println(namingService.getAllInstances(serviceName));
 
 上述代码定义了一个 service：`nacos.test.service.1`；定义了一个 instance，以本机 host 为 IP 和 8080 为端口号，观察实际的注册情况：
 
-![服务信息](https://kirito.iocoder.cn/image-20210314165514015.png)
+![服务信息](https://image.cnkirito.cn/image-20210314165514015.png)
 
-![实例信息](https://kirito.iocoder.cn/image-20210314173532176.png)
+![实例信息](https://image.cnkirito.cn/image-20210314173532176.png)
 
 并且控制台也打印出了服务的详情。至此一个最简单的 Nacos 服务发现 demo 就已经完成了。对一些细节稍作解释：
 
@@ -198,9 +198,9 @@ namingService.registerInstance(serviceName, group, instance);
 System.out.println(namingService.getAllInstances(serviceName));
 ```
 
-![服务信息](https://kirito.iocoder.cn/image-20210314173008765.png)
+![服务信息](https://image.cnkirito.cn/image-20210314173008765.png)
 
-![实例信息](https://kirito.iocoder.cn/image-20210314173750457.png)
+![实例信息](https://image.cnkirito.cn/image-20210314173750457.png)
 
 ## 构建自定义服务
 

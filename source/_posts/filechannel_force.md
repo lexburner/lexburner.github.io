@@ -56,7 +56,7 @@ tags:
 
 在《[文件 IO 操作的一些最佳实践](https://www.cnkirito.moe/file-io-best-practise/)》一文中，我其实已经介绍了，Java 中无非就一个 `FileChannel` 是最常用的文件操作类。 `FileChannel` 的 `write` 方法看似是一个同步方法，将内存数据写入了磁盘，但其实它和磁盘之间还隔着一层 PageCache。
 
-![PageCache](https://kirito.iocoder.cn/1364556742_9652.gif)
+![PageCache](https://image.cnkirito.cn/1364556742_9652.gif)
 
 尽管操作系统可能很快就将 PageCache 刷入到了磁盘，但这个过程仍然是一个异步的过程。就以这次比赛而言，如果你仅仅数据写入到 PageCache 就不管不问了，肯定是无法通过正确性检测的。
 

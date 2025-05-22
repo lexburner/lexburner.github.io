@@ -89,7 +89,7 @@ Host: localhost:8080
 
 而实际上，RestController 并没有接收到，我们在 RestController 一侧的应用中获得了一些提示：
 
-![服务端 DEBUG 信息](https://kirito.iocoder.cn/feignlog.png)
+![服务端 DEBUG 信息](https://image.cnkirito.cn/feignlog.png)
 
 - 并没有按照期望使用 GET 方式发送请求，而是 POST 方式
 - name 参数没有被封装，获得了一个 null 值

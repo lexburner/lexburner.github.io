@@ -33,7 +33,7 @@ toc: true
 
 前面已经提到过，追求性能时，必然会选择使用长连接，所以借助 Dubbo 可以很好的来理解 TCP。我们开启两个 Dubbo 应用，一个 server 负责监听本地 20880 端口（众所周知，这是 Dubbo 协议默认的端口），一个 client 负责循环发送请求。执行 `lsof -i:20880` 命令可以查看端口的相关使用情况：
 
-![image-20190106203341694](https://kirito.iocoder.cn/image-20190106203341694.png)
+![image-20190106203341694](https://image.cnkirito.cn/image-20190106203341694.png)
 
 - `*:20880 (LISTEN)` 说明了 Dubbo 正在监听本地的 20880 端口，处理发送到本地 20880 端口的请求
 - 后两条信息说明请求的发送情况，验证了 TCP 是一个双向的通信过程，由于我是在同一个机器开启了两个 Dubbo 应用，所以你能够看到是本地的 53078 端口与 20880 端口在通信。我们并没有手动设置 53078 这个客户端端口，它是随机的。通过这两条信息，阐释了一个事实：** 即使是发送请求的一方，也需要占用一个端口 **。
@@ -136,7 +136,7 @@ public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exc
 
 除了定时任务的设计，还需要在协议层面支持心跳。最简单的例子可以参考 nginx 的健康检查，而针对 Dubbo 协议，自然也需要做心跳的支持，如果将心跳请求识别为正常流量，会造成服务端的压力问题，干扰限流等诸多问题。
 
-![dubbo protocol](https://kirito.iocoder.cn/359310b9-b980-3254-aed6-78aa6c482e53.png)
+![dubbo protocol](https://image.cnkirito.cn/359310b9-b980-3254-aed6-78aa6c482e53.png)
 
 其中 Flag 代表了 Dubbo 协议的标志位，一共 8 个地址位。低四位用来表示消息体数据用的序列化工具的类型（默认 hessian），高四位中，第一位为 1 表示是 request 请求，第二位为 1 表示双向传输（即有返回 response），** 第三位为 1 表示是心跳事件 **。
 
@@ -183,4 +183,4 @@ public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exc
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

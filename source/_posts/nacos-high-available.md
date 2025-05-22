@@ -12,7 +12,7 @@ toc: true
 
 服务注册发现是一个经久不衰的话题，Dubbo 早期开源时默认的注册中心 Zookeeper 最早进入人们的视线，并且在很长一段时间里，人们将注册中心和 Zookeeper 划上了等号，可能 Zookeeper 的设计者都没有想到这款产品对微服务领域造成了如此深厚的影响，直到 SpringCloud 开始流行，其自带的 Eureka 进入了人们的视野，人们这才意识到原来注册中心还可以有其他的选择。再到后来，热衷于开源的阿里把目光也聚焦在了注册中心这个领域，Nacos 横空出世。
 
-![注册中心](http://kirito.iocoder.cn/image-20201220140934757.png)
+![注册中心](http://image.cnkirito.cn/image-20201220140934757.png)
 
 Kirito 在做注册中心选型时的思考：曾经我没得选，现在我只想选择一个好的注册中心，它最好是开源的，这样开放透明，有自我的掌控力；不仅要开源，它还要有活跃的社区，以确保特性演进能够满足日益增长的业务需求，出现问题也能及时修复；最好...它的功能还要很强大，除了满足注册服务、推送服务外，还要有完善的微服务体系中所需的功能；最重要的，它还要稳定，最好有大厂的实际使用场景背书，证明这是一个经得起实战考验的产品；当然，云原生特性，安全特性也是很重要的...
 
@@ -42,7 +42,7 @@ Kirito 在做注册中心选型时的思考：曾经我没得选，现在我只�
 
 当其中一台机器宕机时，为了不影响整体运行，客户端会存在重试机制
 
-![轮询 server](http://kirito.iocoder.cn/image-20201220151901675.png)
+![轮询 server](http://image.cnkirito.cn/image-20201220151901675.png)
 
 逻辑非常简单，拿到地址列表，在请求成功之前逐个尝试，直到成功为止。
 
@@ -63,7 +63,7 @@ distro 协议与高可用有什么关系呢？上一节我们提到 nacos-server
 - Nacos 每个节点是平等的都可以处理写入请求，同时把新数据同步到其他节点
 - 每个节点只负责部分数据，定时发送自己负责数据校验值到其他节点来保持数据一致性
 
-![image-20201220204422195](https://kirito.iocoder.cn/image-20201220204422195.png)
+![image-20201220204422195](https://image.cnkirito.cn/image-20201220204422195.png)
 
 如上图所示，每个节点服务一部分服务的写入，但每个节点都可以接收到写入请求，这时就存在两种写情况：
 
@@ -74,11 +74,11 @@ distro 协议与高可用有什么关系呢？上一节我们提到 nacos-server
 
 而当节点发生宕机后，原本该节点负责的一部分服务的写入任务会转移到其他节点，从而保证 Nacos 集群整体的可用性。
 
-![image-20201220204436097](https://kirito.iocoder.cn/image-20201220204436097.png)
+![image-20201220204436097](https://image.cnkirito.cn/image-20201220204436097.png)
 
 一个比较复杂的情况是，节点没有宕机，但是出现了网络分区，即下图所示：
 
-![image-20201220204446690](https://kirito.iocoder.cn/image-20201220204446690.png)
+![image-20201220204446690](https://image.cnkirito.cn/image-20201220204446690.png)
 
 这个情况会损害可用性，客户端会表现为有时候服务存在有时候服务不存在。
 
@@ -94,7 +94,7 @@ distro 协议与高可用有什么关系呢？上一节我们提到 nacos-server
 
 Nacos 存在本地文件缓存机制，nacos-client 在接收到 nacos-server 的服务推送之后，会在内存中保存一份，随后会落盘存储一份快照。snapshot 默认的存储路径为：{USER_HOME}/nacos/naming/ 中
 
-![Nacos snapshot 文件目录](https://kirito.iocoder.cn/image-20201220165548542.png)
+![Nacos snapshot 文件目录](https://image.cnkirito.cn/image-20201220165548542.png)
 
 这份文件有两种价值，一是用来排查服务端是否正常推送了服务；二是当客户端加载服务时，如果无法从服务端拉取到数据，会默认从本地文件中加载。
 
@@ -117,11 +117,11 @@ Nacos 存在本地文件缓存机制，nacos-client 在接收到 nacos-server �
 
 以下是对心跳同步服务的测试，使用阿里云 MSE 提供 Nacos 集群进行测试
 
-![](https://kirito.iocoder.cn/image-20201220173117425.png)
+![](https://image.cnkirito.cn/image-20201220173117425.png)
 
 调用 OpenApi：`curl -X "DELETE mse-xxx-p.nacos-ans.mse.aliyuncs.com:8848/nacos/v1/ns/service?serviceName=providers:com.alibaba.edas.boot.EchoService:1.0.0:DUBBO&groupName=DEFAULT_GROUP"` 依次删除各个服务
 
-![](https://kirito.iocoder.cn/image-20201220173637589.png)
+![](https://image.cnkirito.cn/image-20201220173637589.png)
 
 过 5s 后刷新，服务又再次被注册了上来，符合我们对心跳注册服务的预期。
 
@@ -161,15 +161,15 @@ K8s 部署的有点在于云原生运维能力强，可以在节点宕机后实�
 
 一个三节点的 Nacos 集群：
 
-![正常状态](https://kirito.iocoder.cn/image-20201220180757477.png)
+![正常状态](https://image.cnkirito.cn/image-20201220180757477.png)
 
 执行 `kubectl delete pod mse-7654c960-1605278296312-reg-center-0-2` 以模拟部分节点宕机的场景。
 
-![恢复中](https://kirito.iocoder.cn/image-20201220181056737.png)
+![恢复中](https://image.cnkirito.cn/image-20201220181056737.png)
 
 大概 2 分钟后，节点恢复，并且角色发生了转换，Leader 从杀死的 2 号节点转给 1 号节点
 
-![恢复后 leader 重选](https://kirito.iocoder.cn/image-20201220181330884.png)
+![恢复后 leader 重选](https://image.cnkirito.cn/image-20201220181330884.png)
 
 ## 总结
 

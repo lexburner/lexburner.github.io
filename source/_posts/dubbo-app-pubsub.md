@@ -30,7 +30,7 @@ toc: true
 
 所谓“应用/实例粒度” 或者“RPC 服务粒度”强调的是一种地址发现的数据组织格式。
 
-![1](https://kirito.iocoder.cn/46ddc6ead81d44fe1c68fb189a687f3e3fa60101.png)
+![1](https://image.cnkirito.cn/46ddc6ead81d44fe1c68fb189a687f3e3fa60101.png)
 
 以 Dubbo 当前的地址发现数据格式为例，它是“RPC 服务粒度”的，它是以 RPC 服务作为 key，以实例列表作为 value 来组织数据的：
 
@@ -75,7 +75,7 @@ toc: true
 - 实例地址，服务消费方需要知道地址以建立链接
 - RPC 方法定义，服务消费方需要知道 RPC 服务的具体定义，不论服务类型是 rest 或 rmi 等。
 
-![2](https://kirito.iocoder.cn/de21f1ab3366f3c1ecaa648f0ad6e0d84aac7440.png)
+![2](https://image.cnkirito.cn/de21f1ab3366f3c1ecaa648f0ad6e0d84aac7440.png)
 
 对于 RPC 实例间借助注册中心的数据同步，REST 定义了一套非常有意思的成熟度模型，感兴趣的朋友可以参考这里的链接 [https://www.martinfowler.com/articles/richardsonMaturityModel.html](https://yq.aliyun.com/go/articleRenderRedirect?url=https%3A%2F%2Fwww.martinfowler.com%2Farticles%2FrichardsonMaturityModel.html)， 按照文章中的 4 级成熟度定义，Dubbo 当前基于接口粒度的模型可以对应到 L4 级别。
 
@@ -89,13 +89,13 @@ RPC 服务这部分信息目前都是通过线下约定或离线的管理系统�
 优势：部署结构清晰、地址推送量小；
 缺点：地址订阅需要指定应用名， provider 应用变更（拆分）需消费端感知；RPC 调用无法全自动同步。
 
-![3](https://kirito.iocoder.cn/51d71432a1411e85c0f4ed483c5a6739bcd7909c.png)
+![3](https://image.cnkirito.cn/51d71432a1411e85c0f4ed483c5a6739bcd7909c.png)
 
 **2. Dubbo**
 
 Dubbo 通过注册中心同时同步了实例地址和 RPC 方法，因此其能实现 RPC 过程的自动同步，面向 RPC 编程、面向 RPC 治理，对后端应用的拆分消费端无感知，其缺点则是地址推送数量变大，和 RPC 方法成正比。
 
-![4](https://kirito.iocoder.cn/470ae02261cec1b1884737bd703222507027d184.png)
+![4](https://image.cnkirito.cn/470ae02261cec1b1884737bd703222507027d184.png)
 
 **3. Dubbo + Kubernetes**
 
@@ -157,7 +157,7 @@ Dubbo 要支持 Kubernetes native service，相比之前自建注册中心的服
 >   ...
 >   ```
 
-![5](https://kirito.iocoder.cn/b986d8df9f93eeb6d985e37604225dd68984f4db.png)
+![5](https://image.cnkirito.cn/b986d8df9f93eeb6d985e37604225dd68984f4db.png)
 
 结合以上几种不同微服务框架模型的分析，我们可以发现，Dubbo 与 SpringCloud、Kubernetes 等不同产品在微服务的抽象定义上还是存在很大不同的。SpringCloud 和 Kubernetes 在微服务的模型抽象上还是比较接近的，两者基本都只关心实例地址的同步，如果我们去关心其他的一些服务框架产品，会发现它们绝大多数也是这么设计的；
 
@@ -173,7 +173,7 @@ Dubbo 要支持 Kubernetes native service，相比之前自建注册中心的服
 
 这部分涉及到和注册中心、配置中心的交互，关于不同模型下注册中心数据的变化，之前原理部分我们简单分析过。为更直观的对比服务模型变更带来的推送效率提升，我们来通过一个示例看一下不同模型注册中心的对比：
 
-![6](https://kirito.iocoder.cn/c275bcf54f023eeac0e63d90e5068a6ec2686893.png)
+![6](https://image.cnkirito.cn/c275bcf54f023eeac0e63d90e5068a6ec2686893.png)
 
 图中左边是微服务框架的一个典型工作流程，Provider 和 Consumer 通过注册中心实现自动化的地址通知。其中，Provider 实例的信息如图中表格所示：
 
@@ -210,7 +210,7 @@ Dubbo 要支持 Kubernetes native service，相比之前自建注册中心的服
 
 #### 注册中心数据以“应用 - 实例列表”格式组织，不再包含 RPC 服务信息
 
-![7](https://kirito.iocoder.cn/82c0d6c6222e4f582a275a70ff52332dcb5dba20.png)
+![7](https://image.cnkirito.cn/82c0d6c6222e4f582a275a70ff52332dcb5dba20.png)
 
 以下是每个 Instance metadata 的示例数据，总的原则是 metadata 只包含当前 instance 节点相关的信息，不涉及 RPC 服务粒度的信息。
 
@@ -243,7 +243,7 @@ Dubbo 要支持 Kubernetes native service，相比之前自建注册中心的服
 
 在注册中心不再同步 RPC 服务信息后，服务自省在服务消费端和提供端之间建立了一条内置的 RPC 服务信息协商机制，这也是“服务自省”这个名字的由来。服务端实例会暴露一个预定义的 MetadataService RPC 服务，消费端通过调用 MetadataService 获取每个实例 RPC 方法相关的配置信息。
 
-![8](https://kirito.iocoder.cn/89e96f895f76912a7c2d1a6e8b44643176f3c431.png)
+![8](https://image.cnkirito.cn/89e96f895f76912a7c2d1a6e8b44643176f3c431.png)
 
 当前 MetadataService 返回的数据格式如下，
 
@@ -264,7 +264,7 @@ Dubbo 要支持 Kubernetes native service，相比之前自建注册中心的服
 
 以下是服务自省的一个完整工作流程图，详细描述了服务注册、服务发现、MetadataService、RPC 调用间的协作流程。
 
-![9](https://kirito.iocoder.cn/e8c286b5e79d9c085431840d3ee57537ece95d2e.png)
+![9](https://image.cnkirito.cn/e8c286b5e79d9c085431840d3ee57537ece95d2e.png)
 
 - 服务提供者启动，首先解析应用定义的“普通服务”并依次注册为 RPC 服务，紧接着注册内建的 MetadataService 服务，最后打开 TCP 监听端口。
 - 启动完成后，将实例信息注册到注册中心（仅限 ip、port 等实例相关数据），提供者启动完成。
@@ -291,7 +291,7 @@ MetadataService 通过标准的 Dubbo 协议暴露，根据查询条件，会将
 
 > 注意 consumer 端查询元数据中心的时机，是等到注册中心的地址更新通知之后。也就是通过注册中心下发的数据，我们能明确的知道何时某个实例的元数据被更新了，此时才需要去查元数据中心。
 
-![10](https://kirito.iocoder.cn/7a2c72bc9f5e541e8a155a01b303d4c77590a65a.png)
+![10](https://image.cnkirito.cn/7a2c72bc9f5e541e8a155a01b303d4c77590a65a.png)
 
 #### RPC 服务 < - > 应用映射关系
 
@@ -323,7 +323,7 @@ MetadataService 通过标准的 Dubbo 协议暴露，根据查询条件，会将
 
 为了使整个开发流程对老的 Dubbo 用户更透明，同时避免指定 provider 对可扩展性带来的影响（参见下方说明），我们设计了一套 `RPC 服务到应用名`的映射关系，以尝试在 consumer 自动完成 RPC 服务到 provider 应用名的转换。
 
-![11](https://kirito.iocoder.cn/4a92841e861c49424a2635dfb695e58ea78f70ee.png)
+![11](https://image.cnkirito.cn/4a92841e861c49424a2635dfb695e58ea78f70ee.png)
 
 > Dubbo 之所以选择建立一套“接口-应用”的映射关系，主要是考虑到 service - app 映射关系的不确定性。一个典型的场景即是应用/服务拆分，如上面提到的配置``，PC Service 2 是定义于 provider-app-x 中的一个服务，未来它随时可能会被开发者分拆到另外一个新的应用如 provider-app-x-1 中，这个拆分要被所有的 PC Service 2 消费方感知到，并对应用进行修改升级，如改为``，这样的升级成本不可否认还是挺高的。
 > 到底是 Dubbo 框架帮助开发者透明的解决这个问题，还是交由开发者自己去解决，当然这只是个策略选择问题，并且 Dubbo 2.7.5+ 版本目前是都提供了的。其实我个人更倾向于交由业务开发者通过组织上的约束来做，这样也可进一步降低 Dubbo 框架的复杂度，提升运行态的稳定性。

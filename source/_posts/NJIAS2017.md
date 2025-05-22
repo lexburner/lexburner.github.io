@@ -9,7 +9,7 @@ toc: true
 
 ## 大型支付交易平台的演进过程
 
-![大型支付交易平台的演进过程](https://kirito.iocoder.cn/%E9%99%88%E6%96%8C.jpg)   
+![大型支付交易平台的演进过程](https://image.cnkirito.cn/%E9%99%88%E6%96%8C.jpg)   
 
 > 陈斌，《架构即未来》译者，易宝支付 CTO。
 
@@ -51,7 +51,7 @@ toc: true
 
 ## 轻量级微服务架构实践之路
 
-![轻量级微服务架构实践之路](https://kirito.iocoder.cn/%E9%BB%84%E5%8B%87.jpg)
+![轻量级微服务架构实践之路](https://image.cnkirito.cn/%E9%BB%84%E5%8B%87.jpg)
 
 > 黄勇，特赞科技 CTO，《轻量级微服务架构》作者。
 
@@ -68,7 +68,7 @@ toc: true
 
 随后给出了轻量级微服务架构的技术选型，非常有参考价值。
 
-![轻量级微服务架构](https://kirito.iocoder.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7%E5%BE%AE%E6%9C%8D%E5%8A%A1.png)
+![轻量级微服务架构](https://image.cnkirito.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7%E5%BE%AE%E6%9C%8D%E5%8A%A1.png)
 
 其 PPT 总结了很多经验 list，可以在文末链接获取。
 
@@ -78,7 +78,7 @@ toc: true
 
 ## Cloud Native 架构一致性问题及解决方案
 
-![Cloud Native 架构一致性问题及解决方案](https://kirito.iocoder.cn/%E4%B8%80%E8%87%B4%E6%80%A7.jpg)
+![Cloud Native 架构一致性问题及解决方案](https://image.cnkirito.cn/%E4%B8%80%E8%87%B4%E6%80%A7.jpg)
 
 > 王启军，华为架构部资深架构师。
 
@@ -115,7 +115,7 @@ toc: true
 
 ## 技术架构演变全景图 - 从单体式到云原生
 
-![技术架构演变全景图 - 从单体式到云原生](https://kirito.iocoder.cn/%E5%BC%A0%E4%BA%AE&%E6%9B%B9%E7%A5%96%E9%B9%8F.jpg)
+![技术架构演变全景图 - 从单体式到云原生](https://image.cnkirito.cn/%E5%BC%A0%E4%BA%AE&%E6%9B%B9%E7%A5%96%E9%B9%8F.jpg)
 
 > 千米网首席架构师，曹祖鹏（右） & 当当网首席架构师，张亮（左）。知名开源框架 sharding-jdbc，elastic-job 作者。
 
@@ -127,17 +127,17 @@ Spring Cloud 的出现同时宣告了 Cloud Native 云原生的首映，其为�
 
 随后，介绍了云原生的技术全景图：
 
-![技术全景图](https://kirito.iocoder.cn/%E5%9B%BE%E7%89%871.png)
+![技术全景图](https://image.cnkirito.cn/%E5%9B%BE%E7%89%871.png)
 
 之后，简单解释了治理，编排，调度的概念后，并重点介绍了服务治理，编排相关的技术栈，老牌的 nginx，netflix ribbon，zuul 等产品，如今风靡的 k8s。尤其是介绍到 service mesh 这一比较新的概念时，分析了服务的治理，编排，调度从应用层转移到基础设施层的趋势，无疑是非常 exciting 的一件事。如 dubbo 等 rpc 框架的服务注册发现依赖于 zk，consul，而 spring cloud 的服务注册发现组件 eureka，以及其客户端路由组件 ribbon，服务端路由组件 zuul 等都是从应用层解决了服务的相关问题，而 service mesh 提供了一个新的思路，从基础设施层解决服务的相关问题：
 
-![service mesh](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720171206002523.png)
+![service mesh](https://image.cnkirito.cn/QQ%E5%9B%BE%E7%89%8720171206002523.png)
 
 如果 service mesh 的开源产品 Linkerd 和 Lstio 能够保持好的势头，配合 k8s 在运维层的大一统，很有可能带来架构的新格局。与此同时，java 一枝独秀的时代即将宣告终结，多语言的优势将会被 service mesh 发扬光大，使用 go 编写高并发的模块，使用 java 编写业务型模块，nodejs 打通前端模块，python 处理性能要求不高模块提升开发效率... 而不用关心多语言交互的问题，这都交由 service mesh 解决，这几乎是 2017 最潮流的知识点，没有之一。
 
 （引用一张 jimmysong 博客中的图片）
 
-![云原生演进](https://kirito.iocoder.cn/d21919a64f89d6c722688d8c1951fc58.jpg)
+![云原生演进](https://image.cnkirito.cn/d21919a64f89d6c722688d8c1951fc58.jpg)
 
 如上图所示，得知 Spring Cloud 竟然是 2015 兴起的技术栈时，可能还会有些吃惊，等到可以预见的 2018，运维层的技术栈开始向上侵蚀应用层的技术栈，不得不感叹互联网技术的日新月异。
 

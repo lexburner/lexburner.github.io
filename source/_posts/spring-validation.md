@@ -144,7 +144,7 @@ public class FooController {
 我们对上面实现的校验入口进行一次测试请求：
 访问 `http://localhost:8080/foo?name=xujingfeng&email=000&age=19` 可以得到如下的 debug 信息：
 
-![](https://kirito.iocoder.cn/20170816154850724.png)
+![](https://image.cnkirito.cn/20170816154850724.png)
 
 实验告诉我们，校验结果起了作用。并且，可以发现当发生多个错误，spring validation 不会在第一个错误发生后立即停止，而是继续试错，告诉我们所有的错误。debug 可以查看到更多丰富的错误信息，这些都是 spring validation 为我们提供的便捷特性，基本适用于大多数场景。
 

@@ -91,7 +91,7 @@ static void BM_boost_spirit(benchmark::State& state) {
 }
 ```
 
-![Native](https://kirito.iocoder.cn/image-20210830140622323.png)
+![Native](https://image.cnkirito.cn/image-20210830140622323.png)
 
 可以发现 `stringstream` 表现的非常差。当然，这并不是一个公平的比较，但从测评结果来看，使用 `stringstream` 来实现数值转换相比 baseline 慢了 391 倍。相比之下， `<charconv>` 和 `boost::spirit` 表现的更好。
 
@@ -114,7 +114,7 @@ inline std::uint64_t parse_naive(std::string_view s) noexcept
 }
 ```
 
-![Naive](https://kirito.iocoder.cn/image-20210830145719547.png)
+![Naive](https://image.cnkirito.cn/image-20210830145719547.png)
 
 虽然这层 for 循环看起来呆呆的，但如果这样一个呆呆的解决方案能够击败标准库实现，何乐而不为呢？前提是，标准库的实现考虑了异常场景，做了一些校验，这种 for 循环写法的一个前提是，我们的输入一定是合理的。
 
@@ -150,7 +150,7 @@ inline std::uint64_t parse_unrolled(std::string_view s) noexcept
 }
 ```
 
-![unrolled](https://kirito.iocoder.cn/image-20210830145738904.png)
+![unrolled](https://image.cnkirito.cn/image-20210830145738904.png)
 
 关于循环展开为什么会更快，可以参考我过去关于 JMH 的文章。
 
@@ -268,7 +268,7 @@ static void BM_trick(benchmark::State& state) {
 }
 ```
 
-![trick](https://kirito.iocoder.cn/image-20210830160535296.png)
+![trick](https://image.cnkirito.cn/image-20210830160535296.png)
 
 看上去优化的不错，我们将循环展开方案的基准测试优化了近 56% 的性能。能做到这一点，主要得益于我们手动进行一系列 CPU 优化的操作，虽然这些并不是特别通用的技巧。这样算不算开了个不好的头呢？我们看起来对 CPU 操作干预地太多了，或许我们应该放弃这些优化，让 CPU 自由地飞翔。
 
@@ -340,19 +340,19 @@ inline std::uint64_t parse_16_chars(const char* string) noexcept
 }
 ```
 
-![SIMD trick](https://kirito.iocoder.cn/image-20210830162448680.png)
+![SIMD trick](https://image.cnkirito.cn/image-20210830162448680.png)
 
 **0.75 nanoseconds**! 是不是大吃一惊呢.
 
 ### 总结
 
-![整体对比](https://kirito.iocoder.cn/image-20210830163954493.png)
+![整体对比](https://image.cnkirito.cn/image-20210830163954493.png)
 
 有人可能会问，你为啥要用 C++ 来介绍下，不能用 Java 吗？我再补充下，本文的测试结论，均来自于老外的文章，文章出处见开头，其次，本文的后半部分的优化，都是基于一些系统调用，和 CPU 指令的优化，这些在 C++ 中实现起来方便一些，Java 只能走系统调用。
 
 在最近过去的性能挑战赛中，由于限定了不能使用 JNI，使得选手们只能将方案止步于循环展开方案，试想一下，如果允许走系统调用，加上比赛中字符串也基本是固定的长度，完全可以采用 SIMD 的 trick 方案，String 转 Long 的速度会更快。
 
-![polardb优化点](https://kirito.iocoder.cn/image-20210830164705282.png)
+![polardb优化点](https://image.cnkirito.cn/image-20210830164705282.png)
 
 实际上，在之前 polarDB 的比赛中，普哥就给我介绍过 bswap 的向量化方案，这也是为啥 Java 方案就是比 C++ 方案逊色的原因之一，C++ 在执行一些 CPU 指令集以及系统调用上，比 Java 方便很多。
 

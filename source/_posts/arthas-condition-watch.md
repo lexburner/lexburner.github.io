@@ -126,7 +126,7 @@ watch moe.cnkirito.actuator.demo.HelloController methodForWatch {params,returnOb
 
 可能大家看了上面的示例会觉得这个 condition 表达式不就是跟 Java 里面的表达式差不多吗？但其实我作为一个不太了解 Arthas 的弱鸡，上面的用法纯粹是我摸索出来的，在最开始的时候，参考 github 中的 issue，我使用的其实是其他的方式来实现的条件查询，参考 issue：https://github.com/alibaba/arthas/issues/71。
 
-![](https://kirito.iocoder.cn/image-20210808210244317.png)
+![](https://image.cnkirito.cn/image-20210808210244317.png)
 
 看下 github 中的 Arthas 开源作者提供的按条件过滤的示例，可以发现跟上文中我介绍的过滤方式好像，有那么一点点的不同。注意上文的示例
 

@@ -10,7 +10,7 @@ toc: true
 
 ### 1 前言
 
-![排名](https://kirito.iocoder.cn/image-20181210184521001.png)
+![排名](https://image.cnkirito.cn/image-20181210184521001.png)
 
 国际惯例，先报成绩，熬了无数个夜晚，最后依旧被绝杀出了第一页，最终排名第 21 名。前十名的成绩分布为 413.69~416.94，我最终的耗时是 422.43。成绩虽然不是特别亮眼，但与众多参赛选手使用 C++ 作为参赛语言不同，我使用的是 Java，一方面是我 C++ 的能力早已荒废，另一方面是我想验证一下使用 Java 编写存储引擎是否与 C++ 差距巨大 (当然，主要还是前者 QAQ)。所以在本文中，我除了介绍整体的架构之外，还会着重笔墨来探讨 Java 编写存储类型应用的一些最佳实践，文末会给出 github 的开源地址。
 
@@ -112,11 +112,11 @@ public class HighTenPartitioner implements Partitionable {
 
 ** 全局视角 **
 
-![全局视角](https://kirito.iocoder.cn/KiritoDB.png)
+![全局视角](https://image.cnkirito.cn/KiritoDB.png)
 
 ** 分区视角 **
 
-![分区视角](https://kirito.iocoder.cn/image-20181210204156199.png)
+![分区视角](https://image.cnkirito.cn/image-20181210204156199.png)
 
 ** 内存视角 **
 
@@ -166,7 +166,7 @@ Range 环节是整个比赛的大头，也是拉开差距的分水岭。前面�
 
 具体的顺序读架构可以参见下图：
 
-![range](https://kirito.iocoder.cn/image-20181210215200345.png)
+![range](https://image.cnkirito.cn/image-20181210215200345.png)
 
 大体来看，便是 4 个 fetch 线程负责读盘，fetch thread n 负责 `partitionNo % 4 == n` 编号的分区，完成后通知 visit 消费。这中间充斥着比较多的互斥等待逻辑，并未在图中体现出来，大体如下：
 
@@ -274,4 +274,4 @@ try (final AffinityLock al2 = AffinityLock.acquireLock()) {
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

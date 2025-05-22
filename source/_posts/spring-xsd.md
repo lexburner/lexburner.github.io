@@ -18,7 +18,7 @@ XML schema 扩展机制是啥？这并不是一块很大的知识点，翻阅一
 
 > Spring 为基于 XML 构建的应用提供了一种扩展机制，用于定义和配置 Bean。 它允许使用者编写自定义的 XML bean 解析器，并将解析器本身以及最终定义的 Bean 集成到 Spring IOC 容器中。
 
-![dubbo.xml](https://kirito.iocoder.cn/image-20180903175207354.png)
+![dubbo.xml](https://image.cnkirito.cn/image-20180903175207354.png)
 
 Dubbo 依赖了 Spring，并提供了一套自定义的 XML 标签，`<dubbo:application>` ,`<dubbo:registry>` ,`<dubbo:protocol>`,`<dubbo:service>`。作为使用者，大多数人只需要关心这些参数如何配置，但不知道有没有人好奇过，它们是如何加载进入 Spring 的 IOC 容器中被其他组件使用的呢？这便牵扯出了今天的主题：Spring 对 XML schema 的扩展支持。
 
@@ -33,7 +33,7 @@ Dubbo 依赖了 Spring，并提供了一套自定义的 XML 标签，`<dubbo:app
 
 我们的目的便是想要实现一个 `kirito XML schema`，我们的项目中可以自定义 kirito.xml，在其中会以 kirito 为标签来定义不同的类，并在最终的测试代码中验证这些声明在 kirito.xml 的类是否被 Spring 成功加载。大概像这样，是不是和 dubbo.xml 的格式很像呢？
 
-![kirito.xml](https://kirito.iocoder.cn/image-20180903180938053.png)
+![kirito.xml](https://image.cnkirito.cn/image-20180903180938053.png)
 
 ### 动手实现
 
@@ -221,7 +221,7 @@ public class XmlSchemaAuthoringSampleApplication {
 
 最后我们以 Dubbo 为例，看看一个成熟的 XML schema 扩展是如何被应用的。
 
-![Dubbo 中的应用](https://kirito.iocoder.cn/image-20180903190429383.png)
+![Dubbo 中的应用](https://image.cnkirito.cn/image-20180903190429383.png)
 
 刚好对应了四个标准的扩展步骤，是不是对 XML 配置下的 Dubbo 应用有了更好的理解了呢？
 
@@ -231,5 +231,5 @@ public class XmlSchemaAuthoringSampleApplication {
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 

@@ -15,21 +15,21 @@ tags:
 
 照例先说成绩，这里贴一下排行榜，总共有 1446 只队伍，可以看到不少学生和其他公司的员工都参赛了。
 
-![排名](https://kirito.iocoder.cn/3AD25B94-A46F-4AC9-AA42-5FA2B6EE6E75.png)
+![排名](https://image.cnkirito.cn/3AD25B94-A46F-4AC9-AA42-5FA2B6EE6E75.png)
 
 我的成绩是第 14 名（普哥忙于 KPI，没有能带飞我，diss 一下嘿嘿），内部排名也是进入了前五，虽然被剥夺了参加复赛的资格，但是也给了内部的奖励作为补偿，奖品是啥呢？
 
 <!-- more -->
 
-![获奖通知](https://kirito.iocoder.cn/image-20210823002116642.png)
+![获奖通知](https://image.cnkirito.cn/image-20210823002116642.png)
 
 怎么评价这个内部赛奖品呢？食之无味，弃之可惜。我还特地拍了照留作纪念，后边要不直接公众号抽奖抽掉吧？不知道有没有人要。
 
-![内部奖品](https://kirito.iocoder.cn/WechatIMG4964.jpeg)
+![内部奖品](https://image.cnkirito.cn/WechatIMG4964.jpeg)
 
 看看人家隔壁的[云原生挑战赛](https://mp.weixin.qq.com/s/slU9NCHBLadb6kTs_9w0VA) (内部赛)奖品，虽然奖励不如外部赛，但整体吸引力还是有的。
 
-![内部赛奖励](https://kirito.iocoder.cn/image-20210823002905059.png)
+![内部赛奖励](https://image.cnkirito.cn/image-20210823002905059.png)
 
 好了，讲完比赛结果，吐槽完内部奖励，简单先点评下这次比赛吧。首先是主办方的出题水平，还是非常高的。
 
@@ -88,7 +88,7 @@ tags:
 
 ## 持久内存 PMem 介绍
 
-![存储体系结构](https://kirito.iocoder.cn/pmem_storage_pyramid.jpeg)
+![存储体系结构](https://image.cnkirito.cn/pmem_storage_pyramid.jpeg)
 
 提到内存（DRAM）、固态磁盘（SSD）、机械硬盘（HDD）这些概念，相信大多数人不会感到陌生，都能够道出这几个介质的访问速度差异。而持久内存 PMem 这个概念，相对而言不太为人所知，的确，它是近几年才兴起的一个概念。
 
@@ -104,7 +104,7 @@ tags:
 
 目前为止，将 PMem 技术正式商用的公司，貌似只有 Intel，也就是本次比赛的赞助商。Intel optane DC persistent memory 是 Intel 推出的基于 3D Xpoint 技术的持久内存产品，其代号为 Apace Pass (AEP)。所以大家今后如果看到其他人提到 AEP，基本心理就有数了，说的就是 PMem 这个存储介质。在某电商平台看看这东西怎么卖的
 
-![商品详情](https://kirito.iocoder.cn/image-20210823134438699.png)
+![商品详情](https://image.cnkirito.cn/image-20210823134438699.png)
 
 好家伙，128 * 4 条，卖 15000，折合下来，一根 PMem 就要 3000~4000。同时我们也注意到，傲腾系列的 PMem 产品最高规格也就只有 512M，基本佐证了金字塔中的 Capacity 这一维度，属于内存嫌大，磁盘嫌小的一个数值。
 
@@ -112,13 +112,13 @@ tags:
 
 这东西咱们的电脑可以装吗？当然可以，直接插在内存条上就成。我们都知道内存是易失性的存储，磁盘是持久化的存储，而介于两者之间的持久内存，持久化特性是什么样的呢？这一点，不能望文生义地认为 PMem 就是持久化的，而是要看其工作模式：**Memory Mode** 和 **AppDirect Mode**
 
-![PMem操作模式](https://kirito.iocoder.cn/image-20210823143116956.png)
+![PMem操作模式](https://image.cnkirito.cn/image-20210823143116956.png)
 
 本文就不过多展开介绍了这两种模式了。简单来说，PMem 工作在 Memory Mode 时，是易失性的，这时候，你需要使用专门的一套系统指令去进行存取；PMem 工作在 AppDirect Mode 时，可以直接把 PMem 当成一块磁盘来用，PMem 背后适配了一整套文件系统的指令，使得常规的文件操作可以完全兼容的跑在 PMem 之上。
 
 我花了这么大的篇幅介绍 PMem，仍然只介绍了 PMem 特性非常小的一部分，最多让大家知道 PMem 是个啥，至于怎么利用好这块盘，我后边会花专门的一篇文章去介绍。
 
-![比赛限制](https://kirito.iocoder.cn/image-20210823143543415.png)
+![比赛限制](https://image.cnkirito.cn/image-20210823143543415.png)
 
 回到赛题，尽管 intel 提供了一套 PMem 专用的 API：https://github.com/pmem/pmemkv-java，但由于比赛限定了不能引入三方类库，所以等于直接告诉了参赛选手，PMem 这块盘是工作在 AppDirect Mode 之下的，大家可以完全把它当成一块磁盘去存取。这个时候，选手们就需要围绕 PMem 的特性，去设计存储引擎的架构，可能你在固态硬盘、常规文件操作中的一些认知会被颠覆，这很正常，毕竟 PMem 的出现，就是为了颠覆传统存储架构而生的。在不能直接操作 PMem 的情况下选手们需要设计 PMem 友好的架构。
 
@@ -134,7 +134,7 @@ tags:
 
 这里先给出初赛的最终架构，明确下如何串联各个流程。
 
-![架构](https://kirito.iocoder.cn/image-20210823162446365.png)
+![架构](https://image.cnkirito.cn/image-20210823162446365.png)
 
 把大象放进冰箱总共需要三步，这道题目仅仅多了一步。
 
@@ -278,7 +278,7 @@ readPosition += size;
 
 尽管得知我们可以知道字节数组的长度，从而用循环来解析出 Long，但根据 JMH 的优化项来看，手动展开循环，可以让程序更加地快，例如像下面这样。
 
-![循环展开](https://kirito.iocoder.cn/image-20210823184008366.png)
+![循环展开](https://image.cnkirito.cn/image-20210823184008366.png)
 
 这样的优化大概仅仅能提升 1s~2s，甚至不到，但越是到前排，1~2s 的优化就越会显得弥足珍贵。
 

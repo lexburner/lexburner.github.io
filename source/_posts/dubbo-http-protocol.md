@@ -34,7 +34,7 @@ server 属性可选值：jetty，tomcat，servlet。
 
 翻看 Dubbo 的源码，找到 HttpProtocol 的实现，你可能会吃惊，基本就依靠 HttpProtocol 一个类，就实现了 http 协议
 
-![image-20190717185724385](https://kirito.iocoder.cn/image-20190717185724385.png)
+![image-20190717185724385](https://image.cnkirito.cn/image-20190717185724385.png)
 
 要知道实现自定义的 dubbo 协议，有近 30 个类！http 协议实现的如此简单，背后主要原因有两点：
 
@@ -118,15 +118,15 @@ public class HttpClientApp {
 
 我们使用 wireshark 可以抓取到客户端发送的请求以及服务端响应的报文。
 
-![image-20190717193241396](https://kirito.iocoder.cn/image-20190717193241396.png)
+![image-20190717193241396](https://image.cnkirito.cn/image-20190717193241396.png)
 
 追踪报文流，可以看到详细的请求和响应内容
 
-![image-20190717193339739](https://kirito.iocoder.cn/image-20190717193339739.png)
+![image-20190717193339739](https://image.cnkirito.cn/image-20190717193339739.png)
 
 从 `ContentType: application/x-java-serialized-object` 和报文 Body 部分的 ASCII 码可以看出，使用的是 Java Serialize 序列化。我们将 Body 部分导出成文件，使用 Java Serialize 反序列化响应，来验证一下它的庐山真面目：
 
-![image-20190717194908741](https://kirito.iocoder.cn/image-20190717194908741.png)
+![image-20190717194908741](https://image.cnkirito.cn/image-20190717194908741.png)
 
 使用 Java Serialize 可以正常反序列化报文，得到结果是 Spring 内置的包装类 RemoteInvocationResult，里面装饰着实际的业务返回结果。
 
@@ -154,4 +154,4 @@ Topic：[Proposal] replace the protocol="http" with protocol="jsonrpc"
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

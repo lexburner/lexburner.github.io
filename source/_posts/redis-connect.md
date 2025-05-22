@@ -78,7 +78,7 @@ tcp        0      0 172.24.1.95:6379        172.24.7.34:44602       ESTABLISHED 
 
 怀疑是某个时刻开始，master 和 slave 角色发生了互换，而主从切换过程中由于 pod 没有重启，长连接会一直保留着，此时即使 Redis service 的 endpoint 被修正，也不会影响到已有的连接。
 
-![](https://kirito.iocoder.cn/image-20230214170127670.png)
+![](https://image.cnkirito.cn/image-20230214170127670.png)
 
 为了验证上述猜想，着手排查 Redis server 节点和 sentinel 节点。
 

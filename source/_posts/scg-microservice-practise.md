@@ -15,7 +15,7 @@ tags:
 
 ## 为什么需要微服务网关
 
-![网关流量](https://kirito.iocoder.cn/image-20230707150927224.png)
+![网关流量](https://image.cnkirito.cn/image-20230707150927224.png)
 
 从功能角度来看，微服务网关通常用来统一提供认证授权、限流、熔断、协议转换等功能。
 
@@ -30,7 +30,7 @@ tags:
 
 微服务架构、微服务/API 网关这些关键词发展至今，早已不是什么新鲜的概念，技术选型者也从出于好奇心关注一个技术，转移到了更加关注这个技术的本质。市场上各类网关产品的功能也逐渐趋于同质化，基本可以用同一张图来概括：
 
-![网关核心功能](https://kirito.iocoder.cn/image-20230707154150984.png)
+![网关核心功能](https://image.cnkirito.cn/image-20230707154150984.png)
 
 ## 网关选型对比
 
@@ -38,7 +38,7 @@ tags:
 
 早期 SpringCloud 社区出现过 Zuul 这种产品，时至今日搜索微服务网关的资料，大概率都会出现它的身影，仅其通信模型是同步的线程模型这一条，就不足以支撑其成为企业级的网关产品选型，我会主要对比 SpringCloud Gateway、阿里云 CSB 2.0、Nginx、Kong、Envoy。
 
-![选型对比](https://kirito.iocoder.cn/image-20230712113239721.png)
+![选型对比](https://image.cnkirito.cn/image-20230712113239721.png)
 
 严谨来说，这几个网关并不适合对比，因为他们都有其各自适用的场景，表格仅供参考。
 
@@ -90,13 +90,13 @@ spring:
 
 SpringCloud Gateway 支持丰富的路由匹配逻辑，以应对各种类型的业务诉求：
 
-![SCG断言](https://kirito.iocoder.cn/image-20230712115531910.png)
+![SCG断言](https://image.cnkirito.cn/image-20230712115531910.png)
 
 其中 Path、Header、Method 这几种断言最为常用。
 
 针对于网关请求路径、参数和后端服务请求路径、参数不一致的场景，SpringCloud Gateway 也提供了诸多开箱即用的 GatewayFilter，以实现对请求和响应的定制。
 
-![SCG插件](https://kirito.iocoder.cn/image-20230712115545924.png)
+![SCG插件](https://image.cnkirito.cn/image-20230712115545924.png)
 
 SpringCloud Gateway 的 user guide 介绍到此为止，如果想要了解 develop guide，建议参考 SpringCloud Gateway 的官方文档。
 
@@ -104,13 +104,13 @@ SpringCloud Gateway 的 user guide 介绍到此为止，如果想要了解 devel
 
 众所周知，开源产品直接投入企业级生产使用一般是会面临一些挑战的，毕竟场景不同。以扩展性为例，开源产品大多讲究扩展点丰富，以应对开源用户千奇百怪的需求，而企业级产品场景更为单一，性能和稳定性是第一考虑因素，当二者发生 trade off 时，则需要一些取舍了。
 
-![企业级特性](https://kirito.iocoder.cn/image-20230714161600920.png)
+![企业级特性](https://image.cnkirito.cn/image-20230714161600920.png)
 
 开源 SpringCloud Gateway 没有开箱即用地支持一些重要的企业级特性，如果选型 SpringCloud Gateway 构建生产级别可用的微服务网关，那我的建议是需要补足以上这些能力。下面我会花较多的篇幅介绍我们在开源基础上做的一些企业级改造，希望能够抛砖引玉。
 
 ### 白屏化管控
 
-![白屏化](https://kirito.iocoder.cn/image-20230714161955374.png)
+![白屏化](https://image.cnkirito.cn/image-20230714161955374.png)
 
 表面看来，SpringCloud Gateway 并没有配套一个管理控制台，深层次一点来看，是 SpringCloud Gateway 还停留在一个开发框架层面，不是那么的产品化，同时它的领域模型也不是划分的那么清晰，说的好听点，这说明 SpringCloud Gateway 有充足的改造空间。
 
@@ -128,7 +128,7 @@ SpringCloud Gateway 的 user guide 介绍到此为止，如果想要了解 devel
 
 配置拆分势在必行，但其中困难也很多，例如动态监听的管理，稳定性的保障流程尤为复杂，额外提供的视图层与实际配置中心数据一致性保障等等。方案参考下图：
 
-![配置方案重构](https://kirito.iocoder.cn/image-20230714164248026.png)
+![配置方案重构](https://image.cnkirito.cn/image-20230714164248026.png)
 
 图中还有一个细节，也是我们优先选择 Nacos 作为配置中心的原因，nacos-client 的 snapshot 机制可以保证在管控以及配置中心组件都不可用时，即使网关 broker 重启了，依旧保证路由不丢失，保证自身可用性。
 
@@ -159,7 +159,7 @@ SpringCloud Gateway 的 user guide 介绍到此为止，如果想要了解 devel
 
 针对这些痛点和诉求，分享一些我们改造时遇到的难点以及经验
 
-![服务发现x协议转换扩展](https://kirito.iocoder.cn/image-20230714171525533.png)
+![服务发现x协议转换扩展](https://image.cnkirito.cn/image-20230714171525533.png)
 
 在支持不同协议时，对应的服务框架可能已经有了对应的 remoting 层和 discovery 层，我们的选择是仅引入该协议的 remoting 二方包解决协议转换问题，对于 discovery 层，应当自行封装，避免使用对应协议的 discovery 层这个误区，因为回归到网关领域，服务发现和协议转换是对等的模块，抽象 ServiceDiscoveryFIlter 负责服务发现，ProtocolTransferFilter 则负责点对点的协议通信。
 
@@ -173,7 +173,7 @@ SpringCloud Gateway 的 user guide 介绍到此为止，如果想要了解 devel
 
 如果仔细阅读过 SpringCloud Gateway 的文档，你会发现，开源对限流熔断的支持是非常有限的，它强依赖一个 Redis 做集群限流，且限流方案是自己实现的，而我们可能会更加信赖 Sentinel 提供的解决方案。事实上，开源 Sentinel 也对 SpringCloud Gateway 提供了一部分开箱即用的能力，使用层面完全没问题，主要是欠缺了一部分可观测性的能力。
 
-![限流熔断](https://kirito.iocoder.cn/image-20230714175044775.png)
+![限流熔断](https://image.cnkirito.cn/image-20230714175044775.png)
 
 在改造中，尤为注意要使用高版本的 Sentinel，即按比例阈值这套模型实现的限流方案，集成 Sentinel 之后，我们按照网关的通用场景提供了两类限流模型：基于慢调用比例的限流熔断和基于响应码比例的限流熔断。借助于 Sentinel 的能力，可惜实现渐进式的恢复。
 
@@ -181,7 +181,7 @@ SpringCloud Gateway 的 user guide 介绍到此为止，如果想要了解 devel
 
 可观测性体系的建设，可以说是很多开源产品距离企业级使用的距离，SpringCloud Gateway 亦是如此。
 
-![可观测性](https://kirito.iocoder.cn/image-20230717135729732.png)
+![可观测性](https://image.cnkirito.cn/image-20230717135729732.png)
 
 网关通常会需要记录三类可观测性指标。
 
@@ -203,13 +203,13 @@ Logging 方案则是 SpringCloud Gateway 开源欠缺的，在实际生产中至
 
 一些常用的优化技巧在网关中也同样适用，例如：缓存、懒加载、预分配、算法复杂度优化、CPU 友好操作，减少线程切换。
 
-![性能基线](https://kirito.iocoder.cn/image-20230717144227071.png)
+![性能基线](https://image.cnkirito.cn/image-20230717144227071.png)
 
 ### 火焰图
 
 通过火焰图观测性能可以从宏观角度分析大的性能损耗点
 
-![火焰图](https://kirito.iocoder.cn/image-20230717144324186.png)
+![火焰图](https://image.cnkirito.cn/image-20230717144324186.png)
 
 一个理想的网关火焰图应当是大部分的时间片占用花费在 IO 上，即图中的 netty 相关的损耗，除此之外占用了 CPU 的类，都需要重点关注。通过火焰图，我们也定位到了相当多的性能损耗点，并针对进行了优化。
 

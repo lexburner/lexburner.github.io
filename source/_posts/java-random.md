@@ -20,13 +20,13 @@ toc: true
 
 Random 这个类是 JDK 提供的用来生成随机数的一个类，这个类并不是真正的随机，而是伪随机，伪随机的意思是生成的随机数其实是有一定规律的，而这个规律出现的周期随着伪随机算法的优劣而不同，一般来说周期比较长，但是可以预测。通过下面的代码我们可以对 Random 进行简单的使用: 
 
-![img](https://kirito.iocoder.cn/648.jpeg)
+![img](https://image.cnkirito.cn/648.jpeg)
 
 #### Random 原理
 
 Random 中的方法比较多，这里就针对比较常见的 nextInt()和 nextInt(int bound) 方法进行分析，前者会计算出 int 范围内的随机数，后者如果我们传入 10，那么他会求出 [0,10) 之间的 int 类型的随机数，左闭右开。我们首先看一下 Random() 的构造方法:
 
- ![img](https://kirito.iocoder.cn/20190906173929.jpg)
+ ![img](https://image.cnkirito.cn/20190906173929.jpg)
 
 可以发现在构造方法当中，根据当前时间的种子生成了一个 AtomicLong 类型的 seed，这也是我们后续的关键所在。
 
@@ -34,17 +34,17 @@ Random 中的方法比较多，这里就针对比较常见的 nextInt()和 nextI
 
 nextInt() 的代码如下所示：
 
- ![img](https://kirito.iocoder.cn/642.png)
+ ![img](https://image.cnkirito.cn/642.png)
 
 这个里面直接调用的是 next() 方法，传入的 32，代指的是 Int 类型的位数。
 
-![img](https://kirito.iocoder.cn/643.jpeg)
+![img](https://image.cnkirito.cn/643.jpeg)
 
 这里会根据 seed 当前的值，通过一定的规则 (伪随机算法) 算出下一个 seed，然后进行 CAS，如果 CAS 失败则继续循环上面的操作。最后根据我们需要的 bit 位数来进行返回。核心便是 CAS 算法。
 
 ### nextInt(int bound)
 
-nextInt(int bound) 的代码如下所示：![img](https://kirito.iocoder.cn/644.jpeg)
+nextInt(int bound) 的代码如下所示：![img](https://image.cnkirito.cn/644.jpeg)
 
 这个流程比 nextInt() 多了几步，具体步骤如下:
 
@@ -68,9 +68,9 @@ ThreadLocalRandom.current().nextInt(10);
 
 在 current 方法中有:
 
-![img](https://kirito.iocoder.cn/645.jpeg) 可以看见如果没有初始化会对其进行初始化，而这里我们的 seed 不再是一个全局变量，在我们的 Thread 中有三个变量: 
+![img](https://image.cnkirito.cn/645.jpeg) 可以看见如果没有初始化会对其进行初始化，而这里我们的 seed 不再是一个全局变量，在我们的 Thread 中有三个变量: 
 
-![img](https://kirito.iocoder.cn/646.jpeg)
+![img](https://image.cnkirito.cn/646.jpeg)
 
 - threadLocalRandomSeed：ThreadLocalRandom 使用它来控制随机数种子。
 - threadLocalRandomProbe：ThreadLocalRandom 使用它来控制初始化。
@@ -80,7 +80,7 @@ ThreadLocalRandom.current().nextInt(10);
 
 在 nextInt() 方法当中代码如下:
 
-![img](https://kirito.iocoder.cn/647.jpeg)
+![img](https://image.cnkirito.cn/647.jpeg)
 
 我们的关键代码如下:
 
@@ -217,7 +217,7 @@ public class RightCase {
 
 梁飞博客中一句话常常在我脑海中萦绕：魔鬼在细节中。优秀的代码都是一个个小细节堆砌出来，今天介绍的 ThreadLocalRandom 也不例外。
 
-![dubbo](https://kirito.iocoder.cn/image-20180911184147013.png)
+![dubbo](https://image.cnkirito.cn/image-20180911184147013.png)
 
 在 incubator-dubbo-2.7.0 中，随机负载均衡器的一个小改动便是将 Random 替换为了 ThreadLocalRandom，用于优化并发性能。
 
@@ -245,11 +245,11 @@ public int nextInt(int bound) {
 
 ** 欢迎关注李钊同学的微信公众号：「咖啡拿铁」**
 
-![咖啡拿铁](https://kirito.iocoder.cn/image-20180911185754582.png)
+![咖啡拿铁](https://image.cnkirito.cn/image-20180911185754582.png)
 
 ** 当然，也欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 
 
 

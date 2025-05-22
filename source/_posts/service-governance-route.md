@@ -17,7 +17,7 @@ tags:
 
 在业务层面，路由往往是为了实现一定的业务语义，对流量进行调度，所以服务治理框架通常提供的都是基础的路由扩展能力，使用者根据业务场景进行扩展。
 
-![路由过程](https://kirito.iocoder.cn/image-20211228182012630.png)
+![路由过程](https://image.cnkirito.cn/image-20211228182012630.png)
 
 今天这篇文章将会围绕路由层该如何设计展开。
 
@@ -114,7 +114,7 @@ List<Invoker> route(Invocation invocation) {
 
 优化过后的方案，路由过程如下：
 
-![路由树选址](https://kirito.iocoder.cn/image-20211228180521560.png)
+![路由树选址](https://image.cnkirito.cn/image-20211228180521560.png)
 
 对比之前，主要是两个变化：
 

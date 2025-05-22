@@ -20,7 +20,7 @@ Nacos 支持两种部署模式：单机模式和集群模式。在实践中，�
 
 直连模式是部署上最简单，也是最容易理解的一种模式
 
-![直连模式](http://kirito.iocoder.cn/image-20201224024616439.png)
+![直连模式](http://image.cnkirito.cn/image-20201224024616439.png)
 
 
 
@@ -58,7 +58,7 @@ dubbo.registry.protocol=nacos
 
 VIP（Virtual IP） 模式可以很好的解决直连模式 IP 变化所带来的应用批量修改的问题。什么是 VIP 呢？
 
-![VIP](http://kirito.iocoder.cn/1567916375212-f3fd5df3-1cc6-4304-aaee-c7bb564e3b79.png)
+![VIP](http://image.cnkirito.cn/1567916375212-f3fd5df3-1cc6-4304-aaee-c7bb564e3b79.png)
 
 - Real Server：处理实际请求的后端服务器节点。
 - Director Server：指的是负载均衡器节点，负责接收客户端请求，并转发给 RS。
@@ -69,7 +69,7 @@ VIP（Virtual IP） 模式可以很好的解决直连模式 IP 变化所带来�
 
 我这里介绍时并没有用【负载均衡模式】，而是用了【VIP 模式】，主要是为了跟 Nacos 官方文档保持一致。事实上，VIP 的叫法在阿里内部比较流行，所以在开源 Nacos 时也被习惯性的带了出去。
 
-![VIP 模式](http://kirito.iocoder.cn/image-20201224025005872.png)
+![VIP 模式](http://image.cnkirito.cn/image-20201224025005872.png)
 
 VIP 帮助 Nacos Client 屏蔽了后端 RIP，相对于 RIP 而言，VIP 很少会发生变化。以扩容场景为例，只需要让 VIP 感知到即可，Nacos Client 只需要关注 VIP，避免了扩容引起的代码改造。
 
@@ -102,7 +102,7 @@ VIP 模式和直连模式都不具备可读性，所以在实际生产中，往�
 
 VIP 模式的最终生产高可用版架构便产生了：
 
-![域名 VIP 模式](http://kirito.iocoder.cn/image-20201225013353540.png)
+![域名 VIP 模式](http://image.cnkirito.cn/image-20201225013353540.png)
 
 典型的开发场景配置只需要将 VIP 替换为域名即可
 
@@ -135,7 +135,7 @@ dubbo.registry.protocol=nacos
 
 地址服务器是什么？顾名思义，是用来寻址地址的服务器，发送一个请求，返回一串地址列表。尽管在阿里内部使用的真实地址服务器比这复杂一些，但下图这个简单交互逻辑，几乎涵盖了地址服务器 90% 的内容。
 
-![地址服务器原理](http://kirito.iocoder.cn/image-20201225015919479.png)
+![地址服务器原理](http://image.cnkirito.cn/image-20201225015919479.png)
 
 实现一个简易版本的地址服务器并不困难，推荐使用 nginx 搭建一个静态文件服务器管理地址， 当然你可以使用 Java！
 
@@ -160,7 +160,7 @@ public class AddressServerController {
 
 并且地址服务器建议配置域名，增加可读性。所以最后的部署交互架构是这样的：
 
-![地址服务器部署架构](http://kirito.iocoder.cn/image-20201225025419171.png)
+![地址服务器部署架构](http://image.cnkirito.cn/image-20201225025419171.png)
 
 
 
@@ -221,7 +221,7 @@ VIP 模式同样推荐在自建场景使用，但运维成本相对地址服务�
 
 当然，组合使用地址服务器 + VIP 也是可以的，可以充分的融合两者的优势：
 
-![组合模式](http://kirito.iocoder.cn/image-20201225133001525.png)
+![组合模式](http://image.cnkirito.cn/image-20201225133001525.png)
 
 ## 6 MSE Nacos 的实践
 
@@ -235,7 +235,7 @@ MSE（微服务引擎）提供了 Nacos 注册中心中心的全托管能力，�
 
 综上，MSE Nacos 最终采用的是域名 + SLB 的 VIP 模式。
 
-![MSE 部署模式](http://kirito.iocoder.cn/image-20201225135839176.png)
+![MSE 部署模式](http://image.cnkirito.cn/image-20201225135839176.png)
 
 MSE Nacos 提供两个域名，其中公网域名可以用做本地开发测试，或者自建环境、混合云等场景的接入点，内网域名用做阿里云生产环境接入点。公网域名有带宽限制，需要在集群创建时根据场景选择合适的带宽，而内网域名则没有带宽限制。公网域名请注意添加 IP 访问白名单。
 

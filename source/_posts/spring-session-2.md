@@ -112,7 +112,7 @@ Spring Session provides an API and implementations for managing a user’s sessi
 
 如果还记得上一篇文章中运行结果的话，会发现和原生的 session 管理是有一些差别，原先的信息中我们记得 Cookie 中记录的 Key 值是 JSESSIONID，而替换成 RedisHttpSession 之后变成了 SESSION。接着观察 redis 中的变化：
 
-![redis 中的 session](https://kirito.iocoder.cn/image/redisSession.png)
+![redis 中的 session](https://image.cnkirito.cn/image/redisSession.png)
 
 解析一下这个 redis store，如果不纠结于细节，可以跳过，不影响使用。
 
@@ -129,7 +129,7 @@ Spring Session provides an API and implementations for managing a user’s sessi
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
 
 
 

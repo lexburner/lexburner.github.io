@@ -73,7 +73,7 @@ expireTime 是  `Comparator`  的对比参数。NewTask O(logN) 和 Cancel O(log
 
 Netty 针对 I/O 超时调度的场景进行了优化，实现了 `HashedWheelTimer` 时间轮算法。
 
-![时间轮算法](https://kirito.iocoder.cn/201807171109599678a80c-075a-40ee-b25f-10fd82c1025c.png)
+![时间轮算法](https://image.cnkirito.cn/201807171109599678a80c-075a-40ee-b25f-10fd82c1025c.png)
 
 `HashedWheelTimer` 是一个环形结构，可以用时钟来类比，钟面上有很多 bucket ，每一个 bucket 上可以存放多个任务，使用一个 List 保存该时刻到期的所有任务，同时一个指针随着时间流逝一格一格转动，并执行对应 bucket 上所有到期的任务。任务通过 ` 取模 ` 决定应该放入哪个 bucket 。和 HashMap 的原理类似，newTask 对应 put，使用 List 来解决 Hash 冲突。
 
@@ -102,7 +102,7 @@ Kafka 针对时间轮算法进行了优化，实现了层级时间轮 `TimingWhe
 
 如果任务的时间跨度很大，数量也多，传统的 `HashedWheelTimer` 会造成任务的 `round` 很大，单个 bucket 的任务 List 很长，并会维持很长一段时间。这时可将轮盘按时间粒度分级：
 
-![层级时间轮](https://kirito.iocoder.cn/7f03c027b1de345a0b1e57239d73de74.png)
+![层级时间轮](https://image.cnkirito.cn/7f03c027b1de345a0b1e57239d73de74.png)
 
 现在，每个任务除了要维护在当前轮盘的 `round`，还要计算在所有下级轮盘的 `round`。当本层的 `round` 为 0 时，任务按下级 `round` 值被下放到下级轮子，最终在最底层的轮盘得到执行。
 
@@ -242,4 +242,4 @@ ticksPerWheel，tickDuration 这两个参数尤为重要，ticksPerWheel 控制�
 
 **欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

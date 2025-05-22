@@ -135,9 +135,9 @@ curl localhost:22222/online
 
 小 tips：在使用 SpringBoot 注解式声明一个 Service 时，register 属性会失效，在 xml 或者 API 方式下声明则运行正常，怀疑是 dubbo-spring-boot-starter 的一个 bug。
 
-![image-20191117205139227](https://kirito.iocoder.cn/image-20191117205139227.png)
+![image-20191117205139227](https://image.cnkirito.cn/image-20191117205139227.png)
 
-![image-20191117205207044](https://kirito.iocoder.cn/image-20191117205207044.png)
+![image-20191117205207044](https://image.cnkirito.cn/image-20191117205207044.png)
 
 大家在 SpringBoot 下使用 Dubbo 需要留意类似的问题，之前有过一些属性在 SpringBoot 注解中未解析或为提供注解配置的案例，在使用时需要注意。
 

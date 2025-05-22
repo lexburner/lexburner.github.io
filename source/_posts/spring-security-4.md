@@ -175,7 +175,7 @@ SecurityContextPersistenceFilter 和 HttpSessionSecurityContextRepository 配合
 
 表单认证是最常用的一个认证方式，一个最直观的业务场景便是允许用户在表单中输入用户名和密码进行登录，而这背后的 UsernamePasswordAuthenticationFilter，在整个 Spring Security 的认证体系中则扮演着至关重要的角色。
 
-![https://kirito.iocoder.cn/2011121410543010.jpg](https://kirito.iocoder.cn/2011121410543010.jpg)
+![https://image.cnkirito.cn/2011121410543010.jpg](https://image.cnkirito.cn/2011121410543010.jpg)
 
 上述的时序图，可以看出 UsernamePasswordAuthenticationFilter 主要肩负起了调用身份认证器，校验身份的作用，至于认证的细节，在前面几章花了很大篇幅进行了介绍，到这里，其实 Spring Security 的基本流程就已经走通了。
 
@@ -362,7 +362,7 @@ public class ExceptionTranslationFilter extends GenericFilterBean {
 
 剩下的便是要搞懂 AuthenticationEntryPoint 和 AccessDeniedHandler 就可以了。
 
-![AuthenticationEntryPoint](https://kirito.iocoder.cn/QQ%E5%9B%BE%E7%89%8720170929231608.png)
+![AuthenticationEntryPoint](https://image.cnkirito.cn/QQ%E5%9B%BE%E7%89%8720170929231608.png)
 
 选择了几个常用的登录端点，以其中第一个为例来介绍，看名字就能猜到是认证失败之后，让用户跳转到登录页面。还记得我们一开始怎么配置表单登录页面的吗？
 
@@ -467,4 +467,4 @@ protected void configure(HttpSecurity http) throws Exception {
 
 ** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

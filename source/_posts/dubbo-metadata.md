@@ -14,7 +14,7 @@ toc: true
 
 在今年年初 Dubbo 2.7 刚发布时，我就写了一篇文章 《[Dubbo 2.7 三大新特性详解](https://www.cnkirito.moe/dubbo27-features/)》，介绍了包含元数据中心改造在内的三大新特性，但一些细节介绍没有详细呈现出来，在这篇文章中，我将会以 Dubbo 为例，跟大家一起探讨一下服务治理框架中元数据中心的意义与集成细节。
 
-![Dubbo 2.7 架构](https://kirito.iocoder.cn/image-20191103160946348.png)
+![Dubbo 2.7 架构](https://image.cnkirito.cn/image-20191103160946348.png)
 
 <!-- more -->
 
@@ -75,7 +75,7 @@ toc: true
 
 在 Dubbo 2.7 之前，虽然注册中心耦合存储了不少本应属于元数据的数据，但也漏掉了一部分元数据，例如服务的方法列表，参数列表。这些是服务测试和服务 MOCK 必备的数据，想要使用这些能力，就必须引入元数据中心。例如开源的 [Dubbo Admin](https://github.com/apache/dubbo-admin) 就实现了服务测试功能，用户可以在控制台上对已经发布的服务提供者进行功能测试。可能你之前有过这样的疑惑：为什么只有 Dubbo 2.7 才支持了服务测试呢？啊哈，原因就是 Dubbo 2.7 才有了元数据中心的概念。当然，服务 MOCK 也是如此。
 
-![服务测试](https://kirito.iocoder.cn/image-20191103180851464.png)
+![服务测试](https://image.cnkirito.cn/image-20191103180851464.png)
 
 ### 其他场景
 
@@ -85,7 +85,7 @@ toc: true
 
 目前 Dubbo 最新的版本为 2.7.4，目前支持的几种元数据中心可以从源码中得知（官方文档尚未更新）：
 
-![元数据中心扩展](https://kirito.iocoder.cn/image-20191103204744161.png)
+![元数据中心扩展](https://image.cnkirito.cn/image-20191103204744161.png)
 
 支持 consul、etcd、nacos、redis、zookeeper 这五种组件。
 
@@ -142,7 +142,7 @@ timestamp=1552975501873
 
 被精简省略的数据不代表没有用了，而是转移到了元数据中心之中，我们观察一下此时元数据中心中的数据：
 
-![元数据存储格式](https://kirito.iocoder.cn/image-20191103202821635.png)
+![元数据存储格式](https://image.cnkirito.cn/image-20191103202821635.png)
 
 ## 最佳实践
 

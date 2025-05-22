@@ -57,7 +57,7 @@ public class HelloController {
 
 执行 `curl localhost:8080/hello` 发现，直接报了一个 StackOverFlowError：
 
-![StackOverFlow](https://kirito.iocoder.cn/image-20210715011351293.png)
+![StackOverFlow](https://image.cnkirito.cn/image-20210715011351293.png)
 
 ## 问题剖析
 

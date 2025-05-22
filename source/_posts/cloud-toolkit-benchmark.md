@@ -30,7 +30,7 @@ toc: true
 
 在 `Tools -> Deployment` 中可以找到 IDEA 对项目部署支持的内置插件
 
-![Deployment 插件](https://kirito.iocoder.cn/image-20190602181059808.png)
+![Deployment 插件](https://image.cnkirito.cn/image-20190602181059808.png)
 
 我们可以在其中进行服务器信息的配置，包括服务器地址和权限认证，并且在 Mapping 选项卡中完成本地工程与服务器路径的映射。
 
@@ -66,17 +66,17 @@ public class Application {
 
 之后，只要执行 install，即可得到一个可运行的 jar 包：
 
-![打包](https://kirito.iocoder.cn/image-20190602181758619.png)
+![打包](https://image.cnkirito.cn/image-20190602181758619.png)
 
 ### 第三步：部署 jar 包
 
-![部署](https://kirito.iocoder.cn/image-20190602181934176.png)
+![部署](https://image.cnkirito.cn/image-20190602181934176.png)
 
 由于我们在第一步已经配置过项目路径与服务器路径的映射，可以选择直接对 fatjar 右键，upload 到远程服务器上。
 
 ### 第四步：启动应用
 
-![启动](https://kirito.iocoder.cn/image-20190602182411907.png)
+![启动](https://image.cnkirito.cn/image-20190602182411907.png)
 
 上图中展示的是 IDEA 中两个非常棒的内置功能，可以在 `Tools -> Start SSH session` 中开启远程服务器的终端，在 IDEA 下方可以执行远程指令；也可以在 `Tools -> Deployment ->Browse Remote Host ` 中展开如图右侧的结构，可视化地浏览服务器上的文件列表，检查应用是否部署成功。
 
@@ -90,7 +90,7 @@ IDEA 内置插件已经提供了相当强大的能力，整个部署过程我们
 
 我们不急着用 Cloud Toolkit 来部署应用。虽然笔者是一位开发，但还是从产品的角度来研究下它的菜单项，看看它的产品定位。IDEA 安装插件的过程省略，详情可以参考 [《Intellij IDEA 安装 Cloud Toolkit 教程》](https://yq.aliyun.com/articles/674021)。
 
-![多种部署方式](https://kirito.iocoder.cn/image-20190602183827891.png)
+![多种部署方式](https://image.cnkirito.cn/image-20190602183827891.png)
 
 其他菜单项暂且抛到一边，这 5 个核心能力应该就是 Cloud Toolkit 的核心了。
 
@@ -105,7 +105,7 @@ IDEA 内置插件已经提供了相当强大的能力，整个部署过程我们
 
 ## 使用 Cloud Toolkit 部署应用到任意服务器
 
-![Deploy to Host](https://kirito.iocoder.cn/image-20190602185551351.png)
+![Deploy to Host](https://image.cnkirito.cn/image-20190602185551351.png)
 
 上图展示的 Deploy to Host 功能的配置项，实际上涵盖了
 
@@ -118,13 +118,13 @@ IDEA 内置插件已经提供了相当强大的能力，整个部署过程我们
 
 SSH 登录账户可以在 `Preferences -> Alibaba Cloud Toolkit -> SSH Profile ` 中管理，找不到也没关系，需要设置的时候一般都会有超链接跳转，这点做得很人性化。
 
-![SSH 账号管理](https://kirito.iocoder.cn/image-20190602190651881.png)
+![SSH 账号管理](https://image.cnkirito.cn/image-20190602190651881.png)
 
 ### 主机管理
 
 服务信息可以在 `Tools -> Alibaba Cloud ->Alibaba Cloud View ` 中展开，如下图所示
 
-![image-20190602191159882](https://kirito.iocoder.cn/image-20190602191159882.png)
+![image-20190602191159882](https://image.cnkirito.cn/image-20190602191159882.png)
 
 ### Deploy to Host
 
@@ -142,13 +142,13 @@ SSH 登录账户可以在 `Preferences -> Alibaba Cloud Toolkit -> SSH Profile `
 
 可以预见的一件事是，对于非阿里云用户来说，Deploy to Host 是使用 Cloud Toolkit 最大的诱惑了。作为一个测评文章，除了 Deploy to Host 之外，我还选择了 Deploy to ECS 这一功能来进行测评。为此我购买了一台阿里云的 ECS 来部署与上文相同的应用。
 
-![Accounts](https://kirito.iocoder.cn/image-20190602194148035.png)
+![Accounts](https://image.cnkirito.cn/image-20190602194148035.png)
 
 在阿里云控制台可以获取到账号的 Access Key/Access Key Secret，在 IDEA 中的 `Preferences -> Alibaba Cloud Toolkit -> Accounts` 中可以设置账号。
 
 在账号设置完毕后，Cloud Toolkit 看起来是通过内置的 API 直接关联到了我的 ECS 实例，在选择部署时，可以直接根据 region 选择实例列表中的机器进行部署。
 
-![实例列表](https://kirito.iocoder.cn/image-20190602194439453.png)
+![实例列表](https://image.cnkirito.cn/image-20190602194439453.png)
 
 其余的部署流程和 Deploy to Host 相差无几。也就是说，Deploy to ECS 更多的其实完成了权限管理和主机管理，ECS 用户使用这个功能就显得非常高效了。
 
@@ -158,7 +158,7 @@ Cloud Toolkit 除了主打的部署能力，还提供了不少亮点功能，我
 
 ### 上传文件
 
-![upload](https://kirito.iocoder.cn/image-20190604201842718.png)
+![upload](https://image.cnkirito.cn/image-20190604201842718.png)
 
 有些脚本我们希望在本地编辑之后上传到服务器上，Cloud Toolkit 对每一个主机都提供了一个 Upload 操作，可以将本地的文件上传到远程主机上，并且还可以触发一个 commond，这个功能也是很人性化的，因为上传脚本后，往往需要运行一次，避免了我们再登录到远程主机上执行一次运行操作。
 
@@ -166,7 +166,7 @@ Cloud Toolkit 除了主打的部署能力，还提供了不少亮点功能，我
 
 特别是在 Mac 中，我一直苦恼的一件事便是如何管理众多的远程机器，我需要偶尔去搭建了博客的主机上查看下个人博客为什么挂了，偶尔又要去看看我的 VPN 主机排查下为什么无法转发流量了，在开发测试阶段，又要经常去测试主机上简单的执行一些命令。所有这一切通过 ssh 工具去完成都不麻烦，但所有的麻烦事集合到一起时往往会让我变得焦头烂额，这一点，Cloud Toolkit 简直是一个 Life Saver。
 
-![image-20190604201228263](https://kirito.iocoder.cn/image-20190604201228263.png)
+![image-20190604201228263](https://image.cnkirito.cn/image-20190604201228263.png)
 
 事实上，在前面的测评中我们已经了解到 IDEA 内置了远程 Terminal 这个功能，Cloud Toolkit 是进一步优化了它的体验，用户可以直接在可视化的页面选择想要远程登录的主机，在对主机加了 Tag 之后，这个过程会更加直观。
 
@@ -177,7 +177,7 @@ Cloud Toolkit 除了主打的部署能力，还提供了不少亮点功能，我
 - 对于本地主机，可以直接通过 `Tools -> Alibaba Cloud -> Diagnostic Tools` 开启诊断。
 - 对于远程主机，可以通过主机管理中的 Diagnostic 选项卡，开启远程诊断。
 
-![远程诊断](https://kirito.iocoder.cn/image-20190602195455602.png)
+![远程诊断](https://image.cnkirito.cn/image-20190602195455602.png)
 
 在过去，我们想要进行诊断，必须要手动在服务器上安装 Arthas，Cloud Toolkit 借助于 Remote Terminal 和 Arthas 的集成，让这一切都可以在 IDEA 中完成，似乎是想要贯彻：彻底杜绝第三方工具，一切都用插件完成。
 
@@ -192,15 +192,15 @@ Cloud Toolkit 除了主打的部署能力，还提供了不少亮点功能，我
 
 作为一个偏正经的评测，我们试用一下远程诊断的功能，选取比较直观的 trace 命令来进行评测
 
-![慢应用](https://kirito.iocoder.cn/image-20190604194749595.png)
+![慢应用](https://image.cnkirito.cn/image-20190604194749595.png)
 
 如上图所示，我们构造了一个慢请求，其中 invokeServiceA_B() 相对于其他方法十分耗时，我们希望通过 Cloud Toolkit 定位到慢调用的源头，找出 invokeServiceA_B 这个罪魁祸首。
 
-![arthas](https://kirito.iocoder.cn/image-20190602200009029.png)
+![arthas](https://image.cnkirito.cn/image-20190602200009029.png)
 
 点击 IDEA 中对应部署服务器的 Diagnostic 菜单项，就会出现如上图所示的一个 Arthas 诊断页面，它会自动关联到用户的 Java 进程，用户只需要选择相应诊断的进程即可。
 
-![image-20190604200009328](https://kirito.iocoder.cn/image-20190604200009328.png)
+![image-20190604200009328](https://image.cnkirito.cn/image-20190604200009328.png)
 
 在关联到相应的进程之后，我们执行 trace 指令 
 
@@ -218,7 +218,7 @@ Cloud Toolkit 除了主打的部署能力，还提供了不少亮点功能，我
 
 ### 文件浏览器过于简陋
 
-![ssh](https://kirito.iocoder.cn/image-20190602200447655.png)
+![ssh](https://image.cnkirito.cn/image-20190602200447655.png)
 
 当尝试配置 SSH 公私钥以实现免密登录时，发现 Browse 打开的文件浏览器无法正常显示 Mac 中的 .ssh 隐藏文件夹，大多数情况下用户会将 SSH 公私钥存放在 ~/.ssh 中，这个用户体验不是很好，或许有办法在这个文件浏览器中访问到隐藏文件夹，但至少我还没找到方法。
 
@@ -226,7 +226,7 @@ Cloud Toolkit 除了主打的部署能力，还提供了不少亮点功能，我
 
 IDEA 的默认插件支持 Remote Host
 
-![Remote Host](https://kirito.iocoder.cn/image-20190602200927981.png)
+![Remote Host](https://image.cnkirito.cn/image-20190602200927981.png)
 
 这个可以提升用户体验，Cloud Toolkit 提供了远程主机的管理，额外实现一个 ftp 协议可能会更方便用户查看自己的部署结果。从连接协议的选择上也可以发现，Cloud Toolkit 目前只支持 sftp 协议，而 IDEA 内置的 Deployment 插件还支持 ftp、ftps 等方式。
 

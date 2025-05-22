@@ -31,7 +31,7 @@ toc: true
 
 启动完成之后，访问：`http://127.0.0.1:8848/nacos/`，使用默认的用户名和密码：`nacos/nacos` 可以进入 Nacos 的服务管理页面。
 
-![Nacos 控制台](https://kirito.iocoder.cn/image-20210116152123133.png)
+![Nacos 控制台](https://image.cnkirito.cn/image-20210116152123133.png)
 
 ## 构建 Dubbo 应用接入 Nacos 注册中心
 
@@ -169,11 +169,11 @@ dubbo:
 
 我们可以访问 Nacos 的管理页面 http://127.0.0.1:8848/nacos/ 来查看服务列表，此时可以看到如下内容：
 
-![服务列表](https://kirito.iocoder.cn/image-20210116175213815.png)
+![服务列表](https://image.cnkirito.cn/image-20210116175213815.png)
 
 点击详情，可以查看实例级别的信息
 
-![实例列表](https://kirito.iocoder.cn/image-20210116175324746.png)
+![实例列表](https://image.cnkirito.cn/image-20210116175324746.png)
 
 ### 服务消费者
 
@@ -238,7 +238,7 @@ dubbo:
 
 我们可以访问 Nacos 的管理页面 http://127.0.0.1:8848/nacos/ 来查看服务消费者列表，此时可以看到如下内容：
 
-![消费者列表](https://kirito.iocoder.cn/image-20210116182820391.png)
+![消费者列表](https://image.cnkirito.cn/image-20210116182820391.png)
 
 执行调用
 
@@ -265,4 +265,4 @@ hello kirito
 
 **欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**
 
-![关注微信公众号](https://kirito.iocoder.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)
+![关注微信公众号](https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg)

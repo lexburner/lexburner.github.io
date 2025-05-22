@@ -22,7 +22,7 @@ tags:
 - SpringCloud 以应用维度表示服务
 - Dubbo2.x 以接口维度表示服务；Dubbo3.x 以应用维度表示服务
 
-![](https://kirito.iocoder.cn/image-20230131112641733.png)
+![](https://image.cnkirito.cn/image-20230131112641733.png)
 
 服务从 Provider -> Registry -> Consumer 的这一流动过程便是本文重点讨论的内容。
 
@@ -54,7 +54,7 @@ public interface RegistryService {
 
 Dubbo 管理服务发现的核心接口 `RegistryService` 直接给出了答案，通过 subscribe 和 notify 这些关键字便可以猜测到 Dubbo 使用的是推模型。
 
- ![](https://kirito.iocoder.cn/image-20230131114940080.png)
+ ![](https://image.cnkirito.cn/image-20230131114940080.png)
 
 上图是一个推模型的工作流程。
 
@@ -82,7 +82,7 @@ public interface DiscoveryClient extends Ordered {
 
 `DiscoveryClient` 是 SpringCloud 中一个核心服务发现的接口，通过 `getInstances` 基本可以看出，SpringCloud 使用的是拉模型。
 
-![](https://kirito.iocoder.cn/image-20230131122300084.png)
+![](https://image.cnkirito.cn/image-20230131122300084.png)
 
 上图是一个拉模型的工作流程。
 
