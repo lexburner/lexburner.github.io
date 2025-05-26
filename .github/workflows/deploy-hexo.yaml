@@ -51,7 +51,11 @@ jobs:
           ssh-private-key: ${{ secrets.GITEE_PK }}
 
       - name: Add Gitee to known_hosts
-        run: ssh-keyscan -t rsa gitee.com >> ~/.ssh/known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -t rsa gitee.com >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
       - name: Push to Gitee master branch (orphan)
         env:
