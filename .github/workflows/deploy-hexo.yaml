@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - source  # 明确指定只监听 source 分支的推送
+  workflow_dispatch:
   repository_dispatch:
     types: [push]  # 响应 event_type 为 "push" 的 repository_dispatch 事件
 
