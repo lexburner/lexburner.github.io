@@ -1,0 +1,45 @@
+name: Deploy Hexo site to Master
+
+on:
+  push:
+    branches:
+      - source  # 明确指定只监听 source 分支的推送
+  repository_dispatch:
+    types: [push]  # 响应 event_type 为 "push" 的 repository_dispatch 事件
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v3
+        with:
+          ref: source  # 明确检出 source 分支
+          submodules: true  # 获取子模块
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-npm-cache
+          restore-keys: |
+            ${{ runner.OS }}-npm-cache
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: npx hexo generate
+
+      - name: Deploy to master branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: master  # 发布到 master 分支
+          force_orphan: true  # 强制将 master 分支变为孤立分支，只包含最新的提交
