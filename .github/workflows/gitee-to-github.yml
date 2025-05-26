@@ -1,0 +1,41 @@
+name: Sync from Gitee (source branch)
+
+on:
+  repository_dispatch:
+    types: [push]  # 这里改成通用事件类型
+
+jobs:
+  sync-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git config
+        run: |
+          git config --global user.name "lexburner"
+          git config --global user.email "jingfeng.xjf@alibaba-inc.com"
+
+      - name: Clone from Gitee
+        run: |
+          git clone https://gitee.com/xujingfeng/lexburner.github.io.git gitee-code
+          cd gitee-code
+          git fetch origin +refs/heads/*:refs/remotes/origin/*
+          branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "Syncing branch: $branch"
+
+      - name: Only sync source branch
+        if: contains(github.event.head_commit.message, 'source') || github.event.head_commit.branch == 'source'
+        run: |
+          echo "This is a push to the source branch. Proceeding..."
+
+      - name: Push to GitHub's source branch
+        env:
+          GITEE_REPO_URL: https://gitee.com/xujingfeng/lexburner.github.io.git
+        run: |
+          cd gitee-code
+          branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "Syncing branch: $branch"
+
+          # 设置 GitHub 远程地址
+          git remote add github-origin https://x-access-token:${{ secrets.SYNC_FROM_GITEE_GITHUB_TOKEN }}@github.com/lexburner/lexburner.github.io.git
+
+          # 强制推送到 GitHub 的 source 分支
+          git push --force github-origin $branch
