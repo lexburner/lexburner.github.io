@@ -11,6 +11,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      GITEE_USERNAME: xujingfeng
+      GITEE_REPO_NAME: lexburner.github.io
     steps:
       - name: Checkout source branch
         uses: actions/checkout@v3
@@ -45,21 +48,9 @@ jobs:
           publish_branch: master
           force_orphan: true
 
-      - name: Setup SSH for Gitee
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.GITEE_PK }}
-
-      - name: Add Gitee to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          ssh-keyscan -t rsa gitee.com >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
-      - name: Push to Gitee master branch (orphan)
+      - name: Push to Gitee master branch
         env:
-          GITEE_REPO: git@gitee.com:xujingfeng/lexburner.github.io.git
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
@@ -70,4 +61,4 @@ jobs:
           git add -A
           git commit -m "Deploy to Gitee"
           
-          GIT_SSH_COMMAND="ssh -v" git push --force $GITEE_REPO master:master
+          git push --force https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_USERNAME}/${GITEE_REPO_NAME}.git master:master
