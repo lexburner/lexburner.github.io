@@ -39,7 +39,7 @@ jobs:
       - name: Deploy to master branch
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.SYNC_FROM_GITEE_GITHUB_TOKEN }}
           publish_dir: ./public
           publish_branch: master  # 发布到 master 分支
           force_orphan: true  # 强制将 master 分支变为孤立分支，只包含最新的提交
