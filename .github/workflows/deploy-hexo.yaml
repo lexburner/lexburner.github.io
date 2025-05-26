@@ -1,22 +1,22 @@
-name: Deploy Hexo site to Master
+name: Deploy Hexo site to Master and Sync to Gitee
 
 on:
   push:
     branches:
-      - source  # 明确指定只监听 source 分支的推送
+      - source
   workflow_dispatch:
   repository_dispatch:
-    types: [push]  # 响应 event_type 为 "push" 的 repository_dispatch 事件
+    types: [push]
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-to-github:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source branch
         uses: actions/checkout@v3
         with:
-          ref: source  # 明确检出 source 分支
-          submodules: true  # 获取子模块
+          ref: source
+          submodules: true
 
       - name: Use Node.js 16.x
         uses: actions/setup-node@v3
@@ -37,13 +37,29 @@ jobs:
       - name: Build
         run: npx hexo generate
 
-      - name: Deploy to master branch
+      - name: Deploy to GitHub master branch
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.SYNC_FROM_GITEE_GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
-          publish_branch: master  # 发布到 master 分支
-          force_orphan: true  # 强制将 master 分支变为孤立分支，只包含最新的提交
+          publish_branch: master
+          force_orphan: true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: public
+          path: public
+
+  deploy-to-gitee:
+    needs: build-and-deploy-to-github
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: public
+          path: public
 
       - name: Setup SSH for Gitee
         uses: webfactory/ssh-agent@v0.5.0
@@ -51,25 +67,20 @@ jobs:
           ssh-private-key: ${{ secrets.GITEE_PK }}
 
       - name: Add Gitee to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -t rsa gitee.com >> ~/.ssh/known_hosts
+        run: ssh-keyscan -t rsa gitee.com >> ~/.ssh/known_hosts
 
       - name: Push to Gitee master branch (orphan)
         env:
           GITEE_REPO: git@gitee.com:xujingfeng/lexburner.github.io.git
         run: |
-          git config --global user.name "xujingfeng"
-          git config --global user.email "250577914@qq.com"
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
           
-          # 创建一个新的孤立分支
           cd public
           git init
           git checkout --orphan master
-          
-          # 添加所有文件并提交
           git add -A
           git commit -m "Deploy to Gitee"
           
-          # 强制推送到 Gitee 的 master 分支
-          git push --force $GITEE_REPO master:master
+          GIT_SSH_COMMAND="ssh -v" git push --force $GITEE_REPO master:master
+
