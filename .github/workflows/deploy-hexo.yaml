@@ -44,3 +44,27 @@ jobs:
           publish_dir: ./public
           publish_branch: master  # 发布到 master 分支
           force_orphan: true  # 强制将 master 分支变为孤立分支，只包含最新的提交
+
+      - name: Setup SSH for Gitee
+        uses: webfactory/ssh-agent@v0.5.0
+        with:
+          ssh-private-key: ${{ secrets.GITEE_PK }}
+
+      - name: Push to Gitee master branch (orphan)
+        env:
+          GITEE_REPO: gitee.com:xujingfeng/lexburner.github.io.git
+        run: |
+          git config --global user.name "xujingfeng"
+          git config --global user.email "250577914@qq.com"
+          
+          # 创建一个新的孤立分支
+          cd public
+          git init
+          git checkout --orphan master
+          
+          # 添加所有文件并提交
+          git add -A
+          git commit -m "Deploy to Gitee"
+          
+          # 强制推送到 Gitee 的 master 分支
+          git push --force git@$GITEE_REPO master:master
