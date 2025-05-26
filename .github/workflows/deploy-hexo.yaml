@@ -50,9 +50,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.GITEE_PK }}
 
+      - name: Add Gitee to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -t rsa gitee.com >> ~/.ssh/known_hosts
+
       - name: Push to Gitee master branch (orphan)
         env:
-          GITEE_REPO: gitee.com:xujingfeng/lexburner.github.io.git
+          GITEE_REPO: git@gitee.com:xujingfeng/lexburner.github.io.git
         run: |
           git config --global user.name "xujingfeng"
           git config --global user.email "250577914@qq.com"
@@ -67,4 +72,4 @@ jobs:
           git commit -m "Deploy to Gitee"
           
           # 强制推送到 Gitee 的 master 分支
-          git push --force git@$GITEE_REPO master:master
+          git push --force $GITEE_REPO master:master
