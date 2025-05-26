@@ -9,7 +9,7 @@ on:
     types: [push]
 
 jobs:
-  build-and-deploy-to-github:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source branch
@@ -44,22 +44,6 @@ jobs:
           publish_dir: ./public
           publish_branch: master
           force_orphan: true
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: public
-          path: public
-
-  deploy-to-gitee:
-    needs: build-and-deploy-to-github
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: public
-          path: public
 
       - name: Setup SSH for Gitee
         uses: webfactory/ssh-agent@v0.7.0
