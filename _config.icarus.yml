@@ -299,8 +299,7 @@ widgets:
         links:
             Higress: https://higress.cn?spm=daofeng_blog
             Dubbo: https://dubbo.apache.org?spm=daofeng_blog
-            Nacos: https://nacos.io/zh-cn?spm=daofeng_blog
-            Spring Cloud Alibaba: https://spring.io/projects/spring-cloud-alibaba
+            Nacos: https://nacos.io/?spm=daofeng_blog
             程序猿DD: https://blog.didispace.com
             芋道源码: https://www.iocoder.cn
 # Plugin configurations
