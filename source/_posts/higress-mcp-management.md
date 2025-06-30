@@ -12,7 +12,7 @@ tags:
 
 ## 前言
 
-今年 3 月份 MCP 协议成为了 AI 的新一轮热点，被大多数人所熟知，彼时 Higress 快速进行跟进，新增了 MCP 协议转换功能，详见：https://higress.cn/ai/mcp-quick-start，该方案解决了以下问题：
+今年 3 月份 MCP 协议成为了 AI 的新一轮热点，被大多数人所熟知，彼时 Higress 快速进行跟进，新增了 MCP 协议转换功能，详见：[https://higress.cn/ai/mcp-quick-start](https://higress.cn/ai/mcp-quick-start ) ，该方案解决了以下问题：
 
 1. 引入 Redis，借助其 pub/sub 特性，解决了 SSE 协议会话保持的问题
 2. 提供了 OpenAPI 转换成 MCPServer 的能力，仅需提供符合 OAS 3.0 规范的 OpenAPI 文档，即可自动转换成网关托管的 MCPServer
@@ -170,13 +170,13 @@ MCP 社区目前对认证方案主要关注用户级别的权限管理，在企�
 
 在这个 PR 主导下，社区目前已经接受了基于 OAuth2 PRM （ Protected Resource Metadata ）草案的认证方案，并且在最新版本中已经发布。
 
-https://github.com/modelcontextprotocol/modelcontextprotocol/pull/284#issuecomment-2825122408
+[https://github.com/modelcontextprotocol/modelcontextprotocol/pull/284#issuecomment-2825122408](https://github.com/modelcontextprotocol/modelcontextprotocol/pull/284#issuecomment-2825122408)
 
 简单来说，是将 Auth Server 的职责从 MCP Server 中抽离，当 MCP Client 不带凭证请求 MCP Server 时，MCP Server 返回 401 并提供 PRM 信息，告知 MCP Client 去 Auth Server 签发 Token，MCP Client 拿到 Token 后再请求 MCP Server。
 
 这个方案解决了 MCP Client 和 MCP Server 通信时自动发现认证端点的问题，但整体方案在 MCP 客户端生态大规模落地估计需要较长时间，并且该方案过于复杂和理想化，个人判断在企业级落地过程会有较大的阻力。
 
-并且一个很有意思的点：https://github.com/modelcontextprotocol/modelcontextprotocol/issues/544，阿里云安全团队在该方案设计过程中提出了潜在的安全隐患，该 issue 在上周刚刚被修复。
+并且一个很有意思的点：[https://github.com/modelcontextprotocol/modelcontextprotocol/issues/544](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/544)，阿里云安全团队在该方案设计过程中提出了潜在的安全隐患，该 issue 在上周刚刚被修复。
 
 ### Higress 提供的 MCP 认证方案
 
