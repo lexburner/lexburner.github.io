@@ -1,5 +1,5 @@
 ---
-title: higress-plugin-server
+title: Higress Plugin Server：简化 Wasm 插件私有化部署难题
 toc: true
 type: 1
 date: 2025-06-14 19:06:55
