@@ -3,8 +3,8 @@ title: Unsafe与ByteBuffer那些事
 toc: true
 type: 1
 date: 2021-10-19 19:00:24
-category:
-- 文件IO
+categories:
+- Java
 tags:
 - NIO
 ---

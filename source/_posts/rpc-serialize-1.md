@@ -3,7 +3,8 @@ title: 深入理解 RPC 之序列化篇 --Kryo
 date: 2017-11-28 22:15:28
 tags: 
 - RPC
-categories: RPC
+categories:
+  - 微服务
 toc: true
 ---
 

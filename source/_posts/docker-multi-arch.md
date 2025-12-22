@@ -3,8 +3,8 @@ title: 构建多系统架构支持的 Docker 镜像
 toc: true
 type: 1
 date: 2022-04-18 19:03:06
-category:
-- 技术杂谈
+categories:
+  - 技术杂谈
 tags:
 - 技术杂谈
 ---

@@ -3,8 +3,8 @@ title: Nacos Client 1.4.1 版本踩坑记录
 toc: true
 type: 1
 date: 2021-05-27 20:08:52
-category:
-- Nacos
+categories:
+  - 微服务
 tags:
 - Nacos
 ---

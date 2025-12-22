@@ -3,8 +3,8 @@ title: 聊聊服务治理中的路由设计
 toc: true
 type: 1
 date: 2021-12-27 18:42:35
-category:
-- RPC
+categories:
+  - 微服务
 tags:
 - RPC
 ---

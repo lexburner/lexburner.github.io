@@ -5,7 +5,6 @@ tags:
 - Zuul
 categories: 
 - 网关
-- Zuul
 toc: true
 ---
 
@@ -21,7 +20,7 @@ Zuul 是 Netflix 提供的一个开源组件, 致力于在云平台上提供动�
 传统互联网架构图
 ---------
 
-![这里写图片描述](http://img.blog.csdn.net/20170401101904656?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+![这里写图片描述](https://img.blog.csdn.net/20170401101904656?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 上图是没有网关参与的一个最典型的互联网架构 (本文中统一使用 book 代表应用实例，即真正提供服务的一个业务系统)
 
 加入 eureka 的架构图

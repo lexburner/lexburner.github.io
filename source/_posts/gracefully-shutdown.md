@@ -3,7 +3,8 @@ title: 研究优雅停机时的一点思考
 date: 2018-01-14 20:16:28
 tags: 
 - JAVA
-categories: JAVA
+categories:
+  - 微服务
 toc: true
 ---
 

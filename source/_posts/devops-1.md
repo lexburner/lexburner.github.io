@@ -3,7 +3,8 @@ title: DevOps 的八荣八耻
 date: 2017-03-14 00:43:52
 tags: 
 - DevOps
-categories: 架构设计
+categories:
+  - 技术杂谈
 toc: true
 ---
 

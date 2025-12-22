@@ -5,7 +5,7 @@ tags:
 - Spring Session
 - Spring
 categories:
-- Spring Session
+- Spring
 toc: true
 ---
 

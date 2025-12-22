@@ -4,7 +4,7 @@ date: 2017-08-08 15:16:52
 tags: 
 - Spring Security OAuth2
 categories: 
-- Spring Security OAuth2
+- Spring
 toc: true
 ---
 

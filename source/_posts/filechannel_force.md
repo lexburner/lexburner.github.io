@@ -3,8 +3,8 @@ title: 文件 IO 中如何保证掉电不丢失数据
 toc: true
 type: 1
 date: 2021-09-17 23:00:44
-category:
-- 文件IO
+categories:
+  - Java
 tags:
 - 文件IO
 ---

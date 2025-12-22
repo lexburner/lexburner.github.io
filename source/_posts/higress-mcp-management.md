@@ -3,8 +3,8 @@ title: Higress 新增 MCP 服务管理，助力构建私有 MCP 市场
 toc: true
 type: 1
 date: 2025-06-30 15:19:54
-category:
-- Higress
+categories:
+  - 网关
 tags:
 - Higress
 - MCP

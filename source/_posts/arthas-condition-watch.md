@@ -3,8 +3,8 @@ title: 不会吧？不会还有人不知道 Arthas 可以条件过滤进行 watc
 toc: true
 type: 1
 date: 2021-08-08 19:52:37
-category:
-- Arthas
+categories:
+  - 工具
 tags:
 - Arthas
 ---

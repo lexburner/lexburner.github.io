@@ -3,8 +3,8 @@ title: 聊聊服务发现的推拉模型
 toc: true
 type: 1
 date: 2023-01-31 18:18:01
-category:
-- RPC
+categories:
+  - 微服务
 tags:
 - RPC
 ---

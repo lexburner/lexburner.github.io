@@ -3,7 +3,8 @@ title: 深入理解 RPC 之动态代理篇
 date: 2017-12-15 20:16:28
 tags: 
 - RPC
-categories: RPC
+categories:
+  - 微服务
 toc: true
 ---
 

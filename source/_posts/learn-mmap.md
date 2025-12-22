@@ -3,8 +3,8 @@ title: 重新认识 Java 中的内存映射（mmap）
 toc: true
 type: 1
 date: 2021-11-08 19:00:24
-category:
-- 性能挑战赛
+categories:
+  - 性能挑战赛
 tags:
 - 文件IO
 ---

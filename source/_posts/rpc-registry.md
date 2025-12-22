@@ -3,7 +3,8 @@ title: 深入理解 RPC 之服务注册与发现篇
 date: 2018-01-05 20:16:28
 tags: 
 - RPC
-categories: RPC
+categories:
+  - 微服务
 toc: true
 ---
 

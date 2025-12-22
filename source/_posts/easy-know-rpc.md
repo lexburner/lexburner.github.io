@@ -3,7 +3,8 @@ title: 简单了解 RPC 实现原理
 date: 2017-02-10 15:11:52
 tags: 
 - RPC
-categories: RPC
+categories:
+  - 微服务
 toc: true
 ---
 

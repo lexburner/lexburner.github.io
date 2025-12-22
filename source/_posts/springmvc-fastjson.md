@@ -3,8 +3,8 @@ title: 浅析 SpringMVC 中返回对象的循环引用问题
 toc: true
 type: 1
 date: 2021-07-15 00:55:50
-category:
-- Spring
+categories:
+  - 微服务
 tags:
 - Spring
 ---

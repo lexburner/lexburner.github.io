@@ -3,8 +3,8 @@ title: SpringCloud Gateway 在微服务架构下的最佳实践
 toc: true
 type: 1
 date: 2023-07-07 14:48:34
-category:
-- Spring Cloud
+categories:
+  - 网关
 tags:
 - Spring Cloud Gateway
 ---

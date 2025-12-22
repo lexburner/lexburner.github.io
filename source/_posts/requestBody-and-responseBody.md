@@ -2,7 +2,8 @@
 title: 解析 Spring 中的 ResponseBody 和 RequestBody
 date: 2017-08-30 12:44:21
 tags: Spring
-categories: Spring
+categories:
+  - 微服务
 toc: true
 ---
 

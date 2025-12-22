@@ -2,7 +2,8 @@
 title: 给初中级 JAVA 准备的面试题
 date: 2017-11-28 22:15:28
 tags: JAVA
-categories: JAVA
+categories:
+  - Java
 toc: true
 ---
 

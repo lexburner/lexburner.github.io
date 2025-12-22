@@ -3,7 +3,8 @@ title: Kirito 的博客崩了，这次是因为...
 toc: true
 type: 1
 date: 2021-12-11 17:47:03
-category:
+categories:
+  - 技术杂谈
 tags:
 ---
 

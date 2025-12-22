@@ -3,7 +3,8 @@ title: sinosoft 代码规范
 date: 2017-08-25 12:18:45
 tags: 
 - 代码规范
-categories: 技术杂谈
+categories:
+  - 技术杂谈
 toc: true
 ---
 

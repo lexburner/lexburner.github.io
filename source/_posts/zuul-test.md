@@ -5,7 +5,6 @@ tags:
 - Zuul
 categories: 
 - 网关
-- Zuul
 toc: true
 ---
 
@@ -14,7 +13,6 @@ toc: true
 采用三台阿里云服务器作为测试
 10.19.52.8 部署网关应用 -gateway
 10.19.52.9, 10.19.52.10 部署用于测试的业务系统
-![这里写图片描述](http://img.blog.csdn.net/20170408122814192?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMzgxNTU0Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
 压测工具准备
 ------
@@ -71,6 +69,7 @@ zuul:
 
  - 测试一
   1. 通过访问网关，由网关转发，应用端接口延迟 200ms 后返回一个字符串，模拟真实接口的业务处理延迟
+
     2.300 个线程并发请求，共计 100000 次
 ```shell
 ab -n 100000 -c 300 http://10.19.52.8:8080/hello/testOK?access_token=e0345712-c30d-4bf8-ae61-8cae1ec38c52
@@ -184,7 +183,6 @@ ab 测试命令也占用了一定的 cpu 使用率，总应用接近 70% 的 cpu
   1. 是在应用服务器端模拟 200ms 的延时，因为实际请求不可能不伴随着耗时的业务操作，实际发现对 ab 的测试影响还是较大的，毕竟线程阻塞着，不延迟时 request per second 能达到 2000，加了 200ms 延迟之后下降到 1000+。
   2. 模拟总请求数和线程数的变化会引起 QPS/TPS 的抖动，即使是在多核 CPU 的承受范围之内，也并不是说线程越多，QPS/TPS 就越高，因为启动线程的开销，以及线程上下文切换的耗时，开辟线程带来的内存损耗都会影响性能。钱总说单个 tomcat 实例的并发度理论值 200 就可以接受了，经过参数调优后的 tomcat 使用 zuul 做网关能达到如上的测试结果，完全可以投入生产环境使用了。而 tomcat 默认的 150 线程，如果使用 200 的并发度测试就显然是“不公平的”。
   3. 测试注意点有几个，例如 ab 部署在了 api-gateway 本机会影响性能，tomcat 参数以及 zuul 参数应当尽可能放开，不让其默认配置影响测试。
-
 
 
 

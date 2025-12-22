@@ -4,7 +4,7 @@ date: 2017-10-27 16:10:55
 tags:
 - Spring Data Redis
 categories:
-- Spring Data Redis
+- Spring
 toc: true
 ---
 

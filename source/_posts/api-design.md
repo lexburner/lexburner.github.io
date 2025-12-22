@@ -3,8 +3,8 @@ title: 浅析 Open API 设计规范
 toc: true
 type: 1
 date: 2022-06-22 00:16:02
-category:
-- 技术杂谈
+categories:
+  - 技术杂谈
 tags:
 - 技术杂谈
 ---

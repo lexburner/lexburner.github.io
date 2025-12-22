@@ -3,7 +3,8 @@ title: 深入理解 RPC 之协议篇
 date: 2017-12-28 20:16:28
 tags: 
 - RPC
-categories: RPC
+categories:
+  - 微服务
 toc: true
 ---
 

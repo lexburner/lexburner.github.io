@@ -3,8 +3,8 @@ title: 一文了解 CORS 跨域
 toc: true
 type: 1
 date: 2023-12-29 11:10:04
-category:
-- JAVA
+categories:
+  - 网关
 tags:
 - JAVA
 - CORS

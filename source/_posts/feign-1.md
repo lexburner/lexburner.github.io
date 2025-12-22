@@ -2,7 +2,8 @@
 title: 从 Feign 使用注意点到 RESTFUL 接口设计规范
 date: 2017-09-09 14:43:28
 tags: Spring Cloud
-categories: Spring Cloud
+categories:
+  - 微服务
 toc: true
 ---
 

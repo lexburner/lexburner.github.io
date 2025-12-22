@@ -3,8 +3,8 @@ title: 聊聊Unsafe的一些使用技巧
 toc: true
 type: 1
 date: 2021-10-12 19:36:14
-category:
-- 文件IO
+categories:
+- Java
 tags:
 - 文件IO
 ---

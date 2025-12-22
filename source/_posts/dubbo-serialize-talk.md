@@ -3,8 +3,8 @@ title: Dubbo 支持的几个主流序列化框架评测
 toc: true
 type: 1
 date: 2021-08-15 19:14:13
-category:
-- RPC
+categories:
+  - 微服务
 tags:
 - 序列化
 ---

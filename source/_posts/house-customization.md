@@ -3,8 +3,8 @@ title: Kirito 全屋定制记 | 纯小白向全屋定制攻略
 toc: true
 type: 1
 date: 2023-03-13 19:25:29
-category:
-- 技术杂谈
+categories:
+  - 技术杂谈
 tags:
 - 技术杂谈
 ---

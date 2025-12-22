@@ -3,8 +3,8 @@ title: Guava Cache 使用小结
 toc: true
 type: 1
 date: 2021-12-27 18:42:35
-category:
-- JAVA
+categories:
+- Java
 tags:
 - JAVA
 ---

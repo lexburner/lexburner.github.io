@@ -4,7 +4,7 @@ date: 2017-08-03 17:40:16
 tags: 
 - Spring Cloud
 categories: 
-- Spring Cloud
+- Spring
 toc: true
 ---
 
@@ -42,22 +42,22 @@ Spring Cloud Feign 是一套基于 Netflix Feign 实现的声明式服务调用�
 
 -  `restful-provider` 新建一个 module`restful-provider-app`, 模块中只需要写一个 `CalculateController.java` 即可
 
-   ​
+   
    ```java
    @RestController
    @RequestMapping("/api")
    public class CalculateController {
-
+   
        @PostMapping("/add")
        public Integer add(@RequestParam Integer a,@RequestParam Integer b){
            return a+b;
        }
-
+   
        @PostMapping("/subtract")
        public Integer subtract(@RequestParam Integer a,@RequestParam Integer b){
            return a-b;
        }
-
+   
    }
    ```
 - 配置文件 application.yml：
@@ -96,11 +96,11 @@ Spring Cloud Feign 是一套基于 Netflix Feign 实现的声明式服务调用�
   @EnableFeignClients(basePackages = {"sinosoftsh.consumer.api"})
   @SpringBootApplication
   public class ConsumerApp {
-
+  
       public static void main(String []args){
           SpringApplication.run(ConsumerApp.class,args);
       }
-
+  
   }
   ```
   使用 `@EnableFeignClients(basePackages = {"sinosoftsh.consumer.api"})` 扫描接口类所在的包，spring 的容器中才会有代理实现类。

@@ -3,9 +3,8 @@ title: Higress 开源贡献全攻略：共建 AI 原生网关生态
 toc: true
 type: 1
 date: 2025-05-19 19:34:10
-category:
-- 网关
-- Higress
+categories:
+  - 网关
 tags:
 - Higress
 - AI

@@ -4,7 +4,8 @@ date: 2018-10-16 01:25:14
 tags: 
 - RxJava
 - Reactor
-categories: 架构设计
+categories:
+  - 技术杂谈
 type: 3
 toc: true
 ---

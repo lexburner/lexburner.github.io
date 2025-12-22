@@ -3,8 +3,8 @@ title: 使用 Qoder 2 个月，我总结了一些经验
 toc: true
 type: 1
 date: 2025-11-26 13:42:56
-category:
-- AI
+categories:
+  - AI
 tags:
 - AI
 - Qoder

@@ -3,8 +3,8 @@ title: EDAS 让 Spring Cloud Gateway 生产可用的二三策
 toc: true
 type: 1
 date: 2023-10-18 16:23:59
-category:
-- Spring Cloud
+categories:
+  - 网关
 tags:
 - Spring Cloud Gateway
 ---

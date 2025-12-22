@@ -3,7 +3,8 @@ title: 中文文案排版指北
 date: 2018-01-16 20:16:28
 tags: 
 - 中文排版
-categories: 技术杂谈
+categories:
+  - 技术杂谈
 type: 2
 toc: true
 ---

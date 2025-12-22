@@ -3,8 +3,8 @@ title: Dubbo中的连接控制，你真的理解吗？
 toc: true
 type: 1
 date: 2021-09-07 19:32:26
-category:
-- RPC
+categories:
+  - 微服务
 tags:
 - Dubbo
 ---

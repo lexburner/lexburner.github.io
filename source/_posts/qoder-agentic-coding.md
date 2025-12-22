@@ -3,9 +3,8 @@ title: Agentic Coding 认知升级与 Qoder 实践避坑指南
 toc: true
 type: 1
 date: 2025-12-22 12:22:33
-category:
-- Qoder
-- AI
+categories:
+  - AI
 tags:
 - Qoder
 - AI
@@ -67,7 +66,7 @@ Vide Coding 给 AI 编程带来了很多流量，但同时也带来了风险。�
 
 我的观念中，AI 只是一个提效工具，我们才是代码的第一责任人。
 
-## **Agentic Coding 演进历程
+## Agentic Coding 演进历程
 
 ![](https://image.cnkirito.cn/ad366906-34a9-497c-8d0e-e15fcae65c5c.png)
 
@@ -163,7 +162,7 @@ Qoder 也提供了 “压缩上下文” 的功能，我的态度是敬而远之
 
 这里要特别提一下基础模型。我在 Qoder 交流群里看到不少人还在用基础模型。基础模型最大的瓶颈就是上下文窗口太小，一个原子任务还没做完，窗口就爆了。如果你正在用基础模型体验，请务必知道，这只是模型的上限，不是 Qoder 的上限。
 
-## 基础实践：Rules 与 Memory**
+## 基础实践：Rules 与 Memory
 
 ![](https://image.cnkirito.cn/0a1bb36a-740c-493d-a9b4-6aa8cbb76332.png)
 
@@ -191,7 +190,7 @@ Qoder 也提供了 “压缩上下文” 的功能，我的态度是敬而远之
 
 自动记忆功能用好了，会让你产生一种“Qoder 越来越懂我”的感觉。它记住了你的编码习惯和偏好，即使你在多个项目或窗口间切换，也能减少大量重复描述背景的麻烦。
 
-## 进阶实践：Quest 模式实现 SDD**
+## 进阶实践：Quest 模式实现 SDD
 
 ![](https://image.cnkirito.cn/19283cdb-c068-4b0d-8de9-058fb1396387.png)
 
@@ -235,7 +234,7 @@ Quest 模式可以结合 git worktree 和云端沙箱实现异步委派，实际
 
 我的实践是，日常开发任务选择 Auto 模式基本够用。
 
-## 进阶实践：Git 哲学遇见 Agentic Coding**
+## 进阶实践：Git 哲学遇见 Agentic Coding
 
 ![](https://image.cnkirito.cn/9937c968-608a-4be3-9f8e-ec8621c0606a.png)
 
@@ -265,7 +264,7 @@ Quest 模式可以结合 git worktree 和云端沙箱实现异步委派，实际
 
 下文也会有一个案例分享这个实践的细节。
 
-## 警惕 Vibe Coding**
+## 警惕 Vibe Coding
 
 ![](https://image.cnkirito.cn/a6b1a8de-9a53-400e-95b0-e4a64887c322.png)
 

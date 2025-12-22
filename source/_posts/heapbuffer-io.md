@@ -3,8 +3,8 @@ title: 使用堆内内存HeapByteBuffer的注意事项
 toc: true
 type: 1
 date: 2021-10-07 23:16:50
-category:
-- 文件IO
+categories:
+  - Java
 tags:
 - 文件IO
 ---

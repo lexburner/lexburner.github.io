@@ -3,8 +3,8 @@ title: 第三届数据库大赛 ADB 性能挑战赛赛题总结
 toc: true
 type: 1
 date: 2021-08-22 23:39:37
-category:
-- 性能挑战赛
+categories:
+  - 性能挑战赛
 tags:
 - ADB
 ---

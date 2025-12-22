@@ -3,8 +3,8 @@ title: 【参赛总结】第二届云原生编程挑战赛-冷热读写场景的
 toc: true
 type: 1
 date: 2021-11-02 19:00:24
-category:
-- 性能挑战赛
+categories:
+  - 性能挑战赛
 tags:
 - 文件IO
 ---

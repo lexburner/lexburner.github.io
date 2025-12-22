@@ -3,8 +3,8 @@ title: 记一次 Redis 连接问题排查
 toc: true
 type: 1
 date: 2023-02-14 16:21:21
-category:
-- JAVA
+categories:
+  - 微服务
 tags:
 - Redis
 ---

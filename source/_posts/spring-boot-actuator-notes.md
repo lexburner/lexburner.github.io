@@ -3,7 +3,8 @@ title: 警惕 Spring Boot Actuator 引发的安全漏洞
 toc: true
 type: 1
 date: 2021-04-07 23:25:34
-category: Spring
+categories:
+  - 微服务
 tags: Spring
 ---
 

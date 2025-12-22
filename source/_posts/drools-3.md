@@ -5,7 +5,7 @@ tags:
 - 规则引擎
 - drools
 categories: 
-- 规则引擎
+- 工具
 toc: true
 ---
 

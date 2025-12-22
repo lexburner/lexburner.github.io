@@ -3,8 +3,8 @@ title: “字节序”是个什么鬼
 toc: true
 type: 3
 date: 2021-09-03 16:08:05
-category:
-- 文件IO
+categories:
+  - Java
 tags:
 - 字节序
 ---
