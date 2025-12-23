@@ -107,4 +107,5 @@ toc: true
 deploy:
   - type: git
     branch: master
-    repo: https://gitee.com/xujingfeng/lexburner.github.io.git
+    # repo: https://gitee.com/xujingfeng/lexburner.github.io.git
+    repo: https://github.com/lexburner/lexburner.github.io.git
