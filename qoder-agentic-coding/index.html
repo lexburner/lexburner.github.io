@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Agentic Coding 认知升级与 Qoder 实践避坑指南 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="使用 Qoder 开发真实项目 本文整理自《Qoder Together 上海站 | 2025&amp;#x2F;12&amp;#x2F;20》的直播分享。 我今天分享的主题是 Agentic Coding 认知升级与实践避坑指南。我相信大家都能感受到，AI 编程的浪潮已经拍在了我们的键盘上，问题不是”用不用”，而是”怎么用才能让它成为真正的生产力，而不是解决了代码的产出，又引入了新的麻烦”。 自我介绍 首先进行下自我介绍，我是徐靖"><meta property="og:type" content="blog"><meta property="og:title" content="Agentic Coding 认知升级与 Qoder 实践避坑指南"><meta property="og:url" content="https://www.cnkirito.moe/qoder-agentic-coding/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="使用 Qoder 开发真实项目 本文整理自《Qoder Together 上海站 | 2025&amp;#x2F;12&amp;#x2F;20》的直播分享。 我今天分享的主题是 Agentic Coding 认知升级与实践避坑指南。我相信大家都能感受到，AI 编程的浪潮已经拍在了我们的键盘上，问题不是”用不用”，而是”怎么用才能让它成为真正的生产力，而不是解决了代码的产出，又引入了新的麻烦”。 自我介绍 首先进行下自我介绍，我是徐靖"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/image-20251222122506850.png"><meta property="og:image" content="https://image.cnkirito.cn/8fd1cdf6-e913-40c0-b48f-3b066a86c30a.png"><meta property="og:image" content="https://image.cnkirito.cn/9441afb0-1081-4b73-9ea1-030cec34087d.png"><meta property="og:image" content="https://image.cnkirito.cn/7ed4ca58-e8c2-4997-b030-3ffb1f78d8d9-20251222122945510.png"><meta property="og:image" content="https://image.cnkirito.cn/ad366906-34a9-497c-8d0e-e15fcae65c5c.png"><meta property="og:image" content="https://image.cnkirito.cn/36d35f57-5ff0-4128-a790-f75917d96d9a.png"><meta property="og:image" content="https://image.cnkirito.cn/a672ba1f-2a8b-440c-abb6-ad2b4816452a.png"><meta property="og:image" content="https://image.cnkirito.cn/b38a9b64-60dd-4353-835b-87285e18973a.png"><meta property="og:image" content="https://image.cnkirito.cn/98576858-012c-4778-9c48-4afbb179e1a1.png"><meta property="og:image" content="https://image.cnkirito.cn/b49e26db-f079-473d-aed3-f24ef7cdbfa7.png"><meta property="og:image" content="https://image.cnkirito.cn/0a1bb36a-740c-493d-a9b4-6aa8cbb76332.png"><meta property="og:image" content="https://image.cnkirito.cn/19283cdb-c068-4b0d-8de9-058fb1396387.png"><meta property="og:image" content="https://image.cnkirito.cn/7b4086dc-9575-427b-b0d8-10af1ae30156.png"><meta property="og:image" content="https://image.cnkirito.cn/472b6da3-4391-4a1a-906e-c0bc097dd347.png"><meta property="og:image" content="https://image.cnkirito.cn/9937c968-608a-4be3-9f8e-ec8621c0606a.png"><meta property="og:image" content="https://image.cnkirito.cn/57cd13e2-66f4-48ae-b482-0ecfdbf0f435.png"><meta property="og:image" content="https://image.cnkirito.cn/a6b1a8de-9a53-400e-95b0-e4a64887c322.png"><meta property="og:image" content="https://image.cnkirito.cn/8de4b15c-bcd5-4653-97e4-a3be5a111c1c.png"><meta property="og:image" content="https://image.cnkirito.cn/9a6c207e-668a-4e7a-ba53-cee98f2cc1f2.png"><meta property="og:image" content="https://image.cnkirito.cn/65b3b060-53d8-45c2-9059-22cf537c68f2.png"><meta property="og:image" content="https://image.cnkirito.cn/2b36fce7-e97c-42d2-87b9-52294c0c4948.png"><meta property="article:published_time" content="2025-12-22T04:22:33.000Z"><meta property="article:modified_time" content="2025-12-22T06:40:52.422Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="AI"><meta property="article:tag" content="Qoder"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/image-20251222122506850.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/qoder-agentic-coding/"},"headline":"Agentic Coding 认知升级与 Qoder 实践避坑指南","image":["https://image.cnkirito.cn/image-20251222122506850.png","https://image.cnkirito.cn/8fd1cdf6-e913-40c0-b48f-3b066a86c30a.png","https://image.cnkirito.cn/9441afb0-1081-4b73-9ea1-030cec34087d.png","https://image.cnkirito.cn/7ed4ca58-e8c2-4997-b030-3ffb1f78d8d9-20251222122945510.png","https://image.cnkirito.cn/ad366906-34a9-497c-8d0e-e15fcae65c5c.png","https://image.cnkirito.cn/36d35f57-5ff0-4128-a790-f75917d96d9a.png","https://image.cnkirito.cn/a672ba1f-2a8b-440c-abb6-ad2b4816452a.png","https://image.cnkirito.cn/b38a9b64-60dd-4353-835b-87285e18973a.png","https://image.cnkirito.cn/98576858-012c-4778-9c48-4afbb179e1a1.png","https://image.cnkirito.cn/b49e26db-f079-473d-aed3-f24ef7cdbfa7.png","https://image.cnkirito.cn/0a1bb36a-740c-493d-a9b4-6aa8cbb76332.png","https://image.cnkirito.cn/19283cdb-c068-4b0d-8de9-058fb1396387.png","https://image.cnkirito.cn/7b4086dc-9575-427b-b0d8-10af1ae30156.png","https://image.cnkirito.cn/472b6da3-4391-4a1a-906e-c0bc097dd347.png","https://image.cnkirito.cn/9937c968-608a-4be3-9f8e-ec8621c0606a.png","https://image.cnkirito.cn/57cd13e2-66f4-48ae-b482-0ecfdbf0f435.png","https://image.cnkirito.cn/a6b1a8de-9a53-400e-95b0-e4a64887c322.png","https://image.cnkirito.cn/8de4b15c-bcd5-4653-97e4-a3be5a111c1c.png","https://image.cnkirito.cn/9a6c207e-668a-4e7a-ba53-cee98f2cc1f2.png","https://image.cnkirito.cn/65b3b060-53d8-45c2-9059-22cf537c68f2.png","https://image.cnkirito.cn/2b36fce7-e97c-42d2-87b9-52294c0c4948.png"],"datePublished":"2025-12-22T04:22:33.000Z","dateModified":"2025-12-22T06:40:52.422Z","author":{"@type":"Person","name":"徐靖峰"},"description":"使用 Qoder 开发真实项目 本文整理自《Qoder Together 上海站 | 2025&#x2F;12&#x2F;20》的直播分享。 我今天分享的主题是 Agentic Coding 认知升级与实践避坑指南。我相信大家都能感受到，AI 编程的浪潮已经拍在了我们的键盘上，问题不是”用不用”，而是”怎么用才能让它成为真正的生产力，而不是解决了代码的产出，又引入了新的麻烦”。 自我介绍 首先进行下自我介绍，我是徐靖"}</script><link rel="canonical" href="https://www.cnkirito.moe/qoder-agentic-coding/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>Agentic Coding 认知升级与 Qoder 实践避坑指南</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2025-12-22</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/AI/">AI</a></span><span class="level-item">43 分钟读完 (大约6448个字)</span></div></div><div class="content"><h2 id="使用-Qoder-开发真实项目"><a href="#使用-Qoder-开发真实项目" class="headerlink" title="使用 Qoder 开发真实项目"></a>使用 Qoder 开发真实项目</h2><p><img src="https://image.cnkirito.cn/image-20251222122506850.png"></p>
+<p>本文整理自《Qoder Together 上海站 | 2025/12/20》的直播分享。</p>
+<p>我今天分享的主题是 Agentic Coding 认知升级与实践避坑指南。我相信大家都能感受到，AI 编程的浪潮已经拍在了我们的键盘上，问题不是”用不用”，而是”怎么用才能让它成为真正的生产力，而不是解决了代码的产出，又引入了新的麻烦”。</p>
+<h2 id="自我介绍"><a href="#自我介绍" class="headerlink" title="自我介绍"></a>自我介绍</h2><p><img src="https://image.cnkirito.cn/8fd1cdf6-e913-40c0-b48f-3b066a86c30a.png"></p>
+<p>首先进行下自我介绍，我是徐靖峰，花名是岛风，来自阿里云专有云 PaaS 中间件团队，主要负责网关产品的研发工作。同时我也是一个开源贡献者，主要参与 Higress 和 Himarket 项目。</p>
+<p>我并不是 Qoder 团队的同学，所以可以更加客观地去评价 Qoder。</p>
+<span id="more"></span>
+
+<h2 id="Qoder-平台介绍：为真实软件开发而生"><a href="#Qoder-平台介绍：为真实软件开发而生" class="headerlink" title="Qoder 平台介绍：为真实软件开发而生"></a>Qoder 平台介绍：为真实软件开发而生</h2><p><img src="https://image.cnkirito.cn/9441afb0-1081-4b73-9ea1-030cec34087d.png"></p>
+<p>Qoder 是阿里开发的一个 Agentic Coding 平台型产品</p>
+<p>官网地址：<a target="_blank" rel="noopener" href="https://qoder.com/referral?referral_code=giB4Qp8oAraMl3HnoBEqCoIavUwbZJPO">https://qoder.com/referral?referral_code=giB4Qp8oAraMl3HnoBEqCoIavUwbZJPO</a></p>
+<p>我很喜欢它的 Slogan：为“真实软件”开发而生。其实我在刷 B 站的时候经常看到一些视频标题“xx AI Coding 产品太强了，xx 分钟开发一个 xx”，我不确定为什么大数据会给我推送这类视频，因为作为一个研发，我更关注的是如何将 AI 编程融入到我们真实开发的项目中，为业务带来价值，实际很少会有机会让我们真正从 0 到 1 构建一个新的产品，而 Qoder 的 Slogan 正好与我的观念契合，并且一直在朝着这个目标迭代产品，这是驱使我长期使用 Qoder 的重要因素。</p>
+<p>Qoder 提供了 Qoder IDE、Qoder CLI、Qoder JB 插件三种产品形态，这也是 Qoder 的设计理念之一，尊重每一位开发者的开发习惯。</p>
+<p>作为一个常年使用 IntelliJ IDEA 写 Java 的用户，我也分享下我对于 Qoder IDE 和 Qoder JB 产品形态的选择，为什么我会使用 Qoder IDE 而不是 Qoder JB 插件。</p>
+<p>Qoder JB 插件的优势主要在于其能够深度理解后端框架语义，例如：</p>
+<ul>
+<li><p>获取 Spring/FastAPI/Gin 的依赖关系，提供符合框架规范的代码建议</p>
+</li>
+<li><p>JB IDE 能力的深度融合，可以识别 Spring Bean 依赖，AST 和运行时信息的感知</p>
+</li>
+</ul>
+<p>这都是很“诱人”的能力，但是我观察到 Qoder JB 在 AI 场景下的能力还并没有完全对标到 Qoder IDE，尽管它们背后可能是一套 agent loop 的实现（这我不得而知）。Qoder IDE/Qoder CLI 则更依赖朴素的 linux 指令，这些朴素的 linux 指令通常被预训练得非常好，在 SOTA 模型如此强大的环境下，上下文工程和 scaling law 孰强孰弱，我可能还是会更相信后者。</p>
+<p>如果你是刚上手 AI Coding 的驾驶员，我还是会推荐优先尝试 Qoder IDE 产品形态。</p>
+<h2 id="编程范式的演进：开发者角色转变"><a href="#编程范式的演进：开发者角色转变" class="headerlink" title="编程范式的演进：开发者角色转变"></a>编程范式的演进：开发者角色转变</h2><p><img src="https://image.cnkirito.cn/7ed4ca58-e8c2-4997-b030-3ffb1f78d8d9-20251222122945510.png"></p>
+<p>AI 介入编程，最先颠覆的不是技术栈，而是我们的角色定位。</p>
+<p>在传统编程时代，开发者更像“乙方”，代码的实现者和执行者，需要事无巨细地完成每一个逻辑的编写。</p>
+<p>Vide Coding 给 AI 编程带来了很多流量，但同时也带来了风险。如果开发者仅凭模糊的“感觉”或“想法”让 AI 自动生成代码，自己却不加严谨地验证，那我们此时的角色就变成了不负责任的“甲方”。这种模式下，对于生产级、需要质量保障的真实应用，是巨大的不稳定因素。</p>
+<p>而 Agentic Coding 则要求我们必须完成一次痛苦的认知升级，向“导师”心态转变。这意味着我们的重要不再是敲代码，而是“洞察需求、描述意图、编排逻辑、结果验收”，缺少任一环节，都会导致退化成 Vibe Coding。</p>
+<p>我的观念中，AI 只是一个提效工具，我们才是代码的第一责任人。</p>
+<h2 id="Agentic-Coding-演进历程"><a href="#Agentic-Coding-演进历程" class="headerlink" title="Agentic Coding 演进历程"></a>Agentic Coding 演进历程</h2><p><img src="https://image.cnkirito.cn/ad366906-34a9-497c-8d0e-e15fcae65c5c.png"></p>
+<p>这张图来自于 Qoder 官方，介绍了 Agentic Coding 的演进历程，这对于 AI 编程的新手驾驶员很有帮助，可以快速了解过去几年 AI 编程的主流范式发生了怎样的变化。</p>
+<p>辅助式编程：对应 Qoder 的代码补全和 Ask 模式</p>
+<p>协同式编程：对应 Agent 模式</p>
+<p>AI 自主编程：对应 Quest 模式</p>
+<p>我向来对代码补全不太偏爱，这是我个人的习惯，不分对错，只有喜恶。</p>
+<p>Agent 模式或者 Quest 模式是我最常用的模式，但 Quest 模式虽然被定义为“AI 自主编程”，也并不代表其更应该被使用，我个人使用场景中，Quest 模式仅占 20%，Agent 模式占 80%，至于原因，也是跟我所维护的“真实项目”有关，我会放到下边的 Quest 模式介绍中单独阐述。</p>
+<h2 id="思维切换：拥抱以对话为中心的上下文管理"><a href="#思维切换：拥抱以对话为中心的上下文管理" class="headerlink" title="思维切换：拥抱以对话为中心的上下文管理"></a>思维切换：拥抱以对话为中心的上下文管理</h2><p><img src="https://image.cnkirito.cn/36d35f57-5ff0-4128-a790-f75917d96d9a.png"></p>
+<p>我安利过很多同事使用 Qoder，我能深刻感受到，刚上手时最大的障碍，不是技术，而是习惯。</p>
+<p>对于一个已经习惯了传统 IDE 的开发者来说，面对 Qoder IDE 那个全新的对话窗口时，常常感到无措：“这个上下文达到多少需要压缩？”“这么多 @xxx 都是干嘛用的？”</p>
+<p>传统 IDE 是“文件浏览器 + 编辑器”，我们的肌肉记忆是：“我要去哪个文件里改代码？”。</p>
+<p>Qoder IDE 的核心则是“以对话为中心的上下文管理器”。我们需要转变思维，学会问自己：“我需要告诉 AI 哪些信息，才能让它快、准、省地帮我改代码？”。</p>
+<p>拥抱以对话为中心为中心的上下文管理，是跨越这道心理障碍的第一步。自然语言描述和对上下文管理的理解，是 AI 编程的基础课。 如何掌握这个基础，其实就包含在我下边分享的基础实践中。</p>
+<h2 id="我们为何仍在观望？"><a href="#我们为何仍在观望？" class="headerlink" title="我们为何仍在观望？"></a>我们为何仍在观望？</h2><p><img src="https://image.cnkirito.cn/a672ba1f-2a8b-440c-abb6-ad2b4816452a.png"></p>
+<p>我发现很多人对 AI 编程还停留在观望阶段，我看过一场 meetup 现场的调研，一个比较令我惊讶的数据显示，生产系统中 30% 代码由 AI 产出的用户不到三分之一，这个调研结果很令我感到意外，我自己现在大概在 90% 以上。不过通过公开数据显示，倒也能够印证这一点，国外 AI 编程的接受度在 90%，国内的确就在 30%，这说明国内市场还是蓝海，国际市场则是红海。</p>
+<p>根据我的观察，还在观望的团队和个人，主要有以下顾虑：</p>
+<p>顾虑一：安全合规。担心内部代码使用外部模型存在风险。</p>
+<p>顾虑二：信任感。他们可能也充分了解 SOTA 模型的能力，但对于 AI 编程投产到真实项目，还是持观望态度，毕竟 AI 产出代码容易，但最后谁为业务结果买单呢？团队成员对于 AI 编程的理解程度参差不齐，Vibe Coding 引入的质量保障问题，会不会解决了老问题，又引入新问题，这缺乏工程实践。毕竟软件工程是工程师的基础素养，AI 软件工程不是。</p>
+<p>顾虑三：成本。AI 编程非常依赖 SOTA 模型，特别是国内算力受限的大环境，即使是阿里，在 coding 领域距离 SOTA 模型仍有差距，不然也不会发展出 Qoder 和灵码两条路线，这使得企业采购流程阻力很大，员工被迫付费上班，阿里赚钱阿里花，一分别想带回家。</p>
+<p>顾虑归顾虑，我觉得都会有解法：区分代码仓库安全等级、掌握 AI 编程的最佳实践、小投入换取高产出。</p>
+<p>我想说，AI 编程一定会成为主流，我们早晚需要拥抱它，真正的成本，是机会成本，它的价值远超价格。</p>
+<h2 id="基础实践：Ask-Agent-核心循环"><a href="#基础实践：Ask-Agent-核心循环" class="headerlink" title="基础实践：Ask + Agent 核心循环"></a>基础实践：Ask + Agent 核心循环</h2><p><img src="https://image.cnkirito.cn/b38a9b64-60dd-4353-835b-87285e18973a.png"></p>
+<p>之前花了很长的篇幅讲 AI 编程发展和思维的转换，终于到了我个人的实践经验部分。</p>
+<p>我的日常工作流很简单，概括起来就是：先 Ask（提问），再 Agent（行动）。</p>
+<p>• Ask (问答模式)：用来理解代码，摸清脉络。它不会触发代码编辑，让你带着敬畏之心去询问存量代码的逻辑和背景。</p>
+<p>• Agent (智能体模式)：一旦脉络清晰，立刻切换到智能体，让 AI 结对编程，动手开干，自主编码。</p>
+<p>Qoder 真正让人上瘾的原因就在于，它的 Agent 模式已经迈过了那个”拐点”，在效率、成本、质量和易用性上，达到了一种令人惊叹的平衡。</p>
+<p>如果你是一个 AI 编程新手，觉得那些理论太麻烦，我建议你也别瞎折腾，啥都别管，直接 Agent 模式开干，这就像是自动挡的车，虽然操控感不强，但好在省事，等实践中有了新的感悟了，再切换到手动挡也不迟。</p>
+<h2 id="基础实践：RepoWiki-使隐性知识显性化"><a href="#基础实践：RepoWiki-使隐性知识显性化" class="headerlink" title="基础实践：RepoWiki 使隐性知识显性化"></a>基础实践：RepoWiki 使隐性知识显性化</h2><p><img src="https://image.cnkirito.cn/98576858-012c-4778-9c48-4afbb179e1a1.png"></p>
+<p>RepoWiki 是 Qoder 的一大竞争力优势，貌似具备这个功能的竞品还真不多。Qoder 的 RepoWiki 生成的文档可以分为给人看的和给 AI 看的，也是一种上下文的管理手段。试想一下，你突然有一天要去接收一个用户文档不齐全的仓库，RepoWiki 可以帮助你快速理解项目，简直是 life saver。</p>
+<p>也不用担心 RepoWiki 生成这么多文档会很消耗 credits，Qoder 用的是专门训练过的模型，我实测下来一个中型仓库，才花了 20 多 credits。</p>
+<p>增量代码似乎也会自动更新 wiki，如果我没观察错的话。</p>
+<h2 id="基础实践：上下文管理"><a href="#基础实践：上下文管理" class="headerlink" title="基础实践：上下文管理"></a>基础实践：上下文管理</h2><p><img src="https://image.cnkirito.cn/b49e26db-f079-473d-aed3-f24ef7cdbfa7.png"></p>
+<p>无数文章科普过“提示词工程”过渡到了“上下文工程”，但是说实话，我自己都没完整研究明白什么是科学的“上下文工程”，又或许上下文工程就是我所介绍的这些实践。</p>
+<p>上下文管理，是决定 AI 编程质量的灵魂。</p>
+<p>“精准投喂，手动添加上下文一定是一个好习惯”。虽然 Qoder 具备强大的代码检索能力，但手动添加核心线索，能极大地减少 AI 在工程中“盲搜”的负担，提升命中率，让它一次性把事情做对。</p>
+<p>常用的 <code>@file</code>、<code>@folder</code>、<code>@codeChanges</code>、<code>@gitCommit</code> 它们不仅仅是命令，而是我们在向 AI 传递明确的意图和边界。</p>
+<p>Qoder 也提供了 “压缩上下文” 的功能，我的态度是敬而远之，只有少部分场景我会使用。相比压缩功能本身，我发现观察上下文窗口的占用比例更有价值。</p>
+<p>这个占用比例是一个绝佳的任务复杂度“指示器”。如果一个任务聊了几轮后，上下文窗口就飙升到 60% 以上，这其实是 Qoder 在向你发出信号：“这个任务太大了，不适合在 Agent 模式下一次完成，需要进行拆分！” 这时，我宁愿新开一个窗口处理子任务，也不会选择压缩上下文。</p>
+<p>为什么不压缩？主要是担心信息失真。压缩算法是个黑盒，我无法确定关键信息是否在压缩中被“优化”掉了，万一它“取其糟粕，去其精华”呢？</p>
+<p>最后还是绕不开成本。Qoder 的 credits 计费模式最终还是会跟 Token 总量挂钩，过长的上下文也会带来 credits 焦虑。所以，保持上下文的“精简”和“健康”，既能保证质量，又能节省开销。</p>
+<p>这里要特别提一下基础模型。我在 Qoder 交流群里看到不少人还在用基础模型。基础模型最大的瓶颈就是上下文窗口太小，一个原子任务还没做完，窗口就爆了。如果你正在用基础模型体验，请务必知道，这只是模型的上限，不是 Qoder 的上限。</p>
+<h2 id="基础实践：Rules-与-Memory"><a href="#基础实践：Rules-与-Memory" class="headerlink" title="基础实践：Rules 与 Memory"></a>基础实践：Rules 与 Memory</h2><p><img src="https://image.cnkirito.cn/0a1bb36a-740c-493d-a9b4-6aa8cbb76332.png"></p>
+<p>规则 (Rules) 是项目级的“铁律”，你可以把项目的强制规范写进去，让 Qoder 严格遵守（尽管目前它在规则遵循的一致性上还有提升空间）。</p>
+<p>目前我的项目加了不少规则，比如：国际化规范，组件库规范，命名规范，接口规范，私域知识引导等等</p>
+<p>规则的一些最佳实践：</p>
+<ul>
+<li><p>保持简洁：让规则聚焦且明确无歧义。</p>
+</li>
+<li><p>结构清晰：使用项目符号、编号列表或 Markdown 格式以提升可读性。</p>
+</li>
+<li><p>包含示例：提供“良好”的代码示例以指导模型。</p>
+</li>
+<li><p>迭代与优化：根据模型输出和反馈不断完善规则。</p>
+</li>
+</ul>
+<p>规则和记忆都属于 Qoder 预置的上下文，二者的主要区别：</p>
+<ul>
+<li><p>规则属于项目级，记忆属于用户级。</p>
+</li>
+<li><p>当规则与记忆冲突时，规则优先。</p>
+</li>
+<li><p>规则需要手动维护，记忆则分为主动记忆和自动记忆。我个人主要使用自动记忆，不太会主动管理记忆，只有当发现记忆出了明显问题时，才会手动清理。</p>
+</li>
+</ul>
+<p>自动记忆功能用好了，会让你产生一种“Qoder 越来越懂我”的感觉。它记住了你的编码习惯和偏好，即使你在多个项目或窗口间切换，也能减少大量重复描述背景的麻烦。</p>
+<h2 id="进阶实践：Quest-模式实现-SDD"><a href="#进阶实践：Quest-模式实现-SDD" class="headerlink" title="进阶实践：Quest 模式实现 SDD"></a>进阶实践：Quest 模式实现 SDD</h2><p><img src="https://image.cnkirito.cn/19283cdb-c068-4b0d-8de9-058fb1396387.png"></p>
+<p>如果 Agent 模式是结对编程，那么 Quest 模式就是任务委派。它专为复杂任务设计，因为它践行了 Spec Driven 开发的理念，彻底将“思考”与“执行”分离。</p>
+<p>Quest 模式遵循“设计 → 执行 → 总结”的三步原则。</p>
+<ol>
+<li><p>设计 (Spec Driven)：开发者通过多轮对话，和 AI 一起打磨一份 Markdown 格式的设计方案。这份设计文档是人与人、人与 AI 之间最重要的沟通媒介。</p>
+</li>
+<li><p>执行 (AI 自主编程)：一旦方案敲定，AI 就能心无旁骛，一次性执行到底。</p>
+</li>
+<li><p>总结：最终产出代码和结论。</p>
+</li>
+</ol>
+<p>Quest 模式的强大之处在于：它强迫你“想清楚了再干”，极大地避免了复杂任务导致上下文窗口迅速膨胀的问题，将我们的角色从执行者提升为架构师。</p>
+<p>但 Spec Driven 一定是 AI Coding 的银弹吗？一定是终态吗？如果是的话，做到什么程度是一个最佳实践呢？是 spec-kit 这种三方统一的规范？还是 kiro 实现的复杂 spec 设计流程？反正我个人是接受不了 spec-kit 和 kiro，感觉不太适合中国宝宝的体质。而 Qoder 的 Quest 模式，我也仅会在复杂需求和系统性重构时会使用，实际需求开发，使用 Agent 模式进行渐进式的开发更符合我现阶段 80% 的场景。 </p>
+<h2 id="进阶实践：Quest-模式异步委派"><a href="#进阶实践：Quest-模式异步委派" class="headerlink" title="进阶实践：Quest 模式异步委派"></a>进阶实践：Quest 模式异步委派</h2><p><img src="https://image.cnkirito.cn/7b4086dc-9575-427b-b0d8-10af1ae30156.png"></p>
+<p>Quest 模式可以结合 git worktree 和云端沙箱实现异步委派，实际上后者我没用过，Qoder 的主要设计思路是好的，让 AI 当牛马，开发者下班了还可以远程干活，但现阶段的确给我一种压得喘不过气的感觉，代码它是写好了，我还是要 review 的，所以从来没用过。</p>
+<p>而 git worktree 则是一个很好用的功能，例如你可以一边丢一个 Quest 任务去生成单测，基于 worktree 的隔离机制，我可以继续在当前分支继续用 Agent 模式进行结对编程。</p>
+<h2 id="进阶实践：Token-效率法则"><a href="#进阶实践：Token-效率法则" class="headerlink" title="进阶实践：Token 效率法则"></a>进阶实践：Token 效率法则</h2><p><img src="https://image.cnkirito.cn/472b6da3-4391-4a1a-906e-c0bc097dd347.png"></p>
+<p>当我们评估 AI 编程成本时，不能只看单位成本，而更应该关注任务总成本。</p>
+<p>任务总成本 = 单位成本 × 迭代步数 + 人力成本</p>
+<p>想象一下：一个极致模型（Y）可能比经济模型（X）单位成本更高。但如果经济模型需要 10 步才能完成任务（10X），而极致模型只需 3 步就能成功交付（3Y）。只要 3<em>Y</em>&lt;10<em>X</em>，那么极致模型反而更便宜，也更快，效果还更好。</p>
+<p>在 Qoder 内部交流群，有用户担心 Qoder 的 Auto 模式会自动路由到极致模型，从而导致 credits 消耗过多，Qoder 研发澄清了 Qoder 的实现：当前 Auto 模式不会自动路由到极致模型，无需担心该问题。</p>
+<p>但根据 Token 效率规则，Auto 模式的最终目标应该根据总成本、质量、速度加权系数后，提供给用户一个最优解，而不应该完全不路由到极致模型。但我相信 Qoder 团队不会不理解 Token 效率法则，这应该也是当下难以达到最优解的无奈之举。</p>
+<p>我的实践是，日常开发任务选择 Auto 模式基本够用。</p>
+<h2 id="进阶实践：Git-哲学遇见-Agentic-Coding"><a href="#进阶实践：Git-哲学遇见-Agentic-Coding" class="headerlink" title="进阶实践：Git 哲学遇见 Agentic Coding"></a>进阶实践：Git 哲学遇见 Agentic Coding</h2><p><img src="https://image.cnkirito.cn/9937c968-608a-4be3-9f8e-ec8621c0606a.png"></p>
+<p>我从未想过，Git Commit 的哲学跟 AI Coding 之间有如此大的默契。</p>
+<p>在一个多人协同开发的内部项目中，很容易看到一堆不规范的 commit message，而在 Qoder 的加持下，自动生成 commit message 这个小功能发挥了绝大的价值。</p>
+<p>当你的 git log 变得规范后，好处是连锁的：</p>
+<ol>
+<li><p>可以和 @gitCommit 功能联动，精准回溯。</p>
+</li>
+<li><p>改坏了代码手滑接受了？至少还有一个清晰的回溯点。</p>
+</li>
+<li><p>通过 commit message 就能快速理解同事的工作，沟通成本大降。</p>
+</li>
+</ol>
+<p>我发现有的人会尝试添加这样的 rule：”自动提交代码，并在此之前设置 git config user.name vibe-coder”，这很有创意，但我会认为这是一个 bad case，因为这似乎在尝试进行免责声明：”这是 AI 提交的代码，与我无关”。Agentic Coding 只是一个工具，第一责任人依旧是 AI 驾驶员。</p>
+<h2 id="进阶实践：划清模型与工具的边界"><a href="#进阶实践：划清模型与工具的边界" class="headerlink" title="进阶实践：划清模型与工具的边界"></a>进阶实践：划清模型与工具的边界</h2><p><img src="https://image.cnkirito.cn/57cd13e2-66f4-48ae-b482-0ecfdbf0f435.png"></p>
+<p>理解哪些任务应该交给模型，哪些任务应该让模型帮你创造一个“工具”来解决，是掌握 AI 编程进阶能力的一个依据。</p>
+<p>大模型是概率工具，不是逻辑引擎，它擅长创造和模仿，但不擅长精确和重复。且模型存在上下文窗口限制和幻觉。</p>
+<p>基于这个认知，我的原则是：一次性的、创造性的任务交给模型；需要重复的、确定性的任务，让模型帮我创造一个工具来解决。</p>
+<p>下文也会有一个案例分享这个实践的细节。</p>
+<h2 id="警惕-Vibe-Coding"><a href="#警惕-Vibe-Coding" class="headerlink" title="警惕 Vibe Coding"></a>警惕 Vibe Coding</h2><p><img src="https://image.cnkirito.cn/a6b1a8de-9a53-400e-95b0-e4a64887c322.png"></p>
+<p>在维护开源项目 Higress 的过程中，我观察到一种因 AI 编程产生的坏味道——“Vibe Coding”。一些社区贡献者提交了 AI 味很浓的代码，但缺少必要的方案设计和验证，导致审查的压力全都转移到了 Reviewer 身上。</p>
+<p>我曾在社区吐槽这个现象：vibe coding → vibe review → A vibe project. </p>
+<p>依靠 UT 和 CI 来对 AI 编程进行验证是一个兜底方案，同时也给质量保障带来了一个新的哲学话题，如果保障 AI 编程的质量？</p>
+<p>AI 编程带来的效率提升，也对研发人员提出了新的素养要求，我们需要建立新的质量保障体系：</p>
+<ol>
+<li><p>可测试性优先： 尽早将“代码必须可测试”这一准则加入到 <code>rules</code> 中，从源头上避免 AI 生成无法进行单元测试的代码。</p>
+</li>
+<li><p>谨慎“全局接受”： Agent 模式一次性生成大量代码后，很容易有“一键接受”的冲动。但 Qoder 目前不支持撤销，一旦接受就无法回头。建议还是文件 by 文件的审查和接受。</p>
+</li>
+<li><p>推行 Prompt Review 或者 Spec Review： 在 Higress 社区，我们已经开始尝试这一举措。对于有明显“Vibe Coding”痕迹的提交，要求贡献者附上他的核心 Prompt。在开源社区这种异步协作的环境下，极大地保护了 Reviewer。</p>
+</li>
+</ol>
+<h2 id="案例分享：swagger2xml-工具"><a href="#案例分享：swagger2xml-工具" class="headerlink" title="案例分享：swagger2xml 工具"></a>案例分享：swagger2xml 工具</h2><p><img src="https://image.cnkirito.cn/8de4b15c-bcd5-4653-97e4-a3be5a111c1c.png"></p>
+<p>需求： 将一个 Spring Boot 项目 Controller 层的接口，自动生成符合内部 API 平台规范的元数据 XML 文件，用于补充 API 文档。</p>
+<p>我的弯路：最初，我想直接让 Qoder 基于模型能力，逐个接口生成最终的 XML 文件。</p>
+<p>踩到的坑：</p>
+<ul>
+<li><p>XML 格式一致性难以保证，AI 时不时会“自由发挥”。</p>
+</li>
+<li><p>消耗大量 credits，成本高。</p>
+</li>
+<li><p>上下文窗口容易爆炸。</p>
+</li>
+<li><p>一次性工作，无法复用。</p>
+</li>
+</ul>
+<p>我的转向： 回到“划清模型与工具的边界”的实践，我让 Qoder 帮我创造一个工具：一个专门用于生成元数据的项目。这个项目 99% 的代码都是由 Qoder 完成的，这完美体现了“用 AI 造工厂”的思路。</p>
+<h2 id="案例分享：跨项目协作"><a href="#案例分享：跨项目协作" class="headerlink" title="案例分享：跨项目协作"></a>案例分享：跨项目协作</h2><p><img src="https://image.cnkirito.cn/9a6c207e-668a-4e7a-ba53-cee98f2cc1f2.png"></p>
+<p>Qoder 目前没有直接的跨工程管理能力，同一 workspace 包含两个仓库依旧不够优雅，因为上下文不完全共享。</p>
+<p>我的工作流是：后端开发完成后，用 Quest 模式生成一份详细的对接方案（包含接口地址、参数、返回格式等）。然后，在前端项目中打开这份方案，再用 Quest 模式基于方案完成接口的对接和调试。Qoder 的Quest 模式在这个过程中，像一座桥梁，助力后端程序员轻松跨界，搞定前端的活。</p>
+<h2 id="案例分享：Himarket-AI-开放平台"><a href="#案例分享：Himarket-AI-开放平台" class="headerlink" title="案例分享：Himarket AI 开放平台"></a>案例分享：Himarket AI 开放平台</h2><p><img src="https://image.cnkirito.cn/65b3b060-53d8-45c2-9059-22cf537c68f2.png"></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/higress-group/himarket">https://github.com/higress-group/himarket</a> 是阿里开源的一个 AI 开放平台项目，践行了 AI 编程的一些实践，通过实操，给大家分享一下如何使用 Qoder。-&gt; 演示环节</p>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p><img src="https://image.cnkirito.cn/2b36fce7-e97c-42d2-87b9-52294c0c4948.png"></p>
+<p>欢迎体验 Qoder：<a target="_blank" rel="noopener" href="https://qoder.com/referral?referral_code=giB4Qp8oAraMl3HnoBEqCoIavUwbZJPO">https://qoder.com/referral?referral_code=giB4Qp8oAraMl3HnoBEqCoIavUwbZJPO</a></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Agentic Coding 认知升级与 Qoder 实践避坑指南</p><p><a href="https://www.cnkirito.moe/qoder-agentic-coding/">https://www.cnkirito.moe/qoder-agentic-coding/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/AI/">AI, </a><a class="link-muted" rel="tag" href="/tags/Qoder/">Qoder </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/qoder-quest/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Qoder Quest 1.0：把执行交给 AI，把选择留给人类</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/qoder-use-guide/"><span class="level-item">使用 Qoder 2 个月，我总结了一些经验</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#使用-Qoder-开发真实项目"><span class="level-left"><span class="level-item">1</span><span class="level-item">使用 Qoder 开发真实项目</span></span></a></li><li><a class="level is-mobile" href="#自我介绍"><span class="level-left"><span class="level-item">2</span><span class="level-item">自我介绍</span></span></a></li><li><a class="level is-mobile" href="#Qoder-平台介绍：为真实软件开发而生"><span class="level-left"><span class="level-item">3</span><span class="level-item">Qoder 平台介绍：为真实软件开发而生</span></span></a></li><li><a class="level is-mobile" href="#编程范式的演进：开发者角色转变"><span class="level-left"><span class="level-item">4</span><span class="level-item">编程范式的演进：开发者角色转变</span></span></a></li><li><a class="level is-mobile" href="#Agentic-Coding-演进历程"><span class="level-left"><span class="level-item">5</span><span class="level-item">Agentic Coding 演进历程</span></span></a></li><li><a class="level is-mobile" href="#思维切换：拥抱以对话为中心的上下文管理"><span class="level-left"><span class="level-item">6</span><span class="level-item">思维切换：拥抱以对话为中心的上下文管理</span></span></a></li><li><a class="level is-mobile" href="#我们为何仍在观望？"><span class="level-left"><span class="level-item">7</span><span class="level-item">我们为何仍在观望？</span></span></a></li><li><a class="level is-mobile" href="#基础实践：Ask-Agent-核心循环"><span class="level-left"><span class="level-item">8</span><span class="level-item">基础实践：Ask + Agent 核心循环</span></span></a></li><li><a class="level is-mobile" href="#基础实践：RepoWiki-使隐性知识显性化"><span class="level-left"><span class="level-item">9</span><span class="level-item">基础实践：RepoWiki 使隐性知识显性化</span></span></a></li><li><a class="level is-mobile" href="#基础实践：上下文管理"><span class="level-left"><span class="level-item">10</span><span class="level-item">基础实践：上下文管理</span></span></a></li><li><a class="level is-mobile" href="#基础实践：Rules-与-Memory"><span class="level-left"><span class="level-item">11</span><span class="level-item">基础实践：Rules 与 Memory</span></span></a></li><li><a class="level is-mobile" href="#进阶实践：Quest-模式实现-SDD"><span class="level-left"><span class="level-item">12</span><span class="level-item">进阶实践：Quest 模式实现 SDD</span></span></a></li><li><a class="level is-mobile" href="#进阶实践：Quest-模式异步委派"><span class="level-left"><span class="level-item">13</span><span class="level-item">进阶实践：Quest 模式异步委派</span></span></a></li><li><a class="level is-mobile" href="#进阶实践：Token-效率法则"><span class="level-left"><span class="level-item">14</span><span class="level-item">进阶实践：Token 效率法则</span></span></a></li><li><a class="level is-mobile" href="#进阶实践：Git-哲学遇见-Agentic-Coding"><span class="level-left"><span class="level-item">15</span><span class="level-item">进阶实践：Git 哲学遇见 Agentic Coding</span></span></a></li><li><a class="level is-mobile" href="#进阶实践：划清模型与工具的边界"><span class="level-left"><span class="level-item">16</span><span class="level-item">进阶实践：划清模型与工具的边界</span></span></a></li><li><a class="level is-mobile" href="#警惕-Vibe-Coding"><span class="level-left"><span class="level-item">17</span><span class="level-item">警惕 Vibe Coding</span></span></a></li><li><a class="level is-mobile" href="#案例分享：swagger2xml-工具"><span class="level-left"><span class="level-item">18</span><span class="level-item">案例分享：swagger2xml 工具</span></span></a></li><li><a class="level is-mobile" href="#案例分享：跨项目协作"><span class="level-left"><span class="level-item">19</span><span class="level-item">案例分享：跨项目协作</span></span></a></li><li><a class="level is-mobile" href="#案例分享：Himarket-AI-开放平台"><span class="level-left"><span class="level-item">20</span><span class="level-item">案例分享：Himarket AI 开放平台</span></span></a></li><li><a class="level is-mobile" href="#结尾"><span class="level-left"><span class="level-item">21</span><span class="level-item">结尾</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

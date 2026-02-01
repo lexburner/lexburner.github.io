@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Netty实现长连接服务的难点和优化点 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="转载自：https:&amp;#x2F;&amp;#x2F;www.dozer.cc&amp;#x2F;2014&amp;#x2F;12&amp;#x2F;netty-long-connection.html 原文作者：dozer  推送服务还记得一年半前，做的一个项目需要用到 Android 推送服务。和 iOS 不同，Android 生态中没有统一的推送服务。Google 虽然有 Google Cloud Messaging ，但是连国外都没统一，更别说国内了，直接被墙。 所以之"><meta property="og:type" content="blog"><meta property="og:title" content="Netty实现长连接服务的难点和优化点"><meta property="og:url" content="https://www.cnkirito.moe/netty-persistent-connection-difficulty-and-improvement/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="转载自：https:&amp;#x2F;&amp;#x2F;www.dozer.cc&amp;#x2F;2014&amp;#x2F;12&amp;#x2F;netty-long-connection.html 原文作者：dozer  推送服务还记得一年半前，做的一个项目需要用到 Android 推送服务。和 iOS 不同，Android 生态中没有统一的推送服务。Google 虽然有 Google Cloud Messaging ，但是连国外都没统一，更别说国内了，直接被墙。 所以之"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://www.easemob.com/data/upload/ueditor/20191126/5ddc9959c2b1d.png"><meta property="og:image" content="https://www.easemob.com/data/upload/ueditor/20191126/5ddc99655e074.png"><meta property="article:published_time" content="2021-03-28T06:59:28.000Z"><meta property="article:modified_time" content="2025-05-22T16:49:16.233Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="RPC"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://www.easemob.com/data/upload/ueditor/20191126/5ddc9959c2b1d.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/netty-persistent-connection-difficulty-and-improvement/"},"headline":"Netty实现长连接服务的难点和优化点","image":["https://www.easemob.com/data/upload/ueditor/20191126/5ddc9959c2b1d.png","https://www.easemob.com/data/upload/ueditor/20191126/5ddc99655e074.png"],"datePublished":"2021-03-28T06:59:28.000Z","dateModified":"2025-05-22T16:49:16.233Z","author":{"@type":"Person","name":"徐靖峰"},"description":"转载自：https:&#x2F;&#x2F;www.dozer.cc&#x2F;2014&#x2F;12&#x2F;netty-long-connection.html 原文作者：dozer  推送服务还记得一年半前，做的一个项目需要用到 Android 推送服务。和 iOS 不同，Android 生态中没有统一的推送服务。Google 虽然有 Google Cloud Messaging ，但是连国外都没统一，更别说国内了，直接被墙。 所以之"}</script><link rel="canonical" href="https://www.cnkirito.moe/netty-persistent-connection-difficulty-and-improvement/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>Netty实现长连接服务的难点和优化点</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-03-28</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-05-23</time></span><span class="level-item"><a class="link-muted" href="/categories/RPC/">RPC</a></span><span class="level-item">25 分钟读完 (大约3734个字)</span></div></div><div class="content"><blockquote>
+<p>转载自：<a target="_blank" rel="noopener" href="https://www.dozer.cc/2014/12/netty-long-connection.html">https://www.dozer.cc/2014/12/netty-long-connection.html</a></p>
+<p>原文作者：dozer</p>
+</blockquote>
+<h2 id="推送服务"><a href="#推送服务" class="headerlink" title="推送服务"></a>推送服务</h2><p>还记得一年半前，做的一个项目需要用到 Android 推送服务。和 iOS 不同，Android 生态中没有统一的推送服务。Google 虽然有 <a target="_blank" rel="noopener" href="http://zh.wikipedia.org/wiki/Google%E9%9B%B2%E7%AB%AF%E9%80%9A%E8%A8%8A">Google Cloud Messaging</a> ，但是连国外都没统一，更别说国内了，直接被墙。</p>
+<p>所以之前在 Android 上做推送大部分只能靠轮询。而我们之前在技术调研的时候，搜到了 <a target="_blank" rel="noopener" href="https://www.jpush.cn/">jPush</a> 的博客，上面介绍了一些他们的技术特点，他们主要做的其实就是移动网络下的长连接服务。单机 50W-100W 的连接的确是吓我一跳！后来我们也采用了他们的免费方案，因为是一个受众面很小的产品，所以他们的免费版够我们用了。一年多下来，运作稳定，非常不错！</p>
+<p>时隔两年，换了部门后，竟然接到了一项任务，优化公司自己的长连接服务端。</p>
+<p>再次搜索网上技术资料后才发现，相关的很多难点都被攻破，网上也有了很多的总结文章，单机 50W-100W 的连接完全不是梦，其实人人都可以做到。但是光有连接还不够，QPS 也要一起上去。</p>
+<p>所以，这篇文章就是汇总一下利用 Netty 实现长连接服务过程中的各种难点和可优化点。</p>
+<span id="more"></span>
+
+<h2 id="Netty-是什么"><a href="#Netty-是什么" class="headerlink" title="Netty 是什么"></a>Netty 是什么</h2><p>Netty: <a target="_blank" rel="noopener" href="http://netty.io/">http://netty.io/</a></p>
+<blockquote>
+<p>Netty is an asynchronous event-driven network application framework for rapid development of maintainable high performance protocol servers &amp; clients.</p>
+</blockquote>
+<p>官方的解释最精准了，期中最吸引人的就是高性能了。但是很多人会有这样的疑问：直接用 NIO 实现的话，一定会更快吧？就像我直接手写 JDBC 虽然代码量大了点，但是一定比 iBatis 快！</p>
+<p>但是，如果了解 Netty 后你才会发现，这个还真不一定！</p>
+<p>利用 Netty 而不用 NIO 直接写的优势有这些：</p>
+<ul>
+<li>高性能高扩展的架构设计，大部分情况下你只需要关注业务而不需要关注架构</li>
+<li><code>Zero-Copy</code> 技术尽量减少内存拷贝</li>
+<li>为 Linux 实现 Native 版 Socket</li>
+<li>写同一份代码，兼容 java 1.7 的 NIO2 和 1.7 之前版本的 NIO</li>
+<li><code>Pooled Buffers</code> 大大减轻 <code>Buffer</code> 和释放 <code>Buffer</code> 的压力</li>
+<li>……</li>
+</ul>
+<p>特性太多，大家可以去看一下《Netty in Action》这本书了解更多。</p>
+<p>另外，Netty 源码是一本很好的教科书！大家在使用的过程中可以多看看它的源码，非常棒！</p>
+<h2 id="瓶颈是什么"><a href="#瓶颈是什么" class="headerlink" title="瓶颈是什么"></a>瓶颈是什么</h2><p>想要做一个长链服务的话，最终的目标是什么？而它的瓶颈又是什么？</p>
+<p>其实目标主要就两个：</p>
+<ol>
+<li>更多的连接</li>
+<li>更高的 QPS</li>
+</ol>
+<p>所以，下面就针对这连个目标来说说他们的难点和注意点吧。</p>
+<h2 id="更多的连接"><a href="#更多的连接" class="headerlink" title="更多的连接"></a>更多的连接</h2><h3 id="非阻塞-IO"><a href="#非阻塞-IO" class="headerlink" title="非阻塞 IO"></a>非阻塞 IO</h3><p>其实无论是用 Java NIO 还是用 Netty，达到百万连接都没有任何难度。因为它们都是非阻塞的 IO，不需要为每个连接创建一个线程了。</p>
+<p>欲知详情，可以搜索一下<code>BIO</code>,<code>NIO</code>,<code>AIO</code>的相关知识点。</p>
+<h3 id="Java-NIO-实现百万连接"><a href="#Java-NIO-实现百万连接" class="headerlink" title="Java NIO 实现百万连接"></a>Java NIO 实现百万连接</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ServerSocketChannel ssc &#x3D; ServerSocketChannel.open();</span><br><span class="line">Selector sel &#x3D; Selector.open();</span><br><span class="line"></span><br><span class="line">ssc.configureBlocking(false);</span><br><span class="line">ssc.socket().bind(new InetSocketAddress(8080));</span><br><span class="line">SelectionKey key &#x3D; ssc.register(sel, SelectionKey.OP_ACCEPT);</span><br><span class="line"></span><br><span class="line">while(true) &#123;</span><br><span class="line">    sel.select();</span><br><span class="line">    Iterator it &#x3D; sel.selectedKeys().iterator();</span><br><span class="line">    while(it.hasNext()) &#123;</span><br><span class="line">        SelectionKey skey &#x3D; (SelectionKey)it.next();</span><br><span class="line">        it.remove();</span><br><span class="line">        if(skey.isAcceptable()) &#123;</span><br><span class="line">            ch &#x3D; ssc.accept();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码只会接受连过来的连接，不做任何操作，仅仅用来测试待机连接数极限。</p>
+<p>大家可以看到这段代码是 NIO 的基本写法，没什么特别的。</p>
+<h3 id="Netty-实现百万连接"><a href="#Netty-实现百万连接" class="headerlink" title="Netty 实现百万连接"></a>Netty 实现百万连接</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">NioEventLoopGroup bossGroup &#x3D;  new NioEventLoopGroup();</span><br><span class="line">NioEventLoopGroup workerGroup&#x3D; new NioEventLoopGroup();</span><br><span class="line">ServerBootstrap bootstrap &#x3D; new ServerBootstrap();</span><br><span class="line">bootstrap.group(bossGroup, workerGroup);</span><br><span class="line"></span><br><span class="line">bootstrap.channel( NioServerSocketChannel.class);</span><br><span class="line"></span><br><span class="line">bootstrap.childHandler(new ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">    @Override protected void initChannel(SocketChannel ch) throws Exception &#123;</span><br><span class="line">        ChannelPipeline pipeline &#x3D; ch.pipeline();</span><br><span class="line">        &#x2F;&#x2F;todo: add handler</span><br><span class="line">    &#125;&#125;);</span><br><span class="line">bootstrap.bind(8080).sync();</span><br></pre></td></tr></table></figure>
+
+<p>这段其实也是非常简单的 Netty 初始化代码。同样，为了实现百万连接根本没有什么特殊的地方。</p>
+<h3 id="瓶颈到底在哪"><a href="#瓶颈到底在哪" class="headerlink" title="瓶颈到底在哪"></a>瓶颈到底在哪</h3><p>上面两种不同的实现都非常简单，没有任何难度，那有人肯定会问了：实现百万连接的瓶颈到底是什么？</p>
+<p>其实只要 java 中用的是非阻塞 IO（NIO 和 AIO 都算），那么它们都可以用单线程来实现大量的 Socket 连接。 不会像 BIO 那样为每个连接创建一个线程，因为代码层面不会成为瓶颈。</p>
+<p>其实真正的瓶颈是在 Linux 内核配置上，默认的配置会限制全局最大打开文件数(Max Open Files)还会限制进程数。 所以需要对 Linux 内核配置进行一定的修改才可以。</p>
+<p>这个东西现在看似很简单，按照网上的配置改一下就行了，但是大家一定不知道第一个研究这个人有多难。</p>
+<p>这里直接贴几篇文章，介绍了相关配置的修改方式：</p>
+<p><a target="_blank" rel="noopener" href="http://www.ideawu.net/blog/archives/740.html">构建C1000K的服务器</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.blogjava.net/yongboy/archive/2013/04/11/397677.html">100万并发连接服务器笔记之1M并发连接目标达成</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.linuxde.net/2013/08/15150.html">淘宝技术分享 HTTP长连接200万尝试及调优</a></p>
+<h3 id="如何验证"><a href="#如何验证" class="headerlink" title="如何验证"></a>如何验证</h3><p>让服务器支持百万连接一点也不难，我们当时很快就搞定了一个测试服务端，但是最大的问题是，我怎么去验证这个服务器可以支撑百万连接呢？</p>
+<p>我们用 Netty 写了一个测试客户端，它同样用了非阻塞 IO ，所以不用开大量的线程。 但是一台机器上的端口数是有限制的，用<code>root</code>权限的话，最多也就 6W 多个连接了。 所以我们这里用 Netty 写一个客户端，用尽单机所有的连接吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">NioEventLoopGroup workerGroup &#x3D;  new NioEventLoopGroup();</span><br><span class="line">Bootstrap b &#x3D; new Bootstrap();</span><br><span class="line">b.group(workerGroup);</span><br><span class="line">b.channel( NioSocketChannel.class);</span><br><span class="line"></span><br><span class="line">b.handler(new ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void initChannel(SocketChannel ch) throws Exception &#123;</span><br><span class="line">        ChannelPipeline pipeline &#x3D; ch.pipeline();</span><br><span class="line">        &#x2F;&#x2F;todo:add handler</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">for (int k &#x3D; 0; k &lt; 60000; k++) &#123;</span><br><span class="line">    &#x2F;&#x2F;请自行修改成服务端的IP</span><br><span class="line">    b.connect(127.0.0.1, 8080);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码同样很简单，只要连上就行了，不需要做任何其他的操作。</p>
+<p>这样只要找到一台电脑启动这个程序即可。这里需要注意一点，客户端最好和服务端一样，修改一下 Linux 内核参数配置。 </p>
+<h3 id="怎么去找那么多机器"><a href="#怎么去找那么多机器" class="headerlink" title="怎么去找那么多机器"></a>怎么去找那么多机器</h3><p>按照上面的做法，单机最多可以有 6W 的连接，百万连接起码需要17台机器！</p>
+<p>如何才能突破这个限制呢？其实这个限制来自于网卡。 我们后来通过使用虚拟机，并且把虚拟机的虚拟网卡配置成了桥接模式解决了问题。</p>
+<p>根据物理机内存大小，单个物理机起码可以跑4-5个虚拟机，所以最终百万连接只要4台物理机就够了。</p>
+<h3 id="讨巧的做法"><a href="#讨巧的做法" class="headerlink" title="讨巧的做法"></a>讨巧的做法</h3><p>除了用虚拟机充分压榨机器资源外，还有一个非常讨巧的做法，这个做法也是我在验证过程中偶然发现的。</p>
+<p>根据 TCP/IP 协议，任何一方发送<code>FIN</code>后就会启动正常的断开流程。而如果遇到网络瞬断的情况，连接并不会自动断开。</p>
+<p>那我们是不是可以这样做？</p>
+<ol>
+<li>启动服务端，千万别设置 Socket 的<code>keep-alive</code>属性，默认是不设置的</li>
+<li>用虚拟机连接服务器</li>
+<li>强制关闭虚拟机</li>
+<li>修改虚拟机网卡的 MAC 地址，重新启动并连接服务器</li>
+<li>服务端接受新的连接，并保持之前的连接不断</li>
+</ol>
+<p>我们要验证的是服务端的极限，所以只要一直让服务端认为有那么多连接就行了，不是吗？</p>
+<p>经过我们的试验后，这种方法和用真实的机器连接服务端的表现是一样的，因为服务端只是认为对方网络不好罢了，不会将你断开。</p>
+<p>另外，禁用<code>keep-alive</code>是因为如果不禁用，Socket 连接会自动探测连接是否可用，如果不可用会强制断开。</p>
+<h2 id="更高的-QPS"><a href="#更高的-QPS" class="headerlink" title="更高的 QPS"></a>更高的 QPS</h2><p>由于 NIO 和 Netty 都是非阻塞 IO，所以无论有多少连接，都只需要少量的线程即可。而且 QPS 不会因为连接数的增长而降低（在内存足够的前提下）。</p>
+<p>而且 Netty 本身设计得足够好了，Netty 不是高 QPS 的瓶颈。那高 QPS 的瓶颈是什么？</p>
+<p>是数据结构的设计！</p>
+<h3 id="如何优化数据结构"><a href="#如何优化数据结构" class="headerlink" title="如何优化数据结构"></a>如何优化数据结构</h3><p>首先要熟悉各种数据结构的特点是必需的，但是在复杂的项目中，不是用了一个集合就可以搞定的，有时候往往是各种集合的组合使用。</p>
+<p>既要做到高性能，还要做到一致性，还不能有死锁，这里难度真的不小…</p>
+<p>我在这里总结的经验是，不要过早优化。优先考虑一致性，保证数据的准确，然后再去想办法优化性能。</p>
+<p>因为一致性比性能重要得多，而且很多性能问题在量小和量大的时候，瓶颈完全会在不同的地方。 所以，我觉得最佳的做法是，编写过程中以一致性为主，性能为辅；代码完成后再去找那个 TOP1，然后去解决它！</p>
+<h3 id="解决-CPU-瓶颈"><a href="#解决-CPU-瓶颈" class="headerlink" title="解决 CPU 瓶颈"></a>解决 CPU 瓶颈</h3><p>在做这个优化前，先在测试环境中去狠狠地压你的服务器，量小量大，天壤之别。</p>
+<p>有了压力测试后，就需要用工具来发现性能瓶颈了！</p>
+<p>我喜欢用的是 VisualVM，打开工具后看抽样器(Sample)，根据自用时间(Self Time (CPU))倒序，排名第一的就是你需要去优化的点了！</p>
+<p>备注：Sample 和 Profiler 有什么区别？前者是抽样，数据不是最准但是不影响性能；后者是统计准确，但是非常影响性能。 如果你的程序非常耗 CPU，那么尽量用 Sample，否则开启 Profiler 后降低性能，反而会影响准确性。</p>
+<p><img src="https://www.easemob.com/data/upload/ueditor/20191126/5ddc9959c2b1d.png" alt="sample"></p>
+<p>还记得我们项目第一次发现的瓶颈竟然是<code>ConcurrentLinkedQueue</code>这个类中的<code>size()</code>方法。 量小的时候没有影响，但是<code>Queue</code>很大的时候，它每次都是从头统计总数的，而这个<code>size()</code>方法我们又是非常频繁地调用的，所以对性能产生了影响。</p>
+<p><code>size()</code>的实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public int size() &#123;</span><br><span class="line">    int count &#x3D; 0;</span><br><span class="line">    for (Node&lt;E&gt; p &#x3D; first(); p !&#x3D; null; p &#x3D; succ(p))</span><br><span class="line">    if (p.item !&#x3D; null)</span><br><span class="line">    &#x2F;&#x2F; Collection.size() spec says to max out</span><br><span class="line">    if (++count &#x3D;&#x3D; Integer.MAX_VALUE)</span><br><span class="line">    break;</span><br><span class="line">    return count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>后来我们通过额外使用一个<code>AtomicInteger</code>来计数，解决了问题。但是分离后岂不是做不到高一致性呢？ 没关系，我们的这部分代码关心最终一致性，所以只要保证最终一致就可以了。</p>
+<p>总之，具体案例要具体分析，不同的业务要用不同的实现。</p>
+<h3 id="解决-GC-瓶颈"><a href="#解决-GC-瓶颈" class="headerlink" title="解决 GC 瓶颈"></a>解决 GC 瓶颈</h3><p>GC 瓶颈也是 CPU 瓶颈的一部分，因为不合理的 GC 会大大影响 CPU 性能。</p>
+<p>这里还是在用 VisualVM，但是你需要装一个插件：VisualGC</p>
+<p><img src="https://www.easemob.com/data/upload/ueditor/20191126/5ddc99655e074.png" alt="GC"></p>
+<p>有了这个插件后，你就可以直观的看到 GC 活动情况了。</p>
+<p>按照我们的理解，在压测的时候，有大量的 New GC 是很正常的，因为有大量的对象在创建和销毁。</p>
+<p>但是一开始有很多 Old GC 就有点说不过去了！</p>
+<p>后来发现，在我们压测环境中，因为 Netty 的 QPS 和连接数关联不大，所以我们只连接了少量的连接。内存分配得也不是很多。</p>
+<p>而 JVM 中，默认的新生代和老生代的比例是1:2，所以大量的老生代被浪费了，新生代不够用。</p>
+<p>通过调整 <code>-XX:NewRatio</code> 后，Old GC 有了显著的降低。</p>
+<p>但是，生产环境又不一样了，生产环境不会有那么大的 QPS，但是连接会很多，连接相关的对象存活时间非常长，所以生产环境更应该分配更多的老生代。</p>
+<p>总之，GC 优化和 CPU 优化一样，也需要不断调整，不断优化，不是一蹴而就的。</p>
+<h2 id="其他优化"><a href="#其他优化" class="headerlink" title="其他优化"></a>其他优化</h2><p>如果你已经完成了自己的程序，那么一定要看看《Netty in Action》作者的这个网站：<a target="_blank" rel="noopener" href="http://normanmaurer.me/presentations/2014-facebook-eng-netty/slides.html">Netty Best Practices a.k.a Faster == Better</a>。</p>
+<p>相信你会受益匪浅，经过里面提到的一些小小的优化后，我们的整体 QPS 提升了很多。</p>
+<p>最后一点就是，java 1.7 比 java 1.6 性能高很多！因为 Netty 的编写风格是事件机制的，看似是 AIO。 可 java 1.6 是没有 AIO 的，java 1.7 是支持 AIO 的，所以如果用 java 1.7 的话，性能也会有显著提升。</p>
+<h2 id="最后成果"><a href="#最后成果" class="headerlink" title="最后成果"></a>最后成果</h2><p>经过几周的不断压测和不断优化了，我们在一台16核、120G内存(JVM只分配8G)的机器上，用 java 1.6 达到了60万的连接和20万的QPS。</p>
+<p>其实这还不是极限，JVM 只分配了8G内存，内存配置再大一点连接数还可以上去；</p>
+<p>QPS 看似很高，System Load Average 很低，也就是说明瓶颈不在 CPU 也不在内存，那么应该是在 IO 了！ 上面的 Linux 配置是为了达到百万连接而配置的，并没有针对我们自己的业务场景去做优化。</p>
+<p>因为目前性能完全够用，线上单机 QPS 最多才 1W，所以我们先把精力放在了其他地方。 相信后面我们还会去继续优化这块的性能，期待 QPS 能有更大的突破！</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Netty实现长连接服务的难点和优化点</p><p><a href="https://www.cnkirito.moe/netty-persistent-connection-difficulty-and-improvement/">https://www.cnkirito.moe/netty-persistent-connection-difficulty-and-improvement/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2021-03-28</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-05-23</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/RPC/">RPC </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/spring-boot-actuator-notes/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">警惕 Spring Boot Actuator 引发的安全漏洞</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/nacos-service-model/"><span class="level-item">小白也能懂的 Nacos 服务模型介绍</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#推送服务"><span class="level-left"><span class="level-item">1</span><span class="level-item">推送服务</span></span></a></li><li><a class="level is-mobile" href="#Netty-是什么"><span class="level-left"><span class="level-item">2</span><span class="level-item">Netty 是什么</span></span></a></li><li><a class="level is-mobile" href="#瓶颈是什么"><span class="level-left"><span class="level-item">3</span><span class="level-item">瓶颈是什么</span></span></a></li><li><a class="level is-mobile" href="#更多的连接"><span class="level-left"><span class="level-item">4</span><span class="level-item">更多的连接</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#非阻塞-IO"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">非阻塞 IO</span></span></a></li><li><a class="level is-mobile" href="#Java-NIO-实现百万连接"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">Java NIO 实现百万连接</span></span></a></li><li><a class="level is-mobile" href="#Netty-实现百万连接"><span class="level-left"><span class="level-item">4.3</span><span class="level-item">Netty 实现百万连接</span></span></a></li><li><a class="level is-mobile" href="#瓶颈到底在哪"><span class="level-left"><span class="level-item">4.4</span><span class="level-item">瓶颈到底在哪</span></span></a></li><li><a class="level is-mobile" href="#如何验证"><span class="level-left"><span class="level-item">4.5</span><span class="level-item">如何验证</span></span></a></li><li><a class="level is-mobile" href="#怎么去找那么多机器"><span class="level-left"><span class="level-item">4.6</span><span class="level-item">怎么去找那么多机器</span></span></a></li><li><a class="level is-mobile" href="#讨巧的做法"><span class="level-left"><span class="level-item">4.7</span><span class="level-item">讨巧的做法</span></span></a></li></ul></li><li><a class="level is-mobile" href="#更高的-QPS"><span class="level-left"><span class="level-item">5</span><span class="level-item">更高的 QPS</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#如何优化数据结构"><span class="level-left"><span class="level-item">5.1</span><span class="level-item">如何优化数据结构</span></span></a></li><li><a class="level is-mobile" href="#解决-CPU-瓶颈"><span class="level-left"><span class="level-item">5.2</span><span class="level-item">解决 CPU 瓶颈</span></span></a></li><li><a class="level is-mobile" href="#解决-GC-瓶颈"><span class="level-left"><span class="level-item">5.3</span><span class="level-item">解决 GC 瓶颈</span></span></a></li></ul></li><li><a class="level is-mobile" href="#其他优化"><span class="level-left"><span class="level-item">6</span><span class="level-item">其他优化</span></span></a></li><li><a class="level is-mobile" href="#最后成果"><span class="level-left"><span class="level-item">7</span><span class="level-item">最后成果</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

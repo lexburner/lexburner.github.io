@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>记一次 Redis 连接问题排查 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="问题发现客户端：业务应用使用 lettuce 客户端 服务端：Redis server 部署架构采用 1 主 + 1 从 + 3 哨兵 Redis 和业务应用部署在同一个 K8s 集群中，Redis Server 暴露了一个 redis-service，指向到 master 节点，业务应用通过 redis-service 连接 Redis。 某个时刻起，开始发现业务报错，稍加定位，发现是 Redi"><meta property="og:type" content="blog"><meta property="og:title" content="记一次 Redis 连接问题排查"><meta property="og:url" content="https://www.cnkirito.moe/redis-connect/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="问题发现客户端：业务应用使用 lettuce 客户端 服务端：Redis server 部署架构采用 1 主 + 1 从 + 3 哨兵 Redis 和业务应用部署在同一个 K8s 集群中，Redis Server 暴露了一个 redis-service，指向到 master 节点，业务应用通过 redis-service 连接 Redis。 某个时刻起，开始发现业务报错，稍加定位，发现是 Redi"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/image-20230214170127670.png"><meta property="article:published_time" content="2023-02-14T08:21:21.000Z"><meta property="article:modified_time" content="2025-12-22T06:40:52.508Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="Redis"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/image-20230214170127670.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/redis-connect/"},"headline":"记一次 Redis 连接问题排查","image":["https://image.cnkirito.cn/image-20230214170127670.png"],"datePublished":"2023-02-14T08:21:21.000Z","dateModified":"2025-12-22T06:40:52.508Z","author":{"@type":"Person","name":"徐靖峰"},"description":"问题发现客户端：业务应用使用 lettuce 客户端 服务端：Redis server 部署架构采用 1 主 + 1 从 + 3 哨兵 Redis 和业务应用部署在同一个 K8s 集群中，Redis Server 暴露了一个 redis-service，指向到 master 节点，业务应用通过 redis-service 连接 Redis。 某个时刻起，开始发现业务报错，稍加定位，发现是 Redi"}</script><link rel="canonical" href="https://www.cnkirito.moe/redis-connect/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>记一次 Redis 连接问题排查</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2023-02-14</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a></span><span class="level-item">21 分钟读完 (大约3142个字)</span></div></div><div class="content"><h2 id="问题发现"><a href="#问题发现" class="headerlink" title="问题发现"></a>问题发现</h2><p>客户端：业务应用使用 lettuce 客户端</p>
+<p>服务端：Redis server 部署架构采用 1 主 + 1 从 + 3 哨兵</p>
+<p>Redis 和业务应用部署在同一个 K8s 集群中，Redis Server 暴露了一个 redis-service，指向到 master 节点，业务应用通过 redis-service 连接 Redis。</p>
+<p>某个时刻起，开始发现业务报错，稍加定位，发现是 Redis 访问出了问题，搜索业务应用日志，发现关键信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">org.springframework.data.redis.RedisSystemException: Error in execution; nested exception is io.lettuce.core.RedisCommandExecutionException: READONLY You can<span class="string">&#x27;t write against a read only replica.</span></span><br></pre></td></tr></table></figure>
+
+<p>这是一个 Redis 访问的报错，看起来跟 Redis 的读写配置有关。</p>
+<span id="more"></span>
+
+<h2 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h2><p>首先排查下业务应用和 Redis 的连接情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># netstat -ano | grep 6379</span><br><span class="line">tcp        0      0 172.24.7.34:44602       10.96.113.219:6379      ESTABLISHED off (0.00&#x2F;0&#x2F;0)</span><br></pre></td></tr></table></figure>
+
+<p>其中 172.24.7.34 是业务 pod 的 ip，10.96.113.219 是 redis 的 K8s service ip，连接是 ESTABLISHED 状态，说明连接没有断。</p>
+<p>继续排查 Redis 的 pod 是否正常：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">redis-shareredis-0                           2&#x2F;2     Running   0</span><br><span class="line">redis-shareredis-1                           2&#x2F;2     Running   0</span><br><span class="line">redis-shareredis-sentinel-5f7458cd89-7dwpz   2&#x2F;2     Running   0</span><br><span class="line">redis-shareredis-sentinel-5f7458cd89-rrfz7   2&#x2F;2     Running   0</span><br><span class="line">redis-shareredis-sentinel-5f7458cd89-xzpmb   2&#x2F;2     Running   0</span><br></pre></td></tr></table></figure>
+
+<p>无论是读写节点还是哨兵节点，都没有重启过。</p>
+<p>既然报了只读节点的异常，索性看下 redis 节点的读写角色情况。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">root@redis-shareredis-0:&#x2F;data# redis-cli -h 172.24.1.95 -a xxxx role</span><br><span class="line">1) &quot;slave&quot;</span><br><span class="line">2) &quot;172.24.1.96&quot;</span><br><span class="line">3) (integer) 6379</span><br><span class="line">4) &quot;connected&quot;</span><br><span class="line">5) (integer) 6942040980</span><br><span class="line">root@redis-shareredis-0:&#x2F;data# redis-cli -h 172.24.1.96 -a xxxx role</span><br><span class="line">1) &quot;master&quot;</span><br><span class="line">2) (integer) 6942173072</span><br><span class="line">3) 1) 1) &quot;172.24.1.95&quot;</span><br><span class="line">      2) &quot;6379&quot;</span><br><span class="line">      3) &quot;6942173072&quot;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到此时 redis-shareredis-0（172.24.1.95）是 slave 节点，redis-shareredis-1（172.24.1.96）是 master 节点。</p>
+<p>排查到这里，猜测是业务 pod 实际通过 K8s service 连到了 slave 节点。进入 slave 确认这一信息，发现果然如此，并且 master 节点并没有检查到有该业务 pod 的连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@redis-shareredis-0:&#x2F;data# netstat -ano | grep 172.24.7.34:44602</span><br><span class="line">tcp        0      0 172.24.1.95:6379        172.24.7.34:44602       ESTABLISHED keepalive (24.09&#x2F;0&#x2F;0)</span><br></pre></td></tr></table></figure>
+
+<p>怀疑是某个时刻开始，master 和 slave 角色发生了互换，而主从切换过程中由于 pod 没有重启，长连接会一直保留着，此时即使 Redis service 的 endpoint 被修正，也不会影响到已有的连接。</p>
+<p><img src="https://image.cnkirito.cn/image-20230214170127670.png"></p>
+<p>为了验证上述猜想，着手排查 Redis server 节点和 sentinel 节点。</p>
+<p>查看 Redis 哨兵日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1:X 03 Feb 2023 06:21:41.357 * +slave slave 172.24.1.96:6379 172.24.1.96 6379 @ mymaster 172.24.1.95 6379</span><br><span class="line">1:X 14 Feb 2023 06:53:27.683 # +reset-master master mymaster 172.24.1.96 6379</span><br><span class="line">1:X 14 Feb 2023 06:53:28.692 * +slave slave 172.24.1.95:6379 172.24.1.95 6379 @ mymaster 172.24.1.96 6379</span><br><span class="line">1:X 14 Feb 2023 06:53:33.271 # +reset-master master mymaster 172.24.1.96 6379</span><br></pre></td></tr></table></figure>
+
+<p>可以看到在 2023/2/14 14:53 (时区+8)时发生了主从切换。</p>
+<p>尝试排查主从切换的原因，进到 redis-0 查看日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">1:M 14 Feb 2023 14:53:27.343 # Connection with replica 172.24.1.96:6379 lost.</span><br><span class="line">1:S 14 Feb 2023 14:53:27.616 * Before turning into a replica, using my master parameters to synthesize a cached master: I may be able to synchronize with the new master with just a partial transfer.</span><br><span class="line">1:S 14 Feb 2023 14:53:27.616 * REPLICAOF 172.24.1.96:6379 enabled (user request from &#39;id&#x3D;1238496 addr&#x3D;172.24.1.91:49388 fd&#x3D;7 name&#x3D; age&#x3D;0 idle&#x3D;0 flags&#x3D;N db&#x3D;0 sub&#x3D;0 psub&#x3D;0 multi&#x3D;-1 qbuf&#x3D;45 qbuf-free&#x3D;32723 obl&#x3D;0 oll&#x3D;0 omem&#x3D;0 events&#x3D;r cmd&#x3D;slaveof&#39;)</span><br><span class="line">1:S 14 Feb 2023 14:53:27.646 * REPLICAOF would result into synchronization with the master we are already connected with. No operation performed.</span><br><span class="line">1:S 14 Feb 2023 14:53:27.670 * REPLICAOF would result into synchronization with the master we are already connected with. No operation performed.</span><br><span class="line">1:S 14 Feb 2023 14:53:28.076 * Connecting to MASTER 172.24.1.96:6379</span><br><span class="line">1:S 14 Feb 2023 14:53:28.076 * MASTER &lt;-&gt; REPLICA sync started</span><br><span class="line">1:S 14 Feb 2023 14:53:28.076 * Non blocking connect for SYNC fired the event.</span><br><span class="line">1:S 14 Feb 2023 14:53:28.076 * Master replied to PING, replication can continue...</span><br><span class="line">1:S 14 Feb 2023 14:53:28.077 * Trying a partial resynchronization (request 816c44412b9008e6969b2fef6401a6cef85fff87:6901666283).</span><br><span class="line">1:S 14 Feb 2023 14:53:28.081 * Full resync from master: 86aa2f4759f73114594586e2e7d2cfbdd1ed2b69:6901664978</span><br><span class="line">1:S 14 Feb 2023 14:53:28.081 * Discarding previously cached master state.</span><br><span class="line">1:S 14 Feb 2023 14:53:28.140 * MASTER &lt;-&gt; REPLICA sync: receiving 1117094 bytes from master</span><br><span class="line">1:S 14 Feb 2023 14:53:28.144 * MASTER &lt;-&gt; REPLICA sync: Flushing old data</span><br><span class="line">1:S 14 Feb 2023 14:53:28.157 * MASTER &lt;-&gt; REPLICA sync: Loading DB in memory</span><br><span class="line">1:S 14 Feb 2023 14:53:28.234 * MASTER &lt;-&gt; REPLICA sync: Finished with success</span><br></pre></td></tr></table></figure>
+
+<p>从日志分析是主从同步时出现了网络分区，导致哨兵进行重新选主，但为什么出现网络分区，就无从得知了，K8s 中两个 pod 之间的通信都能出现 Connection lost 的确挺诡异的。</p>
+<p>到这里，问题的根源基本定位清楚了。</p>
+<h2 id="问题复盘"><a href="#问题复盘" class="headerlink" title="问题复盘"></a>问题复盘</h2><p>无论 Redis 的主从切换是故意的还是不小心，都应当被当做是一个常态，程序需要兼容这类场景。反映出两个问题：</p>
+<ul>
+<li>问题一，Redis 使用了哨兵机制，程序应当首选通过哨兵连接 Redis</li>
+<li>问题二，Lettuce 客户端没有自动断开错误的连接</li>
+</ul>
+<p>那么改进思路自然是有两种，一是改用哨兵连接 Redis，二是替换掉 Lettuce。对于本文遇到的问题，方案一可能可以，但不能确保没有其他极端情况导致其他连接问题，所以我实际采用的是方案二，使用 Jedis 替换掉 Lettuce。</p>
+<p>项目一开始采用 Lettuce，主要是因为 spring-boot-data-redis 默认采用了 Lettuce 的实现，尽管我一开始已经留意到搜索引擎中诸多关于 Lettuce 的问题，但实际测试发现，高版本 Lettuce 基本均已修复了这些问题，忽略了特殊场景下其可能存在的风险。简单对比下 Jedis 和 Lettuce:</p>
+<ul>
+<li><p>Lettuce：</p>
+<ul>
+<li>Lettuce 客户端没有连接保活探测，错误连接存在连接池中会造成请求超时报错。</li>
+<li>Lettuce 客户端未实现 testOnBorrow 等连接池检测方法，无法在使用连接之前进行连接校验。</li>
+</ul>
+</li>
+<li><p>Jedis：</p>
+<ul>
+<li><p>Jedis 客户端实现了 testOnBorrow、testWhileIdle、testOnReturn 等连接池校验配置。</p>
+<p>开启 testOnBorrow 在每次借用连接前都会进行连接校验，可靠性最高，但是会影响性能（每次 Redis 请求前会进行探测）。</p>
+</li>
+<li><p>testWhileIdle 可以在连接空闲时进行连接检测，合理配置阈值可以及时剔除连接池中的异常连接，防止使用异常连接造成业务报错。</p>
+</li>
+<li><p>在空闲连接检测之前，连接出现问题，可能会造成使用该连接的业务报错，此处可以通过参数控制检测间隔（timeBetweenEvictionRunsMillis）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>因此，Jedis 客户端在面对连接异常，网络抖动等场景下的异常处理和检测能力明显强于 Lettuce，可靠性更强。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th><strong>配置介绍</strong></th>
+<th><strong>配置建议</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>maxTotal</td>
+<td>最大连接，单位：个</td>
+<td>根据Web容器的Http线程数来进行配置，估算单个Http请求中可能会并行进行的Redis调用次数，例如：Tomcat中的Connector内的maxConnections配置为150，每个Http请求可能会并行执行2个Redis请求，在此之上进行部分预留，则建议配置至少为：150 x 2 + 100= 400<strong>限制条件：</strong>单个Redis实例的最大连接数。maxTotal和客户端节点数（CCE容器或业务VM数量）数值的乘积要小于单个Redis实例的最大连接数。例如：Redis主备实例配置maxClients为10000，单个客户端maxTotal配置为500，则最大客户端节点数量为20个。</td>
+</tr>
+<tr>
+<td>maxIdle</td>
+<td>最大空闲连接，单位：个</td>
+<td>建议配置为maxTotal一致。</td>
+</tr>
+<tr>
+<td>minIdle</td>
+<td>最小空闲连接，单位：个</td>
+<td>一般来说建议配置为maxTotal的X分之一，例如此处常规配置建议为：100。对于性能敏感的场景，防止经常连接数量抖动造成影响，也可以配置为与maxIdle一致，例如：400。</td>
+</tr>
+<tr>
+<td>maxWaitMillis</td>
+<td>最大获取连接等待时间，单位：毫秒</td>
+<td>获取连接时最大的连接池等待时间，根据单次业务最长容忍的失败时间减去执行命令的超时时间得到建议值。例如：Http最大容忍超时时间为15s，Redis请求的timeout设置为10s，则此处可以配置为5s。</td>
+</tr>
+<tr>
+<td>timeout</td>
+<td>命令执行超时时间，单位：毫秒</td>
+<td>单次执行Redis命令最大可容忍的超时时间，根据业务程序的逻辑进行选择，一般来说处于对网络容错等考虑至少建议配置为210ms以上。特殊的探测逻辑或者环境异常检测等，可以适当调整达到秒级。</td>
+</tr>
+<tr>
+<td>minEvictableIdleTimeMillis</td>
+<td>空闲连接逐出时间，大于该值的空闲连接一直未被使用则会被释放，单位：毫秒</td>
+<td>如果希望系统不会经常对连接进行断链重建，此处可以配置一个较大值（xx分钟），或者此处配置为-1并且搭配空闲连接检测进行定期检测。</td>
+</tr>
+<tr>
+<td>timeBetweenEvictionRunsMillis</td>
+<td>空闲连接探测时间间隔，单位：毫秒</td>
+<td>根据系统的空闲连接数量进行估算，例如系统的空闲连接探测时间配置为30s，则代表每隔30s会对连接进行探测，如果30s内发生异常的连接，经过探测后会进行连接排除。根据连接数的多少进行配置，如果连接数太大，配置时间太短，会造成请求资源浪费。对于几百级别的连接，常规来说建议配置为30s，可以根据系统需要进行动态调整。</td>
+</tr>
+<tr>
+<td>testOnBorrow</td>
+<td>向资源池借用连接时是否做连接有效性检测（ping），检测到的无效连接将会被移除。</td>
+<td>对于业务连接极端敏感的，并且性能可以接受的情况下，可以配置为True，一般来说建议配置为False，启用连接空闲检测。</td>
+</tr>
+<tr>
+<td>testWhileIdle</td>
+<td>是否在空闲资源监测时通过ping命令监测连接有效性，无效连接将被销毁。</td>
+<td>True</td>
+</tr>
+<tr>
+<td>testOnReturn</td>
+<td>向资源池归还连接时是否做连接有效性检测（ping），检测到无效连接将会被移除。</td>
+<td>False</td>
+</tr>
+<tr>
+<td>maxAttempts</td>
+<td>在JedisCluster模式下，您可以配置maxAttempts参数来定义失败时的重试次数。</td>
+<td>建议配置3-5之间，默认配置为5。根据业务接口最大超时时间和单次请求的timeout综合配置，最大配置不建议超过10，否则会造成单次请求处理时间过长，接口请求阻塞。</td>
+</tr>
+</tbody></table>
+<p>再次回到本次案例，如果使用了 Jedis，并且配置了合理的连接池策略，可能仍然会存在问题，因为 Jedis 底层检测连接是否可用，使用的是 ping 命令，当连接到只读节点，ping 命令仍然可以工作，所以实际上连接检查机制并不能解决本案例的问题。</p>
+<p>但 Jedis 提供了一个 minEvictableIdleTimeMillis 参数，该参数表示一个连接至少停留在 idle 状态的最短时间，然后才能被 idle object evitor 扫描并驱逐，该参数会受到 minIdle 的影响，驱逐到 minIdle 的数量。也就意味着：默认配置 minEvictableIdleTimeMillis=60s，minIdle=0 下，连接在空闲时间达到 60s 时，将会被释放。由于实际的业务场景 Redis 读写空闲达到 60s 的场景是很常见的，所以该方案勉强可以达到在主从切换之后，在较短时间内恢复。但如果 minIdle &gt; 0，这些连接依旧会有问题。而 Lettuce 默认配置下，连接会一直存在。</p>
+<p>出于一些不可描述的原因，我无法将应用连接 Redis 的模式切换成哨兵模式，所以最终采取了切换到 Jedis 客户端，并且配置 minIdle=0、minEvictableIdleTimeMillis=60s 的方案。</p>
+<h2 id="问题总结"><a href="#问题总结" class="headerlink" title="问题总结"></a>问题总结</h2><p>当使用域名/K8s Service 连接 Redis 集群时，需要考虑主从切换时可能存在的问题。Redis 通常使用长连接通信，主从切换时如果连接不断开，会导致无法进行写入操作。可以在客户端、服务端两个层面规避这一问题，以下是一些行之有效的方案：</p>
+<ul>
+<li>客户端连接哨兵集群，哨兵会感知到主从切换，并推送给客户端这一变化</li>
+<li>客户端配置 minIdle=0，及时断开空闲的连接，可以一定程度规避连接已经不可用但健康检测又检查不出来的场景。（即本文的场景）</li>
+<li>服务端主从切换时断开所有已有的连接，依靠客户端的健康检测以及重连等机制，确保连接到正确的节点。</li>
+</ul>
+<p>Redis 客户端推荐使用 Jedis 客户端，其在面对连接异常，网络抖动等场景下的异常处理和检测能力明显强于 Lettuce。</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>记一次 Redis 连接问题排查</p><p><a href="https://www.cnkirito.moe/redis-connect/">https://www.cnkirito.moe/redis-connect/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2023-02-14</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Redis/">Redis </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/house-customization/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Kirito 全屋定制记 | 纯小白向全屋定制攻略</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/service-pull-push/"><span class="level-item">聊聊服务发现的推拉模型</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#问题发现"><span class="level-left"><span class="level-item">1</span><span class="level-item">问题发现</span></span></a></li><li><a class="level is-mobile" href="#问题定位"><span class="level-left"><span class="level-item">2</span><span class="level-item">问题定位</span></span></a></li><li><a class="level is-mobile" href="#问题复盘"><span class="level-left"><span class="level-item">3</span><span class="level-item">问题复盘</span></span></a></li><li><a class="level is-mobile" href="#问题总结"><span class="level-left"><span class="level-item">4</span><span class="level-item">问题总结</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

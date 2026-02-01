@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>文件 IO 中如何保证掉电不丢失数据 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言好久没有分享文件 IO 的小技巧了，依稀记得上次分享还是在上次。 第二届云原生编程挑战赛正在火热进行中，Kirito 也在做《针对冷热读写场景的RocketMQ存储系统设计》这个题目，不过参与的是内部赛道，没法跟外部的小伙伴们一起排名了。 众所周知，存储设计离不开文件 IO，将数据存储到文件中进行持久化，是大多数消息队列、数据库系统的常规操作。在比赛中，为了更贴近实际的生产场景，往往也会引入正"><meta property="og:type" content="blog"><meta property="og:title" content="文件 IO 中如何保证掉电不丢失数据"><meta property="og:url" content="https://www.cnkirito.moe/filechannel_force/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="前言好久没有分享文件 IO 的小技巧了，依稀记得上次分享还是在上次。 第二届云原生编程挑战赛正在火热进行中，Kirito 也在做《针对冷热读写场景的RocketMQ存储系统设计》这个题目，不过参与的是内部赛道，没法跟外部的小伙伴们一起排名了。 众所周知，存储设计离不开文件 IO，将数据存储到文件中进行持久化，是大多数消息队列、数据库系统的常规操作。在比赛中，为了更贴近实际的生产场景，往往也会引入正"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/1364556742_9652.gif"><meta property="article:published_time" content="2021-09-17T15:00:44.000Z"><meta property="article:modified_time" content="2025-12-22T07:22:12.744Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="文件IO"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/1364556742_9652.gif"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/filechannel_force/"},"headline":"文件 IO 中如何保证掉电不丢失数据","image":["https://image.cnkirito.cn/1364556742_9652.gif"],"datePublished":"2021-09-17T15:00:44.000Z","dateModified":"2025-12-22T07:22:12.744Z","author":{"@type":"Person","name":"徐靖峰"},"description":"前言好久没有分享文件 IO 的小技巧了，依稀记得上次分享还是在上次。 第二届云原生编程挑战赛正在火热进行中，Kirito 也在做《针对冷热读写场景的RocketMQ存储系统设计》这个题目，不过参与的是内部赛道，没法跟外部的小伙伴们一起排名了。 众所周知，存储设计离不开文件 IO，将数据存储到文件中进行持久化，是大多数消息队列、数据库系统的常规操作。在比赛中，为了更贴近实际的生产场景，往往也会引入正"}</script><link rel="canonical" href="https://www.cnkirito.moe/filechannel_force/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>文件 IO 中如何保证掉电不丢失数据</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-09-17</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/Java/">Java</a></span><span class="level-item">14 分钟读完 (大约2057个字)</span></div></div><div class="content"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>好久没有分享文件 IO 的小技巧了，依稀记得上次分享还是在上次。</p>
+<p>第二届云原生编程挑战赛正在火热进行中，Kirito 也在做《针对冷热读写场景的RocketMQ存储系统设计》这个题目，不过参与的是内部赛道，没法跟外部的小伙伴们一起排名了。</p>
+<p>众所周知，存储设计离不开文件 IO，将数据存储到文件中进行持久化，是大多数消息队列、数据库系统的常规操作。在比赛中，为了更贴近实际的生产场景，往往也会引入正确性检测阶段，以避免让选手设计一些仅仅支持内存行为的代码逻辑。试想一下，RocketMQ 或者 Mysql 在宕机之后因为索引丢失，而导致数据无法查询，这该是多么可怕的一件事！</p>
+<p>正确性检测要求我们<strong>写入的数据能够被查询出来，没有丢失</strong>，按照我个人的参赛经验，通常分为三种级别</p>
+<ul>
+<li>进程正常退出或者进程被 kill -15 中断</li>
+<li>进程被 kill -9 中断</li>
+<li>系统掉电</li>
+</ul>
+<span id="more"></span>
+
+<p>第一个级别，进程正常退出或者进程被 kill -15 中断，该场景没有什么好讲的，一般评测程序会留出 <code>destroy</code> 、<code>close</code> 等回调接口，用于显式关闭，或者在 Java 中使用 JVM 提供的 <code>ShutdownHook</code> 监听 <code>-15</code> 信号，这是最简单的一种场景，一般不需要考虑数据一致性的问题。在实际生产中，对应我们优雅退出、手动关机的流程。</p>
+<p>第二个级别，进程被 kill -9 中断。这意味着，我们使用内存去聚合一些数据可能是受限的，但我们仍然可以利用操作系统的一些特性，例如 PageCache 去做缓存。毕竟进程挂了，机器可没挂。在实际生产中，对应我们遇到一些内存溢出、FullGC 重启进程等暴力退出程序的场景。</p>
+<p>第三个级别，系统掉电。这也是我这篇文章的主角，同时也是数据一致性要求最高的级别。系统掉电意味着我们甚至连 PageCache 都不能直接利用，必须严格保证数据落到磁盘当中。在实际生产中，对应主机宕机，机房断电等场景。</p>
+<p>可以发现，任何一个级别，都有他们实际应用的场景，越是一致性要求高的级别，通常性能就越差，能够利用的手段也越少，系统也就越难设计。</p>
+<p>而这次比赛的正确性描述</p>
+<blockquote>
+<ol>
+<li>写入若干条数据。</li>
+<li>重启机器</li>
+<li>再读出来，必须严格等于之前写入的数据</li>
+</ol>
+</blockquote>
+<p>其中的重启机器环节，恰恰是模拟的掉电。</p>
+<h2 id="如何理解数据不丢失"><a href="#如何理解数据不丢失" class="headerlink" title="如何理解数据不丢失"></a>如何理解数据不丢失</h2><p>在介绍 Java 文件 IO 中保证掉电不丢失的手段之前，我还需要做一个概念的介绍，这样方便我们更好的理解文章后续的观点。</p>
+<p>很多同学可能有疑惑，如果一个数据写到一半，发生了掉电，那评测程序怎么知道这条数据落盘了没有呢？评测程序会不会读取这条数据呢？其实，对于”执行到一半“这种逻辑，谁都没有办法保证，正如系统真正掉电时，他可不会跟你商量。所以，在一般的评测中，去验证选手的数据一致性时，通常采取的做法是：当一个方法同步返回时，就应该认为这个数据落盘了，即使返回后立刻断电，也应该可以在重启之后，查询到这条数据。</p>
+<p>这符合我们在实际开发/生产场景的认知：</p>
+<ul>
+<li>对于同步方法，其实隐含了 ack 的契约，即拿到返回值的那一瞬间，认为对方处理完毕了。</li>
+<li>对于异步方法，我们才需要增加回调或者轮询 ack 的机制。</li>
+</ul>
+<h2 id="Java-文件-IO-保障掉电不丢数据"><a href="#Java-文件-IO-保障掉电不丢数据" class="headerlink" title="Java 文件 IO 保障掉电不丢数据"></a>Java 文件 IO 保障掉电不丢数据</h2><p>在《<a href="https://www.cnkirito.moe/file-io-best-practise/">文件 IO 操作的一些最佳实践</a>》一文中，我其实已经介绍了，Java 中无非就一个 <code>FileChannel</code> 是最常用的文件操作类。 <code>FileChannel</code> 的 <code>write</code> 方法看似是一个同步方法，将内存数据写入了磁盘，但其实它和磁盘之间还隔着一层 PageCache。</p>
+<p><img src="https://image.cnkirito.cn/1364556742_9652.gif" alt="PageCache"></p>
+<p>尽管操作系统可能很快就将 PageCache 刷入到了磁盘，但这个过程仍然是一个异步的过程。就以这次比赛而言，如果你仅仅数据写入到 PageCache 就不管不问了，肯定是无法通过正确性检测的。</p>
+<p>解决方法也很简单，调用 <code>FileChannel#force(boolean meta)</code> 方法即可，该方法会强制操作系统将 PageCache 刷盘。</p>
+<blockquote>
+<p>force 的入参是一个 boolean 值，代表是否将元数据也刷盘，这块网上资料比较少，我也没有详细的依据。按照我个人的理解，元数据包含了大小和时间戳信息，可能会影响文件的实际长度，所以 force(true) 可能更稳妥一些。</p>
+</blockquote>
+<p>结合第二节中介绍的内容，我们只需要保证在每次写入操作返回之前，调用 <code>force</code>，即可实现掉电数据不丢失的效果。</p>
+<p>那么，代价是什么呢？意味着我们完全丧失了操作系统给文件 IO 设置的一道缓存。在没有缓存又没有 4kb 对齐的情况下，写入放大问题将会非常明显。</p>
+<p>这里用一份数据说话，根据官方给出的数据，这次评测使用的 SSD 吞吐可达到 <strong>320MiB/s</strong>，而我实测在不经过优化的场景下使用 force，仅仅能达到 <strong>50 Mib/s</strong>，直接会导致评测超时。</p>
+<p><code>force</code> 是掉电的拯救者，也可能是性能的毁灭者。</p>
+<h2 id="force-下可能的优化方案"><a href="#force-下可能的优化方案" class="headerlink" title="force 下可能的优化方案"></a>force 下可能的优化方案</h2><p>在实际场景中，消息的生产者可能会同步地连续地发送多条消息，也有可能会有多个生产者一起在发送消息，尽管消息的投递是同步的，但我们仍然可以在多个不同生产者的消息之间做一些文章，在保证 force 的同时，减少写入放大的问题。</p>
+<p>鉴于比赛还在进行中，我就不过多聊详细设计了，懂的应该看到上面这段话都懂了，还算是比较基础的优化。我在优化过后，可以保证在 force 的前提下，将吞吐量从 50 Mib/s 提升到 275 Mib/s，尽管离理论值还是有所差距，但已经足够出一个 baseline 了。</p>
+<h2 id="RocketMQ-中的实际应用"><a href="#RocketMQ-中的实际应用" class="headerlink" title="RocketMQ 中的实际应用"></a>RocketMQ 中的实际应用</h2><p>以 RocketMQ 为例，聊聊其是如何保障数据不丢失的。RocketMQ 在 Broker 侧保障数据不丢失主要有两种机制：</p>
+<ol>
+<li>RocketMQ 支持配置同步双写，保障消息在主节点之外，还在一个从节点有备份</li>
+<li>RocketMQ 支持同步刷盘策略，即本文介绍的 <code>FileChannel#force(boolean meta)</code>  方案</li>
+</ol>
+<p>今天对文件 IO 的理解有没有多一点点呢，如果你愿意多花点时间阅读这篇文章的话，你就会发现多花了点时间。对了，这次比赛，我有拉一个小群，欢迎对比赛感兴趣的同学加我微信 xiayimiaoshenghua 进群交流，或者留言讨论哦。</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>文件 IO 中如何保证掉电不丢失数据</p><p><a href="https://www.cnkirito.moe/filechannel_force/">https://www.cnkirito.moe/filechannel_force/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2021-09-17</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/%E6%96%87%E4%BB%B6IO/">文件IO </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/heapbuffer-io/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">使用堆内内存HeapByteBuffer的注意事项</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/dubbo-channel/"><span class="level-item">Dubbo中的连接控制，你真的理解吗？</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#如何理解数据不丢失"><span class="level-left"><span class="level-item">2</span><span class="level-item">如何理解数据不丢失</span></span></a></li><li><a class="level is-mobile" href="#Java-文件-IO-保障掉电不丢数据"><span class="level-left"><span class="level-item">3</span><span class="level-item">Java 文件 IO 保障掉电不丢数据</span></span></a></li><li><a class="level is-mobile" href="#force-下可能的优化方案"><span class="level-left"><span class="level-item">4</span><span class="level-item">force 下可能的优化方案</span></span></a></li><li><a class="level is-mobile" href="#RocketMQ-中的实际应用"><span class="level-left"><span class="level-item">5</span><span class="level-item">RocketMQ 中的实际应用</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>EDAS 让 Spring Cloud Gateway 生产可用的二三策 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Spring Cloud Gateway 是 Spring Cloud 微服务生态下的网关组件，一直以来备受 Java 社区的用户关注，很多企业选择使用其作为微服务网关或者业务网关。在阿里云上，也不乏有很多网关类型的产品供用户使用，例如 API Gateway 和 MSE Higress，使用 PaaS 化的方式提供网关能力，用户不再需要关注网关的实现，直接获得开箱即用的能力。在从前，用户只能选择"><meta property="og:type" content="blog"><meta property="og:title" content="EDAS 让 Spring Cloud Gateway 生产可用的二三策"><meta property="og:url" content="https://www.cnkirito.moe/edas-scg-agent/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="Spring Cloud Gateway 是 Spring Cloud 微服务生态下的网关组件，一直以来备受 Java 社区的用户关注，很多企业选择使用其作为微服务网关或者业务网关。在阿里云上，也不乏有很多网关类型的产品供用户使用，例如 API Gateway 和 MSE Higress，使用 PaaS 化的方式提供网关能力，用户不再需要关注网关的实现，直接获得开箱即用的能力。在从前，用户只能选择"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/image-20231016151952343.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20231016153906037.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20231016154842110.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20231016183215958.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20231017095051605.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20231017095551499.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20231017100248106.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20231017100933394.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20231017101531498.png"><meta property="article:published_time" content="2023-10-18T08:23:59.000Z"><meta property="article:modified_time" content="2025-12-22T06:40:52.175Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="Spring Cloud Gateway"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/image-20231016151952343.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/edas-scg-agent/"},"headline":"EDAS 让 Spring Cloud Gateway 生产可用的二三策","image":["https://image.cnkirito.cn/image-20231016151952343.png","https://image.cnkirito.cn/image-20231016153906037.png","https://image.cnkirito.cn/image-20231016154842110.png","https://image.cnkirito.cn/image-20231016183215958.png","https://image.cnkirito.cn/image-20231017095051605.png","https://image.cnkirito.cn/image-20231017095551499.png","https://image.cnkirito.cn/image-20231017100248106.png","https://image.cnkirito.cn/image-20231017100933394.png","https://image.cnkirito.cn/image-20231017101531498.png"],"datePublished":"2023-10-18T08:23:59.000Z","dateModified":"2025-12-22T06:40:52.175Z","author":{"@type":"Person","name":"徐靖峰"},"description":"Spring Cloud Gateway 是 Spring Cloud 微服务生态下的网关组件，一直以来备受 Java 社区的用户关注，很多企业选择使用其作为微服务网关或者业务网关。在阿里云上，也不乏有很多网关类型的产品供用户使用，例如 API Gateway 和 MSE Higress，使用 PaaS 化的方式提供网关能力，用户不再需要关注网关的实现，直接获得开箱即用的能力。在从前，用户只能选择"}</script><link rel="canonical" href="https://www.cnkirito.moe/edas-scg-agent/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>EDAS 让 Spring Cloud Gateway 生产可用的二三策</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2023-10-18</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/%E7%BD%91%E5%85%B3/">网关</a></span><span class="level-item">26 分钟读完 (大约3857个字)</span></div></div><div class="content"><p>Spring Cloud Gateway 是 Spring Cloud 微服务生态下的网关组件，一直以来备受 Java 社区的用户关注，很多企业选择使用其作为微服务网关或者业务网关。在阿里云上，也不乏有很多网关类型的产品供用户使用，例如 API Gateway 和 MSE Higress，使用 PaaS 化的方式提供网关能力，用户不再需要关注网关的实现，直接获得开箱即用的能力。在从前，用户只能选择自建 Spring Cloud Gateway，或者购买云产品，而今天介绍的 EDAS 增强 Spring Cloud Gateway 的新姿势，给用户提供了一个新的选择。</p>
+<h2 id="让-Spring-Cloud-Gateway-生产可用"><a href="#让-Spring-Cloud-Gateway-生产可用" class="headerlink" title="让 Spring Cloud Gateway 生产可用"></a>让 Spring Cloud Gateway 生产可用</h2><p>开源 Spring Cloud Gateway 存在一些让企业级用户担忧的因素，包括内存泄漏问题，以及路由设计问题，EDAS 根据云服务总线 CSB 多年沉淀下来的 Spring Cloud Gateway 使用经验，对诸多已经存在的问题进行了治理，对诸多的风险因素也进行了规避，彻底打消用户使用 Spring Cloud Gateway 技术侧的顾虑。</p>
+<ul>
+<li> 内存泄漏问题，该问题来自于 CSB 的生产实践，Spring Cloud Gateway 底层依赖 netty 进行 IO 通信，熟悉 netty 的人应当知道其有一个读写缓冲的设计，如果通信内容较小，一般会命中 chunked buffer，而通信内容较大时，例如文件上传，则会触发内存的新分配，而 Spring Cloud Gateway 在对接 netty 时存在逻辑缺陷，会导致新分配的池化内存无法完全回收，导致堆外内存泄漏。并且这块堆外内存时 netty 使用 unsafe 自行分配的，通过常规的 JVM 工具还无法观测，非常隐蔽。 </li>
+</ul>
+<p>EDAS 建议为 Spring Cloud Gateway 应用增加启动参数 <code>-Dio.netty.allocator.type=unpooled</code>，使得请求未命中 chunked buffer 时，分配的临时内存不进行池化，规避内存泄漏问题。<code>-Dio.netty.allocator.type=unpooled</code> 不会导致性能下降，只有大报文才会触发该内存的分配，而网关的最佳实践应该是不允许文件上传这类需求，加上该参数是为了应对非主流场景的一个兜底行为。</p>
+<ul>
+<li> 开源 Spring Cloud Gateway 并未提供路由配置校验能力，当路由配置出错时，可能会带来灾难性的后果，例如在配置路由时，误将 POST 写成了 PEST： <code>predicates: Method=PEST</code>，可能会导致网关中所有路由失效，爆炸半径极大。 </li>
+</ul>
+<p>EDAS 建议为 Spring Cloud Gateway 应用配置 <code>spring.cloud.gateway.fail-on-route-definition-error: false</code> ，降低爆炸半径。通过 EDAS 创建的路由，将会经过校验，确保路由的格式正确，提前规避问题。</p>
+<p>以上只是 EDAS 增强 Spring Cloud Gateway 方案的部分案例，EDAS 围绕性能、安全、稳定性等方面，全面为用户的网关保驾护航，让用户彻底回归到业务本身。</p>
+<p>围绕让 Spring Cloud Gateway 生产可用这个基本话题，让用户在云上放心的使用 Spring Cloud Gateway，EDAS 推出了一个新的功能，使用无侵入式的方式增强 Spring Cloud Gateway。</p>
+<span id="more"></span>
+
+<h2 id="功能介绍"><a href="#功能介绍" class="headerlink" title="功能介绍"></a>功能介绍</h2><p>众所周知，在 EDAS 中部署的 Java 应用都会挂载一个 Java Agent，通过 Java Agent 技术，EDAS 提供了丰富的微服务治理以及可观测性的能力，此次介绍的 Spring Cloud Gateway 增强能力，同样通过该 Java Agent 实现。</p>
+<p><img src="https://image.cnkirito.cn/image-20231016151952343.png"></p>
+<p>EDAS 增强 Spring Cloud Gateway 带来的最直观的变化便是提供了一个白屏控制台，方便用户进行操作，同时提供了诸多的增强能力：</p>
+<ul>
+<li>动态配置</li>
+<li>自定义插件</li>
+<li>路由调试</li>
+<li>限流降级</li>
+<li>可观测性增强</li>
+</ul>
+<p>为了方便用户有一个直观的了解，本文以一个快速入门开始进行介绍</p>
+<h3 id="部署-Spring-Cloud-Gateway"><a href="#部署-Spring-Cloud-Gateway" class="headerlink" title="部署 Spring Cloud Gateway"></a>部署 Spring Cloud Gateway</h3><p><img src="https://image.cnkirito.cn/image-20231016153906037.png"></p>
+<p>用户可以将已有的 Spring Cloud Gateway 打包成 jar 包或者镜像，在 EDAS 中进行部署，或者也可以使用 EDAS 提供 Demo 部署包进行部署。如上图所示，EDAS 新增支持了 Spring Cloud Gateway 应用的 Demo 部署包，在该部署包中，事先配置好了一个 Nacos 注册中心，会自动连接到当前部署的微服务空间，并未配置任何路由，因为接下来将会进行动态路由配置的演示，所以无需事先在配置文件中配置。整个部署过程和部署一个普通的微服务应用没有任何差异。</p>
+<h3 id="创建路由并测试"><a href="#创建路由并测试" class="headerlink" title="创建路由并测试"></a>创建路由并测试</h3><p><img src="https://image.cnkirito.cn/image-20231016154842110.png"></p>
+<p>EDAS 会识别到 Spring Cloud Gateway 应用的特征，并在菜单栏中动态增加应用网关的菜单。在快速入门中，示例创建了两条路由，分别是 http:// 格式的直接请求场景和 lb:// 格式的服务发现场景。为方便测试，可以在应用总览中为该网关应用配置一个公网的 SLB，通过 curl 请求测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">~ curl 121.xx.xx.xx&#x2F;httpbin&#x2F;get</span><br><span class="line">&#123;</span><br><span class="line">  &quot;args&quot;: &#123;&#125;,</span><br><span class="line">  &quot;headers&quot;: &#123;</span><br><span class="line">    &quot;Aaa&quot;: &quot;ccc&quot;,</span><br><span class="line">    &quot;Accept&quot;: &quot;*&#x2F;*&quot;,</span><br><span class="line">    &quot;Content-Length&quot;: &quot;0&quot;,</span><br><span class="line">    &quot;Eagleeye-Ip&quot;: &quot;192.168.2.1&quot;,</span><br><span class="line">    &quot;Eagleeye-Pappname&quot;: &quot;5ae05114-bc80-4a32-9048-209b3a93d723&quot;,</span><br><span class="line">    &quot;Eagleeye-Prpc&quot;: &quot;&#x2F;httpbin&#x2F;get&quot;,</span><br><span class="line">    &quot;Eagleeye-Pspanid&quot;: &quot;-7254661991881594415&quot;,</span><br><span class="line">    &quot;Eagleeye-Root-App&quot;: &quot;5ae05114-bc80-4a32-9048-209b3a93d723&quot;,</span><br><span class="line">    &quot;Eagleeye-Rpcid&quot;: &quot;0.2.1&quot;,</span><br><span class="line">    &quot;Eagleeye-Sampled&quot;: &quot;s0&quot;,</span><br><span class="line">    &quot;Eagleeye-Spanid&quot;: &quot;-1207596966212570593&quot;,</span><br><span class="line">    &quot;Eagleeye-Traceid&quot;: &quot;eac0a8020116974429411421021d0001&quot;,</span><br><span class="line">    &quot;Eagleeye-Userdata&quot;: &quot;__microservice_match_result__&#x3D;[]&quot;,</span><br><span class="line">    &quot;Forwarded&quot;: &quot;proto&#x3D;http;host&#x3D;121.xx.xx.xx;for&#x3D;\&quot;140.xx.xx.xx\&quot;&quot;,</span><br><span class="line">    &quot;Gfs.Scg.Ip&quot;: &quot;192.168.2.1&quot;,</span><br><span class="line">    &quot;Host&quot;: &quot;httpbin.org&quot;,</span><br><span class="line">    &quot;Name&quot;: &quot;kirito,kirito&quot;,</span><br><span class="line">    &quot;User-Agent&quot;: &quot;curl&#x2F;7.64.1&quot;,</span><br><span class="line">    &quot;X-Amzn-Trace-Id&quot;: &quot;Root&#x3D;1-652cec7d-50f852f622c546f20f8997fe&quot;,</span><br><span class="line">    &quot;X-Forwarded-Host&quot;: &quot;121.xx.xx.xx&quot;,</span><br><span class="line">    &quot;X-Forwarded-Prefix&quot;: &quot;&#x2F;httpbin&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;origin&quot;: &quot;121.xx.xx.xx, 47.xx.xx.xx&quot;,</span><br><span class="line">  &quot;url&quot;: &quot;http:&#x2F;&#x2F;121.xx.xx.xx&#x2F;get&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>网关成功转发了请求，至此路由测试完毕。</p>
+<h2 id="方案优势"><a href="#方案优势" class="headerlink" title="方案优势"></a>方案优势</h2><p>以下情况，均可以考虑使用 EDAS Spring Cloud Gateway 增强方案</p>
+<ul>
+<li> 已经在使用 Spring Cloud Gateway </li>
+<li> 网关存在较强的业务定制需求，例如企业级用户/权限体系对接 </li>
+<li> Java 技术栈主导，希望对网关组件有自主掌控力 </li>
+<li> 网关后端服务使用 Spring Cloud 技术栈 </li>
+</ul>
+<p>EDAS 提供的 Spring Cloud Gateway 增强方案解耦了网关的业务属性和中间件属性，用户可以专注于在 Spring Cloud Gateway 开源的基础上进行二次开发，注入复杂的业务逻辑，而将网关的功能（动态配置、限流降级等）、安全、性能等中间件属性交给 EDAS。</p>
+<p>对于已经在使用 Spring Cloud Gateway 的用户，当 Spring Cloud Gateway 应用被 EDAS 托管后，无需改动任何代码，即可以在保留原本扩展点的同时，获得诸多的增强能力。今后依旧可以在应用基础上继续进行二次开发，使网关应用获得和业务应用一样的开发体验。传统的 PaaS 化网关在自定义扩展的支持上，一般要求用户去适配网关自身的规范，使用不熟悉的语言或者插件机制，存在一定的学习成本和风险。</p>
+<p>如果用户目前没有网关，考虑新增一个网关，正在进行网关方案的调研，则需要针对自身的业务场景进行充分的考虑。如果符合 Java 技术栈、Spring Cloud 微服务体系等关键词，那么同样可以优先考虑该方案。</p>
+<p>相比较阿里云上同类型的 PaaS 网关产品，他们同样有各自的使用场景，例如 API Gateway 可以实现精细化的 API 管理，MSE Higress 可以作为三合一的网关，也可以作为 K8s Ingress 的实现。可以根据自身需求来决定网关方案，EDAS 增强 Spring Cloud Gateway 的方案为用户新添了一个选型。</p>
+<p>相比开源 Spring Cloud Gateway，EDAS Agent 增强方案在 100% 兼容开源功能的基础上，进行了以下能力的增强。</p>
+<h2 id="能力增强"><a href="#能力增强" class="headerlink" title="能力增强"></a>能力增强</h2><h3 id="动态配置能力"><a href="#动态配置能力" class="headerlink" title="动态配置能力"></a>动态配置能力</h3><p><img src="https://image.cnkirito.cn/image-20231016183215958.png"></p>
+<p>EDAS 为 Spring Cloud Gateway 的路由（Route）和插件（Gateway Filter）提供了动态配置能力，以白屏化的形式呈现，方便用户进行配置。</p>
+<p>如果 Spring Cloud Gateway 项目中已经配置了路由，例如配置在 application.yml 中，同时又在 EDAS 控制台中进行了配置，这些路由最终会合并成一份路由集合。需要注意的是 EDAS 控制台中只会展示由 EDAS 发布的路由配置，不会展示 application.yml 中的配置，但实际上这两份路由都会生效。使用该方案时，建议用户通过配置导入&amp;导出的方式将配置迁移至 EDAS 控制台，方便统一管理。</p>
+<h3 id="配置导入-amp-导出"><a href="#配置导入-amp-导出" class="headerlink" title="配置导入&amp;导出"></a>配置导入&amp;导出</h3><p><img src="https://image.cnkirito.cn/image-20231017095051605.png"></p>
+<p>路由和全局插件均支持通过 Yaml 创建，Yaml 的格式遵循开源 Spring Cloud Gateway 的 schema 规范，以下是两个配置示例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">routes:</span></span><br><span class="line">      <span class="comment"># 1. 利用域名进行路由匹配，且后端是固定 HTTP URL 的场景</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">r-demo</span></span><br><span class="line">        <span class="attr">predicates:</span></span><br><span class="line">        <span class="comment"># 只有域名为 demo.com 的请求才会匹配上该路由</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">Host=demo.com</span></span><br><span class="line">        <span class="attr">filters:</span></span><br><span class="line">        <span class="comment"># 该插件在转发请求时，在请求头中添加 Header 键值对</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">AddRequestHeader=a,b</span></span><br><span class="line">        <span class="comment"># uri 里填写后端 HTTP URL</span></span><br><span class="line">        <span class="attr">uri:</span> <span class="string">http://demo.com</span></span><br><span class="line">        <span class="comment"># order 代表路由的优先级，值越小，优先级越高</span></span><br><span class="line">        <span class="attr">order:</span> <span class="number">1000</span></span><br><span class="line">      <span class="comment"># 2. 利用路径前缀进行路由匹配，且后端是微服务的场景</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">r-demo-2</span></span><br><span class="line">        <span class="attr">predicates:</span></span><br><span class="line">        <span class="comment"># 请求路径以 /demo-2 开头，才会匹配上该路由</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">Path=/demo-2/**</span></span><br><span class="line">        <span class="attr">filters:</span></span><br><span class="line">        <span class="comment"># 该插件确保请求在转发至后端服务时，会移除掉 /demo-2 的前缀</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">StripPrefix=1</span></span><br><span class="line">        <span class="comment"># 后端为微服务时，uri应该以 lb:// 开头，并填写服务名</span></span><br><span class="line">        <span class="attr">uri:</span> <span class="string">lb://service-provider</span></span><br><span class="line">        <span class="comment"># 可以为路由添加元数据，以在插件中使用</span></span><br><span class="line">        <span class="attr">metadata:</span></span><br><span class="line">          <span class="attr">ccc:</span> <span class="string">ddd</span></span><br><span class="line">          <span class="attr">eee:</span> <span class="number">10</span></span><br><span class="line">        <span class="attr">order:</span> <span class="number">1000</span></span><br></pre></td></tr></table></figure>
+
+<p>路由 r-demo 是一个通过域名进行路由的配置示例，后端服务对应到了一个直接请求的地址，路由 r-demo-2 是一个通过路径前缀匹配路由的配置示例，配置了 StripPrefix 插件，使得在转发到后端时移除用于匹配的前缀，后端服务则是以 lb 开头，表明是服务发现发现场景。</p>
+<p>同时也支持批量查看路由的 Yaml 定义：</p>
+<p><img src="https://image.cnkirito.cn/image-20231017095551499.png"></p>
+<p>Yaml 创建和查看的设计，是为了尽可能地对齐到开源 Spring Cloud Gateway 的规范，如果用户是 Spring Cloud Gateway 开源的资深用户，这会保留用户原有的使用体验。</p>
+<p>同时，借助于该功能，可以实现多套网关的配置同步，例如一批路由在测试环境验证完毕，需要迁移至生产网关，只需要将测试环境的路由选中导出，再导入至生产网关即可。</p>
+<p>也可以借助于该功能，将用户本地配置文件中的路由导入至 EDAS，完全由 EDAS 管理，EDAS 提供的动态配置能力使用起来会更加方便。</p>
+<h3 id="插件交互"><a href="#插件交互" class="headerlink" title="插件交互"></a>插件交互</h3><p>Spring Cloud Gateway 提供了非常丰富的插件（GatewayFilter）机制，允许配置在路由和全局级别，EDAS 在此基础上提升了插件的易用性。</p>
+<p><img src="https://image.cnkirito.cn/image-20231017100248106.png"></p>
+<p>Spring Cloud Gateway 原生的插件配置采用的是精简配置的方式，对于一些不太常用的插件，很难直观地去判断如何添加参数，在 EDAS 中则没有这样的烦恼，EDAS 会将插件的解释、参数是否必填、参数含义、参数个数进行拆解，避免误用。</p>
+<p>插件参考：</p>
+<table>
+<thead>
+<tr>
+<th><strong>插件名</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>AddRequestHeader</strong></td>
+<td>添加请求头。</td>
+</tr>
+<tr>
+<td><strong>AddRequestParameter</strong></td>
+<td>添加请求参数。</td>
+</tr>
+<tr>
+<td><strong>AddResponseHeader</strong></td>
+<td>添加响应头。</td>
+</tr>
+<tr>
+<td><strong>SetRequestHeader</strong></td>
+<td>修改请求头。</td>
+</tr>
+<tr>
+<td><strong>SetResponseHeader</strong></td>
+<td>修改响应头。</td>
+</tr>
+<tr>
+<td><strong>SetStatus</strong></td>
+<td>修改响应码。</td>
+</tr>
+<tr>
+<td><strong>SetPath</strong></td>
+<td>修改请求路径。</td>
+</tr>
+<tr>
+<td><strong>MapRequestHeader</strong></td>
+<td>请求头参数映射。</td>
+</tr>
+<tr>
+<td><strong>PrefixPath</strong></td>
+<td>为请求路径添加前缀。</td>
+</tr>
+<tr>
+<td><strong>StripPrefix</strong></td>
+<td>删除请求路径前缀。</td>
+</tr>
+<tr>
+<td><strong>RemoveRequestHeader</strong></td>
+<td>删除请求头。</td>
+</tr>
+<tr>
+<td><strong>RemoveResponseHeader</strong></td>
+<td>删除响应头。</td>
+</tr>
+<tr>
+<td><strong>RemoveRequestParameter</strong></td>
+<td>删除请求参数。</td>
+</tr>
+<tr>
+<td><strong>DedupeResponseHeader</strong></td>
+<td>删除响应的重复头。</td>
+</tr>
+<tr>
+<td><strong>PreserveHostHeader</strong></td>
+<td>保留请求的域名属性。</td>
+</tr>
+<tr>
+<td><strong>RedirectTo</strong></td>
+<td>重定向。</td>
+</tr>
+<tr>
+<td><strong>RequestSize</strong></td>
+<td>请求大小限制。</td>
+</tr>
+<tr>
+<td><strong>RequestHeaderSize</strong></td>
+<td>请求头大小限制。</td>
+</tr>
+<tr>
+<td><strong>RewritePath</strong></td>
+<td>重写请求路径。</td>
+</tr>
+<tr>
+<td><strong>RewriteResponseHeader</strong></td>
+<td>重写响应头。</td>
+</tr>
+</tbody></table>
+<p>需要注意的一点是，这些插件是允许重复添加的，但部分插件只建议配置一次，例如 StripPrefix、SetPath 等等，否则会出现未知的表现。</p>
+<h3 id="快速测试"><a href="#快速测试" class="headerlink" title="快速测试"></a>快速测试</h3><p><img src="https://image.cnkirito.cn/image-20231017100933394.png"></p>
+<p>针对于 Spring Cloud Gateway 应用，EDAS 会列举出控制台中的路由路径，供用户进行路由测试，借助于快速测试的能力，可以在路由配置完毕后快速进行验证，从而判断配置是否正确。</p>
+<h3 id="可观测"><a href="#可观测" class="headerlink" title="可观测"></a>可观测</h3><p>开源 Spring Cloud Gateway 并未配备网关应有的 accessLog，EDAS 补齐了这部分必备能力，任何经过网关的请求，都会打印在 <code>/home/admin/.opt/ArmsAgent/logs/scg-access.log</code> 路径下，用户可以在应用详情的日志中心中进行查看：</p>
+<p><img src="https://image.cnkirito.cn/image-20231017101531498.png"></p>
+<p>用户可以选择将这份数据采集至 SLS 或者自定义的日志中心，用作监控。</p>
+<p><code>access.log</code>日志格式说明</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>说明</th>
+<th>字段名</th>
+<th>内容示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>日志记录时间</td>
+<td>dateTime</td>
+<td>2023-06-19 16:06:53 966</td>
+</tr>
+<tr>
+<td>2</td>
+<td>请求 trace id</td>
+<td>traceId</td>
+<td>0ab32f9f15293956139457176d485a</td>
+</tr>
+<tr>
+<td>3</td>
+<td>客户端IP</td>
+<td>clientIp</td>
+<td>127.0.0.1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>请求方法</td>
+<td>method</td>
+<td>GET</td>
+</tr>
+<tr>
+<td>5</td>
+<td>请求路径</td>
+<td>path</td>
+<td>/httpbin/get</td>
+</tr>
+<tr>
+<td>6</td>
+<td>请求数据大小</td>
+<td>requestSize</td>
+<td>122</td>
+</tr>
+<tr>
+<td>7</td>
+<td>请求开始时间</td>
+<td>startTime</td>
+<td>1667381534546</td>
+</tr>
+<tr>
+<td>8</td>
+<td>匹配上的路由ID</td>
+<td>routeId</td>
+<td>sc-A</td>
+</tr>
+<tr>
+<td></td>
+<td>路由对应的URI</td>
+<td>routeUri</td>
+<td><a target="_blank" rel="noopener" href="http://httpbin.org/">http://httpbin.org:80</a> 、lb://sc-A</td>
+</tr>
+<tr>
+<td>9</td>
+<td>后端调用开始时间</td>
+<td>backendStartTime</td>
+<td>1667381534546</td>
+</tr>
+<tr>
+<td>10</td>
+<td>后端请求方法</td>
+<td>backendMethod</td>
+<td>GET</td>
+</tr>
+<tr>
+<td>11</td>
+<td>后端请求URL</td>
+<td>backendUrl</td>
+<td>httpbin.org/get</td>
+</tr>
+<tr>
+<td>13</td>
+<td>后端请求体大小</td>
+<td>backendRequestSize</td>
+<td>122</td>
+</tr>
+<tr>
+<td>14</td>
+<td>后端响应码</td>
+<td>backendStatusCode</td>
+<td>200</td>
+</tr>
+<tr>
+<td>15</td>
+<td>后端响应体大小</td>
+<td>backendResponseSize</td>
+<td>433</td>
+</tr>
+<tr>
+<td>16</td>
+<td>后端调用结束时间</td>
+<td>backendEndTIme</td>
+<td>1667381534560</td>
+</tr>
+<tr>
+<td>17</td>
+<td>后端调用耗时</td>
+<td>backendRt</td>
+<td>14</td>
+</tr>
+<tr>
+<td>18</td>
+<td>请求响应码</td>
+<td>statusCode</td>
+<td>200</td>
+</tr>
+<tr>
+<td>19</td>
+<td>请求响应体大小</td>
+<td>responseSize</td>
+<td>433</td>
+</tr>
+<tr>
+<td>20</td>
+<td>调用是否成功</td>
+<td>status</td>
+<td>SUCCESS/FAILURE</td>
+</tr>
+<tr>
+<td>21</td>
+<td>错误信息</td>
+<td>errorMsg</td>
+<td>成功时：-失败时打印具体信息，例如：Service Unavailable</td>
+</tr>
+<tr>
+<td>22</td>
+<td>请求结束时间</td>
+<td>endTime</td>
+<td>1667381534565</td>
+</tr>
+<tr>
+<td>23</td>
+<td>请求总耗时</td>
+<td>rt</td>
+<td>19</td>
+</tr>
+</tbody></table>
+<h2 id="后续规划"><a href="#后续规划" class="headerlink" title="后续规划"></a>后续规划</h2><p>EDAS 增强 Spring Cloud Gateway 方案在后续还会提供更多的能力，丰富网关生态，目前规划中的能力包括：</p>
+<ul>
+<li>丰富插件生态，新增鉴权、限流降级、跨域插件</li>
+<li>跨微服务空间访问微服务</li>
+<li>支持 Metrics 指标，提供网关资源监控和业务监控</li>
+<li>单机 QOS 排查能力</li>
+</ul>
+<p>欢迎用户使用反馈，与我们进行交流，钉钉交流群：23197114。</p>
+<p>如需体验，可参考用户文档：<a target="_blank" rel="noopener" href="https://help.aliyun.com/zh/edas/user-guide/spring-cloud-gateway-application-routing">https://help.aliyun.com/zh/edas/user-guide/spring-cloud-gateway-application-routing</a></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>EDAS 让 Spring Cloud Gateway 生产可用的二三策</p><p><a href="https://www.cnkirito.moe/edas-scg-agent/">https://www.cnkirito.moe/edas-scg-agent/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2023-10-18</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Spring-Cloud-Gateway/">Spring Cloud Gateway </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/scg-cors/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">一文了解 CORS 跨域</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/scg-microservice-practise/"><span class="level-item">SpringCloud Gateway 在微服务架构下的最佳实践</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#让-Spring-Cloud-Gateway-生产可用"><span class="level-left"><span class="level-item">1</span><span class="level-item">让 Spring Cloud Gateway 生产可用</span></span></a></li><li><a class="level is-mobile" href="#功能介绍"><span class="level-left"><span class="level-item">2</span><span class="level-item">功能介绍</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#部署-Spring-Cloud-Gateway"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">部署 Spring Cloud Gateway</span></span></a></li><li><a class="level is-mobile" href="#创建路由并测试"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">创建路由并测试</span></span></a></li></ul></li><li><a class="level is-mobile" href="#方案优势"><span class="level-left"><span class="level-item">3</span><span class="level-item">方案优势</span></span></a></li><li><a class="level is-mobile" href="#能力增强"><span class="level-left"><span class="level-item">4</span><span class="level-item">能力增强</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#动态配置能力"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">动态配置能力</span></span></a></li><li><a class="level is-mobile" href="#配置导入-amp-导出"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">配置导入&amp;导出</span></span></a></li><li><a class="level is-mobile" href="#插件交互"><span class="level-left"><span class="level-item">4.3</span><span class="level-item">插件交互</span></span></a></li><li><a class="level is-mobile" href="#快速测试"><span class="level-left"><span class="level-item">4.4</span><span class="level-item">快速测试</span></span></a></li><li><a class="level is-mobile" href="#可观测"><span class="level-left"><span class="level-item">4.5</span><span class="level-item">可观测</span></span></a></li></ul></li><li><a class="level is-mobile" href="#后续规划"><span class="level-left"><span class="level-item">5</span><span class="level-item">后续规划</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

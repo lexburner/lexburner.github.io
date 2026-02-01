@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>一文详解 Nacos 高可用特性 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言服务注册发现是一个经久不衰的话题，Dubbo 早期开源时默认的注册中心 Zookeeper 最早进入人们的视线，并且在很长一段时间里，人们将注册中心和 Zookeeper 划上了等号，可能 Zookeeper 的设计者都没有想到这款产品对微服务领域造成了如此深厚的影响，直到 SpringCloud 开始流行，其自带的 Eureka 进入了人们的视野，人们这才意识到原来注册中心还可以有其他的选择"><meta property="og:type" content="blog"><meta property="og:title" content="一文详解 Nacos 高可用特性"><meta property="og:url" content="https://www.cnkirito.moe/nacos-high-available/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="前言服务注册发现是一个经久不衰的话题，Dubbo 早期开源时默认的注册中心 Zookeeper 最早进入人们的视线，并且在很长一段时间里，人们将注册中心和 Zookeeper 划上了等号，可能 Zookeeper 的设计者都没有想到这款产品对微服务领域造成了如此深厚的影响，直到 SpringCloud 开始流行，其自带的 Eureka 进入了人们的视野，人们这才意识到原来注册中心还可以有其他的选择"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://image.cnkirito.cn/image-20201220140934757.png"><meta property="og:image" content="http://image.cnkirito.cn/image-20201220151901675.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20201220204422195.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20201220204436097.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20201220204446690.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20201220165548542.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20201220173117425.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20201220173637589.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20201220180757477.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20201220181056737.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20201220181330884.png"><meta property="og:image" content="https://www.cnkirito.moe/css/images/wechat_public.jpg"><meta property="article:published_time" content="2020-12-18T07:38:25.000Z"><meta property="article:modified_time" content="2025-05-26T03:18:30.980Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="Nacos"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="http://image.cnkirito.cn/image-20201220140934757.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/nacos-high-available/"},"headline":"一文详解 Nacos 高可用特性","image":["http://image.cnkirito.cn/image-20201220140934757.png","http://image.cnkirito.cn/image-20201220151901675.png","https://image.cnkirito.cn/image-20201220204422195.png","https://image.cnkirito.cn/image-20201220204436097.png","https://image.cnkirito.cn/image-20201220204446690.png","https://image.cnkirito.cn/image-20201220165548542.png","https://image.cnkirito.cn/image-20201220173117425.png","https://image.cnkirito.cn/image-20201220173637589.png","https://image.cnkirito.cn/image-20201220180757477.png","https://image.cnkirito.cn/image-20201220181056737.png","https://image.cnkirito.cn/image-20201220181330884.png","https://www.cnkirito.moe/css/images/wechat_public.jpg"],"datePublished":"2020-12-18T07:38:25.000Z","dateModified":"2025-05-26T03:18:30.980Z","author":{"@type":"Person","name":"徐靖峰"},"description":"前言服务注册发现是一个经久不衰的话题，Dubbo 早期开源时默认的注册中心 Zookeeper 最早进入人们的视线，并且在很长一段时间里，人们将注册中心和 Zookeeper 划上了等号，可能 Zookeeper 的设计者都没有想到这款产品对微服务领域造成了如此深厚的影响，直到 SpringCloud 开始流行，其自带的 Eureka 进入了人们的视野，人们这才意识到原来注册中心还可以有其他的选择"}</script><link rel="canonical" href="https://www.cnkirito.moe/nacos-high-available/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>一文详解 Nacos 高可用特性</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2020-12-18</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-05-26</time></span><span class="level-item"><a class="link-muted" href="/categories/Nacos/">Nacos</a></span><span class="level-item">26 分钟读完 (大约3902个字)</span></div></div><div class="content"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>服务注册发现是一个经久不衰的话题，Dubbo 早期开源时默认的注册中心 Zookeeper 最早进入人们的视线，并且在很长一段时间里，人们将注册中心和 Zookeeper 划上了等号，可能 Zookeeper 的设计者都没有想到这款产品对微服务领域造成了如此深厚的影响，直到 SpringCloud 开始流行，其自带的 Eureka 进入了人们的视野，人们这才意识到原来注册中心还可以有其他的选择。再到后来，热衷于开源的阿里把目光也聚焦在了注册中心这个领域，Nacos 横空出世。</p>
+<p><img src="http://image.cnkirito.cn/image-20201220140934757.png" alt="注册中心"></p>
+<p>Kirito 在做注册中心选型时的思考：曾经我没得选，现在我只想选择一个好的注册中心，它最好是开源的，这样开放透明，有自我的掌控力；不仅要开源，它还要有活跃的社区，以确保特性演进能够满足日益增长的业务需求，出现问题也能及时修复；最好…它的功能还要很强大，除了满足注册服务、推送服务外，还要有完善的微服务体系中所需的功能；最重要的，它还要稳定，最好有大厂的实际使用场景背书，证明这是一个经得起实战考验的产品；当然，云原生特性，安全特性也是很重要的…</p>
+<p>似乎 Kirito 对注册中心的要求实在是太高了，但这些五花八门的注册中心呈现在用户眼前，总是免不了一番比较。正如上面所言，功能特性、成熟度、可用性、用户体验度、云原生特性、安全都是可以拉出来做比较的话题。今天这篇文章重点介绍的是 Nacos 在可用性上体现，希望借助于这篇文章，能够让你对 Nacos 有一个更加深刻的认识。</p>
+<span id="more"></span>
+
+<h2 id="高可用介绍"><a href="#高可用介绍" class="headerlink" title="高可用介绍"></a>高可用介绍</h2><p>当我们在聊高可用时，我们在聊什么？</p>
+<ul>
+<li>系统可用性达到 99.99%</li>
+<li>在分布式系统中，部分节点宕机，依旧不影响系统整体运行</li>
+<li>服务端集群化部署多个节点</li>
+</ul>
+<p>这些都可以认为是高可用，而我今天介绍的 Nacos 高可用，则是一些 Nacos 为了提升系统稳定性而采取的一系列手段。Nacos 的高可用不仅仅存在于服务端，同时它也存在于客户端，以及一些与可用性相关的功能特性中。这些点组装起来，共同构成了 Nacos 的高可用。</p>
+<h2 id="客户端重试"><a href="#客户端重试" class="headerlink" title="客户端重试"></a>客户端重试</h2><p>先统一一下语义，在微服务架构中一般会有三个角色：Consumer、Provider 和 Registry，在今天注册中心的主题中，Registry 是 nacos-server，而 Consumer 和 Provider 都是 nacos-client。</p>
+<p>在生产环境，我们往往需要搭建 Nacos 集群，在 Dubbo 也需要显式地配置上集群地址：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:registry</span> <span class="attr">protocol</span>=<span class="string">&quot;nacos&quot;</span> <span class="attr">address</span>=<span class="string">&quot;192.168.0.1:8848,192.168.0.2:8848,192.168.0.3:8848&quot;</span>/&gt;</span> </span><br></pre></td></tr></table></figure>
+
+<p>当其中一台机器宕机时，为了不影响整体运行，客户端会存在重试机制</p>
+<p><img src="http://image.cnkirito.cn/image-20201220151901675.png" alt="轮询 server"></p>
+<p>逻辑非常简单，拿到地址列表，在请求成功之前逐个尝试，直到成功为止。</p>
+<p>该可用性保证存在于 nacos-client 端。</p>
+<h2 id="一致性协议-distro"><a href="#一致性协议-distro" class="headerlink" title="一致性协议 distro"></a>一致性协议 distro</h2><p>首先给各位读者打个强心剂，不用看到”一致性协议“这几个字就被劝退，本节不会探讨一致性协议的实现过程，而是重点介绍其余高可用相关的特性。有的文章介绍 Nacos 的一致性模型是 AP + CP，这么说很容易让人误解，其实 Nacos 并不是支持两种一致性模型，也并不是支持两种模型的切换，介绍一致性模型之前，需要先了解到 Nacos 中的两个概念：临时服务和持久化服务。</p>
+<ul>
+<li>临时服务（Ephemeral）：临时服务健康检查失败后会从列表中删除，常用于服务注册发现场景。</li>
+<li>持久化服务（Persistent）：持久化服务健康检查失败后会被标记成不健康，常用于 DNS 场景。</li>
+</ul>
+<p>临时服务使用的是 Nacos 为服务注册发现场景定制化的私有协议 distro，其一致性模型是 AP；而持久化服务使用的是 raft 协议，其一致性模型是 CP。所以以后不要再说 Nacos 是 AP + CP 了，更建议加上服务节点状态或者使用场景的约束。</p>
+<p>distro 协议与高可用有什么关系呢？上一节我们提到 nacos-server 节点宕机后，客户端会重试，但少了一个前提，即 nacos-server 少了一个节点后依旧可以正常工作。Nacos 这种有状态的应用和一般无状态的 Web 应用不同，并不是说只要存活一个节点就可以对外提供服务的，需要分 case 讨论，这与其一致性协议的设计有关。distro 协议的工作流程如下：</p>
+<ul>
+<li>Nacos 启动时首先从其他远程节点同步全部数据</li>
+<li>Nacos 每个节点是平等的都可以处理写入请求，同时把新数据同步到其他节点</li>
+<li>每个节点只负责部分数据，定时发送自己负责数据校验值到其他节点来保持数据一致性</li>
+</ul>
+<p><img src="https://image.cnkirito.cn/image-20201220204422195.png" alt="image-20201220204422195"></p>
+<p>如上图所示，每个节点服务一部分服务的写入，但每个节点都可以接收到写入请求，这时就存在两种写情况：</p>
+<ol>
+<li>当该节点接收到属于该节点负责的服务时，直接写入。</li>
+<li>当该节点接收到不属于该节点负责的服务时，将在集群内部路由，转发给对应的节点，从而完成写入。</li>
+</ol>
+<p>读取操作则不需要路由，因为集群中的各个节点会同步服务状态，每个节点都会有一份最新的服务数据。</p>
+<p>而当节点发生宕机后，原本该节点负责的一部分服务的写入任务会转移到其他节点，从而保证 Nacos 集群整体的可用性。</p>
+<p><img src="https://image.cnkirito.cn/image-20201220204436097.png" alt="image-20201220204436097"></p>
+<p>一个比较复杂的情况是，节点没有宕机，但是出现了网络分区，即下图所示：</p>
+<p><img src="https://image.cnkirito.cn/image-20201220204446690.png" alt="image-20201220204446690"></p>
+<p>这个情况会损害可用性，客户端会表现为有时候服务存在有时候服务不存在。</p>
+<p>综上，Nacos 的 distro 一致性协议可以保证在大多数情况下，集群中的机器宕机后依旧不损害整体的可用性。该可用性保证存在于 nacos-server 端。</p>
+<h2 id="本地缓存文件-Failover-机制"><a href="#本地缓存文件-Failover-机制" class="headerlink" title="本地缓存文件 Failover 机制"></a>本地缓存文件 Failover 机制</h2><p>注册中心发生故障最坏的一个情况是整个 Server 端宕机，这时候 Nacos 依旧有高可用机制做兜底。</p>
+<p>一道经典的 Dubbo 面试题：当 Dubbo 应用运行时，Nacos 注册中心宕机，会不会影响 RPC 调用。这个题目大多数应该都能回答出来，因为 Dubbo 内存里面是存了一份地址的，一方面这样的设计是为了性能，因为不可能每次 RPC 调用时都读取一次注册中心，另一面，这也起到了可用性的保障（尽管可能 Dubbo 设计者并没有考虑这个因素）。</p>
+<p>那如果，我在此基础上再出一道 Dubbo 面试题：Nacos 注册中心宕机，Dubbo 应用发生重启，会不会影响 RPC 调用。如果了解了 Nacos 的 Failover 机制，应当得到和上一题同样的回答：不会。</p>
+<p>Nacos 存在本地文件缓存机制，nacos-client 在接收到 nacos-server 的服务推送之后，会在内存中保存一份，随后会落盘存储一份快照。snapshot 默认的存储路径为：{USER_HOME}/nacos/naming/ 中</p>
+<p><img src="https://image.cnkirito.cn/image-20201220165548542.png" alt="Nacos snapshot 文件目录"></p>
+<p>这份文件有两种价值，一是用来排查服务端是否正常推送了服务；二是当客户端加载服务时，如果无法从服务端拉取到数据，会默认从本地文件中加载。</p>
+<blockquote>
+<p>前提是构建 NacosNaming 时传入了该参数：namingLoadCacheAtStart=true</p>
+<p>Dubbo 2.7.4 及以上版本支持该 Nacos 参数；开启该参数的方式：dubbo.registry.address=nacos://127.0.0.1:8848?namingLoadCacheAtStart=true</p>
+</blockquote>
+<p>在生产环境，推荐开启该参数，以避免注册中心宕机后，导致服务不可用的稳定，在服务注册发现场景，可用性和一致性 trade off 时，我们大多数时候会优先考虑可用性。</p>
+<p>细心的读者还注意到 {USER_HOME}/nacos/naming/{namespace} 下除了缓存文件之外还有一个 failover 文件夹，里面存放着和 snapshot 一致的文件夹。这是 Nacos 的另一个 failover 机制，snapshot 是按照某个历史时刻的服务快照恢复恢复，而 failover 中的服务可以人为修改，以应对一些极端场景。</p>
+<p>该可用性保证存在于 nacos-client 端。</p>
+<h2 id="心跳同步服务"><a href="#心跳同步服务" class="headerlink" title="心跳同步服务"></a>心跳同步服务</h2><p>心跳机制一般广泛存在于分布式通信领域，用于确认存活状态。一般心跳请求和普通请求的设计是有差异的，心跳请求一般被设计的足够精简，这样在定时探测时可以尽可能避免性能下降。而在 Nacos 中，处于可用性的考虑，一个心跳报文包含了全部的服务信息，这样相比仅仅发送探测信息降低了吞吐量，而提升了可用性，怎么理解呢？考虑以下的两种场景：</p>
+<ul>
+<li>nacos-server 节点全部宕机，服务数据全部丢失。nacos-server 即使恢复运作，也无法恢复出服务，而心跳包含全部内容可以在心跳期间就恢复出服务，保证可用性。</li>
+<li>nacos-server 出现网络分区。由于心跳可以创建服务，从而在极端网络故障下，依旧保证基础的可用性。</li>
+</ul>
+<p>以下是对心跳同步服务的测试，使用阿里云 MSE 提供 Nacos 集群进行测试</p>
+<p><img src="https://image.cnkirito.cn/image-20201220173117425.png"></p>
+<p>调用 OpenApi：<code>curl -X &quot;DELETE mse-xxx-p.nacos-ans.mse.aliyuncs.com:8848/nacos/v1/ns/service?serviceName=providers:com.alibaba.edas.boot.EchoService:1.0.0:DUBBO&amp;groupName=DEFAULT_GROUP&quot;</code> 依次删除各个服务</p>
+<p><img src="https://image.cnkirito.cn/image-20201220173637589.png"></p>
+<p>过 5s 后刷新，服务又再次被注册了上来，符合我们对心跳注册服务的预期。</p>
+<h2 id="集群部署模式高可用"><a href="#集群部署模式高可用" class="headerlink" title="集群部署模式高可用"></a>集群部署模式高可用</h2><p>最后给大家分享的 Nacos 高可用特性来自于其部署架构。</p>
+<h3 id="节点数量"><a href="#节点数量" class="headerlink" title="节点数量"></a>节点数量</h3><p>我们知道在生产集群中肯定不能以单机模式运行 Nacos，那么第一个问题便是：我应该部署几台机器？前面我们提到 Nacos 有两个一致性协议：distro 和 raft，distro 协议不会有脑裂问题，所以理论来说，节点数大于等于 2 即可；raft 协议的投票选举机制则建议是 2n+1 个节点。综合来看，选择 3 个节点是起码的，其次处于吞吐量和更高可用性的考量，可以选择 5 个，7 个，甚至 9 个节点的集群。</p>
+<h3 id="多可用区部署"><a href="#多可用区部署" class="headerlink" title="多可用区部署"></a>多可用区部署</h3><p>组成集群的 Nacos 节点，应该尽可能考虑两个因素：</p>
+<ol>
+<li>各个节点之间的网络时延不能很高，否则会影响数据同步</li>
+<li>各个节点所处机房、可用区应当尽可能分散，以避免单点故障</li>
+</ol>
+<p>以阿里云的 ECS 为例，选择同一个 Region 的不同可用区就是一个很好的实践</p>
+<h3 id="部署模式"><a href="#部署模式" class="headerlink" title="部署模式"></a>部署模式</h3><p>主要分为 K8s 部署和 ECS 部署两种模式。</p>
+<p>ECS 部署的优点在于简单，购买三台机器即可搭建集群，如果你熟练 Nacos 集群部署的话，这不是难事，但无法解决运维问题，如果 Nacos 某个节点出现 OOM 或者磁盘问题，很难迅速摘除，无法实现自运维。</p>
+<p>K8s 部署的有点在于云原生运维能力强，可以在节点宕机后实现自恢复，保障 Nacos 的平稳运行。前面提到过，Nacos 和无状态的 Web 应用不同，它是一个有状态的应用，所以在 K8s 中部署，往往要借助于 StatefulSet 和 Operator 等组件才能实现 Nacos 集群的部署和运维。</p>
+<h2 id="MSE-Nacos-的高可用最佳实践"><a href="#MSE-Nacos-的高可用最佳实践" class="headerlink" title="MSE Nacos 的高可用最佳实践"></a>MSE Nacos 的高可用最佳实践</h2><p>阿里云 MSE（微服务引擎）提供了 Nacos 集群的托管能力，实现了集群部署模式的高可用。</p>
+<ul>
+<li>当创建多个节点的集群时，系统会默认分配在不同可用区。同时，这对于用户来说又是透明的，用户只需要关心 Nacos 的功能即可，MSE 替用户兜底可用性。</li>
+<li>MSE 底层使用 K8s 运维模式部署 Nacos。历史上出现过用户误用 Nacos 导致部分节点宕机的问题，但借助于 K8s 的自运维模式，宕机节点迅速被拉起，以至于用户可能都没有意识到自己发生宕机。</li>
+</ul>
+<p>下面模拟一个节点宕机的场景，来看看 K8s 如何实现自恢复。</p>
+<p>一个三节点的 Nacos 集群：</p>
+<p><img src="https://image.cnkirito.cn/image-20201220180757477.png" alt="正常状态"></p>
+<p>执行 <code>kubectl delete pod mse-7654c960-1605278296312-reg-center-0-2</code> 以模拟部分节点宕机的场景。</p>
+<p><img src="https://image.cnkirito.cn/image-20201220181056737.png" alt="恢复中"></p>
+<p>大概 2 分钟后，节点恢复，并且角色发生了转换，Leader 从杀死的 2 号节点转给 1 号节点</p>
+<p><img src="https://image.cnkirito.cn/image-20201220181330884.png" alt="恢复后 leader 重选"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文从多个角度出发，总结了一下 Nacos 是如何保障高可用的。高可用特性绝不是靠服务端多部署几个节点就可以获得的，而是要结合客户端使用方式、服务端部署模式、使用场景综合来考虑的一件事。</p>
+<p>特别是在服务注册发现场景，Nacos 为可用性做了非常多的努力，而这些保障，Zookeeper 是不一定有的。在做注册中心选型时，可用性保障上，Nacos 绝对是优秀的。</p>
+<p><img src="https://www.cnkirito.moe/css/images/wechat_public.jpg" alt="微信公众号"></p>
+<p><em>「技术分享」某种程度上，是让作者和读者，不那么孤独的东西。欢迎关注我的微信公众号：「Kirito的技术分享」</em></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>一文详解 Nacos 高可用特性</p><p><a href="https://www.cnkirito.moe/nacos-high-available/">https://www.cnkirito.moe/nacos-high-available/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2020-12-18</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-05-26</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Nacos/">Nacos </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/nacos-cluster-mode/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Nacos 集群部署模式最佳实践</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/jpa-and-mybatis/"><span class="level-item">鱼和熊掌兼得：同时使用 JPA 和 Mybatis</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#高可用介绍"><span class="level-left"><span class="level-item">2</span><span class="level-item">高可用介绍</span></span></a></li><li><a class="level is-mobile" href="#客户端重试"><span class="level-left"><span class="level-item">3</span><span class="level-item">客户端重试</span></span></a></li><li><a class="level is-mobile" href="#一致性协议-distro"><span class="level-left"><span class="level-item">4</span><span class="level-item">一致性协议 distro</span></span></a></li><li><a class="level is-mobile" href="#本地缓存文件-Failover-机制"><span class="level-left"><span class="level-item">5</span><span class="level-item">本地缓存文件 Failover 机制</span></span></a></li><li><a class="level is-mobile" href="#心跳同步服务"><span class="level-left"><span class="level-item">6</span><span class="level-item">心跳同步服务</span></span></a></li><li><a class="level is-mobile" href="#集群部署模式高可用"><span class="level-left"><span class="level-item">7</span><span class="level-item">集群部署模式高可用</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#节点数量"><span class="level-left"><span class="level-item">7.1</span><span class="level-item">节点数量</span></span></a></li><li><a class="level is-mobile" href="#多可用区部署"><span class="level-left"><span class="level-item">7.2</span><span class="level-item">多可用区部署</span></span></a></li><li><a class="level is-mobile" href="#部署模式"><span class="level-left"><span class="level-item">7.3</span><span class="level-item">部署模式</span></span></a></li></ul></li><li><a class="level is-mobile" href="#MSE-Nacos-的高可用最佳实践"><span class="level-left"><span class="level-item">8</span><span class="level-item">MSE Nacos 的高可用最佳实践</span></span></a></li><li><a class="level is-mobile" href="#总结"><span class="level-left"><span class="level-item">9</span><span class="level-item">总结</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

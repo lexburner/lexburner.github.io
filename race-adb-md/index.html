@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>第三届数据库大赛 ADB 性能挑战赛赛题总结 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言之前在分享《海量无序数据寻找第 K 大的数》这篇文章时，就已经提到过我参加了阿里云举办的《第三届数据库大赛创新上云性能挑战赛–高性能分析型查询引擎赛道》，传送门：https:&amp;#x2F;&amp;#x2F;tianchi.aliyun.com&amp;#x2F;competition&amp;#x2F;entrance&amp;#x2F;531895&amp;#x2F;introduction。 截止到 8 月 20 日，终于结束了漫长的赛程。作为阿里云员工的我，按照赛题规定，只能参加初赛，"><meta property="og:type" content="blog"><meta property="og:title" content="第三届数据库大赛 ADB 性能挑战赛赛题总结"><meta property="og:url" content="https://www.cnkirito.moe/race-adb-md/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="前言之前在分享《海量无序数据寻找第 K 大的数》这篇文章时，就已经提到过我参加了阿里云举办的《第三届数据库大赛创新上云性能挑战赛–高性能分析型查询引擎赛道》，传送门：https:&amp;#x2F;&amp;#x2F;tianchi.aliyun.com&amp;#x2F;competition&amp;#x2F;entrance&amp;#x2F;531895&amp;#x2F;introduction。 截止到 8 月 20 日，终于结束了漫长的赛程。作为阿里云员工的我，按照赛题规定，只能参加初赛，"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/3AD25B94-A46F-4AC9-AA42-5FA2B6EE6E75.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20210823002116642.png"><meta property="og:image" content="https://image.cnkirito.cn/WechatIMG4964.jpeg"><meta property="og:image" content="https://image.cnkirito.cn/image-20210823002905059.png"><meta property="og:image" content="https://tianchi-public.oss-cn-hangzhou.aliyuncs.com/public/files/forum/162069946069958001620699460557.png"><meta property="og:image" content="https://image.cnkirito.cn/pmem_storage_pyramid.jpeg"><meta property="og:image" content="https://image.cnkirito.cn/image-20210823134438699.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20210823143116956.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20210823143543415.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20210823162446365.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20210823184008366.png"><meta property="article:published_time" content="2021-08-22T15:39:37.000Z"><meta property="article:modified_time" content="2025-12-22T07:26:28.121Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="ADB"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/3AD25B94-A46F-4AC9-AA42-5FA2B6EE6E75.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/race-adb-md/"},"headline":"第三届数据库大赛 ADB 性能挑战赛赛题总结","image":["https://image.cnkirito.cn/3AD25B94-A46F-4AC9-AA42-5FA2B6EE6E75.png","https://image.cnkirito.cn/image-20210823002116642.png","https://image.cnkirito.cn/image-20210823002905059.png","https://tianchi-public.oss-cn-hangzhou.aliyuncs.com/public/files/forum/162069946069958001620699460557.png","https://image.cnkirito.cn/image-20210823134438699.png","https://image.cnkirito.cn/image-20210823143116956.png","https://image.cnkirito.cn/image-20210823143543415.png","https://image.cnkirito.cn/image-20210823162446365.png","https://image.cnkirito.cn/image-20210823184008366.png"],"datePublished":"2021-08-22T15:39:37.000Z","dateModified":"2025-12-22T07:26:28.121Z","author":{"@type":"Person","name":"徐靖峰"},"description":"前言之前在分享《海量无序数据寻找第 K 大的数》这篇文章时，就已经提到过我参加了阿里云举办的《第三届数据库大赛创新上云性能挑战赛–高性能分析型查询引擎赛道》，传送门：https:&#x2F;&#x2F;tianchi.aliyun.com&#x2F;competition&#x2F;entrance&#x2F;531895&#x2F;introduction。 截止到 8 月 20 日，终于结束了漫长的赛程。作为阿里云员工的我，按照赛题规定，只能参加初赛，"}</script><link rel="canonical" href="https://www.cnkirito.moe/race-adb-md/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>第三届数据库大赛 ADB 性能挑战赛赛题总结</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-08-22</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/%E6%80%A7%E8%83%BD%E6%8C%91%E6%88%98%E8%B5%9B/">性能挑战赛</a></span><span class="level-item">40 分钟读完 (大约5981个字)</span></div></div><div class="content"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前在分享《海量无序数据寻找第 K 大的数》这篇文章时，就已经提到过我参加了阿里云举办的《第三届数据库大赛创新上云性能挑战赛–高性能分析型查询引擎赛道》，传送门：<a target="_blank" rel="noopener" href="https://tianchi.aliyun.com/competition/entrance/531895/introduction%E3%80%82">https://tianchi.aliyun.com/competition/entrance/531895/introduction。</a> 截止到 8 月 20 日，终于结束了漫长的赛程。作为阿里云员工的我，按照赛题规定，只能参加初赛，不能参加复赛，出于不影响比赛的目的，终于等到了比赛完全结束，才动笔写下了这篇参赛总结。</p>
+<p>照例先说成绩，这里贴一下排行榜，总共有 1446 只队伍，可以看到不少学生和其他公司的员工都参赛了。</p>
+<p><img src="https://image.cnkirito.cn/3AD25B94-A46F-4AC9-AA42-5FA2B6EE6E75.png" alt="排名"></p>
+<p>我的成绩是第 14 名（普哥忙于 KPI，没有能带飞我，diss 一下嘿嘿），内部排名也是进入了前五，虽然被剥夺了参加复赛的资格，但是也给了内部的奖励作为补偿，奖品是啥呢？</p>
+<span id="more"></span>
+
+<p><img src="https://image.cnkirito.cn/image-20210823002116642.png" alt="获奖通知"></p>
+<p>怎么评价这个内部赛奖品呢？食之无味，弃之可惜。我还特地拍了照留作纪念，后边要不直接公众号抽奖抽掉吧？不知道有没有人要。</p>
+<p><img src="https://image.cnkirito.cn/WechatIMG4964.jpeg" alt="内部奖品"></p>
+<p>看看人家隔壁的<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/slU9NCHBLadb6kTs_9w0VA">云原生挑战赛</a> (内部赛)奖品，虽然奖励不如外部赛，但整体吸引力还是有的。</p>
+<p><img src="https://image.cnkirito.cn/image-20210823002905059.png" alt="内部赛奖励"></p>
+<p>好了，讲完比赛结果，吐槽完内部奖励，简单先点评下这次比赛吧。首先是主办方的出题水平，还是非常高的。</p>
+<ul>
+<li>全程没有改过赛题描述</li>
+<li>全程没有清过榜单</li>
+<li>没有暗改过数据</li>
+<li>赛题做到了”题面描述简单，实现具有区分度“，让不同水平的参赛者都得到了发挥</li>
+<li>评测友好，失败不计算提交次数</li>
+</ul>
+<p>这些点要大大点一个赞，建议其他比赛的主办方都来参考下，向这次出题的水准看齐。</p>
+<p>不好的点，我也吐槽下：</p>
+<ul>
+<li>内部赛奖励太敷衍了，倒不如送我点公仔来的实在</li>
+<li>复赛延期了两周，让很多选手的肝有些吃不消</li>
+</ul>
+<p><strong>这篇文章我觉得得先明确一个定位，复赛和初赛技术架构相差是很大的，而我没有参加复赛，并没有发言权，所以就不去详细介绍最终的复赛方案了，我已经跟复赛前排的选手预约了转载，后边还会再分享一下复赛前排选手的方案。我的这篇文章还是以初赛为主，一方面聊的话题也轻松些，另一方面初赛的架构简单一些，可以供那些希望参加性能挑战赛而又苦于没有学习资料的同学、初赛没有找到优化点的同学一些参考。</strong></p>
+<h2 id="赛题介绍"><a href="#赛题介绍" class="headerlink" title="赛题介绍"></a>赛题介绍</h2><p>选手需要设计实现 quantile 分析函数，导入指定的数据，并回答若干次 quantile 查询。</p>
+<blockquote>
+<p>quantile(column, p) 函数定义</p>
+<p><em>column:</em> 查询列。</p>
+<p><em>p:</em> 百分比，范围 [0, 1]。</p>
+<p><em>函数返回</em>：将列的所有值排序后，返回第 N * p 个值，评测保证 N * p 是整数。</p>
+</blockquote>
+<p>样例：</p>
+<blockquote>
+<p>column = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # column 为整型，有 10个 元素</p>
+<p>quantile(column, 0.5) = 5<br>quantile(column, 0.8) = 8<br>quantile(column, 0.25) = 3<br>quantile(column, 0) = 0<br>quantile(column, 1) = 10</p>
+</blockquote>
+<p>题面可以说是非常简单的，其实就是实现一个查询第 N 大的数函数。它的输入数据一共有两列：</p>
+<p><img src="https://tianchi-public.oss-cn-hangzhou.aliyuncs.com/public/files/forum/162069946069958001620699460557.png" alt="输入样例"></p>
+<p>第一行是列名，第二行开始是列的数据。</p>
+<p>初赛测试数据：只有一张表 lineitem，只有两列 L_ORDERKEY (bigint), L_PARTKEY (bigint)，数据量3亿行，单线程查询 10 次。</p>
+<p>如果你还不理解这个题面是什么意思，建议去看下官方提供的评测 demo：<a target="_blank" rel="noopener" href="https://code.aliyun.com/analytic_db/2021-tianchi-contest-1%EF%BC%8C%E6%9C%AC%E5%9C%B0%E5%B0%B1%E8%83%BD%E8%BF%90%E8%A1%8C%EF%BC%8Cdebug">https://code.aliyun.com/analytic_db/2021-tianchi-contest-1，本地就能运行，debug</a> 跑一遍，既能读懂题意，也能得到一个 baseline（尽管它不能提交，会爆内存）。</p>
+<p>另外需要格外注意的一点，千万不要漏看赛题描述</p>
+<blockquote>
+<p>本题结合英特尔® 傲腾™ 持久内存技术(PMem)，探索新介质和新软件系统上极致的持久化和性能</p>
+</blockquote>
+<p>我们的方案一定需要围绕着存储介质的特性去设计，你问我持久内存 PMem 是啥？老实说，我参赛之前对这个新的技术也是一知半解，但为了成绩，一定需要啃下这个技术，下面我就先介绍下 PMem。</p>
+<h2 id="持久内存-PMem-介绍"><a href="#持久内存-PMem-介绍" class="headerlink" title="持久内存 PMem 介绍"></a>持久内存 PMem 介绍</h2><p><img src="https://image.cnkirito.cn/pmem_storage_pyramid.jpeg" alt="存储体系结构"></p>
+<p>提到内存（DRAM）、固态磁盘（SSD）、机械硬盘（HDD）这些概念，相信大多数人不会感到陌生，都能够道出这几个介质的访问速度差异。而持久内存 PMem 这个概念，相对而言不太为人所知，的确，它是近几年才兴起的一个概念。</p>
+<blockquote>
+<p>持久内存 (PMem) 是驻留在内存总线上的固态高性能按字节寻址的内存设备。PMem 位于内存总线上，支持像 DRAM 一样访问数据，这意味着它具备与 DRAM 相当的速度和延迟，而且兼具 NAND 闪存的非易失性。NVDIMM（非易失性双列直插式内存模块）和 Intel 3D XPoint DIMM（也称为 Optane DC 持久内存模块）是持久内存技术的两个示例。</p>
+</blockquote>
+<p>当我们在讨论这些存储介质时，我们有哪些关注点呢？本节开头的金字塔图片的三条边直观地诠释了众多存储介质在造价、访问延时、容量三方面的对比。我下面从访问延时、造价和持久化特性三个方面做一下对比。</p>
+<h3 id="访问延时"><a href="#访问延时" class="headerlink" title="访问延时"></a>访问延时</h3><p>内存 DRAM 的访问延时在 80<del>100ns，固态硬盘 SSD 的访问延时在 10</del>100us，而持久内存介于两者之间，比内存慢 10 倍，比固态硬盘快 10~100 倍。</p>
+<h3 id="造价"><a href="#造价" class="headerlink" title="造价"></a>造价</h3><p>目前为止，将 PMem 技术正式商用的公司，貌似只有 Intel，也就是本次比赛的赞助商。Intel optane DC persistent memory 是 Intel 推出的基于 3D Xpoint 技术的持久内存产品，其代号为 Apace Pass (AEP)。所以大家今后如果看到其他人提到 AEP，基本心理就有数了，说的就是 PMem 这个存储介质。在某电商平台看看这东西怎么卖的</p>
+<p><img src="https://image.cnkirito.cn/image-20210823134438699.png" alt="商品详情"></p>
+<p>好家伙，128 * 4 条，卖 15000，折合下来，一根 PMem 就要 3000~4000。同时我们也注意到，傲腾系列的 PMem 产品最高规格也就只有 512M，基本佐证了金字塔中的 Capacity 这一维度，属于内存嫌大，磁盘嫌小的一个数值。</p>
+<h3 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h3><p>这东西咱们的电脑可以装吗？当然可以，直接插在内存条上就成。我们都知道内存是易失性的存储，磁盘是持久化的存储，而介于两者之间的持久内存，持久化特性是什么样的呢？这一点，不能望文生义地认为 PMem 就是持久化的，而是要看其工作模式：<strong>Memory Mode</strong> 和 <strong>AppDirect Mode</strong></p>
+<p><img src="https://image.cnkirito.cn/image-20210823143116956.png" alt="PMem操作模式"></p>
+<p>本文就不过多展开介绍了这两种模式了。简单来说，PMem 工作在 Memory Mode 时，是易失性的，这时候，你需要使用专门的一套系统指令去进行存取；PMem 工作在 AppDirect Mode 时，可以直接把 PMem 当成一块磁盘来用，PMem 背后适配了一整套文件系统的指令，使得常规的文件操作可以完全兼容的跑在 PMem 之上。</p>
+<p>我花了这么大的篇幅介绍 PMem，仍然只介绍了 PMem 特性非常小的一部分，最多让大家知道 PMem 是个啥，至于怎么利用好这块盘，我后边会花专门的一篇文章去介绍。</p>
+<p><img src="https://image.cnkirito.cn/image-20210823143543415.png" alt="比赛限制"></p>
+<p>回到赛题，尽管 intel 提供了一套 PMem 专用的 API：<a target="_blank" rel="noopener" href="https://github.com/pmem/pmemkv-java%EF%BC%8C%E4%BD%86%E7%94%B1%E4%BA%8E%E6%AF%94%E8%B5%9B%E9%99%90%E5%AE%9A%E4%BA%86%E4%B8%8D%E8%83%BD%E5%BC%95%E5%85%A5%E4%B8%89%E6%96%B9%E7%B1%BB%E5%BA%93%EF%BC%8C%E6%89%80%E4%BB%A5%E7%AD%89%E4%BA%8E%E7%9B%B4%E6%8E%A5%E5%91%8A%E8%AF%89%E4%BA%86%E5%8F%82%E8%B5%9B%E9%80%89%E6%89%8B%EF%BC%8CPMem">https://github.com/pmem/pmemkv-java，但由于比赛限定了不能引入三方类库，所以等于直接告诉了参赛选手，PMem</a> 这块盘是工作在 AppDirect Mode 之下的，大家可以完全把它当成一块磁盘去存取。这个时候，选手们就需要围绕 PMem 的特性，去设计存储引擎的架构，可能你在固态硬盘、常规文件操作中的一些认知会被颠覆，这很正常，毕竟 PMem 的出现，就是为了颠覆传统存储架构而生的。在不能直接操作 PMem 的情况下选手们需要设计 PMem 友好的架构。</p>
+<h2 id="赛题剖析"><a href="#赛题剖析" class="headerlink" title="赛题剖析"></a>赛题剖析</h2><p>此次的数据输入方式和之前的比赛有很大的不同，选手们需要自行去解析文件，获得输入数据，同时进行处理，如何高效的处理文件是很大的一块优化点。</p>
+<p>初赛一共 3 亿行数据，一共 2 列，内存一共 4 G，稍微计算下就会发现，全部存储在内存中是存不下的（不考虑压缩），所以需要用到 PMem 充当存储引擎。</p>
+<p>查询的需求是查找到第 N 大的数，所以我们的架构一定是需要做到整体有序，允许局部无序。</p>
+<p>赛题数据的说明尤为重要：<strong>测试数据随机，均匀分布</strong>。看过我之前文章的读者，应当敏锐地注意到了均匀分布这个关键词，这意味着我们又可以使用数据的头 n 位来分区了。</p>
+<p>这里先给出初赛的最终架构，明确下如何串联各个流程。</p>
+<p><img src="https://image.cnkirito.cn/image-20210823162446365.png" alt="架构"></p>
+<p>把大象放进冰箱总共需要三步，这道题目仅仅多了一步。</p>
+<p>第一步：将输入文件从逻辑上分成 12 等分，这样 12 个线程可以并发读取输入文件。可以借助预处理程序，找到等分的边界。</p>
+<p>第二步：每个线程都需要读取各自的文件分片，将读取到的文件流在内存中解析成 long，并且需要根据<code>逗号</code>、<code>换行符</code>来区分出两列数据。</p>
+<p>第三步：读取到 long 之后，需要根据头 n 位进行分区，例如选择头 8 位，可以获得 2^(8-1) 即 128 个分区，因为比赛中的数据都是正数，所以减了一个符号位。这样分区之后，可以保证分区之间有序，分区内部无序。</p>
+<p>第四步：获取第 N 大的数字时，可以直接根据分区内的数据量，直接定位到最终在哪个分区，这样就可以确保只加载一部分数据到内存中。t1_pn ~ t12_pn 在逻辑上组成了 partitionN，将 partitionN 的数据加载进内存之后，这道题就变成：查询无序数组中第 N 大数的问题了。</p>
+<h2 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h2><p>以下的实现细节，我会给出实现难度，以供大家参考，打分标准：编码实现难度，容不容易想到等综合评分。</p>
+<h3 id="多线程按分区读文件（难度：2-颗星）"><a href="#多线程按分区读文件（难度：2-颗星）" class="headerlink" title="多线程按分区读文件（难度：2 颗星）"></a>多线程按分区读文件（难度：2 颗星）</h3><p>输入文件按行来分隔数据，第一时间联想到的就是 JDK 提供的 java.io.BufferedReader#readLine() 方法，但稍微懂点文件 IO 基础的读者都应该意识到，文件 IO 要想快，一定得顺序按块读，所以 readLine 这种方法，想都不用想，必定是低效的。那有人问了，博主，你给解释解释，什么叫按块读？最简单的做法是按照固定 4kb 的 buffer 来读取文件，在内存中，自行判断<code>逗号</code>、<code>换行符</code>来区分两列数据，不断移动这个 4kb 的块，这就是按块读了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (readBufferArray[i] == <span class="string">&#x27;\n&#x27;</span>) &#123;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(readBufferArray[i] == <span class="string">&#x27;,&#x27;</span>) &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>光是按块读还不够，为了充分发挥 IO 特性，还可以用上多线程，按照上图中的第一步，我的方案将文件分成了 12 份，这样 12 个线程可以齐头并进地进行读取和解析。</p>
+<blockquote>
+<p>经过测试，多线程比单线程要快 70 多秒，所以没有使用多线程的选手，名次肯定不会高，这是一个通用优化点。</p>
+</blockquote>
+<h3 id="Long-转换（难度：1-颗星）"><a href="#Long-转换（难度：1-颗星）" class="headerlink" title="Long 转换（难度：1 颗星）"></a>Long 转换（难度：1 颗星）</h3><p>将文件中的字节读取到内存中，一定会经过 byte[] 到 long 的转换过程，千万不要小看这个环节，这可是众多选手分数的分水岭。先来看下 demo 中给出的方案</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String[] columns = reader.readLine().split(<span class="string">&quot;,&quot;</span>);</span><br><span class="line">Long.parseLong(row[i]);</span><br></pre></td></tr></table></figure>
+
+<p>这里面存在两个问题</p>
+<ol>
+<li>先转 String，再转成 Long，多了一次无效转换</li>
+<li>Long.parseLong 方法比较低效，有很多无用判断</li>
+</ol>
+<p>我贴一下我方案的伪代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> val = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">    val = val * <span class="number">10</span> + (readBuffer[i] - <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>直接从字节数组中解析出 Long，解析出 Long 主要还是为了落盘的时候进行数据对齐，主流方案应该都会解析。</p>
+<h3 id="按头-n-位分桶落盘（难度：1-颗星）"><a href="#按头-n-位分桶落盘（难度：1-颗星）" class="headerlink" title="按头 n 位分桶落盘（难度：1 颗星）"></a>按头 n 位分桶落盘（难度：1 颗星）</h3><p>在读取到一个 Long 之后，我们可以按照数据的头 n 位，将其写入对应的分区文件中。这其实也是一个通用的优化点，我在《华为云 TaurusDB 性能挑战赛赛题总结》也介绍过，分区之后，可以保证分区之间有序，即 partition1 中的任意数据一定小于 partition2 中的任意数据。分区之间无序，主要是为了可以实现分区文件的顺序写。至于 n 具体是多少，取决于我们想分多个区。分区太多，会导致整体写入速度下降；分区太少，读取阶段加载的数据会过多，甚至可能导致内存放不下。</p>
+<h3 id="每个写线程维护自己的分区文件（难度：3-颗星）"><a href="#每个写线程维护自己的分区文件（难度：3-颗星）" class="headerlink" title="每个写线程维护自己的分区文件（难度：3 颗星）"></a>每个写线程维护自己的分区文件（难度：3 颗星）</h3><p>在赛题剖析里面，我给出了我最终方案的流程图，里面有一个细节，每个读取线程从 1/12 个文件分片中读取解析到的 Long 数值，写入了自己线程编号对应的文件中，进行落盘。并没有采用写入同一个分区文件这样的设计。对比下两种做法的利弊：</p>
+<ul>
+<li>写线程写入同一个分区文件。好处是读取阶段不需要聚合多份分区文件，坏处是多个线程写入同一个分区需要加锁，会导致竞争。</li>
+<li>写线程写入自己的分区文件。好处是不需要加锁写，坏处是读取阶段需要聚合读取。</li>
+</ul>
+<p>也好理解，两个方案的优劣正好相反，稍微分析一下，由于初赛的查询只有 10 次，所以聚合的开销不会太大，再加上，我们本来就希望读取能做到并发，聚合没有那么可怕。反而是写入时加锁导致的冲突，会严重浪费 CPU。</p>
+<blockquote>
+<p>该优化点，帮助我的方案从 80s 缩短到 50s。</p>
+</blockquote>
+<h3 id="分支预测优化（难度：4-颗星）"><a href="#分支预测优化（难度：4-颗星）" class="headerlink" title="分支预测优化（难度：4 颗星）"></a>分支预测优化（难度：4 颗星）</h3><p>这次比赛因为有了 PMem，导致瓶颈根本不出在 IO 上，以往比赛中，大家都是想尽一切方法，把 CPU 让给 IO，而这次比赛，PMem 直接起飞了，导致大家需要考虑，怎么优化 CPU。而 JVM 虚拟机的一系列机制中，就有很多注意事项，是跟 CPU 优化相关的。如果你对 CPU 优化一无所知，我强烈建议你先去阅读下我之前的文章《<a href="https://www.cnkirito.moe/java-jmh/">JAVA 拾遗 — JMH 与 8 个测试陷阱</a>》和《<a href="https://www.cnkirito.moe/cache-line/">JAVA 拾遗 — CPU Cache 与缓存行</a>》。在解析 Long 时，我们需要从 4kb 的读缓冲区中解析出 Long 数值，由于文件中的数值是以不定长的字节数组形式出现的，我们只能通过判断 <code>逗号</code>、<code>换行符</code> 来解析出数值，所以难免会写出这样的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> blockReadPosition = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (readBufferArray[i] == <span class="string">&#x27;\n&#x27;</span>) &#123;</span><br><span class="line">        partRaceEngine.add(threadNo, val);</span><br><span class="line">        val = <span class="number">0</span>;</span><br><span class="line">        blockReadPosition = i + <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(readBufferArray[i] == <span class="string">&#x27;,&#x27;</span>) &#123;</span><br><span class="line">        orderRaceEngine.add(threadNo, val);</span><br><span class="line">        val = <span class="number">0</span>;</span><br><span class="line">        blockReadPosition = i + <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        val = val * <span class="number">10</span> + (readBufferArray[i] - <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思考下，这段代码会有什么逻辑问题吗？当然没有，相信很多选手也会这么判断。但不妨分析下，输入文件大概有 10G 左右，所有的字节都会经过 if 判断一次，而实际上，大多数的字符并不是 <code>\n</code> 和 <code>,</code> 。这会导致 CPU 被浪费在分支预测上。</p>
+<p>我的优化思路也很简单，直接用循环，干掉 if/else 判断</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">    <span class="keyword">byte</span> temp = readBufferArray[i];</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        val = val * <span class="number">10</span> + (temp - <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">        temp = readBufferArray[++i];</span><br><span class="line">    &#125; <span class="keyword">while</span> (temp != <span class="string">&#x27;,&#x27;</span>);</span><br><span class="line">    orderRaceEngine.add(threadNo, val);</span><br><span class="line">    val = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// skip ，</span></span><br><span class="line">    i++;</span><br><span class="line">    temp = readBufferArray[i];</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        val = val * <span class="number">10</span> + (temp - <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">        temp = readBufferArray[++i];</span><br><span class="line">    &#125; <span class="keyword">while</span> (temp != <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">    partRaceEngine.add(threadNo, val);</span><br><span class="line">    val = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// skip \n</span></span><br><span class="line">&#125;</span><br><span class="line">readPosition += size;</span><br></pre></td></tr></table></figure>
+
+<p>一般来说，再没有办法去掉 if/else 的前提下，我们可以遵循的一个最佳实践是，将容易命中的条件放到最前面。</p>
+<blockquote>
+<p>该优化帮助我从 48s 优化到了 24s。</p>
+</blockquote>
+<p>另外，也可以利用数据特性，因为大多数数据是 19 位的数字，可以直接判断第 20 位是不是 <code>,</code> 或者 <code>\n</code> 从而减少分支预测的次数。</p>
+<h3 id="quickSelect（难度：4-颗星）"><a href="#quickSelect（难度：4-颗星）" class="headerlink" title="quickSelect（难度：4 颗星）"></a>quickSelect（难度：4 颗星）</h3><p>在查询阶段，查询一个分区内第 N 大的数，最简单的思路是排序之后直接返回，a[N]，受到评测 demo 的影响，很多选手可能忽略了可以使用 quickSelect 算法。</p>
+<p>关于 TopN 问题，我其实已经专门写过一篇文章了，对这个优化点和算法感兴趣的朋友可以阅读我之前的文章《<a href="https://www.cnkirito.moe/topk/">海量无序数据寻找第 K 大的数</a>》。</p>
+<blockquote>
+<p>该优化帮我从 24s 优化到 17s。</p>
+</blockquote>
+<h3 id="查询阶段多线程读分区（难度：2-颗星）"><a href="#查询阶段多线程读分区（难度：2-颗星）" class="headerlink" title="查询阶段多线程读分区（难度：2 颗星）"></a>查询阶段多线程读分区（难度：2 颗星）</h3><p>前文提到了为了避免写入阶段的冲突，每个线程维护了自己的分区文件，在查询时，则需要聚合多个线程的数据。这个时候不要忘记也可以多线程读取，因为初赛的评测程序是单线程测评的，IO 无法打满，需要我们控制多线程，充分利用 IO。</p>
+<blockquote>
+<p>该优化帮我从 17s 优化到了 15s。</p>
+</blockquote>
+<h3 id="循环展开（难度：4-颗星）"><a href="#循环展开（难度：4-颗星）" class="headerlink" title="循环展开（难度：4 颗星）"></a>循环展开（难度：4 颗星）</h3><p>尽管得知我们可以知道字节数组的长度，从而用循环来解析出 Long，但根据 JMH 的优化项来看，手动展开循环，可以让程序更加地快，例如像下面这样。</p>
+<p><img src="https://image.cnkirito.cn/image-20210823184008366.png" alt="循环展开"></p>
+<p>这样的优化大概仅仅能提升 1s<del>2s，甚至不到，但越是到前排，1</del>2s 的优化就越会显得弥足珍贵。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>还有很多之前我提到过的一些通用优化技巧，例如顺序读写、读写缓冲、对象复用等等，就不在这里继续赘述了，尽管 PMem 和固态硬盘这两种介质有一定的差异，但这些优化技巧依旧是通用的。</p>
+<p>因为这次比赛，IO 的速度实在是太快了，导致优化的方向变成如何优化 CPU，合理分配 CPU，让 CPU 更多地分配给瓶颈操作，这是其他比赛中没有过的经历。</p>
+<p>还有一些点是通过调参来实现的，例如文件分片数，读写缓冲区的大小，读写的线程数等等，也会导致成绩相差非常大，这就需要不断地肝，不断地 benchmark 了。</p>
+<p>不光是成功的优化点值得分享，也拿一个失败的优化分享一下，例如，将一半的数据存储在内存中，最终发现，申请内存的时间，倒不如拿去进行文件 IO，最终放弃了，可以见得在合理的架构设计下，PMem 的表现的确彪悍，不属于内存存取。</p>
+<p>这次 ADB 的性能挑战赛，虽然只参加了初赛，但收获的技能点还是不少的。印象最深的便是 PMem 这块盘的表现和我理解中的 SSD 还是有一定差距的，导致之前的一些经验不能直接在这场比赛中运用。我也大概了解了很多复赛前排选手使用到了很多的奇技淫巧，每一个看似奇葩的优化点背后，可能都蕴含着该选手对操作系统、文件系统、编程语言等方面超出常人的认知，值得喝彩。</p>
+<p>感到遗憾的地方还是有的，这次比赛只能让 PMem 工作在 APP Direct 模式下，没有能够真正做到颠覆性。如果有一场比赛，能够支持 Memory Mode，那我应该能收获到对持久内存更加深刻的认知。</p>
+<p>我一直反复安利我的读者尽可能地参加各类性能挑战赛，特别是在校生、实习生或者刚进入职场的新人，这种比赛是实践的最好机会，看书不是。</p>
+<p>好了，最后，我将我的代码开源在了 github：<a target="_blank" rel="noopener" href="https://github.com/lexburner/2021-tianchi-adb-race%E3%80%82%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%AF%B9%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82%E6%84%9F%E5%85%B4%E8%B6%A3%EF%BC%8C%E6%AC%A2%E8%BF%8E%E4%B8%8E%E6%88%91%E4%BA%A4%E6%B5%81%E3%80%82">https://github.com/lexburner/2021-tianchi-adb-race。如果你对实现细节感兴趣，欢迎与我交流。</a></p>
+<p>推荐阅读：</p>
+<p>《<a href="https://www.cnkirito.moe/file-io-best-practise/">文件 IO 操作的一些最佳实践</a>》</p>
+<p>《<a href="https://www.cnkirito.moe/taurusdb-race/">华为云 TaurusDB 性能挑战赛赛题总结</a>》</p>
+<p>《<a href="https://www.cnkirito.moe/polardb-race/">PolarDB 数据库性能大赛 Java 选手分享</a>》</p>
+<p>《<a href="https://www.cnkirito.moe/dubboMesh/">天池中间件大赛 dubboMesh 优化总结（qps 从 1000 到 6850）</a>》</p>
+<p>《<a href="https://www.cnkirito.moe/mq-million-queue/">天池中间件大赛百万队列存储设计总结【复赛】</a>》</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>第三届数据库大赛 ADB 性能挑战赛赛题总结</p><p><a href="https://www.cnkirito.moe/race-adb-md/">https://www.cnkirito.moe/race-adb-md/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2021-08-22</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/ADB/">ADB </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/integer-parse/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">如何更快地将string转换成int/long</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/dubbo-serialize-talk/"><span class="level-item">Dubbo 支持的几个主流序列化框架评测</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#赛题介绍"><span class="level-left"><span class="level-item">2</span><span class="level-item">赛题介绍</span></span></a></li><li><a class="level is-mobile" href="#持久内存-PMem-介绍"><span class="level-left"><span class="level-item">3</span><span class="level-item">持久内存 PMem 介绍</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#访问延时"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">访问延时</span></span></a></li><li><a class="level is-mobile" href="#造价"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">造价</span></span></a></li><li><a class="level is-mobile" href="#持久化"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">持久化</span></span></a></li></ul></li><li><a class="level is-mobile" href="#赛题剖析"><span class="level-left"><span class="level-item">4</span><span class="level-item">赛题剖析</span></span></a></li><li><a class="level is-mobile" href="#实现细节"><span class="level-left"><span class="level-item">5</span><span class="level-item">实现细节</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#多线程按分区读文件（难度：2-颗星）"><span class="level-left"><span class="level-item">5.1</span><span class="level-item">多线程按分区读文件（难度：2 颗星）</span></span></a></li><li><a class="level is-mobile" href="#Long-转换（难度：1-颗星）"><span class="level-left"><span class="level-item">5.2</span><span class="level-item">Long 转换（难度：1 颗星）</span></span></a></li><li><a class="level is-mobile" href="#按头-n-位分桶落盘（难度：1-颗星）"><span class="level-left"><span class="level-item">5.3</span><span class="level-item">按头 n 位分桶落盘（难度：1 颗星）</span></span></a></li><li><a class="level is-mobile" href="#每个写线程维护自己的分区文件（难度：3-颗星）"><span class="level-left"><span class="level-item">5.4</span><span class="level-item">每个写线程维护自己的分区文件（难度：3 颗星）</span></span></a></li><li><a class="level is-mobile" href="#分支预测优化（难度：4-颗星）"><span class="level-left"><span class="level-item">5.5</span><span class="level-item">分支预测优化（难度：4 颗星）</span></span></a></li><li><a class="level is-mobile" href="#quickSelect（难度：4-颗星）"><span class="level-left"><span class="level-item">5.6</span><span class="level-item">quickSelect（难度：4 颗星）</span></span></a></li><li><a class="level is-mobile" href="#查询阶段多线程读分区（难度：2-颗星）"><span class="level-left"><span class="level-item">5.7</span><span class="level-item">查询阶段多线程读分区（难度：2 颗星）</span></span></a></li><li><a class="level is-mobile" href="#循环展开（难度：4-颗星）"><span class="level-left"><span class="level-item">5.8</span><span class="level-item">循环展开（难度：4 颗星）</span></span></a></li></ul></li><li><a class="level is-mobile" href="#总结"><span class="level-left"><span class="level-item">6</span><span class="level-item">总结</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

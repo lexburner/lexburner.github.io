@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Arthas | 定位线上 Dubbo 线程池满异常 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言本文是 Arthas 系列文章的第二篇。 Dubbo 线程池满异常应该是大多数 Dubbo 用户都遇到过的一个问题，本文以 Arthas 3.1.7 版本为例，介绍如何针对该异常进行诊断，主要使用到 dashboard&amp;#x2F;thread 两个指令。"><meta property="og:type" content="blog"><meta property="og:title" content="Arthas | 定位线上 Dubbo 线程池满异常"><meta property="og:url" content="https://www.cnkirito.moe/arthas-thread/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="前言本文是 Arthas 系列文章的第二篇。 Dubbo 线程池满异常应该是大多数 Dubbo 用户都遇到过的一个问题，本文以 Arthas 3.1.7 版本为例，介绍如何针对该异常进行诊断，主要使用到 dashboard&amp;#x2F;thread 两个指令。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/image-20200216211204396.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20200216211047140.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20200216211837229.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20200216220111905.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20200216215300465.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20200216220024931.png"><meta property="og:image" content="https://image.cnkirito.cn/2018070117435683.jpeg"><meta property="og:image" content="https://alibaba.github.io/arthas/_images/dingding_qr.jpg"><meta property="article:published_time" content="2020-02-16T11:30:35.000Z"><meta property="article:modified_time" content="2025-12-22T07:35:36.714Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="Arthas"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/image-20200216211204396.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/arthas-thread/"},"headline":"Arthas | 定位线上 Dubbo 线程池满异常","image":["https://image.cnkirito.cn/image-20200216211204396.png","https://image.cnkirito.cn/image-20200216211047140.png","https://image.cnkirito.cn/image-20200216211837229.png","https://image.cnkirito.cn/image-20200216220111905.png","https://image.cnkirito.cn/image-20200216215300465.png","https://image.cnkirito.cn/image-20200216220024931.png","https://alibaba.github.io/arthas/_images/dingding_qr.jpg"],"datePublished":"2020-02-16T11:30:35.000Z","dateModified":"2025-12-22T07:35:36.714Z","author":{"@type":"Person","name":"徐靖峰"},"description":"前言本文是 Arthas 系列文章的第二篇。 Dubbo 线程池满异常应该是大多数 Dubbo 用户都遇到过的一个问题，本文以 Arthas 3.1.7 版本为例，介绍如何针对该异常进行诊断，主要使用到 dashboard&#x2F;thread 两个指令。"}</script><link rel="canonical" href="https://www.cnkirito.moe/arthas-thread/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>Arthas | 定位线上 Dubbo 线程池满异常</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2020-02-16</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a></span><span class="level-item">16 分钟读完 (大约2350个字)</span></div></div><div class="content"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文是 Arthas 系列文章的第二篇。</p>
+<p>Dubbo 线程池满异常应该是大多数 Dubbo 用户都遇到过的一个问题，本文以 Arthas 3.1.7 版本为例，介绍如何针对该异常进行诊断，主要使用到 <code>dashboard</code>/<code>thread</code> 两个指令。</p>
+<span id="more"></span>
+
+<h2 id="Dubbo-线程池满异常介绍"><a href="#Dubbo-线程池满异常介绍" class="headerlink" title="Dubbo 线程池满异常介绍"></a>Dubbo 线程池满异常介绍</h2><p>理解线程池满异常需要首先了解 Dubbo 线程模型，官方文档：<a target="_blank" rel="noopener" href="http://dubbo.apache.org/zh-cn/docs/user/demos/thread-model.html%E3%80%82%E7%AE%80%E5%8D%95%E6%A6%82%E6%8B%AC%E4%B8%8B">http://dubbo.apache.org/zh-cn/docs/user/demos/thread-model.html。简单概括下</a> Dubbo 默认的线程模型：Dubbo 服务端每次接收到一个 Dubbo 请求，便交给一个线程池处理，该线程池默认有 200 个线程，如果 200 个线程都不处于空闲状态，则</p>
+<p>客户端会报出如下异常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Caused by: java.util.concurrent.ExecutionException: org.apache.dubbo.remoting.RemotingException: <span class="function">Server <span class="title">side</span><span class="params">(<span class="number">192.168</span><span class="number">.1</span><span class="number">.101</span>,<span class="number">20880</span>)</span> threadpool is exhausted ...</span></span><br></pre></td></tr></table></figure>
+
+<p>服务端会打印 WARN 级别的日志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[DUBBO] Thread pool is EXHAUSTED!</span><br></pre></td></tr></table></figure>
+
+<p>引发该异常的原因主要有以下几点：</p>
+<ul>
+<li>客户端/服务端超时时间设置不合理，导致请求无限等待，耗尽了线程数</li>
+<li>客户端请求量过大，服务端无法及时处理，耗尽了线程数</li>
+<li>服务端由于 fullgc 等原因导致处理请求较慢，耗尽了线程数</li>
+<li>服务端由于数据库、Redis、网络 IO 阻塞问题，耗尽了线程数</li>
+<li>…</li>
+</ul>
+<p>原因可能很多，但纠其根本，都是因为业务上出了问题，导致 Dubbo 线程池资源耗尽了。所以出现该问题，首先要做的是：</p>
+<ul>
+<li>排查业务异常</li>
+</ul>
+<p>紧接着针对自己的业务场景对 Dubbo 进行调优：</p>
+<ul>
+<li>调整 Provider 端的 dubbo.provider.threads 参数大小，默认 200，可以适当提高。多大算合适？至少 700 不算大；不建议调的太小，容易出现上述问题</li>
+<li>调整 Consumer 端的 dubbo.consumer.actives 参数，控制消费者调用的速率。这个实践中很少使用，仅仅一提</li>
+<li>客户端限流</li>
+<li>服务端扩容</li>
+<li>Dubbo 目前不支持给某个 service 单独配置一个隔离的线程池，用于保护服务，可能在以后的版本中会增加这个特性</li>
+</ul>
+<p>另外，不止 Dubbo 如此设计线程模型，绝大多数服务治理框架、 HTTP 服务器都有业务线程池的概念，所以理论上它们都会有线程池满异常的可能，解决方案也类似。</p>
+<p>那竟然问题都解释清楚了，我们还需要排查什么呢？一般在线上，有很多运行中的服务，这些服务都是共享一个 Dubbo 服务端线程池，可能因为某个服务的问题，导致整个应用被拖垮，所以需要排查是不是集中出现在某个服务上，再针对排查这个服务的业务逻辑；需要定位到线程堆栈，揪出导致线程池满的元凶。</p>
+<p>定位该问题，我的习惯一般是使用 Arthas 的 <code>dashboard</code> 和 <code>thread</code> 命令，而在介绍这两个命令之前，我们先人为的构造一个 Dubbo 线程池满异常的例子。</p>
+<h2 id="复现-Dubbo-线程池满异常"><a href="#复现-Dubbo-线程池满异常" class="headerlink" title="复现 Dubbo 线程池满异常"></a>复现 Dubbo 线程池满异常</h2><h3 id="配置服务端线程池大小"><a href="#配置服务端线程池大小" class="headerlink" title="配置服务端线程池大小"></a>配置服务端线程池大小</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">dubbo.protocol.threads</span>=<span class="string">10</span></span><br></pre></td></tr></table></figure>
+
+<p>默认大小是 200，不利于重现该异常</p>
+<h3 id="模拟服务端阻塞"><a href="#模拟服务端阻塞" class="headerlink" title="模拟服务端阻塞"></a>模拟服务端阻塞</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service(version = &quot;1.0.0&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoServiceImpl</span> <span class="keyword">implements</span> <span class="title">DemoService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHello</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        sleep();</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Hello &quot;</span> + name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sleep</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">5000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>sleep</code> 方法模拟了一个耗时操作，主要是为了让服务端线程池耗尽。</p>
+<h3 id="客户端多线程访问"><a href="#客户端多线程访问" class="headerlink" title="客户端多线程访问"></a>客户端多线程访问</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                demoService.sayHello(<span class="string">&quot;Provider&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="问题复现"><a href="#问题复现" class="headerlink" title="问题复现"></a>问题复现</h3><p>客户端</p>
+<p><img src="https://image.cnkirito.cn/image-20200216211204396.png" alt="客户端异常"></p>
+<p>服务端</p>
+<p><img src="https://image.cnkirito.cn/image-20200216211047140.png" alt="服务端异常"></p>
+<p>问题得以复现，保留该现场，并假设我们并不知晓 sleep 的耗时逻辑，使用 Arthas 来进行排查。</p>
+<h2 id="dashboard-命令介绍"><a href="#dashboard-命令介绍" class="headerlink" title="dashboard 命令介绍"></a>dashboard 命令介绍</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dashboard</span><br></pre></td></tr></table></figure>
+
+<p>执行效果</p>
+<p><img src="https://image.cnkirito.cn/image-20200216211837229.png" alt="dashboard"></p>
+<p>可以看到如上所示的面板，显示了一些系统的运行信息，这里主要关注 THREAD 面板，介绍一下各列的含义：</p>
+<ul>
+<li>ID: Java 级别的线程 ID，注意这个 ID 不能跟 jstack 中的 nativeID 一一对应</li>
+<li>NAME: 线程名</li>
+<li>GROUP: 线程组名</li>
+<li>PRIORITY: 线程优先级, 1~10 之间的数字，越大表示优先级越高</li>
+<li>STATE: 线程的状态</li>
+<li>CPU%: 线程消耗的 CPU 占比，采样 100ms，将所有线程在这 100ms 内的 CPU 使用量求和，再算出每个线程的 CPU 使用占比。</li>
+<li>TIME: 线程运行总时间，数据格式为<code>分：秒</code></li>
+<li>INTERRUPTED: 线程当前的中断位状态</li>
+<li>DAEMON: 是否是 daemon 线程</li>
+</ul>
+<p>在空闲状态下线程应该是处于 WAITING 状态，而因为 sleep 的缘故，现在所有的线程均处于 TIME_WAITING 状态，导致后来的请求被处理时，抛出了线程池满的异常。</p>
+<p>在实际排查中，需要抽查一定数量的 Dubbo 线程，记录他们的线程编号，看看它们到底在处理什么服务请求。使用如下命令可以根据线程池名筛选出 Dubbo 服务端线程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dashboard | grep &quot;DubboServerHandler&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="thread-命令介绍"><a href="#thread-命令介绍" class="headerlink" title="thread 命令介绍"></a>thread 命令介绍</h2><p>使用 <code>dashboard</code> 筛选出个别线程 id 后，它的使命就完成了，剩下的操作交给 <code>thread</code> 命令来完成。其实，<code>dashboard</code> 中的 <code>thread</code> 模块，就是整合了 <code>thread</code> 命令，但是 <code>dashboard</code> 还可以观察内存和 GC 状态，视角更加全面，所以我个人建议，在排查问题时，先使用 <code>dashboard</code> 纵观全局信息。</p>
+<p>thread 使用示例：</p>
+<ol>
+<li><p>查看当前最忙的前 n 个线程</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> thread -n 3</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://image.cnkirito.cn/image-20200216220111905.png" alt="thread -n"></p>
+</li>
+<li><p>显示所有线程信息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> thread</span></span><br></pre></td></tr></table></figure>
+
+<p>和 <code>dashboard</code> 中显示一致</p>
+</li>
+<li><p>显示当前阻塞其他线程的线程</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> thread -b</span></span><br><span class="line">No most blocking thread found!</span><br><span class="line">Affect(row-cnt:0) cost in 22 ms.</span><br></pre></td></tr></table></figure>
+
+<p>这个命令还有待完善，目前只支持找出 synchronized 关键字阻塞住的线程， 如果是 <code>java.util.concurrent.Lock</code>， 目前还不支持</p>
+</li>
+<li><p>显示指定状态的线程</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> thread --state TIMED_WAITING</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://image.cnkirito.cn/image-20200216215300465.png" alt="thread --state"></p>
+<p>线程状态一共有 [RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, NEW, TERMINATED] 6 种</p>
+</li>
+<li><p>查看指定线程的运行堆栈</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> thread 46</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://image.cnkirito.cn/image-20200216220024931.png" alt="thread ${thread_id}"></p>
+</li>
+</ol>
+<p>介绍了几种常见的用法，在实际排查中需要针对我们的现场做针对性的分析，也同时考察了我们对线程状态的了解程度。我这里列举了几种常见的线程状态：</p>
+<h3 id="初始-NEW"><a href="#初始-NEW" class="headerlink" title="初始(NEW)"></a>初始(NEW)</h3><p>新创建了一个线程对象，但还没有调用 start() 方法。</p>
+<h3 id="运行-RUNNABLE"><a href="#运行-RUNNABLE" class="headerlink" title="运行(RUNNABLE)"></a>运行(RUNNABLE)</h3><p>Java 线程将就绪（ready）和运行中（running）两种状态笼统的称为“运行”</p>
+<h3 id="阻塞-BLOCKED"><a href="#阻塞-BLOCKED" class="headerlink" title="阻塞(BLOCKED)"></a>阻塞(BLOCKED)</h3><p>线程阻塞于锁</p>
+<h3 id="等待-WAITING"><a href="#等待-WAITING" class="headerlink" title="等待(WAITING)"></a>等待(WAITING)</h3><p>进入该状态的线程需要等待其他线程做出一些特定动作（通知或中断）</p>
+<ol>
+<li>Object#wait() 且不加超时参数</li>
+<li>Thread#join() 且不加超时参数</li>
+<li>LockSupport#park()</li>
+</ol>
+<h3 id="超时等待-TIMED-WAITING"><a href="#超时等待-TIMED-WAITING" class="headerlink" title="超时等待(TIMED_WAITING)"></a>超时等待(TIMED_WAITING)</h3><p>该状态不同于 WAITING，它可以在指定的时间后自行返回</p>
+<ol>
+<li>Thread#sleep()</li>
+<li>Object#wait() 且加了超时参数</li>
+<li>Thread#join() 且加了超时参数</li>
+<li>LockSupport#parkNanos()</li>
+<li>LockSupport#parkUntil()</li>
+</ol>
+<h3 id="终止-TERMINATED"><a href="#终止-TERMINATED" class="headerlink" title="终止(TERMINATED)"></a>终止(TERMINATED)</h3><p>标识线程执行完毕</p>
+<h3 id="状态流转图"><a href="#状态流转图" class="headerlink" title="状态流转图"></a>状态流转图</h3><p><img src="https://image.cnkirito.cn/2018070117435683.jpeg" alt="线程状态"></p>
+<h3 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h3><p>分析线程池满异常并没有通法，需要灵活变通，我们对下面这些 case 一个个分析：</p>
+<ul>
+<li>阻塞类问题。例如数据库连接不上导致卡死，运行中的线程基本都应该处于 BLOCKED 或者 TIMED_WAITING 状态，我们可以借助 <code>thread --state</code> 定位到</li>
+<li>繁忙类问题。例如 CPU 密集型运算，运行中的线程基本都处于 RUNNABLE 状态，可以借助于 <code>thread -n</code> 来定位出最繁忙的线程</li>
+<li>GC 类问题。很多外部因素会导致该异常，例如 GC 就是其中一个因素，这里就不能仅仅借助于 <code>thread</code> 命令来排查了。</li>
+<li>定点爆破。还记得在前面我们通过 grep 筛选出了一批 Dubbo 线程，可以通过 <code>thread $&#123;thread_id&#125;</code> 定向的查看堆栈，如果统计到大量的堆栈都是一个服务时，基本可以断定是该服务出了问题，至于说是该服务请求量突然激增，还是该服务依赖的某个下游服务突然出了问题，还是该服务访问的数据库断了，那就得根据堆栈去判断了。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文以 Dubbo 线程池满异常作为引子，介绍了线程类问题该如何分析，以及如何通过 Arthas 快速诊断线程问题。有了 Arthas，基本不再需要 jstack 将 16 进制转来转去了，大大提升了诊断速度。</p>
+<h2 id="Arthas-钉钉交流群"><a href="#Arthas-钉钉交流群" class="headerlink" title="Arthas 钉钉交流群"></a>Arthas 钉钉交流群</h2><p><img src="https://alibaba.github.io/arthas/_images/dingding_qr.jpg" alt="_images/dingding_qr.jpg"></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Arthas | 定位线上 Dubbo 线程池满异常</p><p><a href="https://www.cnkirito.moe/arthas-thread/">https://www.cnkirito.moe/arthas-thread/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2020-02-16</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Arthas/">Arthas </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/arthas-trace/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Arthas | 追踪线上耗时方法</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/middleware-hire/"><span class="level-item">阿里巴巴中间件技术部春招开始啦</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#Dubbo-线程池满异常介绍"><span class="level-left"><span class="level-item">2</span><span class="level-item">Dubbo 线程池满异常介绍</span></span></a></li><li><a class="level is-mobile" href="#复现-Dubbo-线程池满异常"><span class="level-left"><span class="level-item">3</span><span class="level-item">复现 Dubbo 线程池满异常</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#配置服务端线程池大小"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">配置服务端线程池大小</span></span></a></li><li><a class="level is-mobile" href="#模拟服务端阻塞"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">模拟服务端阻塞</span></span></a></li><li><a class="level is-mobile" href="#客户端多线程访问"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">客户端多线程访问</span></span></a></li><li><a class="level is-mobile" href="#问题复现"><span class="level-left"><span class="level-item">3.4</span><span class="level-item">问题复现</span></span></a></li></ul></li><li><a class="level is-mobile" href="#dashboard-命令介绍"><span class="level-left"><span class="level-item">4</span><span class="level-item">dashboard 命令介绍</span></span></a></li><li><a class="level is-mobile" href="#thread-命令介绍"><span class="level-left"><span class="level-item">5</span><span class="level-item">thread 命令介绍</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#初始-NEW"><span class="level-left"><span class="level-item">5.1</span><span class="level-item">初始(NEW)</span></span></a></li><li><a class="level is-mobile" href="#运行-RUNNABLE"><span class="level-left"><span class="level-item">5.2</span><span class="level-item">运行(RUNNABLE)</span></span></a></li><li><a class="level is-mobile" href="#阻塞-BLOCKED"><span class="level-left"><span class="level-item">5.3</span><span class="level-item">阻塞(BLOCKED)</span></span></a></li><li><a class="level is-mobile" href="#等待-WAITING"><span class="level-left"><span class="level-item">5.4</span><span class="level-item">等待(WAITING)</span></span></a></li><li><a class="level is-mobile" href="#超时等待-TIMED-WAITING"><span class="level-left"><span class="level-item">5.5</span><span class="level-item">超时等待(TIMED_WAITING)</span></span></a></li><li><a class="level is-mobile" href="#终止-TERMINATED"><span class="level-left"><span class="level-item">5.6</span><span class="level-item">终止(TERMINATED)</span></span></a></li><li><a class="level is-mobile" href="#状态流转图"><span class="level-left"><span class="level-item">5.7</span><span class="level-item">状态流转图</span></span></a></li><li><a class="level is-mobile" href="#问题分析"><span class="level-left"><span class="level-item">5.8</span><span class="level-item">问题分析</span></span></a></li></ul></li><li><a class="level is-mobile" href="#总结"><span class="level-left"><span class="level-item">6</span><span class="level-item">总结</span></span></a></li><li><a class="level is-mobile" href="#Arthas-钉钉交流群"><span class="level-left"><span class="level-item">7</span><span class="level-item">Arthas 钉钉交流群</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>谈谈中间件开发 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="最近频繁地在跟实习生候选人打交道，每次新接触一个候选人，都要花上一定的时间去介绍我们团队，候选人问的最多的一个问题就是「中间件部门一般是干嘛的？」，恰好我之前也接触过一些想从事中间件开发的小伙伴，问过我「现在转行做中间件开发还来得及吗？」诸如此类的问题，索性就写一篇文章，聊聊我个人这些年做中间件开发的感受吧。 什么是中间件开发？我大四实习时，在一个 20 多人的软件开发团队第一次接触了中间件，当时"><meta property="og:type" content="blog"><meta property="og:title" content="谈谈中间件开发"><meta property="og:url" content="https://www.cnkirito.moe/talk-about-middleware-develop/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="最近频繁地在跟实习生候选人打交道，每次新接触一个候选人，都要花上一定的时间去介绍我们团队，候选人问的最多的一个问题就是「中间件部门一般是干嘛的？」，恰好我之前也接触过一些想从事中间件开发的小伙伴，问过我「现在转行做中间件开发还来得及吗？」诸如此类的问题，索性就写一篇文章，聊聊我个人这些年做中间件开发的感受吧。 什么是中间件开发？我大四实习时，在一个 20 多人的软件开发团队第一次接触了中间件，当时"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://www.cnkirito.moe/img/og_image.png"><meta property="article:published_time" content="2021-02-06T11:09:53.000Z"><meta property="article:modified_time" content="2025-05-22T16:49:16.251Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="职场"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/talk-about-middleware-develop/"},"headline":"谈谈中间件开发","image":["https://www.cnkirito.moe/img/og_image.png"],"datePublished":"2021-02-06T11:09:53.000Z","dateModified":"2025-05-22T16:49:16.251Z","author":{"@type":"Person","name":"徐靖峰"},"description":"最近频繁地在跟实习生候选人打交道，每次新接触一个候选人，都要花上一定的时间去介绍我们团队，候选人问的最多的一个问题就是「中间件部门一般是干嘛的？」，恰好我之前也接触过一些想从事中间件开发的小伙伴，问过我「现在转行做中间件开发还来得及吗？」诸如此类的问题，索性就写一篇文章，聊聊我个人这些年做中间件开发的感受吧。 什么是中间件开发？我大四实习时，在一个 20 多人的软件开发团队第一次接触了中间件，当时"}</script><link rel="canonical" href="https://www.cnkirito.moe/talk-about-middleware-develop/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>谈谈中间件开发</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-02-06</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-05-23</time></span><span class="level-item"><a class="link-muted" href="/categories/%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/">技术杂谈</a></span><span class="level-item">23 分钟读完 (大约3494个字)</span></div></div><div class="content"><p>最近频繁地在跟实习生候选人打交道，每次新接触一个候选人，都要花上一定的时间去介绍我们团队，候选人问的最多的一个问题就是「中间件部门一般是干嘛的？」，恰好我之前也接触过一些想从事中间件开发的小伙伴，问过我「现在转行做中间件开发还来得及吗？」诸如此类的问题，索性就写一篇文章，聊聊我个人这些年做中间件开发的感受吧。</p>
+<h2 id="什么是中间件开发？"><a href="#什么是中间件开发？" class="headerlink" title="什么是中间件开发？"></a>什么是中间件开发？</h2><p>我大四实习时，在一个 20 多人的软件开发团队第一次接触了中间件，当时项目的架构师引入了微博开源的 RPC 框架 Motan，借助于这个框架，我们迅速构建起了一个基于微服务架构的内部电商系统。接着在项目中，由于业务需求，我们又引入了 ActiveMQ…在这个阶段，我已经在使用中间件了，但似乎没有接触到中间件开发，更多的是使用层面上的接触。</p>
+<p>我毕业后的第一份工作，公司有几百号研发，当时的 leader 看我对中间件比较感兴趣，有意把我分配在了基础架构团队，我第一次真正意义上成为了一名”中间件研发“，平时主要的工作，是基于开源的 Kong 和 Dubbo，进行一些内部的改造，以提供给业务团队更好地使用。这个阶段，做的事还是比较杂的，业务团队对某些中间件有定制化的需求，都需要去了解这个中间件，熟悉源码。这段时间，也是我成长最快的一个时期，我是在这个期间学会了 Docker、Neo4j、Kong 等以前从来没接触过的技术，并且更加深入地了解 Dubbo 这类 RPC 框架的原理。可能坐在我旁边的就是一个订单部门的同学，抛了一个功能点让我来改造。</p>
+<p>现在，我供职于阿里云云原生中间件，相较于上一份中间件研发工作，阿里云这类互联网大公司，任意一个中间件都有少则数人，多则数十人负责，中间件部门和业务部门之间也有着明确的界限。在这里，中间件团队的职责可以细分为三个方向：</p>
+<ol>
+<li>中间件团队会被业务团队的需求所驱动，为集团内部提供定制化的解决方案，俗称「自研」。所以你可能并不了解到 HSF、Diamond 这些阿里内部的中间件。</li>
+<li>中间件团队会从事开源，花费大量的精力提升中间件的极致性能，提升开源影响力，引领技术先进性。这部分中间件则比较为人所熟知，例如 Dubbo、Spring Cloud Alibaba、RocketMQ、Nacos。</li>
+<li>中间件会在阿里云输出商业化产品，相比开源产品，提供更高的 SLA、更强大的功能、更友好的交互。这部分商业化产品诸如：微服务引擎 MSE、消息队列 RocketMQ、分布式应用链路追踪 ARMS。</li>
+</ol>
+<p>我的这三段经历，正好反应了不同规模的公司对中间件开发的不同需求。小公司使用中间件，例如 RPC、MQ、缓存等，基本是由业务开发人员自己维护的。但如果后台研发达到数百人，基本就会组建自己的中间件团队，或者选择使用阿里云等云厂商提供的中间件产品。</p>
+<span id="more"></span>
+
+<h2 id="中间件开发和业务开发的区别"><a href="#中间件开发和业务开发的区别" class="headerlink" title="中间件开发和业务开发的区别"></a>中间件开发和业务开发的区别</h2><p>在我看来，中间件开发和业务开发并没有什么高下之分，非要说区别的话，有点像游戏里面的不同转职，有人选择的是魔法师，有人选择的是战士。在职场的练级过程中，每个人的总技能点数是一样的，业务开发有点向全能战士的方向去发展，各个点都涉猎一点，但每个方向能够分配到技能点自然就少了；中间件开发就像《因为太怕痛，就全点防御力了》里面的主角，把技能点都分配到了一个方向。</p>
+<p>假设你是在一个小公司工作，现阶段并没有专门的中间件团队，大家都是业务开发，此时我们做一个假设：公司即将成立一个中间件团队或者叫基础架构部，那么会是哪一类人容易被选中呢？一定是那些技术功底扎实，对中间件感兴趣，研究过源码的人。这个假设并非凭空捏造，很多互联网公司的中间件团队都是这么一点点壮大起来的。我想说什么呢？业务开发和中间件开发一开始并没有明确的界限，因此，不用顾忌你现在是不是在从事业务开发，只要你对中间件感兴趣，有过源码级别的研究，就可以成为一个中间件开发。</p>
+<h2 id="中间件开发需要具备哪些素质？"><a href="#中间件开发需要具备哪些素质？" class="headerlink" title="中间件开发需要具备哪些素质？"></a>中间件开发需要具备哪些素质？</h2><p>越是大的公司，大的中间件团队，责任分工就越垂直。基本在大公司，一个中间件开发可能花几年时间在某一个垂直方向深耕。以下是一些常见的中间件方向，当然，这个分类在各个公司可能由于组织架构的原因，略有不同。</p>
+<ol>
+<li>微服务治理。例如 RPC 相关中间件，注册中心，配置中心，限流熔断，链路追踪等等。开源产品例如：Dubbo、SpringCloud、Nacos、Zookeeper、Sentinel、Hystrix、Zipkin。</li>
+<li>消息队列。微服务一般强调的同步通信，消息队列单独列出来，主要是因为其异步的机制。开源产品例如：RocketMQ、Kafka</li>
+<li>存储中间件。例如缓存，数据库等等，例如 Mysql、Redis。值得一提的是，由于存储相关的系统一般都非常复杂，特别是在分布式存储领域，体系更是繁杂，在阿里内部一般将数据库和缓存这种存储类型的产品当成是和中间件平级的存在，所以如果有人说 Mysql 和 Redis 不是中间件，也没有啥好争吵的。</li>
+<li>存储 Proxy。典型的如 ShardingSphere。</li>
+<li>网关。例如 Spring Cloud Gateway、Kong、Nginx。</li>
+<li>ServiceMesh。Envoy、Istio 在阿里这边也被划分在中间件部门。</li>
+</ol>
+<p>其实可以发现，中间件其实并没有一个明确的定义，到底哪些开源产品可以是中间件，哪些又不是。</p>
+<p>列举完这些典型的中间件，继续讨论这一节的主题，一个中间件开发者需要具备哪些素质？</p>
+<ol>
+<li>语言基础。从 Java 程序员的角度，基础通常就是：集合，并发，JVM，常用工具类。</li>
+<li>操作系统基础。中间件开发人员经常和操作系统打交道，所以计算机基础也必不可少，我列举一些关键词，供各位参考<ul>
+<li>文件 IO。例如 pageCache，mmap，direct IO 等概念。</li>
+<li>进程线程。例如 green thread，协程等概念。</li>
+<li>内存/CPU。例如 cgroup，cache line，bound core 等概念。</li>
+</ul>
+</li>
+<li>网络基础。可以发现上述的每一个中间件都离不开网络通信，一定需要对 TCP 和 HTTP 的原理烂熟于心，框架层面需要熟悉 NIO、Netty、GRPC、HttpClient 等常用的网络框架/工具。</li>
+<li>分布式相关知识。了解 CAP， paxos，raft，zab，2pc/3pc，base 等理论知识，例如我看到有一些应届生简历中的一个项目经历就很有意思：根据 MIT 课程 Lab 实现 Raft 协议的 POC。</li>
+<li>源码阅读能力。我认为源码阅读能力是一个中间件开发者必备的素质，网上经常能看到各种源码分析文章，通过阅读开源中间件的源码，可以借鉴别人的设计理念，提升自身的编码水准。</li>
+<li>保持技术热情，拥抱变化。中间件技术日新月异，可能一个打败一个中间件的不是同类的产品，而是整体的大环境，例如近几年云原生大火，所有中间件几乎都在拥抱变化，主动向 K8s 对齐，在这个大背景下，就需要中间件开发者拥有 K8s 的基础认知能力，熟悉 pod、service、deployment、statefulSet、operator 这些 K8s 的基本概念。</li>
+</ol>
+<h2 id="如何成为中间件开发"><a href="#如何成为中间件开发" class="headerlink" title="如何成为中间件开发"></a>如何成为中间件开发</h2><p>看完上述这些要求，可能会有一些同学开始咋舌了，但其实也没那么可怕，这跟最早学习 Java 基础是一样的，很多东西一开始没有接触过，觉得很难，但熟悉之后会发现，也就那么回事。</p>
+<p>我的技术交流群中经常会有同学抱怨说，平时只能接触到 CRUD，根本接触不到这些”高大上“的技术。我想说的是，机会都是自己找的。我这里有几个切实可行的建议：</p>
+<ol>
+<li>参与开源社区的项目，贡献代码。了解一个中间件最好的方式就是贡献它，带着问题有的放矢地研究源码，是我比较推荐的方式，你所需要做的是寻找一个合适的 issue，解决它。不断重复这个过程，你其实就是一个中间件开发了！</li>
+<li>多动手做实验。很多上面提到的中间件开发应用的素质都可以通过动手做实验的方式来学习，例如动手实现一个简易的 RPC 框架，实现一个 Raft 协议的 POC，通过 benchmark 对比 FileChannel 和 MMAP 的性能，相信我，这比看书、看视频、看博客有用的多的多。</li>
+<li>参与中间件挑战赛。最早是阿里会举办一年一度的中间件性能挑战赛，后来也有一些其他公司如华为开始效仿这类比赛，参与这些挑战赛也可以积累非常多的经验，同时你还可以借着组队，结交非常多的朋友。</li>
+</ol>
+<p>对于上述的那些要求，我筛选了我之前写过的一些不需要有任何门槛就可以阅读的文章，可能会对你有所帮助：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzI0NzEyODIyOA==&mid=2247485597&idx=1&sn=b0bc9ae83be9fdb2d49f1ac1c876d990&chksm=e9b58156dec20840ba511955dc70040c8f0f9d793a152c9da322ff785fecd786e1f9e326e72d&token=1086156994&lang=zh_CN#rd"> 用了这么久配置中心，还不知道长轮询是什么？</a></li>
+<li><a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzI0NzEyODIyOA==&mid=2247484345&idx=1&sn=9ba0fb062ff6ca427710885d8a26bf0e&chksm=e9b58a72dec203649e2f5e7a97a4ddfcb46b96645a218c5c1ffd56ca832a184bdef0a6ecc923&token=1086156994&lang=zh_CN#rd">一文探讨堆外内存的监控与回收</a></li>
+<li><a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzI0NzEyODIyOA==&mid=2247484276&idx=1&sn=e9d4dd7495272565ef77219f34d65a87&chksm=e9b58abfdec203a97013f0dff6acb7ac0e680b0fcc4f064b4dc38bada0a4e1d750a428e8ea1f&token=1086156994&lang=zh_CN#rd">一种心跳，两种设计</a></li>
+<li><a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzI0NzEyODIyOA==&mid=2247484251&idx=1&sn=c037f75bb6172fbad86f5e9c5ed22a77&chksm=e9b58a90dec203866bbe080b1ab795af4f19cae5815426fa40503e0ad01d3ec2a1aac94cb723&token=1086156994&lang=zh_CN#rd">聊聊 TCP 长连接和心跳那些事</a></li>
+<li><a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzI0NzEyODIyOA==&mid=2247484211&idx=1&sn=1a2e597fe3a039a5925db5f000bad872&chksm=e9b58af8dec203ee578e8903fa7df7abbedcb3f90592117a8885179cb64c72366481427df91d&token=1086156994&lang=zh_CN#rd">文件 IO 操作的最佳实践</a></li>
+<li><a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzI0NzEyODIyOA==&mid=2247484043&idx=1&sn=cd9c9106b9ef43adc7212bac26d4d1de&chksm=e9b58b40dec202560dab4bf84a91d7d5a3a560fea2057e5f3704c2efcc9bf7a2978586a8984c&token=1086156994&lang=zh_CN#rd">以 Dubbo 为例，聊聊如何为开源项目做贡献</a></li>
+</ol>
+<h2 id="中间件欢迎你"><a href="#中间件欢迎你" class="headerlink" title="中间件欢迎你"></a>中间件欢迎你</h2><p>如果你是一个业务开发，想从事中间件方向的研发，正在纠结，那我想说：选择中间件，最合适的时间是毕业时，其次是现在，Why Not？</p>
+<p>如果你是一个学生，正在找一份实习工作，我还是挺推荐你选择中间件方向的工作的，这个方向非常技术范，无论如何对你的成长都有帮助。最后，你应该猜到我要说什么了吧？如果你有意向从事中间件的开发，随时欢迎你与我【微信 id：xiayimiaoshenghua】咨询，我这里是【阿里云云原生中间件】团队，我们正在针对 22 届的学生进行春季实习的意向沟通。</p>
+<p>团队介绍 &amp; JD 请戳阅读原文</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>谈谈中间件开发</p><p><a href="https://www.cnkirito.moe/talk-about-middleware-develop/">https://www.cnkirito.moe/talk-about-middleware-develop/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2021-02-06</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-05-23</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/%E8%81%8C%E5%9C%BA/">职场 </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/hangzhou-buy-house/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Kirito 杭州买房记 | 纯小白向杭州购房攻略</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/school-internship/"><span class="level-item">从校园到职场，聊聊实习这点事</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#什么是中间件开发？"><span class="level-left"><span class="level-item">1</span><span class="level-item">什么是中间件开发？</span></span></a></li><li><a class="level is-mobile" href="#中间件开发和业务开发的区别"><span class="level-left"><span class="level-item">2</span><span class="level-item">中间件开发和业务开发的区别</span></span></a></li><li><a class="level is-mobile" href="#中间件开发需要具备哪些素质？"><span class="level-left"><span class="level-item">3</span><span class="level-item">中间件开发需要具备哪些素质？</span></span></a></li><li><a class="level is-mobile" href="#如何成为中间件开发"><span class="level-left"><span class="level-item">4</span><span class="level-item">如何成为中间件开发</span></span></a></li><li><a class="level is-mobile" href="#中间件欢迎你"><span class="level-left"><span class="level-item">5</span><span class="level-item">中间件欢迎你</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

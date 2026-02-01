@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Java 并发计数器探秘 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言一提到线程安全的并发计数器，AtomicLong 必然是第一个被联想到的工具。Atomic* 一系列的原子类以及它们背后的 CAS 无锁算法，常常是高性能，高并发的代名词。本文将会阐释，在并发场景下，使用 AtomicLong 来充当并发计数器将会是一个糟糕的设计，实际上存在不少 AtomicLong 之外的计数器方案。近期我研究了一些 Jdk1.8 以及 JCTools 的优化方案，并将它们"><meta property="og:type" content="blog"><meta property="og:title" content="Java 并发计数器探秘"><meta property="og:url" content="https://www.cnkirito.moe/java-concurrent-counter/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="前言一提到线程安全的并发计数器，AtomicLong 必然是第一个被联想到的工具。Atomic* 一系列的原子类以及它们背后的 CAS 无锁算法，常常是高性能，高并发的代名词。本文将会阐释，在并发场景下，使用 AtomicLong 来充当并发计数器将会是一个糟糕的设计，实际上存在不少 AtomicLong 之外的计数器方案。近期我研究了一些 Jdk1.8 以及 JCTools 的优化方案，并将它们"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/LongAdder.png"><meta property="og:image" content="https://image.cnkirito.cn/LongAdder-layer.png"><meta property="og:image" content="https://image.cnkirito.cn/ConcurrentAutoTable.png"><meta property="og:image" content="https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg"><meta property="article:published_time" content="2018-08-22T11:47:28.000Z"><meta property="article:modified_time" content="2025-05-26T03:18:31.163Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="JAVA"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/LongAdder.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/java-concurrent-counter/"},"headline":"Java 并发计数器探秘","image":["https://image.cnkirito.cn/LongAdder.png","https://image.cnkirito.cn/LongAdder-layer.png","https://image.cnkirito.cn/ConcurrentAutoTable.png","https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg"],"datePublished":"2018-08-22T11:47:28.000Z","dateModified":"2025-05-26T03:18:31.163Z","author":{"@type":"Person","name":"徐靖峰"},"description":"前言一提到线程安全的并发计数器，AtomicLong 必然是第一个被联想到的工具。Atomic* 一系列的原子类以及它们背后的 CAS 无锁算法，常常是高性能，高并发的代名词。本文将会阐释，在并发场景下，使用 AtomicLong 来充当并发计数器将会是一个糟糕的设计，实际上存在不少 AtomicLong 之外的计数器方案。近期我研究了一些 Jdk1.8 以及 JCTools 的优化方案，并将它们"}</script><link rel="canonical" href="https://www.cnkirito.moe/java-concurrent-counter/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>Java 并发计数器探秘</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2018-08-22</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-05-26</time></span><span class="level-item"><a class="link-muted" href="/categories/JAVA/">JAVA</a></span><span class="level-item">24 分钟读完 (大约3651个字)</span></div></div><div class="content"><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>一提到线程安全的并发计数器，AtomicLong 必然是第一个被联想到的工具。Atomic* 一系列的原子类以及它们背后的 CAS 无锁算法，常常是高性能，高并发的代名词。本文将会阐释，在并发场景下，使用 AtomicLong 来充当并发计数器将会是一个糟糕的设计，实际上存在不少 AtomicLong 之外的计数器方案。近期我研究了一些 Jdk1.8 以及 JCTools 的优化方案，并将它们的对比与实现细节整理于此。</p>
+<p>相关面试题：</p>
+<blockquote>
+<p>单机场景下，有比 AtomicLong 更高效的并发计数器方案吗？</p>
+</blockquote>
+<span id="more"></span>
+
+<h3 id="阅读本文前"><a href="#阅读本文前" class="headerlink" title="阅读本文前"></a>阅读本文前</h3><p>本文相关的基准测试代码均可在博主的 github 中找到，测试方式全部采用 JMH，这篇文章可以帮助你 <a href="https://www.cnkirito.moe/java-jmh/">入门 JMH</a>。 </p>
+<h3 id="AtomicLong-的前世今生"><a href="#AtomicLong-的前世今生" class="headerlink" title="AtomicLong 的前世今生"></a>AtomicLong 的前世今生</h3><p>在 Java 中，Atomic* 是高效的，这得益于 <code>sun.misc.Unsafe</code> 提供的一系列底层 API，使得 Java 这样的高级语言能够直接和硬件层面的 CPU 指令打交道。并且在  Jdk1.7 中，这样的底层指令可以配合 CAS 操作，达到 Lock-Free。</p>
+<p>在 Jdk1.7 中，AtomicLong 的关键代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">long</span> current = get();</span><br><span class="line">        <span class="keyword">long</span> next = current + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSet(current, next))</span><br><span class="line">            <span class="keyword">return</span> current;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapLong(<span class="keyword">this</span>, valueOffset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>get() 方法 volatile 读当前 long 值</li>
+<li>自增</li>
+<li>自旋判断新值与当前值</li>
+<li>自旋成功，返回；否则返回 1</li>
+</ol>
+<p>我们特别留意到 Jdk1.7 中 unsafe 使用的方法是 compareAndSwapLong，它与 x86 CPU 上的 LOCK CMPXCHG 指令对应，并且在应用层使用 while(true) 完成自旋，这个细节在 Jdk1.8 中发生了变化。</p>
+<p>在 Jdk1.8 中，AtomicLong 的关键代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.getAndAddLong(<span class="keyword">this</span>, valueOffset, <span class="number">1L</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Jdk1.7 的 CAS 操作已经不复存在了，转而使用了 getAndAddLong 方法，它与 x86 CPU 上的 LOCK XADD 指令对应，以原子方式返回当前值并递增（fetch and add）。</p>
+<blockquote>
+<p>当问及 Atomic* 高效的原因，回答 CAS 是不够全面且不够严谨的，Jdk1.7 的 unsafe.compareAndSwapLong 以及 Jdk1.8 的 unsafe.getAndAddLong 才是关键，且 Jdk1.8 中不存在 CAS。</p>
+</blockquote>
+<p> Jdk1.8 AtomicLong 相比 Jdk1.7 AtomicLong 的表现是要优秀的，这点我们将在后续的测评中见证。</p>
+<h3 id="AtomicLong-真的高效吗？"><a href="#AtomicLong-真的高效吗？" class="headerlink" title="AtomicLong 真的高效吗？"></a>AtomicLong 真的高效吗？</h3><p>无论在 Jdk1.7 还是 Jdk1.8 中，Atomic* 的开销都是很大的，主要体现在：</p>
+<ol>
+<li>高并发下，CAS 操作可能会频繁失败，真正更新成功的线程占少数。(Jdk1.7 独有的问题)</li>
+<li>我之前的文章中介绍过“伪共享” (false sharing) 问题，但在 CAS 中，问题则表现的更为直接，这是“真共享”，与”伪共享“存在相同的问题：缓存行失效，缓存一致性开销变大。</li>
+<li>底层指令的开销不见得很低，无论是 LOCK XADD 还是 LOCK CMPXCHG，想深究的朋友可以参考 <a target="_blank" rel="noopener" href="https://www.agner.org/optimize/instruction_tables.pdf">instruction_tables</a> ，（这一点可能有点钻牛角尖，但不失为一个角度去分析高并发下可行的优化）</li>
+<li>Atomic* 所做的，比我们的诉求可能更大，有时候我们只需要计数器具备线程安全地递增这样的特性，但 Atomic* 的相关操作每一次都伴随着值的返回。他是个带返回值的方法，而不是 void 方法，而多做了活大概率意味着额外的开销。</li>
+</ol>
+<p>抛开上述导致 AtomicLong 慢的原因，AtomicLong 仍然具备优势：</p>
+<ol>
+<li>上述的第 4 点换一个角度也是 AtomicLong 的有点，相比下面要介绍的其他计数器方案，AtomicLong 能够保证每次操作都精确的返回真实的递增值。你可以借助 AtomicLong 来做并发场景下的递增序列号方案，注意，本文主要讨论的是计数器方案，而不是序列号方案。</li>
+<li>实现简单，回到那句话：“简单的架构通常性能不高，高性能的架构通常复杂度很高”，AtomicLong 属于性能相对较高，但实现极其简单的那种方案，因为大部分的复杂性，由 JMM 和 JNI 方法屏蔽了。相比下面要介绍的其他计数器实现，AtomicLong 真的太“简易”了。</li>
+</ol>
+<p>看一组 AtomicLong 在不同并发量下的性能表现。</p>
+<table>
+<thead>
+<tr>
+<th>线程数</th>
+<th>increment</th>
+<th>get</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>22.31 ns/op</td>
+<td>11.75  ns/op</td>
+</tr>
+<tr>
+<td>3</td>
+<td>78.80 ns/op</td>
+<td>26.58  ns/op</td>
+</tr>
+<tr>
+<td>5</td>
+<td>132.85  ns/op</td>
+<td>38.57  ns/op</td>
+</tr>
+<tr>
+<td>10</td>
+<td>242.61  ns/op</td>
+<td>67.58  ns/op</td>
+</tr>
+<tr>
+<td>20</td>
+<td>488.74  ns/op</td>
+<td>121.22  ns/op</td>
+</tr>
+</tbody></table>
+<p>横向对比，写的性能相比读的性能要差很多，在 20 个线程下写性能比读性能差距了 4~5 倍。</p>
+<p>纵向对比，主要关注并发写，线程竞争激烈的情况下，单次自增耗时从 22 ns 增长为了 488 ns，有明显的性能下降。</p>
+<p>实际场景中，我们需要统计系统的 qps、接口调用次数，都需要使用到计数的功能，写才是关键，并不是每时每刻都需要关注自增后的返回值，而 AtomicLong 恰恰在核心的写性能上有所欠缺。由此引出其他计数器方案。</p>
+<h3 id="认识-LongAdder"><a href="#认识-LongAdder" class="headerlink" title="认识 LongAdder"></a>认识 LongAdder</h3><p>Doug Lea 在 JDK1.8 中找到了一个上述问题的解决方案，他实现了一个 LongAdder 类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@since</span> <span class="number">1.8</span></span><br><span class="line"><span class="meta">@author</span> Doug Lea</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongAdder</span> <span class="keyword">extends</span> <span class="title">Striped64</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>LongAdder 的 API 如下</p>
+<p><img src="https://image.cnkirito.cn/LongAdder.png" alt="LongAdder"></p>
+<p>你应当发现，LongAdder 和 AtomicLong 明显的区别在于，increment 是一个 void 方法。直接来看看 LongAdder 的性能表现如何。(LA = LongAdder, AL = AtomicLong, 单位  ns/op)</p>
+<table>
+<thead>
+<tr>
+<th>线程数</th>
+<th>LA.incr</th>
+<th>AL.incr</th>
+<th>LA.get</th>
+<th>AL.get</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>25.51</td>
+<td>22.31</td>
+<td>11.82</td>
+<td>11.75</td>
+</tr>
+<tr>
+<td>3</td>
+<td>14.99</td>
+<td>78.80</td>
+<td>52.94</td>
+<td>26.58</td>
+</tr>
+<tr>
+<td>5</td>
+<td>30.26</td>
+<td>132.85</td>
+<td>75.88</td>
+<td>38.57</td>
+</tr>
+<tr>
+<td>10</td>
+<td>44.33</td>
+<td>160.61</td>
+<td>139.59</td>
+<td>67.58</td>
+</tr>
+<tr>
+<td>20</td>
+<td>77.81</td>
+<td>488.74</td>
+<td>306.39</td>
+<td>121.22</td>
+</tr>
+</tbody></table>
+<p>我们从中可以发现一些有意思的现象，网上不少很多文章没有从读写上对比二者，直接宣称 LongAdder 性能优于 AtomicLong，其实不太严谨。在单线程下，并发问题没有暴露，两者没有体现出差距；随着并发量加大，LongAdder 的 increment 操作更加优秀，而 AtomicLong 的 get 操作则更加优秀。鉴于在计数器场景下的特点—写多读少，所以写性能更高的 LongAdder 更加适合。</p>
+<h3 id="LongAdder-写速度快的背后"><a href="#LongAdder-写速度快的背后" class="headerlink" title="LongAdder 写速度快的背后"></a>LongAdder 写速度快的背后</h3><p>网上分析 LongAdder 源码的文章并不少，我不打算详细分析源码，而是挑选了一些必要的细节以及多数文章没有提及但我认为值得分析的内容。</p>
+<ol>
+<li>Cell 设计减少并发修改时的冲突</li>
+</ol>
+<p><img src="https://image.cnkirito.cn/LongAdder-layer.png" alt="LongAdder"></p>
+<p>在 LongAdder 的父类 Striped64 中存在一个 <code>volatile Cell[] cells;</code> 数组，其长度是 2 的幂次方，每个 Cell 都填充了一个 @Contended 的 Long 字段，为了避免伪共享问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@sun</span>.misc.Contended <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Cell</span> </span>&#123;</span><br><span class="line">    <span class="keyword">volatile</span> <span class="keyword">long</span> value;</span><br><span class="line">    Cell(<span class="keyword">long</span> x) &#123;value = x;&#125;</span><br><span class="line">    <span class="comment">// ... ignore</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>LongAdder 通过一系列算法，将计数结果分散在了多个 Cell 中，Cell 会随着并发量升高时发生扩容，最坏情况下 Cell == CPU core 的数量。Cell 也是 LongAdder 高效的关键，它将计数的总值分散在了各个 Cell 中，例如 5 = 3 + 2，下一刻，某个线程完成了 3 + (2 + 1) = 6 的操作，而不是在 5 的基础上完成直接相加操作。通过 LongAdder 的 sum() 方法可以直观的感受到这一点（LongAdder 不存在 get 方法）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">sum</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Cell[] as = cells; Cell a;</span><br><span class="line">    <span class="keyword">long</span> sum = base;</span><br><span class="line">    <span class="keyword">if</span> (as != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; as.length; ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((a = as[i]) != <span class="keyword">null</span>)</span><br><span class="line">                sum += a.value;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种惰性求值的思想，在 ConcurrentHashMap 中的 size() 中也存在，毕竟他们的作者都是 Doug Lea。</p>
+<ol start="2">
+<li>并发场景下高效获取随机数</li>
+</ol>
+<p>LongAdder 内部算法需要获取随机数，而 Random 类在并发场景下也是可以优化的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ThreadLocalRandom random =  ThreadLocalRandom.current();</span><br><span class="line">random.nextInt(<span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+
+<p>使用 ThreadLocalRandom 替代 Random，同样出现在了 LongAdder 的代码中。</p>
+<ol start="3">
+<li>longAccumulate</li>
+</ol>
+<p>longAccumulate 方法是 LongAdder 的核心方法，内部存在大量的分支判断。首先和 Jdk1.7 的 AtomicLong 一样，它使用的是 UNSAFE.compareAndSwapLong 来完成自旋，不同之处在于，其在初次 cas 方式失败的情况下 (说明多个线程同时想更新这个值)，尝试将这个值分隔成多个 Cell，让这些竞争的线程只负责更新自己所属的 Cell，这样将竞争压力分散开。</p>
+<h3 id="LongAdder-的前世今生"><a href="#LongAdder-的前世今生" class="headerlink" title="LongAdder 的前世今生"></a>LongAdder 的前世今生</h3><p>其实在 Jdk1.7 时代，LongAdder 还未诞生时，就有一些人想着自己去实现一个高性能的计数器了，比如一款 Java 性能监控框架 <a target="_blank" rel="noopener" href="https://github.com/dropwizard/metrics">dropwizard/metrics</a> 就做了这样事，在早期版本中，其优化手段并没有 Jdk1.8 的 LongAdder 丰富，而在 metrics 的最新版本中，其已经使用 Jdk1.8 的 LongAdder 替换掉了自己的轮子。在最后的测评中，我们将 metrics 版本的 LongAdder 也作为一个参考对象。</p>
+<h3 id="JCTools-中的-ConcurrentAutoTable"><a href="#JCTools-中的-ConcurrentAutoTable" class="headerlink" title="JCTools 中的 ConcurrentAutoTable"></a>JCTools 中的 ConcurrentAutoTable</h3><p>并非只有 LongAdder 考虑到了并发场景下计数器的优化，大名鼎鼎的并发容器框架 JCTool 中也提供了和今天主题相关的实现，虽然其名称和 Counter 看似没有关系，但通过其 Java 文档和 API ，可以发现其设计意图考虑到了计数器的场景。</p>
+<blockquote>
+<p>An auto-resizing table of longs, supporting low-contention CAS operations.Updates are done with CAS’s to no particular table element.The intent is to support <strong>highly scalable counters</strong>, r/w locks, and other structures where the updates are associative, loss-free (no-brainer), and otherwise happen at such a high volume that the cache contention for CAS’ing a single word is unacceptable.</p>
+</blockquote>
+<p><img src="https://image.cnkirito.cn/ConcurrentAutoTable.png" alt="ConcurrentAutoTable"></p>
+<p>在最后的测评中，我们将 JCTools 的 ConcurrentAutoTable 也作为一个参考对象。</p>
+<h3 id="最终测评"><a href="#最终测评" class="headerlink" title="最终测评"></a>最终测评</h3><p>Jdk1.7 的 AtomicLong，Jdk1.8 的 AtomicLong，Jdk 1.8 的 LongAdder，Metrics 的 LongAdder，JCTools 的 ConcurrentAutoTable，我对这五种类型的计数器使用 JMH 进行基准测试。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Counter</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">inc</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">long</span> <span class="title">get</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将 5 个类都适配成 Counter 接口的实现类，采用 @State(Scope.Group)，@Group 将各组测试用例进行隔离，尽可能地排除了互相之间的干扰，由于计数器场景的特性，我安排了 20 个线程进行并发写，1 个线程与之前的写线程共存，进行并发读。Mode=avgt 代表测试的是方法的耗时，越低代表性能越高。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Benchmark                      (counterType)  Mode  Cnt     Score       Error  Units</span><br><span class="line">CounterBenchmark.rw                  Atomic7  avgt    <span class="number">3</span>  <span class="number">1049.906</span> ±  <span class="number">2146.838</span>  ns/op</span><br><span class="line">CounterBenchmark.rw:get              Atomic7  avgt    <span class="number">3</span>   <span class="number">143.352</span> ±   <span class="number">125.388</span>  ns/op</span><br><span class="line">CounterBenchmark.rw:inc              Atomic7  avgt    <span class="number">3</span>  <span class="number">1095.234</span> ±  <span class="number">2247.913</span>  ns/op</span><br><span class="line">CounterBenchmark.rw                  Atomic8  avgt    <span class="number">3</span>   <span class="number">441.837</span> ±   <span class="number">364.270</span>  ns/op</span><br><span class="line">CounterBenchmark.rw:get              Atomic8  avgt    <span class="number">3</span>   <span class="number">149.817</span> ±    <span class="number">66.134</span>  ns/op</span><br><span class="line">CounterBenchmark.rw:inc              Atomic8  avgt    <span class="number">3</span>   <span class="number">456.438</span> ±   <span class="number">384.646</span>  ns/op</span><br><span class="line">CounterBenchmark.rw      ConcurrentAutoTable  avgt    <span class="number">3</span>   <span class="number">144.490</span> ±   <span class="number">577.390</span>  ns/op</span><br><span class="line">CounterBenchmark.rw:get  ConcurrentAutoTable  avgt    <span class="number">3</span>  <span class="number">1243.494</span> ± <span class="number">14313.764</span>  ns/op</span><br><span class="line">CounterBenchmark.rw:inc  ConcurrentAutoTable  avgt    <span class="number">3</span>    <span class="number">89.540</span> ±   <span class="number">166.375</span>  ns/op</span><br><span class="line">CounterBenchmark.rw         LongAdderMetrics  avgt    <span class="number">3</span>   <span class="number">105.736</span> ±   <span class="number">114.330</span>  ns/op</span><br><span class="line">CounterBenchmark.rw:get     LongAdderMetrics  avgt    <span class="number">3</span>   <span class="number">313.087</span> ±   <span class="number">307.381</span>  ns/op</span><br><span class="line">CounterBenchmark.rw:inc     LongAdderMetrics  avgt    <span class="number">3</span>    <span class="number">95.369</span> ±   <span class="number">132.379</span>  ns/op</span><br><span class="line">CounterBenchmark.rw               LongAdder8  avgt    <span class="number">3</span>    <span class="number">98.338</span> ±    <span class="number">80.112</span>  ns/op</span><br><span class="line">CounterBenchmark.rw:get           LongAdder8  avgt    <span class="number">3</span>   <span class="number">274.169</span> ±   <span class="number">113.247</span>  ns/op</span><br><span class="line">CounterBenchmark.rw:inc           LongAdder8  avgt    <span class="number">3</span>    <span class="number">89.547</span> ±    <span class="number">78.720</span>  ns/op</span><br></pre></td></tr></table></figure>
+
+<p>如果我们只关注 inc 即写性能，可以发现 jdk1.8 的 LongAdder 表现的最为优秀，ConcurrentAutoTable 以及两个版本的 LongAdder 在一个数量级之上；1.8 的 AtomicLong 相比 1.7 的 AtomicLong 优秀很多，可以得出这样的结论，1.7 的 CAS+LOCK CMPXCHG 方案的确不如 1.8 的 LOCK XADD 来的优秀，但如果与特地优化过的其他计数器方案来进行比较，便相形见绌了。</p>
+<p>如果关注 get 性能，虽然这意义不大，但可以见得，AtomicLong 的 get 性能在高并发下表现依旧优秀，而 LongAdder 组合求值的特性，导致其性能必然存在一定下降，位列第二梯队，而 ConcurrentAutoTable 的并发读性能最差。</p>
+<p>关注整体性能，CounterBenchmark.rw 是对一组场景的整合打分，可以发现，在我们模拟的高并发计数器场景下，1.8 的 LongAdder 获得整体最低的延迟 98 ns，相比性能最差的 Jdk1.7 AtomicLong 实现，高了整整 10 倍有余，并且，随着并发度提升，这个数值还会增大。</p>
+<h3 id="AtomicLong-可以被废弃吗？"><a href="#AtomicLong-可以被废弃吗？" class="headerlink" title="AtomicLong 可以被废弃吗？"></a>AtomicLong 可以被废弃吗？</h3><p>既然 LongAdder 的性能高出 AtomicLong 这么多，我们还有理由使用 AtomicLong 吗？</p>
+<p>本文重点讨论的角度还是比较局限的：单机场景下并发计数器的高效实现。AtomicLong 依然在很多场景下有其存在的价值，例如一个内存中的序列号生成器，AtomicLong 可以满足每次递增之后都精准的返回其递增值，而 LongAdder 并不具备这样的特性。LongAdder 为了性能而丧失了一部分功能，这体现了计算机的哲学，无处不在的 trade off。</p>
+<h3 id="高性能计数器总结"><a href="#高性能计数器总结" class="headerlink" title="高性能计数器总结"></a>高性能计数器总结</h3><ul>
+<li>AtomicLong ：并发场景下读性能优秀，写性能急剧下降，不适合作为高性能的计数器方案。内存需求量少。</li>
+<li>LongAdder ：并发场景下写性能优秀，读性能由于组合求值的原因，不如直接读值的方案，但由于计数器场景写多读少的缘故，整体性能在几个方案中最优，是高性能计数器的首选方案。由于 Cells 数组以及缓存行填充的缘故，占用内存较大。</li>
+<li>ConcurrentAutoTable ：拥有和 LongAdder 相近的写入性能，读性能则更加不如 LongAdder。它的使用需要引入 JCTools 依赖，相比 Jdk 自带的 LongAdder 并没有优势。但额外说明一点，ConcurrentAutoTable 的使用并非局限于计数器场景，其仍然存在很大的价值。</li>
+</ul>
+<p>在前面提到的性能监控框架 <a target="_blank" rel="noopener" href="https://github.com/dropwizard/metrics">Metrics</a>，以及著名的熔断框架 <a target="_blank" rel="noopener" href="https://github.com/Netflix/Hystrix">Hystrix</a> 中，都存在 LongAdder 的使用场景，有兴趣的朋友快去实践一下 LongAdder 吧。</p>
+<p>本文所有的 JMH 测试代码，均可在我的 github 中获得：<a target="_blank" rel="noopener" href="https://github.com/lexburner/JMH-samples.git">https://github.com/lexburner/JMH-samples.git</a></p>
+<p>** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**</p>
+<p><img src="https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg" alt="关注微信公众号"></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Java 并发计数器探秘</p><p><a href="https://www.cnkirito.moe/java-concurrent-counter/">https://www.cnkirito.moe/java-concurrent-counter/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2018-08-22</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-05-26</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/JAVA/">JAVA </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/contribute-to-opensource/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">如何向开源项目做贡献 (以 incubator-dubbo 为例)</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/java-jmh/"><span class="level-item">JAVA 拾遗 — JMH 与 8 个测试陷阱</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#阅读本文前"><span class="level-left"><span class="level-item">2</span><span class="level-item">阅读本文前</span></span></a></li><li><a class="level is-mobile" href="#AtomicLong-的前世今生"><span class="level-left"><span class="level-item">3</span><span class="level-item">AtomicLong 的前世今生</span></span></a></li><li><a class="level is-mobile" href="#AtomicLong-真的高效吗？"><span class="level-left"><span class="level-item">4</span><span class="level-item">AtomicLong 真的高效吗？</span></span></a></li><li><a class="level is-mobile" href="#认识-LongAdder"><span class="level-left"><span class="level-item">5</span><span class="level-item">认识 LongAdder</span></span></a></li><li><a class="level is-mobile" href="#LongAdder-写速度快的背后"><span class="level-left"><span class="level-item">6</span><span class="level-item">LongAdder 写速度快的背后</span></span></a></li><li><a class="level is-mobile" href="#LongAdder-的前世今生"><span class="level-left"><span class="level-item">7</span><span class="level-item">LongAdder 的前世今生</span></span></a></li><li><a class="level is-mobile" href="#JCTools-中的-ConcurrentAutoTable"><span class="level-left"><span class="level-item">8</span><span class="level-item">JCTools 中的 ConcurrentAutoTable</span></span></a></li><li><a class="level is-mobile" href="#最终测评"><span class="level-left"><span class="level-item">9</span><span class="level-item">最终测评</span></span></a></li><li><a class="level is-mobile" href="#AtomicLong-可以被废弃吗？"><span class="level-left"><span class="level-item">10</span><span class="level-item">AtomicLong 可以被废弃吗？</span></span></a></li><li><a class="level is-mobile" href="#高性能计数器总结"><span class="level-left"><span class="level-item">11</span><span class="level-item">高性能计数器总结</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

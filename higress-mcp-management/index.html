@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Higress 新增 MCP 服务管理，助力构建私有 MCP 市场 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言今年 3 月份 MCP 协议成为了 AI 的新一轮热点，被大多数人所熟知，彼时 Higress 快速进行跟进，新增了 MCP 协议转换功能，详见：https:&amp;#x2F;&amp;#x2F;higress.cn&amp;#x2F;ai&amp;#x2F;mcp-quick-start ，该方案解决了以下问题：  引入 Redis，借助其 pub&amp;#x2F;sub 特性，解决了 SSE 协议会话保持的问题 提供了 OpenAPI 转换成 MCPServer 的能力，仅"><meta property="og:type" content="blog"><meta property="og:title" content="Higress 新增 MCP 服务管理，助力构建私有 MCP 市场"><meta property="og:url" content="https://www.cnkirito.moe/higress-mcp-management/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="前言今年 3 月份 MCP 协议成为了 AI 的新一轮热点，被大多数人所熟知，彼时 Higress 快速进行跟进，新增了 MCP 协议转换功能，详见：https:&amp;#x2F;&amp;#x2F;higress.cn&amp;#x2F;ai&amp;#x2F;mcp-quick-start ，该方案解决了以下问题：  引入 Redis，借助其 pub&amp;#x2F;sub 特性，解决了 SSE 协议会话保持的问题 提供了 OpenAPI 转换成 MCPServer 的能力，仅"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/1751123537087-77e2275a-e3cb-4871-b979-03fab415534a-20250630172830289.png"><meta property="og:image" content="https://image.cnkirito.cn/1747220192467-e5f12a74-2d78-42e1-9c0f-1397e8d4bc62.png"><meta property="og:image" content="https://image.cnkirito.cn/1747225049818-9e59753b-57ff-49ba-a02f-133631520f6a.png"><meta property="og:image" content="https://image.cnkirito.cn/1751127368519-3e515a4d-ba8d-4087-b99f-5b28fe99ebed.png"><meta property="og:image" content="https://image.cnkirito.cn/1751127711978-0032f5a1-65d0-4e71-94ba-e3e3af333489.png"><meta property="og:image" content="https://image.cnkirito.cn/1751127053130-6bf95032-9bc7-419e-ba27-cd39ef21de4e.png"><meta property="og:image" content="https://image.cnkirito.cn/1751128105559-2d0f1241-ba7f-48e1-abb9-9bd40ff043e3.png"><meta property="og:image" content="https://image.cnkirito.cn/8d040b2a1ae50a254ffb4b935f6d5002.svg"><meta property="og:image" content="https://image.cnkirito.cn/e22a20edeedbf6d7643a989e69c31354.svg"><meta property="og:image" content="https://image.cnkirito.cn/127efa98937375286e4291c962c5c818.svg"><meta property="article:published_time" content="2025-06-30T07:19:54.000Z"><meta property="article:modified_time" content="2025-12-22T06:40:52.291Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="Higress"><meta property="article:tag" content="MCP"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/1751123537087-77e2275a-e3cb-4871-b979-03fab415534a-20250630172830289.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/higress-mcp-management/"},"headline":"Higress 新增 MCP 服务管理，助力构建私有 MCP 市场","image":["https://image.cnkirito.cn/1751123537087-77e2275a-e3cb-4871-b979-03fab415534a-20250630172830289.png","https://image.cnkirito.cn/1747220192467-e5f12a74-2d78-42e1-9c0f-1397e8d4bc62.png","https://image.cnkirito.cn/1747225049818-9e59753b-57ff-49ba-a02f-133631520f6a.png","https://image.cnkirito.cn/1751127368519-3e515a4d-ba8d-4087-b99f-5b28fe99ebed.png","https://image.cnkirito.cn/1751127711978-0032f5a1-65d0-4e71-94ba-e3e3af333489.png","https://image.cnkirito.cn/1751127053130-6bf95032-9bc7-419e-ba27-cd39ef21de4e.png","https://image.cnkirito.cn/1751128105559-2d0f1241-ba7f-48e1-abb9-9bd40ff043e3.png"],"datePublished":"2025-06-30T07:19:54.000Z","dateModified":"2025-12-22T06:40:52.291Z","author":{"@type":"Person","name":"徐靖峰"},"description":"前言今年 3 月份 MCP 协议成为了 AI 的新一轮热点，被大多数人所熟知，彼时 Higress 快速进行跟进，新增了 MCP 协议转换功能，详见：https:&#x2F;&#x2F;higress.cn&#x2F;ai&#x2F;mcp-quick-start ，该方案解决了以下问题：  引入 Redis，借助其 pub&#x2F;sub 特性，解决了 SSE 协议会话保持的问题 提供了 OpenAPI 转换成 MCPServer 的能力，仅"}</script><link rel="canonical" href="https://www.cnkirito.moe/higress-mcp-management/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>Higress 新增 MCP 服务管理，助力构建私有 MCP 市场</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2025-06-30</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/%E7%BD%91%E5%85%B3/">网关</a></span><span class="level-item">27 分钟读完 (大约4106个字)</span></div></div><div class="content"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今年 3 月份 MCP 协议成为了 AI 的新一轮热点，被大多数人所熟知，彼时 Higress 快速进行跟进，新增了 MCP 协议转换功能，详见：<a target="_blank" rel="noopener" href="https://higress.cn/ai/mcp-quick-start">https://higress.cn/ai/mcp-quick-start</a> ，该方案解决了以下问题：</p>
+<ol>
+<li>引入 Redis，借助其 pub/sub 特性，解决了 SSE 协议会话保持的问题</li>
+<li>提供了 OpenAPI 转换成 MCPServer 的能力，仅需提供符合 OAS 3.0 规范的 OpenAPI 文档，即可自动转换成网关托管的 MCPServer</li>
+<li>提供了 Go Template 和 GJSON 表达式，来对请求和响应模版进行精细化处理，这使得用户只需要变更配置即可完成对 MCPServer 的调优，且变更过程流量完全无损，SSE 连接也不会断开。</li>
+</ol>
+<p>该功能一经推出，迅速在开源社区引起了用户广泛的关注，同时在交流群中，也有大量用户反馈了配置失败的问题，因为该功能过于原子化且配置复杂，用户很容易遇到配置失败的问题，为进一步增加用户体验，我们决定将 Higress MCP 相关的能力以场景化的方式，集成在 Higress Console 中，即 MCP 服务管理模块。</p>
+<p><img src="https://image.cnkirito.cn/1751123537087-77e2275a-e3cb-4871-b979-03fab415534a-20250630172830289.png" alt="MCP 服务管理"></p>
+<p>用户可以在 Higress 2.1.5 版本中正式体验该文中提及的所有特性。</p>
+<h2 id="Higress-MCP-服务管理介绍"><a href="#Higress-MCP-服务管理介绍" class="headerlink" title="Higress MCP 服务管理介绍"></a>Higress MCP 服务管理介绍</h2><h3 id="Higress-MCP-服务管理功能概览"><a href="#Higress-MCP-服务管理功能概览" class="headerlink" title="Higress MCP 服务管理功能概览"></a>Higress MCP 服务管理功能概览</h3><p><img src="https://image.cnkirito.cn/1747220192467-e5f12a74-2d78-42e1-9c0f-1397e8d4bc62.png" alt="功能概览"></p>
+<p>Higress MCP 服务管理模块提供了以下能力：</p>
+<ul>
+<li>OpenAPI 转换 MCP。根据用户提供的 OAS 3.0 文档，连接网关已有的 HTTP 后端服务，即可自动转换成 MCPServer。</li>
+<li>DB 转换 MCP。用户仅需将数据库实例配置为网关的后端服务，即可自动转换成 MCPServer，目前支持 MySQL、PostgreSQL、Clickhouse、Sqlite。</li>
+<li>MCP 直接路由。可以直接代理 SSE/Streamable 协议的后端服务。</li>
+<li>MCP 认证授权能力。</li>
+</ul>
+<p>站在一个 Higress 开源贡献者的视角，我还是先澄清下 Higress 本身的定位，其主要还是承担 AI 网关/MCP 网关的职责，作为一个基础设施，帮助企业更好地构建自身的 MCP 市场，其提供的 MCP 特性支持，可以非常友好地跟 MCP 应用商店（如 mcp.so）、MCP 客户端市场（Cline、Cursor、Cherry Studio）、平台型市场（百炼、魔搭、Dify）等场景结合，Higress 跟这些场景并不是竞争关系。</p>
+<span id="more"></span>
+
+<h3 id="MCP-服务管理和-MCP-市场"><a href="#MCP-服务管理和-MCP-市场" class="headerlink" title="MCP 服务管理和 MCP 市场"></a>MCP 服务管理和 MCP 市场</h3><p>如果你正在构建企业私有化的 MCP 市场，一定会关心本文介绍的 MCP 服务管理和 MCP 市场之间的关系，以下是一些释疑。</p>
+<p>部分企业有自建 MCP 市场的需求。Higress MCP 服务管理仅是 Higress MCP 相关原子能力的控制台表现形式，旨在提供给用户一个更友好的交互界面，也提供了 OpenAPI 被集成能力，它可以成为企业私有化 MCP 市场的一个重要组成部分。但并不足以完整支撑全部场景的需求，推荐集成 Higress Console 的 OpenAPI 或者 admin-sdk，再自行构建一个符合企业私有化标识的 MCP 市场前/后端应用，才能够打造属于企业自己的私有化 MCP 市场。</p>
+<p>Higress 商业化版本（阿里云公共云 API Gateway、专有云飞天企业版 API Gateway）后续也会推出开箱即用的 MCP 市场，该方案将会基于 MCP 服务管理封装出更上层的应用，计划提供两种模式供商业化用户选择：</p>
+<ul>
+<li>模式一：开箱即用提供可扩展、可定制的自建实例化 MCP 市场</li>
+<li>模式二：提供 MCP 市场源码，方便企业用户二次开发。</li>
+</ul>
+<h3 id="MCP-服务管理和-mcp-higress-ai"><a href="#MCP-服务管理和-mcp-higress-ai" class="headerlink" title="MCP 服务管理和 mcp.higress.ai"></a>MCP 服务管理和 mcp.higress.ai</h3><p><img src="https://image.cnkirito.cn/1747225049818-9e59753b-57ff-49ba-a02f-133631520f6a.png" alt="mcp.higress.ai"></p>
+<p>此前 Higress 官方发布了一个 SaaS 版本的 MCP 市场：mcp.higress.ai，其完全基于 Higress MCP 服务管理构建。目前前后端代码未开源，以 SaaS 化的形式开放相关能力供用户使用，仅起到一个功能演示的作用，用户也可以参考 mcp.higress.ai 的交互，基于 Higress 自行构建自己的 MCP 市场。</p>
+<p>下边重点介绍 Higress MCP 服务管理的三种服务类型 OpenAPI 转换 MCP、MCP 直接路由、DB 转换 MCP，以及他们分别支撑的业务场景。</p>
+<h2 id="OpenAPI-转换-MCP"><a href="#OpenAPI-转换-MCP" class="headerlink" title="OpenAPI 转换 MCP"></a>OpenAPI 转换 MCP</h2><p>企业在开发 MCPServer 供 AI Agent 使用时，可以大致分为两类场景：存量场景和增量场景。存量场景即企业已有的 IT 资产，以电商场景为例，订单系统、商品系统、地址系统，这些系统需要具备被 AI Agent 调用的能力，都需要 MCP 化；增量场景即单独为 AI Agent 更好地运行而开发的 MCP 工具，典型的例子：高德地图所提供的 amap mcpserver。</p>
+<p>高德团队在提供 amap mcpserver 之前，也有成套的 amap openapi，只不过之前都是给传统应用调用的。大多数企业的业务团队如果愿意投入大量的精力和决心，一定也可以编写出像 amap mcpserver 这样高质量的制品，但现实情况很有可能是企业存量的业务会存在诸多顾虑：</p>
+<ol>
+<li>存量业务系统的维护人员更新换代了好几批，部分长尾应用不敢增量代码</li>
+<li>业务系统数量多，全量改造时间排期长</li>
+<li>业务人员学习 AI 技术栈的技术曲线较高</li>
+<li>mcpserver 的部署增加了新的资源消耗</li>
+</ol>
+<p>一旦一项新的技术涉及到存量系统的改造，再加上选择的改造方案门槛高，就很有可能导致改造无法落地，最后成为企业的一笔糊涂账。</p>
+<p>Higress 提供的 OpenAPI 转换 MCP 功能，一定不是唯一的 MCP 接入方案，但其优势非常突出：</p>
+<ul>
+<li>零代码改造，接入便利。仅需提供存量服务的 OpenAPI 文档（符合 OAS 3.0 规范），无需编写一行接入代码，即可被 Higress 纳管。</li>
+<li>白屏化工具修改，维护便利。后期可以在 Higress Console 中，调整 OpenAPI 转换过后的 MCP 元数据（yaml 格式），微调工具和描述，使得 MCP 更好地与 Agent 协作。</li>
+<li>无需提供 MCP 运行时，运维便利。与传统 stdio/sse 提供的方案不同，Higress 网关不需要拉起任何诸如 Docker 之类的 MCP 运行时资源，完全通过协议转换完成，占用的是网关自身的资源。</li>
+</ul>
+<p>借助 Higress 这一特性，业务可以将重心专注在 MCP 工具的描述与 Agent 如何更好地协作上，而不是如何编写 MCPServer 的代码实现上？，给业务智能化进程大大提效。</p>
+<p>下边结合 Higress Console 的界面，进行更直观地功能介绍。</p>
+<p>在 AI 网关管理 - MCP 管理菜单中，选择创建 MCP 服务，可以创建服务类型为 OpenAPI 的 MCP 服务。</p>
+<p><img src="https://image.cnkirito.cn/1751127368519-3e515a4d-ba8d-4087-b99f-5b28fe99ebed.png" alt="openapi转换mcp"></p>
+<p>选择 MCP 服务，可以对其执行编辑工具操作，在此页面中，支持 Swagger 模式和 YAML 模式两种模式。</p>
+<ul>
+<li>Swagger 模式。导入符合 OAS 3.0 规范的 OpenAPI 文档，即可通过 Higress Console 自动转换成 MCP YAML 元数据，推荐新增时使用。</li>
+<li>YAML 模式。直接编辑 MCP YAML 元数据，推荐编辑时使用。</li>
+</ul>
+<p><img src="https://image.cnkirito.cn/1751127711978-0032f5a1-65d0-4e71-94ba-e3e3af333489.png" alt="swagger模式"></p>
+<p>查看工具列表：</p>
+<p><img src="https://image.cnkirito.cn/1751127053130-6bf95032-9bc7-419e-ba27-cd39ef21de4e.png" alt="工具列表"></p>
+<p>在基本信息以及工具列表下方，也可以直接查看到 SSE/Streamable 接入点的信息，供 MCP 客户端直接连接。</p>
+<p><img src="https://image.cnkirito.cn/1751128105559-2d0f1241-ba7f-48e1-abb9-9bd40ff043e3.png" alt="sse endpoint"></p>
+<h2 id="MCP-直接路由"><a href="#MCP-直接路由" class="headerlink" title="MCP 直接路由"></a>MCP 直接路由</h2><p>在 OpenAPI 转换 MCP 场景中，我提到了存量和增量的场景，虽然个人观点是存量的业务场景占据大多数，但也不能排除有部分场景会选择自行开发 MCPServer，以及开源 MCP 市场上也涌现了大量的 MCPServer，考虑到这种情况，Higress 也提供了 MCP 直接路由的方案，以对接 SSE/Streamable 协议的后端服务。</p>
+<p>可能有部分读者会有疑问，都自己开发 MCPServer 了，MCP 客户端可以直接连接，为啥还需要再由 Higress 代理呢？我的观点是，此处的 Higress 充当了 MCP 网关的作用，有以下优势：</p>
+<ul>
+<li>可以借由网关实现 MCPServer 的认证授权、限流、可观测</li>
+<li>统一管理 MCPServer 的对外开放</li>
+</ul>
+<p>其实在 Higress 目前以及未来的特性规划中，一直将 MCP 当成了一个 API 类型，AI 场景下可以有 API 类型有：</p>
+<ul>
+<li>LLM API</li>
+<li>MCP API</li>
+<li>Agent API</li>
+</ul>
+<p>再结合传统 API 网关的 API 类型：</p>
+<ul>
+<li>Rest API</li>
+<li>HTTP API</li>
+<li>Websocket API</li>
+</ul>
+<p>再往下可以衍生出 API &amp; AI 开放平台的话题，不过这些都还在探索阶段，可以关注 Higress 社区了解后续相关进展。</p>
+<h2 id="DB-转换-MCP"><a href="#DB-转换-MCP" class="headerlink" title="DB 转换 MCP"></a>DB 转换 MCP</h2><p>HIgress 提供的 DB 转换 MCPServer 能力，用户仅需提供数据库连接必要的连接信息（用户名、密码、域名/IP、端口），即可生成实例级别的 MCPServer，无需编写代码，无需提供运行时资源。</p>
+<p>目前该特性仍处于探索阶段，使用时请注意以下限制：</p>
+<ul>
+<li>仅提供了部分数据库类型的支持：MySQL、PostgreSQL、Clickhouse、Sqlite。</li>
+<li>仅支持固定的 Tool 列表：ListTables、DescribeTable、Query、Execute，不支持动态增加</li>
+</ul>
+<p>DB 转换 MCP 是 Higress 在数据库以及中间件类通用组件 MCP 化的一个尝试，这提供了一个未来演进可能的方向，我们也希望收到用户的更多反馈。</p>
+<p>基于该功能，未来 Higress 也可以演进出 SQL MCP BI 的能力，用于编排符合业务场景的 SQL，转换成 MCP 工具，提供给上层业务用于智能化分析，格式如下： </p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">db_tool:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">xxxx</span></span><br><span class="line">  <span class="attr">kind:</span> <span class="string">postgres-sql</span> </span><br><span class="line">  <span class="attr">source:</span> <span class="string">my-pg-source</span> <span class="comment"># 通过 name 关联到对应 db_source</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># tools 所需元数据</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">search-hotels-by-name</span> <span class="comment"># tools 的名</span></span><br><span class="line">  <span class="attr">description:</span> <span class="string">Search</span> <span class="string">for</span> <span class="string">hotels</span> <span class="string">based</span> <span class="string">on</span> <span class="string">name.</span> <span class="comment"># tools 的描述</span></span><br><span class="line">  <span class="attr">inputSchema:</span> <span class="comment"># 内容为自定义的 RawMessage</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">string</span></span><br><span class="line">      <span class="attr">properties:</span> </span><br><span class="line">        <span class="attr">table:</span> </span><br><span class="line">          <span class="attr">type:</span> <span class="string">string</span></span><br><span class="line">          <span class="attr">description:</span> <span class="string">&#x27;hotel name&#x27;</span></span><br><span class="line">      <span class="attr">required:</span> </span><br><span class="line">        <span class="bullet">-</span> <span class="string">table</span></span><br><span class="line">                </span><br><span class="line">  <span class="comment"># 执行语句</span></span><br><span class="line">  <span class="attr">statement:</span> <span class="string">SELECT</span> <span class="string">*</span> <span class="string">FROM</span> <span class="string">hotels</span> <span class="string">WHERE</span> <span class="string">name</span> <span class="string">ILIKE</span> <span class="string">&#x27;%&#x27;</span> <span class="string">||</span> <span class="string">$1</span> <span class="string">||</span> <span class="string">&#x27;%&#x27;</span><span class="string">;</span></span><br></pre></td></tr></table></figure>
+
+<p>也欢迎其他 Higress 开源贡献者参与此特性的贡献。</p>
+<h2 id="MCP-认证"><a href="#MCP-认证" class="headerlink" title="MCP 认证"></a>MCP 认证</h2><h3 id="MCP-官方认证方案当前状态"><a href="#MCP-官方认证方案当前状态" class="headerlink" title="MCP 官方认证方案当前状态"></a>MCP 官方认证方案当前状态</h3><p>MCP 社区目前对认证方案主要关注用户级别的权限管理，在企业中完整应用这套方案，需要深入到企业员工账号体系。即要从面向 Role 的权限管理，走向面向 User 的权限管理。</p>
+<p>在这个 PR 主导下，社区目前已经接受了基于 OAuth2 PRM （ Protected Resource Metadata ）草案的认证方案，并且在最新版本中已经发布。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/modelcontextprotocol/modelcontextprotocol/pull/284#issuecomment-2825122408">https://github.com/modelcontextprotocol/modelcontextprotocol/pull/284#issuecomment-2825122408</a></p>
+<p>简单来说，是将 Auth Server 的职责从 MCP Server 中抽离，当 MCP Client 不带凭证请求 MCP Server 时，MCP Server 返回 401 并提供 PRM 信息，告知 MCP Client 去 Auth Server 签发 Token，MCP Client 拿到 Token 后再请求 MCP Server。</p>
+<p>这个方案解决了 MCP Client 和 MCP Server 通信时自动发现认证端点的问题，但整体方案在 MCP 客户端生态大规模落地估计需要较长时间，并且该方案过于复杂和理想化，个人判断在企业级落地过程会有较大的阻力。</p>
+<p>并且一个很有意思的点：<a target="_blank" rel="noopener" href="https://github.com/modelcontextprotocol/modelcontextprotocol/issues/544">https://github.com/modelcontextprotocol/modelcontextprotocol/issues/544</a>，阿里云安全团队在该方案设计过程中提出了潜在的安全隐患，该 issue 在上周刚刚被修复。</p>
+<h3 id="Higress-提供的-MCP-认证方案"><a href="#Higress-提供的-MCP-认证方案" class="headerlink" title="Higress 提供的 MCP 认证方案"></a>Higress 提供的 MCP 认证方案</h3><p>我们的评估是即使 MCP 社区标准化的认证方案在技术层面取得突破，在企业落地进程中依然会遇到一定阻力，鉴于此，Higress 结合自身网关认证的场景，以及常见用户诉求，提供了一套网关侧的认证方案。</p>
+<p>Higress MCP Server 的认证有两个环节，一个是发生在 MCP Client 与 Higress 之间（downstream），一个是发生在 Higress 到 MCP Server 之间（upstream）。</p>
+<h3 id="higress-upstream-认证方案"><a href="#higress-upstream-认证方案" class="headerlink" title="higress upstream 认证方案"></a>higress upstream 认证方案</h3><p><img src="https://image.cnkirito.cn/8d040b2a1ae50a254ffb4b935f6d5002.svg" alt="higress upstream认证"></p>
+<p>MCP 社区中没有明确规定 remote MCP Server 实现下，MCPServer 到后端服务的认证方式，一种可能性是后端服务类型无法枚举，Higress 提供的 MCP 转换能力，设计了一些约定</p>
+<p>Higress 按照 OpenAPI 3.0 规范提供了以下开箱即用的认证能力</p>
+<ul>
+<li>HTTP Basic Auth</li>
+<li>HTTP Bearer Token</li>
+<li>API Key(Header)</li>
+<li>API Key(Query)</li>
+</ul>
+<p>所以，如果 OpenAPI 转换 MCP 场景中，OAS 3.0 文档中包含了后端服务的认证和凭证，Higress 也会使用上该凭证进行后端服务的访问。</p>
+<h3 id="higress-downstream-认证方案"><a href="#higress-downstream-认证方案" class="headerlink" title="higress downstream 认证方案"></a>higress downstream 认证方案</h3><p><img src="https://image.cnkirito.cn/e22a20edeedbf6d7643a989e69c31354.svg" alt="higress downstream认证"></p>
+<p>Higress 作为 MCP 网关，主要价值之一就是对 MCP Server 进行统一的认证管理，推荐和模型服务代理时的 AI 网关场景一致，使用 API Key 进行认证。</p>
+<p>MCP 服务的 downstream 认证，即网关侧的认证方式，和路由，AI 路由的用户体验一致，如果熟悉网关的认证插件，不会对该方案感到陌生。</p>
+<h3 id="透明认证方案"><a href="#透明认证方案" class="headerlink" title="透明认证方案"></a>透明认证方案</h3><p><img src="https://image.cnkirito.cn/127efa98937375286e4291c962c5c818.svg" alt="透明认证方案"></p>
+<p>同时，透明认证凭证传递的支持，以应对一部分 MCP 直接路由的认证需求，会在未来提供支持。</p>
+<h2 id="Higress-商业化-vs-开源-MCP-能力对比"><a href="#Higress-商业化-vs-开源-MCP-能力对比" class="headerlink" title="Higress 商业化 vs 开源 MCP 能力对比"></a>Higress 商业化 vs 开源 MCP 能力对比</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>Higress 开源</th>
+<th>公有云阿里云 API Gateway</th>
+<th>专有云飞天企业版 API Gateway</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OpenAPI 转换 MCP</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>MCP 直接路由</td>
+<td>支持 SSE/Streamable</td>
+<td>支持 SSE/Streamable，计划支持 Stdio</td>
+<td>支持 SSE/Streamable，计划支持 Stdio</td>
+</tr>
+<tr>
+<td>MCP Server 认证和鉴权</td>
+<td>API Key</td>
+<td>API Key/JWT/OAuth2 等多种认证</td>
+<td>API Key/JWT/OAuth2 等多种认证</td>
+</tr>
+<tr>
+<td>MCP Server Tool 粒度鉴权</td>
+<td>暂无计划</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>MCP Server Tool 粒度配额限流</td>
+<td>暂无计划</td>
+<td>计划支持（7月）</td>
+<td>计划支持（7月）</td>
+</tr>
+<tr>
+<td>MCP Server Tool 粒度可观测能力</td>
+<td>暂无计划</td>
+<td>计划支持（7月）</td>
+<td>计划支持（7月）</td>
+</tr>
+<tr>
+<td>MCP Server 安全护栏</td>
+<td>暂无计划</td>
+<td>计划支持（7月）</td>
+<td>计划支持（7月）</td>
+</tr>
+<tr>
+<td>MCP Server Tool 组装机制（从任意Server中选取Tool组装成一个新的Server）</td>
+<td>暂无计划</td>
+<td>计划支持（7月）</td>
+<td>计划支持（7月）</td>
+</tr>
+<tr>
+<td>MCP Marketplace</td>
+<td>暂无计划</td>
+<td>提供两种模式给用户选择：模式一：开箱即用提供可扩展、可定制的自建实例化 MCP 市场模式二：提供 MCP 市场源码，方便企业用户二次开发。</td>
+<td>提供两种模式给用户选择：模式一：开箱即用提供可扩展、可定制的自建实例化 MCP 市场模式二：提供 MCP 市场源码，方便企业用户二次开发。</td>
+</tr>
+</tbody></table>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Higress 新增 MCP 服务管理，助力构建私有 MCP 市场</p><p><a href="https://www.cnkirito.moe/higress-mcp-management/">https://www.cnkirito.moe/higress-mcp-management/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2025-06-30</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Higress/">Higress, </a><a class="link-muted" rel="tag" href="/tags/MCP/">MCP </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/qoder-use-guide/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">使用 Qoder 2 个月，我总结了一些经验</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/higress-plugin-server/"><span class="level-item">Higress Plugin Server：简化 Wasm 插件私有化部署难题</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#Higress-MCP-服务管理介绍"><span class="level-left"><span class="level-item">2</span><span class="level-item">Higress MCP 服务管理介绍</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Higress-MCP-服务管理功能概览"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Higress MCP 服务管理功能概览</span></span></a></li><li><a class="level is-mobile" href="#MCP-服务管理和-MCP-市场"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">MCP 服务管理和 MCP 市场</span></span></a></li><li><a class="level is-mobile" href="#MCP-服务管理和-mcp-higress-ai"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">MCP 服务管理和 mcp.higress.ai</span></span></a></li></ul></li><li><a class="level is-mobile" href="#OpenAPI-转换-MCP"><span class="level-left"><span class="level-item">3</span><span class="level-item">OpenAPI 转换 MCP</span></span></a></li><li><a class="level is-mobile" href="#MCP-直接路由"><span class="level-left"><span class="level-item">4</span><span class="level-item">MCP 直接路由</span></span></a></li><li><a class="level is-mobile" href="#DB-转换-MCP"><span class="level-left"><span class="level-item">5</span><span class="level-item">DB 转换 MCP</span></span></a></li><li><a class="level is-mobile" href="#MCP-认证"><span class="level-left"><span class="level-item">6</span><span class="level-item">MCP 认证</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#MCP-官方认证方案当前状态"><span class="level-left"><span class="level-item">6.1</span><span class="level-item">MCP 官方认证方案当前状态</span></span></a></li><li><a class="level is-mobile" href="#Higress-提供的-MCP-认证方案"><span class="level-left"><span class="level-item">6.2</span><span class="level-item">Higress 提供的 MCP 认证方案</span></span></a></li><li><a class="level is-mobile" href="#higress-upstream-认证方案"><span class="level-left"><span class="level-item">6.3</span><span class="level-item">higress upstream 认证方案</span></span></a></li><li><a class="level is-mobile" href="#higress-downstream-认证方案"><span class="level-left"><span class="level-item">6.4</span><span class="level-item">higress downstream 认证方案</span></span></a></li><li><a class="level is-mobile" href="#透明认证方案"><span class="level-left"><span class="level-item">6.5</span><span class="level-item">透明认证方案</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Higress-商业化-vs-开源-MCP-能力对比"><span class="level-left"><span class="level-item">7</span><span class="level-item">Higress 商业化 vs 开源 MCP 能力对比</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

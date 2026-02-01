@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>平滑迁移 Dubbo 服务的思考 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言近日，有报道称在 HashCorp 的商业软件试用协议上发现，旗下所有商业产品禁止在中国境内使用、部署、安装，这其中就包含了 Terraform, Consul, Vagrant 等众多知名软件，其中 Consul 是一个在微服务领域的开源软件，可以用于做注册发现、配置管理等场景。 该新闻在国内发酵后，有人在 Twitter上咨询了HashCorp 公司的创始人，得到的回复是影响的软件仅限于"><meta property="og:type" content="blog"><meta property="og:title" content="平滑迁移 Dubbo 服务的思考"><meta property="og:url" content="https://www.cnkirito.moe/dubbo-migration/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="前言近日，有报道称在 HashCorp 的商业软件试用协议上发现，旗下所有商业产品禁止在中国境内使用、部署、安装，这其中就包含了 Terraform, Consul, Vagrant 等众多知名软件，其中 Consul 是一个在微服务领域的开源软件，可以用于做注册发现、配置管理等场景。 该新闻在国内发酵后，有人在 Twitter上咨询了HashCorp 公司的创始人，得到的回复是影响的软件仅限于"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/1590754178611.png"><meta property="og:image" content="https://image.cnkirito.cn/222.png"><meta property="og:image" content="https://image.cnkirito.cn/111.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20200531012739193.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20200531015410936.png"><meta property="og:image" content="https://image.cnkirito.cn/1590756935648.png"><meta property="og:image" content="https://www.cnkirito.moe/css/images/wechat_public.jpg"><meta property="article:published_time" content="2020-05-30T15:17:38.000Z"><meta property="article:modified_time" content="2025-05-26T03:18:31.143Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="Dubbo"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/1590754178611.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/dubbo-migration/"},"headline":"平滑迁移 Dubbo 服务的思考","image":["https://image.cnkirito.cn/1590754178611.png","https://image.cnkirito.cn/222.png","https://image.cnkirito.cn/111.png","https://image.cnkirito.cn/image-20200531012739193.png","https://image.cnkirito.cn/image-20200531015410936.png","https://image.cnkirito.cn/1590756935648.png","https://www.cnkirito.moe/css/images/wechat_public.jpg"],"datePublished":"2020-05-30T15:17:38.000Z","dateModified":"2025-05-26T03:18:31.143Z","author":{"@type":"Person","name":"徐靖峰"},"description":"前言近日，有报道称在 HashCorp 的商业软件试用协议上发现，旗下所有商业产品禁止在中国境内使用、部署、安装，这其中就包含了 Terraform, Consul, Vagrant 等众多知名软件，其中 Consul 是一个在微服务领域的开源软件，可以用于做注册发现、配置管理等场景。 该新闻在国内发酵后，有人在 Twitter上咨询了HashCorp 公司的创始人，得到的回复是影响的软件仅限于"}</script><link rel="canonical" href="https://www.cnkirito.moe/dubbo-migration/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>平滑迁移 Dubbo 服务的思考</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2020-05-30</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-05-26</time></span><span class="level-item"><a class="link-muted" href="/categories/RPC/">RPC</a></span><span class="level-item">26 分钟读完 (大约3886个字)</span></div></div><div class="content"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>近日，有报道称在 HashCorp 的商业软件试用协议上发现，旗下所有商业产品禁止在中国境内使用、部署、安装，这其中就包含了 Terraform, Consul, Vagrant 等众多知名软件，其中 Consul 是一个在微服务领域的开源软件，可以用于做注册发现、配置管理等场景。</p>
+<p>该新闻在国内发酵后，有人在 Twitter上咨询了HashCorp 公司的创始人，得到的回复是影响的软件仅限于 Vault 这款加密软件，目前 HashCorp 公司的官方网站上已经更新了相关的条款，明确了受影响的产品仅限 Vault 这一款产品。</p>
+<h2 id="Consul-开源版是否收到影响？"><a href="#Consul-开源版是否收到影响？" class="headerlink" title="Consul 开源版是否收到影响？"></a>Consul 开源版是否收到影响？</h2><p>上面的条款里只提到了商业软件，那么开源的 Consul 是否受到影响呢？在 Github 的 Consul 仓库上，可以得知项目的 license 是 <code>Mozilla Public License 2.0</code> ，这款许可证在 Apache 官网上是 <code>Category B</code> , 属于 <code>Weak Copy Left</code> 许可，那么它有哪些特点呢？</p>
+<p><img src="https://image.cnkirito.cn/1590754178611.png" alt="License"></p>
+<ol>
+<li>任何可以使用，复制，修改，重新分发该代码，包括商业目的使用。</li>
+<li>如果修改了 MPL 协议许可下的源码，再重新发布这部分源码的话，必须保留原来 MPL 许可证不得更换。</li>
+<li>如果基于该项目衍生出更大的项目，那么这部分工作可以使用新许可证的方式进行分发，只要没有修改原来 MPL 许可下的代码。（这也是为什么 Apache 项目的分发的源码中可以包含 MPL 协议下二进制文件的原因）</li>
+</ol>
+<p>可以看到，MPL 通常被认为是介于 Apache License 和 GPL/LGPL 之间的一个折中方案。相对于 Apache License，MPL 2.0 要求修改了源码必须保持相同协议；相对于 GPL/LGPL, MPL 2.0 可以商用，同时衍生的作品在一定条件下也可以更换许可证类型。</p>
+<p>总体来看的话，开源版 Consul 无论是私用还是商用都是不受限制的。但这也可能是一个警钟，如果对 Consul 还是有所顾忌的话，如何替代掉它呢？</p>
+<p>在微服务领域，Consul 主要被用来做充当注册中心和配置中心，例如 Dubbo 和 SpringCloud 都有对应的支持。本文便以这个事为一个引子，介绍如何平滑地迁移 Dubbo 服务，达到替换注册中心的效果。</p>
+<span id="more"></span>
+
+<h2 id="平滑迁移服务的定义和意义"><a href="#平滑迁移服务的定义和意义" class="headerlink" title="平滑迁移服务的定义和意义"></a>平滑迁移服务的定义和意义</h2><p>如果 Dubbo 应用已经部署到生产环境并处于正常运行状态中，此时想将应用的注册中心替换，那么在迁移过程中，保证业务的平稳运行不中断一定是第一要义。我们将保证应用运行不中断，并最终达成注册中心替换的过程称为平滑迁移。可以类比为给飞行中的飞机替换引擎，在项目升级、框架调整等很多时候，现状和终态之间往往都有一个过度方案。</p>
+<ul>
+<li><p>平滑迁移可以避免终态方案一次性上线后出现和原有方案的不兼容性，规避了整体回归的风险</p>
+</li>
+<li><p>没有哪个互联网公司可以承担的起：“自 xx 至 xx，系统维护一小时，期间服务将无法提供，请广大用户谅解” 这种停机升级方案。</p>
+</li>
+</ul>
+<h2 id="平滑迁移过程"><a href="#平滑迁移过程" class="headerlink" title="平滑迁移过程"></a>平滑迁移过程</h2><p>说到注册中心迁移，可能很多人第一时间都能想到双注册双订阅这种方案</p>
+<blockquote>
+<p>双注册和双订阅迁移方案是指在应用迁移时同时接入两个注册中心（原有注册中心和新注册中心）以保证已迁移的应用和未迁移的应用之间的相互调用。</p>
+</blockquote>
+<p>以 Consul 迁移到 Nacos 为例：</p>
+<p>在迁移态下，一共有两种应用类型：未迁移应用，迁移中应用。我们所说的双注册双订阅都是指的【迁移中应用】。明白下面几个点，平滑迁移的过程一下子就清晰了：</p>
+<ul>
+<li><p>【未迁移应用】不做任何改动</p>
+</li>
+<li><p>为了让【未迁移应用】调用到【迁移中应用】，要求【迁移中应用】不仅要将数据写到 Nacos，还要写回旧的 Consul，这是双注册</p>
+</li>
+<li><p>为了让【迁移中应用】调用到【未迁移应用】，要求【迁移中应用】不仅要订阅 Nacos 的数据，还要监听旧的 Consul，这是双订阅</p>
+</li>
+<li><p>当所有应用变成【迁移中应用】时，旧的 Consul 就可以光荣下岗了，至此平滑迁移完成。</p>
+</li>
+</ul>
+<p>在这个过程中，还可以灵活的变换一些规则，例如在迁移中后期，大部分应用在 Nacos 中已经有服务了，可以切换双订阅为单订阅，以验证迁移情况。并且在真实场景下，还会并存配置中心、元数据中心的迁移，过程会更加复杂。</p>
+<h2 id="Dubbo-平滑迁移方案-–-多注册中心"><a href="#Dubbo-平滑迁移方案-–-多注册中心" class="headerlink" title="Dubbo 平滑迁移方案 – 多注册中心"></a>Dubbo 平滑迁移方案 – 多注册中心</h2><p>Dubbo 多注册中心配置文档地址：<a target="_blank" rel="noopener" href="http://dubbo.apache.org/zh-cn/docs/user/demos/multi-registry.html">http://dubbo.apache.org/zh-cn/docs/user/demos/multi-registry.html</a></p>
+<p>本文的完整代码示例将会在文末提供，其中 Consul 注册中心搭建在本地，而 Nacos 注册中心使用的是阿里云的云产品：微服务引擎 MSE，其可以提供托管的 Nacos/Zookeeper/Eureka 等集群。</p>
+<p>Dubbo 支持多注册中心的配置，这就为我们平滑迁移提供了很多的便利性。在使用 dubbo-spring-boot-starter 时，只需要增加如下的配置，即可配置多注册中心：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">dubbo.registries.first.protocol</span>=<span class="string">consul</span></span><br><span class="line"><span class="meta">dubbo.registries.first.address</span>=<span class="string">localhost:8500</span></span><br><span class="line"></span><br><span class="line"><span class="meta">dubbo.registries.second.protocol</span>=<span class="string">nacos</span></span><br><span class="line"><span class="meta">dubbo.registries.second.address</span>=<span class="string">mse-kirito-p.nacos-ans.mse.aliyuncs.com:8848</span></span><br></pre></td></tr></table></figure>
+
+<p>在 Consul 控制台可以看到服务已经注册成功：</p>
+<p><img src="https://image.cnkirito.cn/222.png" alt="Consul"></p>
+<p>在 MSE 控制台可以看到 Nacos 服务也已经注册成功</p>
+<p><img src="https://image.cnkirito.cn/111.png" alt="MSE Nacos"></p>
+<p>并且，服务调用一切正常。你可能回想：前面讲了一堆，你告诉我改了两行配置就是平滑迁移了？我还是得好好纠正下这种想法，改代码从来都是最轻松的事，难的是在迁移中，时刻观察业务状况，确保服务不因为迁移有损。除此之外，还需要注意的是，Dubbo 自带的多注册中心方案因为框架实现的问题，存在一定的缺陷。</p>
+<h2 id="Dubbo-多注册中心的缺陷"><a href="#Dubbo-多注册中心的缺陷" class="headerlink" title="Dubbo 多注册中心的缺陷"></a>Dubbo 多注册中心的缺陷</h2><p>在 Dubbo 的实现中，多个注册中心的地址是隔离的，地址不会融合。也就是说，当消费者如下配置后：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">dubbo.registries.first.protocol</span>=<span class="string">consul</span></span><br><span class="line"><span class="meta">dubbo.registries.first.address</span>=<span class="string">localhost:8500</span></span><br><span class="line"></span><br><span class="line"><span class="meta">dubbo.registries.second.protocol</span>=<span class="string">nacos</span></span><br><span class="line"><span class="meta">dubbo.registries.second.address</span>=<span class="string">mse-kirito-p.nacos-ans.mse.aliyuncs.com:8848</span></span><br></pre></td></tr></table></figure>
+
+<p>会永远优先从 Consul 中读取服务地址，除非 Consul 中没有服务，才会尝试从 Nacos 中读取，顺序取决于配置文件中注册中心声明的先后。这可能不符合大多数人对多注册中心的直观认知，但没办法，Dubbo 就是这么设计的，我也尝试猜想了几个这么设计的可能性：</p>
+<ul>
+<li>多个注册中心没有感知到对方存在的必要，所以只能串行读取多个注册中心</li>
+<li>Dubbo 本身模型不支持注册中心聚合，除非专门搞一个 AggregationRegistry 代理多个注册中心实现</li>
+<li>多个注册地址的 equals 方案难以确定，官方没有给出契约规范，即 ip 和 port 相同就可以认为同一个地址吗？</li>
+<li>Dubbo 的多注册中心的设计并不只是为了适配平滑迁移方案，其他场景可能恰恰希望使用这种串行读取的策略</li>
+</ul>
+<p>为了让读者有一个直观的感受，我用文末的 demo 进行了测试，让服务提供者 A1（端口号 12346） 只注册到 Nacos，服务提供者 A2（端口号为 12345） 只注册到 Consul，消费者 B 双订阅 Nacos 和 Consul。如下图所示，在测试初期，可以发现，稳定调用到 A1；期间，我手动 kill 了 A1，图中也清晰地打印出了一条地址下线通知，之后稳定调用到 A2。</p>
+<p><img src="https://image.cnkirito.cn/image-20200531012739193.png" alt="multi-registry"></p>
+<p>这样的缺陷，会导致我们在平滑迁移过程中无法对未迁移应用和迁移中应用进行充分的测试。</p>
+<h2 id="Dubbo-平滑迁移方案-–-注册中心聚合"><a href="#Dubbo-平滑迁移方案-–-注册中心聚合" class="headerlink" title="Dubbo 平滑迁移方案 – 注册中心聚合"></a>Dubbo 平滑迁移方案 – 注册中心聚合</h2><p>注册中心聚合这个词其实是我自己想的，因为 Dubbo 官方文档并没有直接给出这种方案，而是由阿里云的微服务商业化 EDAS 团队提供的开源实现（ps，没错，就是我所在的团队啦）。其基本思路就是前文提到的，聚合多个注册中心的地址。使用方式也同样简单</p>
+<p>引入依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.edas<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>edas-dubbo-migration-bom<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.6.5.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span>  </span><br></pre></td></tr></table></figure>
+
+<p>增加配置：</p>
+<p>在 <code>application.properties</code> 中添加注册中心的地址。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dubbo.registry.address &#x3D; edas-migration:&#x2F;&#x2F;30.5.124.15:9999?service-registry&#x3D;consul:&#x2F;&#x2F;localhost:8500,nacos:&#x2F;&#x2F;mse-kirito-p.nacos-ans.mse.aliyuncs.com:8848&amp;reference-registry&#x3D;consul:&#x2F;&#x2F;localhost:8500,nacos:&#x2F;&#x2F;mse-kirito-p.nacos-ans.mse.aliyuncs.com:8848         </span><br></pre></td></tr></table></figure>
+
+<p><strong>说明</strong> 如果是非 Spring Boot 应用，在 dubbo.properties 或者对应的 Spring 配置文件中配置。</p>
+<ul>
+<li><p>```<br>edas-migration://30.5.124.15:9999</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  多注册中心的头部信息。可以不做更改，ip 和 port 可以任意填写，主要是为了兼容 Dubbo 对 ip 和 port 的校验。启动时，如果日志级别是 WARN 及以下，可能会抛一个 WARN 的日志，可以忽略。</span><br><span class="line"></span><br><span class="line">- &#96;&#96;&#96;</span><br><span class="line">  service-registry</span><br></pre></td></tr></table></figure>
+
+<p>服务注册的注册中心地址。写入多个注册中心地址。每个注册中心都是标准的 Dubbo 注册中心格式；多个用<code>,</code>分隔。</p>
+</li>
+<li><pre><code>reference-registry
+</code></pre>
+<p>服务订阅的注册中心地址。每个注册中心都是标准的 Dubbo 注册中心格式；多个用<code>,</code>分隔。</p>
+</li>
+</ul>
+<p>验证该方案：</p>
+<p><img src="https://image.cnkirito.cn/image-20200531015410936.png" alt="migration"></p>
+<p>已经变成了随机调用，解决了多注册中心的缺陷。</p>
+<p>迁移完成后，建议删除原注册中心的配置和迁移过程专用的依赖<code>edas-dubbo-migration-bom</code>，在业务量较小的时间分批重启应用。<code>edas-dubbo-migration-bom</code> 是一个迁移专用的依赖，虽然长期使用对您业务的稳定性没有影响，但其并不会跟随 Dubbo 的版本进行升级，为避免今后框架升级过程中出现兼容问题，推荐您在迁移完毕后清理掉，然后在业务量较小的时间分批重启应用。</p>
+<blockquote>
+<p>说明：edas-dubbo-migration-bom 目前的 release 版本只支持 Dubbo 2.6，我在文末的代码中提供了 2.7 的支持，预计很快两个版本都会贡献给 Dubbo 开源社区。</p>
+</blockquote>
+<h2 id="彩蛋：阿里云微服务引擎-MSE-重磅升级，上线微服务治理中心"><a href="#彩蛋：阿里云微服务引擎-MSE-重磅升级，上线微服务治理中心" class="headerlink" title="彩蛋：阿里云微服务引擎 MSE 重磅升级，上线微服务治理中心"></a>彩蛋：阿里云微服务引擎 MSE 重磅升级，上线微服务治理中心</h2><p>微服务治理中心是一个面向开源微服务框架微服务中心，通过 Java Agent 技术使得您的应用无需修改任何代码和配置，即可享有阿里云提供的微服务治理能力。 已经上线的功能包含 服务查询、无损下线、服务鉴权、离群实例摘除、标签路由。</p>
+<p>微服务治理中心具有如下优势：功能强大，覆盖和增强了开源的治理功能，还提供差异化的功能。零成本接入，支持近五年的 Spring Cloud 和 Dubbo 版本，无需修改任何代码和配置。易被集成，阿里云容器服务用户只需在应用市场安装 微服务中心对应的 pilot ，并修改部署时的配置即可接入。</p>
+<p>微服务中心尤其适合以下场景</p>
+<ul>
+<li>解决应用发布时影响业务的问题。如果您的应用在发布新版本的时候，此应用的服务消费者仍旧调用已经下线的节点，出现业务有损，数据不一致的情况。这时候您需要使用 微服务治理中心，微服务治理中心提供的无损下线功能能够实现服务消费者及时感知服务提供者下线情况，保持业务连续无损。容器服务 K8s 集群的应用在接入 微服务治理中心后，您无需再额外对应用进行任何配置、也无需在 MSC 控制台进行任何操作，即可实现 Dubbo 和 Spring Cloud 流量的无损下线。</li>
+<li>满足应用调用中权限控制的需求。当您的某个微服务应用有权限控制要求，不希望其它所有应用都能调用。比如优惠券部门的优惠券查询接口是默认内部的部门都是可以调用的，但是优惠券发放接口只允许特定的部门的应用才可以调用。这时候您需要使用 微服务治理中心，微服务治理中心提供的服务鉴权功能，既能够对整个应用做一些权限控制，也能对应用中的某个接口和 URL 进行权限控制，满足您不同场景下的权限控制需求</li>
+<li>解决不健康实例影响业务对问题，当节点出现 Full GC、网络分区、机器异常等问题时，这种情况下会导致调用此应用的流量出现异常、影响业务。但是运维人员又很难及时发现问题，且无法判断应该采取何种措施，如重启或者单纯地等待应用恢复。这时候您需要使用微服务治理中心，微服务治理中心 提供的离群实例摘除功能，能够根据您配置的规则自动摘服务调用列表中不健康的应用实例，以免异常的节点影响您的业务。同时还能自动地探测实例是否恢复并恢复流量，以及将实例异常信息触发监控报警，保护您的业务，提升稳定性。</li>
+</ul>
+<p><img src="https://image.cnkirito.cn/1590756935648.png" alt="MSC"></p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>本文测试代码地址：<a target="_blank" rel="noopener" href="https://github.com/lexburner/dubbo-migration">https://github.com/lexburner/dubbo-migration</a></p>
+<p><img src="https://www.cnkirito.moe/css/images/wechat_public.jpg" alt="img"></p>
+<p><em>「技术分享」<strong>某种程度上，是让作者和读者，不那么孤独的东西。</strong>欢迎关注我的微信公众号：<strong>「</strong>Kirito的技术分享」</em></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>平滑迁移 Dubbo 服务的思考</p><p><a href="https://www.cnkirito.moe/dubbo-migration/">https://www.cnkirito.moe/dubbo-migration/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2020-05-30</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-05-26</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Dubbo/">Dubbo </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/dubbo-app-pubsub/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Dubbo 迈向云原生的里程碑 | 应用级服务发现</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/arthas-trace/"><span class="level-item">Arthas | 追踪线上耗时方法</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#Consul-开源版是否收到影响？"><span class="level-left"><span class="level-item">2</span><span class="level-item">Consul 开源版是否收到影响？</span></span></a></li><li><a class="level is-mobile" href="#平滑迁移服务的定义和意义"><span class="level-left"><span class="level-item">3</span><span class="level-item">平滑迁移服务的定义和意义</span></span></a></li><li><a class="level is-mobile" href="#平滑迁移过程"><span class="level-left"><span class="level-item">4</span><span class="level-item">平滑迁移过程</span></span></a></li><li><a class="level is-mobile" href="#Dubbo-平滑迁移方案-–-多注册中心"><span class="level-left"><span class="level-item">5</span><span class="level-item">Dubbo 平滑迁移方案 – 多注册中心</span></span></a></li><li><a class="level is-mobile" href="#Dubbo-多注册中心的缺陷"><span class="level-left"><span class="level-item">6</span><span class="level-item">Dubbo 多注册中心的缺陷</span></span></a></li><li><a class="level is-mobile" href="#Dubbo-平滑迁移方案-–-注册中心聚合"><span class="level-left"><span class="level-item">7</span><span class="level-item">Dubbo 平滑迁移方案 – 注册中心聚合</span></span></a></li><li><a class="level is-mobile" href="#彩蛋：阿里云微服务引擎-MSE-重磅升级，上线微服务治理中心"><span class="level-left"><span class="level-item">8</span><span class="level-item">彩蛋：阿里云微服务引擎 MSE 重磅升级，上线微服务治理中心</span></span></a></li><li><a class="level is-mobile" href="#附录"><span class="level-left"><span class="level-item">9</span><span class="level-item">附录</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

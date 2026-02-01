@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>DevOps 的八荣八耻 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言被群里的好友安利了一发，周日跑去参加了一个技术讲座《云上开发与运维最佳实践》，听完两个人的演讲之后才发现主题竟然是讲运维，好在有一个人干货不少，在此记录下所得。简单追溯了一下这个 DevOps 才发现并不是一个新的概念，早在 2010 年就能看到有相关的人在追捧这个概念了。DevOps 就是开发（Development）和运维（Operations）这两个领域的合并。（如果没错的话，DevOp"><meta property="og:type" content="blog"><meta property="og:title" content="DevOps 的八荣八耻"><meta property="og:url" content="https://www.cnkirito.moe/devops-1/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="前言被群里的好友安利了一发，周日跑去参加了一个技术讲座《云上开发与运维最佳实践》，听完两个人的演讲之后才发现主题竟然是讲运维，好在有一个人干货不少，在此记录下所得。简单追溯了一下这个 DevOps 才发现并不是一个新的概念，早在 2010 年就能看到有相关的人在追捧这个概念了。DevOps 就是开发（Development）和运维（Operations）这两个领域的合并。（如果没错的话，DevOp"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://img.mp.itc.cn/upload/20161101/442859059ca8412b9ccc86005922f1e5_th.jpeg"><meta property="og:image" content="http://img.mp.itc.cn/upload/20161101/e1ff6885b5184119965586baf841fee4_th.jpeg"><meta property="og:image" content="http://img.mp.itc.cn/upload/20161101/f74832b01e78472e8507cbf089e3aa8d_th.jpeg"><meta property="og:image" content="http://img.mp.itc.cn/upload/20161101/64c1749dcf464204bf80d5e8024aad7f_th.jpeg"><meta property="og:image" content="http://img.mp.itc.cn/upload/20161101/687e9c56b5b742078e0c6b7b67ee0c06_th.jpeg"><meta property="og:image" content="http://img.mp.itc.cn/upload/20161101/99df354cd9514e6bb8da2f6a51bc5765_th.jpeg"><meta property="og:image" content="http://img.mp.itc.cn/upload/20161101/9f47211cf22444dbb17ca767872dfc61_th.jpeg"><meta property="og:image" content="http://img.mp.itc.cn/upload/20161101/ecb1a9bc0f1e478dbfcd81f2b79d5c7e_th.jpeg"><meta property="article:published_time" content="2017-03-13T16:43:52.000Z"><meta property="article:modified_time" content="2025-12-22T06:40:52.762Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="DevOps"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="http://img.mp.itc.cn/upload/20161101/442859059ca8412b9ccc86005922f1e5_th.jpeg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/devops-1/"},"headline":"DevOps 的八荣八耻","image":[],"datePublished":"2017-03-13T16:43:52.000Z","dateModified":"2025-12-22T06:40:52.762Z","author":{"@type":"Person","name":"徐靖峰"},"description":"前言被群里的好友安利了一发，周日跑去参加了一个技术讲座《云上开发与运维最佳实践》，听完两个人的演讲之后才发现主题竟然是讲运维，好在有一个人干货不少，在此记录下所得。简单追溯了一下这个 DevOps 才发现并不是一个新的概念，早在 2010 年就能看到有相关的人在追捧这个概念了。DevOps 就是开发（Development）和运维（Operations）这两个领域的合并。（如果没错的话，DevOp"}</script><link rel="canonical" href="https://www.cnkirito.moe/devops-1/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>DevOps 的八荣八耻</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2017-03-14</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/">技术杂谈</a></span><span class="level-item">35 分钟读完 (大约5241个字)</span></div></div><div class="content"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>被群里的好友安利了一发，周日跑去参加了一个技术讲座《云上开发与运维最佳实践》，听完两个人的演讲之后才发现主题竟然是讲运维，好在有一个人干货不少，在此记录下所得。简单追溯了一下这个 DevOps 才发现并不是一个新的概念，早在 2010 年就能看到有相关的人在追捧这个概念了。DevOps 就是开发（Development）和运维（Operations）这两个领域的合并。（如果没错的话，DevOps 还包括产品管理、QA、<em>winces</em> 甚至销售等领域）。这种理念和现如今流行的微服务架构以及分布式特性的相关理念不谋而合。这篇文章主要就是转载记录了当时又拍云运维总监的演讲稿。</p>
+<h2 id="DevOps-的八荣八耻"><a href="#DevOps-的八荣八耻" class="headerlink" title="DevOps 的八荣八耻"></a>DevOps 的八荣八耻</h2><span id="more"></span>
+
+<p>DevOps 这个思想提出来已经五六年了，一直都是呼声很高，落地很难，为什么呢？这可能与各个公司的业务情况和技术发展路线有或多或少的关系，比如说创业的最早技术合伙人是运维出身或者技术出身，但是水平不高，为了公司持续发展，引入新鲜血液时，就会存在技术的先进性跟解决遗留烂摊子的矛盾。又或者业务本身偏向于用户，导致技术被边缘化，产品又没有好的架构，限制了快速发展等；所以，DevOps 的推进一定要自上而下，凭借挑战自我，颠覆传统的勇气才能去落实。</p>
+<h2 id="以可配置为荣，以硬编码为耻"><a href="#以可配置为荣，以硬编码为耻" class="headerlink" title="以可配置为荣，以硬编码为耻"></a>以可配置为荣，以硬编码为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/442859059ca8412b9ccc86005922f1e5_th.jpeg" alt="img"></p>
+<p>△ 以可配置为荣，以硬编码为耻</p>
+<p>hardcoding 一时爽，真正要做改动时，需要定位代码，做出调整，甚至可能会破坏功能。以下可以说是配置的一个进化史</p>
+<p>• 本地配置, 程序⽣生成 (txt/ini/cfg)<br>• 集中配置, 动态⽣生成 (Yaml/Json)<br>• 环境变量量 (代码⽆无侵⼊入 &amp; 语⾔言⽆无关性)<br>• 服务⾃自动发现,⾃自动注册 (zookeeper/consul)</p>
+<h2 id="以互备为荣，以单点为耻"><a href="#以互备为荣，以单点为耻" class="headerlink" title="以互备为荣，以单点为耻"></a>以互备为荣，以单点为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/e1ff6885b5184119965586baf841fee4_th.jpeg" alt="img"></p>
+<p>　　△ 以互备为荣，以单点为耻</p>
+<p>互容互备一直是优良架构的设计重点。</p>
+<p>又拍云早期做架构设计，使用了 LVS+Keeplived+VRRP 做转换，这样可以方便负载均衡，动态升级，隔离故障。现在的又拍云第二代，已经在部分大节点使用 OSPF 和 Quagga 做等价路由的负载均衡和冗余保障。</p>
+<p>Nginx 可以加 Haproxy 或 LVS 做负载均衡。MySQL 可以做主从切换，或者是 MMM 的高可用成熟解决方案。我们的消息队列之前用 rabbitmq 做，现在主要是 redis 和 kafka 集群化，其中 kafka 已经迁到了 Mesos 容器平台里。</p>
+<p>服务的自动发现、注册，我们可以使用 consul、etcd、doozer（Heroku 公司产品），还有 zookeeper。主要区别是算法不一样，zookeeper 用的是 paxos 算法，而 consul 用的是 raft 算法。目前看来 consul 比较流行，因为 consul 的自动发现和自动注册更加容易使用。etcd 主要是 CoreOS 在主推，CoreOS 本身就是一个滚动发布的针对分布式部署的操作系统，大家可以去关注一下它。还有一个是 hadoop 和 elk，大数据平台的可扩展性是标配，很容易互备。</p>
+<p>上面是举了一些常见互备的软件组件的造型，那我们如何是设计一个无单点的架构呢？主要掌握以下几点：</p>
+<ol>
+<li>无状态</li>
+</ol>
+<p>无状态意味着没有竞争，很容易做负载均衡，负载均衡的方式有很多种，F5，LVS，Haproxy，总能找到一种适合你的方式。</p>
+<ol start="2">
+<li>无共享</li>
+</ol>
+<p>以前我们很喜欢用内存来保持临时信息，如进程间的交换，这种方式虽然效率很高，但是对程序的扩展性没什么好处，尤其是现在的互联网体量，光靠单机或者高性能机器是明显玩不转的。所以我们现在就需要使用类似消息队列的组件，把数据共享出去，利用多台机器把负载给承担下来。</p>
+<ol start="3">
+<li>松耦合 / 异步处理</li>
+</ol>
+<p>以前我们用 Gearman 这样的任务框架。大家可以把任务丢进任务池里，生成多个消费者去取任务。当我的消费不够用时，可以平滑增加我的 work 资源，让他从更快的去拿任务。运维平台这边以 python/celery 的组合使用更多。</p>
+<ol start="4">
+<li>分布式 / 集群协作</li>
+</ol>
+<p>像 Hadoop 这样的天生大数据 / 数据仓库解决方案，由于先前设计比较成熟，一般都是通过很多台机器扩容来实现 map/reduce 的扩展计算能力。</p>
+<h2 id="以随时重启为荣，以不能迁移为耻"><a href="#以随时重启为荣，以不能迁移为耻" class="headerlink" title="以随时重启为荣，以不能迁移为耻"></a>以随时重启为荣，以不能迁移为耻</h2><p><img src="http://img.mp.itc.cn/upload/20161101/f74832b01e78472e8507cbf089e3aa8d_th.jpeg" alt="img"></p>
+<p>△ 以随时重启为荣，以不能迁移为耻</p>
+<p>关于这个点，我们讲三个方面：</p>
+<p>1.Pet 到 Cow 观念的转变</p>
+<p>以前我们说机器是 pet，也就是宠物模式，然后花了几万块钱去买的服务器，当宝一般供奉。但事实上却并不是这样，任何电子设备、服务器只要一上线，便开始了一个衰老的过程，你根本不知道在运行过程中会发生什么事，比如说质量差的电容会老化爆浆，电子元器件在机房的恶劣环境里会加速损坏，这些变化都是我们无法参与控制的，所以无论我们怎么努力，都无法保障机器有多么的牢靠。</p>
+<p>谷歌指出的 Cow 模式就是指农场模式。就是要把机器发生故障当做常态，打个比方，比如说这头牛死了，那我就不要了，因为我有很多这样的牛，或者是再拉一头新的牛。这就是我们软件开发和运维需要做的转变，去适应这种变化。</p>
+<p>2.OpenStack 虚拟机的编排</p>
+<p>虚拟化是个好东西，通过 OpenStack 我们很容易就可以做出一些存储或者迁移的操作，但是在实施的过程中，也是一波三折的。</p>
+<p>又拍云从 2014 年开始在内部推动 OpenStack，当然我们也踩过 OpenStack 网络的坑，那时候我们用双千兆的卡做内网通讯，因为使用 OpenStack 实现虚拟化后，一切都变成了文件，在网络上传输的话，对网络的压力会非常大，结果就导致部分服务响应缓慢（因为本身就是实验性质，所以在硬件上没有足够投入，内测时也没有推广，所以影响不大）。</p>
+<p>2015 年又拍云再上的 OpenStack，全部都用双万兆的网卡做 bonding，交换机也是做了端口聚合和堆叠。目前来说，只有云存储没有上线，其它云处理，云网络的使用还是能够满足要求。</p>
+<p>3.Docker 的导入导出</p>
+<p>Docker 是更轻量级的资源隔离和复用技术，从 2016 年开始，又拍云同时也在尝试使用 Mesos/Docker 来实现云处理的业务迁移。</p>
+<h2 id="以整体交付为荣，以部分交付为耻"><a href="#以整体交付为荣，以部分交付为耻" class="headerlink" title="以整体交付为荣，以部分交付为耻"></a>以整体交付为荣，以部分交付为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/64c1749dcf464204bf80d5e8024aad7f_th.jpeg" alt="img"></p>
+<p>　　△ 以整体交付为荣，以部分交付为耻</p>
+<p>以往开发运维要安装一个机器，首先要去申请采购，购买完了还要等待运输，在运输中要花去一天的时间，之后还需要配交换机和网络。在这个过程中你会发现，简单的给开发配台机器，光上架就涉及到运维的很多环节，更不要说系统安装，优化，软件配置等剩余工作了，所以大多数情况下你只能做到部分交付。</p>
+<p>要如何解决这些问题？通过 OpenStack 可以做到云计算、云网络、云存储这三块搭建完成之后，进行整体交付。</p>
+<p>根据一些经验总结，在整个云平台当中，云存储的坑最多，云计算、云网络相对来说比较成熟。现在云计算的硬件基本上是基于英特尔 CPU 的虚拟化技术来硬件指令穿透的，损耗大概 2%～5%，这是可以接受的。至于云网络，刚才胡凯（B 站运维总监）提到内网包转发效率，我做过一个测试，在 OpenStack 的内网中，如果 MTU 默认是 1500，万兆网卡的转发率大概为 6.7xxGbps。后来我在优化的过程中，也翻查一些文档，看到的数据是可以达到 9.5xxGbps，通过不断的摸索，对比测试后发现，如果把内网的 MTU 搞成大包，如 9000 时，万兆网卡的存储量直接达到了 9.72Gbps 左右的。不过，这个 MTU 需要提前在宿主机上调整好，需要重启生效。所以，这个问题发现得越早越好，这样就可以做到统一调度，分配资源。</p>
+<p>Docker 的好处是可以做到 Build、Shipand Run，一气呵成。无论是对开发，测试，还是运维来说，Docker 都是同一份 Dockerfile 清单，所以使用 Docker 在公司里的推动就很顺畅。虽然 OpenStack 也可以一站式交付，整体交付，使用时非常方便。但是对开发来说，他还是拿到一台机器，还是需要去安装软件环境，配置，上线，运行，除了得到机器快一些，对上线服务没有什么大的帮助，所以又拍云现在的 Openstack 集群一般对内申请开发测试用，外网生产环境还是以 Docker 容器化部署为主，这也是大家都喜闻乐见的方式，但前提是开发那边能够适应编写 Dockerfile（目前是我在内部推动这种变革，如新的项目就强制要求用 docker）。</p>
+<h2 id="以无状态为荣，以有状态为耻"><a href="#以无状态为荣，以有状态为耻" class="headerlink" title="以无状态为荣，以有状态为耻"></a>以无状态为荣，以有状态为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/687e9c56b5b742078e0c6b7b67ee0c06_th.jpeg" alt="img"></p>
+<p>　　△ 以无状态为荣，以有状态为耻</p>
+<p>有状态的服务真的很麻烦，无论是存在数据库、磁盘开销，还有各种锁等资源的竞争，横向扩展也很差，不能重启，也不能互备。所以，有姿态的服务对于扩展原则来说，就是一场恶梦。如果是说我们解决这个问题，那就要使用解耦和负载均衡的方法去解决问题。</p>
+<ol>
+<li>使用可靠的中间件</li>
+</ol>
+<p>中间件其实最早出现在金融公司、证券公司，后来随着互联网行业不断壮大以后，就用一些高可靠性的号称工业级的消息队列出现，如 RabbitMQ，一出来以后，就把中间件拉下神坛。随着中间件民用化，互联网蓬勃发展，是可以把一些服务变成无状态，方便扩展。</p>
+<ol start="2">
+<li>公共资源池</li>
+</ol>
+<p>我们可以通过各种云，容器云、弹性云，做计算单元的弹性扩展。</p>
+<ol start="3">
+<li>能够被计算</li>
+</ol>
+<p>如果你不想存状态，那也可以被计算，比如说 Ceph 存储，它的创新在于每个数据块都是可计算出来的，这就类似无状态的，每次都算，反正现在的 cpu 都这么强悍了，所以，无状态是一个命题，在做架构的时候，你脑海里一定要有这个意念，然后再看你用什么样的方式开动脑筋，预先的跟开发，运维沟通好，把应用拆分成一种无状态的最佳组合。</p>
+<h2 id="以标准化为荣，以特殊化为耻"><a href="#以标准化为荣，以特殊化为耻" class="headerlink" title="以标准化为荣，以特殊化为耻"></a>以标准化为荣，以特殊化为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/99df354cd9514e6bb8da2f6a51bc5765_th.jpeg" alt="img"></p>
+<p>△ 以标准化为荣，以特殊化为耻</p>
+<p>在标准化方面，我们在这几个方面改良：</p>
+<ol>
+<li>统一输入输出</li>
+</ol>
+<p>统一入口是我加入又拍云后做的第一件事情，我们用一个统一的文本，到现在也在用，然后推送到所有的边缘，服务器上面的组件，要用到的参数，都能从配置里读出来。代码管理方面我们也使用 git，git wiki，批量部署我们用 ansible（早在 2012 年，我做了一些比较后，就在公司里推行 ansible，看来还是很明智的决定）。</p>
+<ol start="2">
+<li>统一的流程管理</li>
+</ol>
+<p>运维中使用 python 最多，所以我们使用了 yaml 和 playbook。又拍云有自己的跳板机，通过 VPN 登陆，目前我们也在试用一个带有审计功能的堡垒机，可以把每个人的操作录制下来，然后再去回放观察，改进我们的工作流程。</p>
+<ol start="3">
+<li>抽象底层设计和复用组件</li>
+</ol>
+<p>如果是开发者的话，就会写很多的复用函数，对于优秀的运维人员来说，也要有优秀的抽象业务的能力，也要去做一些重复工作的复用准备，如频繁的，繁琐易出错的手工操作抽象成若干运维的脚本化。</p>
+<p>最后是巧妙的利用虚拟化、容器服务、server-less 微服务，这些服务是可以被备份，还原的，可以保持一个相对稳定的状态，我们要拒绝多的特殊管理操作。香农 - 信息熵理论里说，变量的不确定性越大，熵就越大，把它搞清楚所需要的信息量也就越大。理论上来说，如果是一个孤立的系统，他就会变得越来越乱。</p>
+<h2 id="以自动化工具为荣，以手动和人肉为耻"><a href="#以自动化工具为荣，以手动和人肉为耻" class="headerlink" title="以自动化工具为荣，以手动和人肉为耻"></a>以自动化工具为荣，以手动和人肉为耻</h2><p><img src="http://img.mp.itc.cn/upload/20161101/9f47211cf22444dbb17ca767872dfc61_th.jpeg" alt="img"></p>
+<p>　　△ 以自动化工具为荣，以手动和人肉为耻</p>
+<p>又拍云早期，用的是 bash、sed、awk，因为我之前有搞嵌入式的背景和经验，对一个十几兆的嵌入式系统来说，上面是不可能有 python/perl/nodejs 等环境。所以我们把服务器批量安装，部署，上线，做成了嵌入式的系统后，只要点亮以后，运行一个硬件检测的程序，会把机器的 CPU、内存、硬盘大小等都打印出来，供货商截图给我看，这个机器是否合格。合格的机器可以直接发到机房去，在机器到了机房通上网线以后会有一个 ansibleplaybook 的推动。</p>
+<p>自从用了这种方法以后，我们在公司里面基本上没有见到服务器，一般直接产线上检测通过后发到机房。然后又拍云的运维人员就可以连上去远程管理，在过去的三年里我们服务器平均每年翻了三倍，节点翻了六倍多，但是人手并没有增加。</p>
+<p>关于 tgz、rpm、pkg 的打包部署，我们用的是 tgz 的打包及 docker 镜像。优势在于，又拍云自有 CDN 网络，软件通过推动到 CDN 网络下可以加速下发。</p>
+<p>关于集成测试、自动测试的发布，像 ELK 集中日志的分析、大数据的分析，我们现在使用 ELK 以后，只要有基础的运维技术知识便可看懂，不需要高深的运维知识和脚本编辑知识，大多数人都可以完成这份工作，好处就是你多了好多眼睛帮你一起来发现问题，定位问题。</p>
+<p>最后是不要图形，不要交互，不要终端。一旦有了图形以后，很难实现自动化。原则就是，不要手工 hack，最好是用程序生成程序的方式去完成这个步骤。</p>
+<h2 id="以无人值守为荣，以人工介入为耻"><a href="#以无人值守为荣，以人工介入为耻" class="headerlink" title="以无人值守为荣，以人工介入为耻"></a>以无人值守为荣，以人工介入为耻</h2><p>　　<img src="http://img.mp.itc.cn/upload/20161101/ecb1a9bc0f1e478dbfcd81f2b79d5c7e_th.jpeg" alt="img"></p>
+<p>　　△ 以无人值守为荣，以人工介入为耻</p>
+<p>运维部门要做的事情有三件：</p>
+<ol>
+<li>运维自动化</li>
+</ol>
+<p>要有一定的业务抽象能力，要有标准化的流程。没有好的自动化，就很难把运维的工作效率提升了，只要做好这些，就可以节省时间，从容应对业务增长。而且运维自动化的另一个好处就是运维不会因为人的喜怒哀乐而受到影响稳定性，比如说我今天心情不好，你让我装一台机器我还可以忍，你让我装十台一百台就不行了。但如果公司有了运维自动化的流程，这个事情就可以避免，因为谁做都一样。</p>
+<ol start="2">
+<li>监控要常态</li>
+</ol>
+<p>2016 年年初，又拍云特别成立大数据分析部门，我们把日志做了采样收集和过滤，通过大数据平台做日志的同构数据分析，重点关注 4xx/5xx/2xx 比例，响应时间分析如 100 毫秒、200 毫秒、500 毫秒，还有区域性的速率分布，讲真，这真是一个好东西。</p>
+<ol start="3">
+<li>性能可视化</li>
+</ol>
+<p>数据的有效展示。现在 ELK 对我们的帮助很大，从监控图上来看相关的数据指标，一目了然。这里就不反复赘述了。</p>
+<h2 id="DevOps-的本质"><a href="#DevOps-的本质" class="headerlink" title="DevOps 的本质"></a>DevOps 的本质</h2><p>最后，我们谈一谈 DevOps 的本质。</p>
+<ol>
+<li><p>弹性</p>
+<p>像亚马逊推云时，那个单词叫 elastic，意思是，你要能够扩展，如横向扩展；你要能负载均衡，如果你是基于 openstack/docker 资源池，你的资源就可以复用，可以编排回滚。比如说 OpenStack 有模板，我打一个镜像包，稍微重了一点，Docker 的就轻一点，Docker 可以做一个滚动发布，可以保留原来的程序、原来的容器，你可以做快速切换，这也是一种变化的弹性。</p>
+</li>
+<li><p>无关性</p>
+<p>如果是虚拟化资源，一切都可以在模板里面设置，可以把底层的硬件、系统、网络抚平差异，比如说不管物理磁盘是 1T(市面上缺货)/4T/6T 的盘，都可以划分 100G 容量，所以当把一切变成按需申请的服务，无论是开发还是运维，工作都会比较简单，因为它的无关性。</p>
+</li>
+<li><p>不可变的基础设施</p>
+<p>这个对传统运维可能是一种打击，因为基础镜像可能已经做的足够安全，足够完美，足够精干，不需要基础运维过多的人工参与。但我认为恰恰能帮助传统运维减轻工作量，反而有更多的精力去迎接虚拟化、容器化，SDN 的挑战，掌握了新技能后，就可以随取随用。</p>
+</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>DevOps 的八荣八耻</p><p><a href="https://www.cnkirito.moe/devops-1/">https://www.cnkirito.moe/devops-1/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2017-03-14</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/DevOps/">DevOps </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/distribute-ratelimit/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">分布式限流</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/java-ConcurrentHashMap-CAS/"><span class="level-item">java 并发实践 --ConcurrentHashMap 与 CAS</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#DevOps-的八荣八耻"><span class="level-left"><span class="level-item">2</span><span class="level-item">DevOps 的八荣八耻</span></span></a></li><li><a class="level is-mobile" href="#以可配置为荣，以硬编码为耻"><span class="level-left"><span class="level-item">3</span><span class="level-item">以可配置为荣，以硬编码为耻</span></span></a></li><li><a class="level is-mobile" href="#以互备为荣，以单点为耻"><span class="level-left"><span class="level-item">4</span><span class="level-item">以互备为荣，以单点为耻</span></span></a></li><li><a class="level is-mobile" href="#以随时重启为荣，以不能迁移为耻"><span class="level-left"><span class="level-item">5</span><span class="level-item">以随时重启为荣，以不能迁移为耻</span></span></a></li><li><a class="level is-mobile" href="#以整体交付为荣，以部分交付为耻"><span class="level-left"><span class="level-item">6</span><span class="level-item">以整体交付为荣，以部分交付为耻</span></span></a></li><li><a class="level is-mobile" href="#以无状态为荣，以有状态为耻"><span class="level-left"><span class="level-item">7</span><span class="level-item">以无状态为荣，以有状态为耻</span></span></a></li><li><a class="level is-mobile" href="#以标准化为荣，以特殊化为耻"><span class="level-left"><span class="level-item">8</span><span class="level-item">以标准化为荣，以特殊化为耻</span></span></a></li><li><a class="level is-mobile" href="#以自动化工具为荣，以手动和人肉为耻"><span class="level-left"><span class="level-item">9</span><span class="level-item">以自动化工具为荣，以手动和人肉为耻</span></span></a></li><li><a class="level is-mobile" href="#以无人值守为荣，以人工介入为耻"><span class="level-left"><span class="level-item">10</span><span class="level-item">以无人值守为荣，以人工介入为耻</span></span></a></li><li><a class="level is-mobile" href="#DevOps-的本质"><span class="level-left"><span class="level-item">11</span><span class="level-item">DevOps 的本质</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>一文聊透 Dubbo 元数据中心 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言如果让你在本地构建一个 Dubbo 应用，你会需要额外搭建哪些中间件呢？如果没猜错的话，你的第一反应应该是注册中心，类 Dubbo 的大多数服务治理框架都有注册中心的概念。你可以部署一个 Zookeeper，或者一个 Nacos，看你的喜好。但在 Apache Dubbo 的 2.7 版本后，额外引入了两个中间件：元数据中心和配置中心。 在今年年初 Dubbo 2.7 刚发布时，我就写了一篇文"><meta property="og:type" content="blog"><meta property="og:title" content="一文聊透 Dubbo 元数据中心"><meta property="og:url" content="https://www.cnkirito.moe/dubbo-metadata/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="前言如果让你在本地构建一个 Dubbo 应用，你会需要额外搭建哪些中间件呢？如果没猜错的话，你的第一反应应该是注册中心，类 Dubbo 的大多数服务治理框架都有注册中心的概念。你可以部署一个 Zookeeper，或者一个 Nacos，看你的喜好。但在 Apache Dubbo 的 2.7 版本后，额外引入了两个中间件：元数据中心和配置中心。 在今年年初 Dubbo 2.7 刚发布时，我就写了一篇文"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/image-20191103160946348.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20191103180851464.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20191103204744161.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20191103202821635.png"><meta property="article:published_time" content="2019-11-03T07:05:50.000Z"><meta property="article:modified_time" content="2025-05-26T03:18:30.980Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="Dubbo"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/image-20191103160946348.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/dubbo-metadata/"},"headline":"一文聊透 Dubbo 元数据中心","image":["https://image.cnkirito.cn/image-20191103160946348.png","https://image.cnkirito.cn/image-20191103180851464.png","https://image.cnkirito.cn/image-20191103204744161.png","https://image.cnkirito.cn/image-20191103202821635.png"],"datePublished":"2019-11-03T07:05:50.000Z","dateModified":"2025-05-26T03:18:30.980Z","author":{"@type":"Person","name":"徐靖峰"},"description":"前言如果让你在本地构建一个 Dubbo 应用，你会需要额外搭建哪些中间件呢？如果没猜错的话，你的第一反应应该是注册中心，类 Dubbo 的大多数服务治理框架都有注册中心的概念。你可以部署一个 Zookeeper，或者一个 Nacos，看你的喜好。但在 Apache Dubbo 的 2.7 版本后，额外引入了两个中间件：元数据中心和配置中心。 在今年年初 Dubbo 2.7 刚发布时，我就写了一篇文"}</script><link rel="canonical" href="https://www.cnkirito.moe/dubbo-metadata/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>一文聊透 Dubbo 元数据中心</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2019-11-03</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-05-26</time></span><span class="level-item"><a class="link-muted" href="/categories/RPC/">RPC</a></span><span class="level-item">19 分钟读完 (大约2913个字)</span></div></div><div class="content"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>如果让你在本地构建一个 Dubbo 应用，你会需要额外搭建哪些中间件呢？如果没猜错的话，你的第一反应应该是注册中心，类 Dubbo 的大多数服务治理框架都有注册中心的概念。你可以部署一个 Zookeeper，或者一个 Nacos，看你的喜好。但在 Apache Dubbo 的 2.7 版本后，额外引入了两个中间件：元数据中心和配置中心。</p>
+<p>在今年年初 Dubbo 2.7 刚发布时，我就写了一篇文章 《<a href="https://www.cnkirito.moe/dubbo27-features/">Dubbo 2.7 三大新特性详解</a>》，介绍了包含元数据中心改造在内的三大新特性，但一些细节介绍没有详细呈现出来，在这篇文章中，我将会以 Dubbo 为例，跟大家一起探讨一下服务治理框架中元数据中心的意义与集成细节。</p>
+<p><img src="https://image.cnkirito.cn/image-20191103160946348.png" alt="Dubbo 2.7 架构"></p>
+<span id="more"></span>
+
+<h2 id="元数据中心介绍"><a href="#元数据中心介绍" class="headerlink" title="元数据中心介绍"></a>元数据中心介绍</h2><p>服务治理中的元数据（Metadata）指的是服务分组、服务版本、服务名、方法列表、方法参数列表、超时时间等，这些信息将会存储在元数据中心之中。与元数据平起平坐的一个概念是服务的注册信息，即：服务分组、服务版本、服务名、地址列表等，这些信息将会存储在注册中心中。稍微一对比可以发现，元数据中心和注册中心存储了一部分共同的服务信息，例如服务名。两者也有差异性，元数据中心还会存储方法列表即参数列表，注册中心存储了服务地址。上述的概述，体现出了元数据中心和注册中心在服务治理过程中，担任着不同的角色。为了有一个直观的对比，我整理出了下面的表格：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>元数据</th>
+<th>注册信息</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>职责</strong></td>
+<td>描述服务，定义服务的基本属性</td>
+<td>存储地址列表</td>
+</tr>
+<tr>
+<td><strong>变化频繁度</strong></td>
+<td>基本不变</td>
+<td>随着服务上下线而不断变更</td>
+</tr>
+<tr>
+<td><strong>数据量</strong></td>
+<td>大</td>
+<td>小</td>
+</tr>
+<tr>
+<td><strong>数据交互/存储模型</strong></td>
+<td>消费者/提供者上报，控制台查询</td>
+<td>PubSub 模型，提供者上报，消费者订阅</td>
+</tr>
+<tr>
+<td><strong>主要使用场景</strong></td>
+<td>服务测试、服务 MOCK</td>
+<td>服务调用</td>
+</tr>
+<tr>
+<td><strong>可用性要求</strong></td>
+<td>元数据中心可用性要求不高，不影响主流程</td>
+<td>注册中心可用性要求高，影响到服务调用的主流程</td>
+</tr>
+</tbody></table>
+<p>下面我会对每个对比点进行单独分析，以加深对元数据中心的理解。</p>
+<h3 id="职责"><a href="#职责" class="headerlink" title="职责"></a>职责</h3><p>在 Dubbo 2.7 版本之前，并没有元数据中心的概念，那时候注册信息和元数据都耦合在一起。Dubbo Provider 的服务配置有接近 30 个配置项，排除一部分注册中心服务治理需要的参数，很大一部分配置项仅仅是 Provider 自己使用，不需要透传给消费者；Dubbo Consumer 也有 20 多个配置项。在注册中心之中，服务消费者列表中只需要关注 application，version，group，ip，dubbo 版本等少量配置。这部分数据不需要进入注册中心，而只需要以 key-value 形式持久化存储在元数据中心即可。从职责来看，将不同职责的数据存储在对应的组件中，会使得逻辑更加清晰。</p>
+<h3 id="变化频繁度"><a href="#变化频繁度" class="headerlink" title="变化频繁度"></a>变化频繁度</h3><p>注册信息和元数据耦合在一起会导致注册中心数据量的膨胀，进而增大注册中心的网络开销，直接造成了服务地址推送慢等负面影响。服务上下线会随时发生，变化的其实是注册信息，元数据是相对不变的。</p>
+<h3 id="数据量"><a href="#数据量" class="headerlink" title="数据量"></a>数据量</h3><p>由于元数据包含了服务的方法列表以及参数列表，这部分数据会导致元数据要比注册信息大很多。注册信息被设计得精简会直接直接影响到服务推送的 SLA。</p>
+<h3 id="数据交互-存储模型"><a href="#数据交互-存储模型" class="headerlink" title="数据交互/存储模型"></a>数据交互/存储模型</h3><p>注册中心采用的是 PubSub 模型，这属于大家的共识，所以注册中心组件的选型一般都会要求其有 notify 的机制。而元数据中心并没有 notify 的诉求，一般只需要组件能够提供 key-value 的存储结构即可。</p>
+<h3 id="主要使用场景"><a href="#主要使用场景" class="headerlink" title="主要使用场景"></a>主要使用场景</h3><p>在服务治理中，注册中心充当了通讯录的职责，在复杂的分布式场景下，让消费者能找到提供者。而元数据中心存储的元数据，主要适用于服务测试、服务 MOCK 等场景，这些场景都对方法列表、参数列表有所诉求。在下面的小节中，我也会对使用场景进行更加详细的介绍。</p>
+<h3 id="可用性要求"><a href="#可用性要求" class="headerlink" title="可用性要求"></a>可用性要求</h3><p>注册中心宕机或者网络不通会直接影响到服务的可用性，它影响了服务调用的主路径。但一般而言，元数据中心出现问题，不会影响到服务调用，它提供的能力是可被降级的。这也阐释了一点，为什么很多用户在 Dubbo 2.7 中没有配置元数据中心，也没有影响到正常的使用。元数据中心在服务治理中扮演的是锦上添花的一个角色。在组件选型时，我们一般也会对注册中心的可用性要求比较高，元数据中心则可以放宽要求。</p>
+<h2 id="元数据中心的价值"><a href="#元数据中心的价值" class="headerlink" title="元数据中心的价值"></a>元数据中心的价值</h2><p>小孩子才分对错，成年人只看利弊。额外引入一个元数据中心，必然带来运维成本、理解成本、迁移成本等问题，那么它具备怎样的价值，来说服大家选择它呢？上面我们介绍元数据中心时已经提到了服务测试、服务 MOCK 等场景，这一节我们重点探讨一下元数据中心的价值。</p>
+<h3 id="降低地址推送的时延"><a href="#降低地址推送的时延" class="headerlink" title="降低地址推送的时延"></a>降低地址推送的时延</h3><p>由于注册中心采用的是 PubSub 模型，数据量的大小会直接影响到服务地址推送时间，不知道你有没有遇到过 <code>No provider available</code> 的报错呢？明明提供者已经启动了，但由于注册中心推送慢会导致很多问题，一方面会影响到服务的可用性，一方面也会增加排查问题的难度。</p>
+<p>在一次杭州 Dubbo Meetup 中，网易考拉分享了他们对 Zookeeper 的改造，根源就是</p>
+<blockquote>
+<p>推送量大 -&gt; 存储数据量大 -&gt; 网络传输量大 -&gt; 延迟严重</p>
+</blockquote>
+<p>这一实际案例佐证了元数据改造并不是凭空产生的需求，而是切实解决了一个痛点。</p>
+<h3 id="服务测试-amp-服务-MOCK"><a href="#服务测试-amp-服务-MOCK" class="headerlink" title="服务测试 &amp; 服务 MOCK"></a>服务测试 &amp; 服务 MOCK</h3><p>在 Dubbo 2.7 之前，虽然注册中心耦合存储了不少本应属于元数据的数据，但也漏掉了一部分元数据，例如服务的方法列表，参数列表。这些是服务测试和服务 MOCK 必备的数据，想要使用这些能力，就必须引入元数据中心。例如开源的 <a target="_blank" rel="noopener" href="https://github.com/apache/dubbo-admin">Dubbo Admin</a> 就实现了服务测试功能，用户可以在控制台上对已经发布的服务提供者进行功能测试。可能你之前有过这样的疑惑：为什么只有 Dubbo 2.7 才支持了服务测试呢？啊哈，原因就是 Dubbo 2.7 才有了元数据中心的概念。当然，服务 MOCK 也是如此。</p>
+<p><img src="https://image.cnkirito.cn/image-20191103180851464.png" alt="服务测试"></p>
+<h3 id="其他场景"><a href="#其他场景" class="headerlink" title="其他场景"></a>其他场景</h3><p>可以这么理解，任何依赖元数据的功能，都需要元数据中心的支持。其他场景还包括了网关应用获取元数据来进行泛化调用、服务自动化测试等等。再描述一个可能的场景，抛砖引玉。在一次南京 Dubbo Meetup 上，dubbo.js 的作者提及的一个场景，希望根据元数据自动生成 NodeJs 代码，以简化前端的开发量，也是元数据的作用之一。这里就需要发挥各位的想象力了</p>
+<h2 id="Dubbo-配置元数据中心"><a href="#Dubbo-配置元数据中心" class="headerlink" title="Dubbo 配置元数据中心"></a>Dubbo 配置元数据中心</h2><p>目前 Dubbo 最新的版本为 2.7.4，目前支持的几种元数据中心可以从源码中得知（官方文档尚未更新）：</p>
+<p><img src="https://image.cnkirito.cn/image-20191103204744161.png" alt="元数据中心扩展"></p>
+<p>支持 consul、etcd、nacos、redis、zookeeper 这五种组件。</p>
+<p>配置方式如下：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">dubbo.metadata-report.address</span>=<span class="string">nacos://127.0.0.1:8848</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="元数据存储格式剖析"><a href="#元数据存储格式剖析" class="headerlink" title="元数据存储格式剖析"></a>元数据存储格式剖析</h2><p>前面我们介绍了元数据中心的由来以及价值，还是飘在天上的概念，这一节将会让概念落地。元数据是以怎么样一个格式存储的呢？</p>
+<p>以 DemoService 服务为例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:service</span> <span class="attr">interface</span>=<span class="string">&quot;com.alibaba.dubbo.demo.DemoService&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;demoService&quot;</span> <span class="attr">executes</span>=<span class="string">&quot;4500&quot;</span> <span class="attr">retries</span>=<span class="string">&quot;7&quot;</span> <span class="attr">owner</span>=<span class="string">&quot;kirito&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:registry</span> <span class="attr">address</span>=<span class="string">&quot;zookeeper://127.0.0.1:2181&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>首先观察在 Dubbo 2.6.x 中，注册中心如何存储这个服务的信息：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">dubbo</span>:<span class="string">//30.5.120.185:20880/com.alibaba.dubbo.demo.DemoService?</span></span><br><span class="line"><span class="attr">anyhost</span>=<span class="string">true&amp;</span></span><br><span class="line"><span class="attr">application</span>=<span class="string">demo-provider&amp;</span></span><br><span class="line"><span class="attr">interface</span>=<span class="string">com.alibaba.dubbo.demo.DemoService&amp;</span></span><br><span class="line"><span class="attr">methods</span>=<span class="string">sayHello&amp;</span></span><br><span class="line"><span class="meta">bean.name</span>=<span class="string">com.alibaba.dubbo.demo.DemoService&amp;</span></span><br><span class="line"><span class="attr">dubbo</span>=<span class="string">2.0.2&amp;executes=4500&amp;</span></span><br><span class="line"><span class="attr">generic</span>=<span class="string">false&amp;owner=kirito&amp;</span></span><br><span class="line"><span class="attr">pid</span>=<span class="string">84228&amp;retries=7&amp;side=provider&amp;timestamp=1552965771067</span></span><br></pre></td></tr></table></figure>
+
+<p>例如 <code>bean.name</code> 和 <code>owner</code> 这些属性，肯定是没必要注册上来的。</p>
+<p>接着，我们在 Dubbo 2.7 中使用最佳实践，为 registry 配置 simplified=true：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:service</span> <span class="attr">interface</span>=<span class="string">&quot;com.alibaba.dubbo.demo.DemoService&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;demoService&quot;</span> <span class="attr">executes</span>=<span class="string">&quot;4500&quot;</span> <span class="attr">retries</span>=<span class="string">&quot;7&quot;</span> <span class="attr">owner</span>=<span class="string">&quot;kirito&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:registry</span> <span class="attr">address</span>=<span class="string">&quot;zookeeper://127.0.0.1:2181&quot;</span> <span class="attr">simplified</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:metadata-report</span> <span class="attr">address</span>=<span class="string">&quot;nacos://127.0.0.1:8848&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>之后再观察注册中心的数据，已经变得相当精简了：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">dubbo</span>:<span class="string">//30.5.120.185:20880/org.apache.dubbo.demo.api.DemoService?</span></span><br><span class="line"><span class="attr">application</span>=<span class="string">demo-provider&amp;</span></span><br><span class="line"><span class="attr">dubbo</span>=<span class="string">2.0.2&amp;</span></span><br><span class="line"><span class="attr">release</span>=<span class="string">2.7.0&amp;</span></span><br><span class="line"><span class="attr">timestamp</span>=<span class="string">1552975501873</span></span><br></pre></td></tr></table></figure>
+
+<p>被精简省略的数据不代表没有用了，而是转移到了元数据中心之中，我们观察一下此时元数据中心中的数据：</p>
+<p><img src="https://image.cnkirito.cn/image-20191103202821635.png" alt="元数据存储格式"></p>
+<h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h2><p>元数据中心是服务治理中的一个关键组件，但对于大多数用户来说还是一个比较新的概念，我整理了一些我认为的最佳实践，分享给大家。</p>
+<ul>
+<li>从 Dubbo 2.6 迁移到 Dubbo 2.7 时，可以采取三步走的策略来平滑迁移元数据。第一步：Dubbo 2.6 + 注册中心，第二步：Dubbo 2.7 + 注册中心 + 元数据中心，第三步：Dubbo 2.7 + 注册中心（simplified=true） + 元数据中心。在未来 Dubbo 的升级版本中，registry 的 simplified 默认值将会变成 true，目前是 false，预留给用户一个升级的时间。</li>
+<li>应用在启动时，会发布一次元数据，在此之后会有定时器，一天同步一次元数据，以上报那些运行时生成的 Bean，目前用户不可以配置元数据上报的周期，但可以通过 <code>-Dcycle.report</code> 关闭这一定时器。</li>
+<li>元数据中心推荐选型：Nacos 和 Redis。</li>
+</ul>
+<p>Dubbo 2.7 还有很多有意思的特性，如果你对 Dubbo 有什么感兴趣的问题，欢迎在文末或者后台进行留言，后面我会继续更新 Dubbo 系列的文章。</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>一文聊透 Dubbo 元数据中心</p><p><a href="https://www.cnkirito.moe/dubbo-metadata/">https://www.cnkirito.moe/dubbo-metadata/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2019-11-03</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-05-26</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Dubbo/">Dubbo </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/dubbo-gracefully-startup/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">一文聊透 Dubbo 优雅上线</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/linux-io-benchmark/"><span class="level-item">Linux 环境写文件如何稳定跑满磁盘 I/O 带宽?</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#元数据中心介绍"><span class="level-left"><span class="level-item">2</span><span class="level-item">元数据中心介绍</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#职责"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">职责</span></span></a></li><li><a class="level is-mobile" href="#变化频繁度"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">变化频繁度</span></span></a></li><li><a class="level is-mobile" href="#数据量"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">数据量</span></span></a></li><li><a class="level is-mobile" href="#数据交互-存储模型"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">数据交互/存储模型</span></span></a></li><li><a class="level is-mobile" href="#主要使用场景"><span class="level-left"><span class="level-item">2.5</span><span class="level-item">主要使用场景</span></span></a></li><li><a class="level is-mobile" href="#可用性要求"><span class="level-left"><span class="level-item">2.6</span><span class="level-item">可用性要求</span></span></a></li></ul></li><li><a class="level is-mobile" href="#元数据中心的价值"><span class="level-left"><span class="level-item">3</span><span class="level-item">元数据中心的价值</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#降低地址推送的时延"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">降低地址推送的时延</span></span></a></li><li><a class="level is-mobile" href="#服务测试-amp-服务-MOCK"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">服务测试 &amp; 服务 MOCK</span></span></a></li><li><a class="level is-mobile" href="#其他场景"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">其他场景</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Dubbo-配置元数据中心"><span class="level-left"><span class="level-item">4</span><span class="level-item">Dubbo 配置元数据中心</span></span></a></li><li><a class="level is-mobile" href="#元数据存储格式剖析"><span class="level-left"><span class="level-item">5</span><span class="level-item">元数据存储格式剖析</span></span></a></li><li><a class="level is-mobile" href="#最佳实践"><span class="level-left"><span class="level-item">6</span><span class="level-item">最佳实践</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

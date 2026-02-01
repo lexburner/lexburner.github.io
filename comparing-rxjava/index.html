@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>八个层面比较 Java 8, RxJava, Reactor - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言这是一篇译文，原文出处 戳这里。其实很久以前我就看完了这篇文章，只不过个人对响应式编程研究的不够深入，羞于下笔翻译，在加上这类译文加了原创还有争议性，所以一直没有动力。恰逢今天交流群里两个大佬对响应式编程的话题辩得不可开交，趁印象还算深刻，借机把这篇文章翻译一下。说道辩论的点，不妨也在这里抛出来：  响应式编程在单机环境下是否鸡肋？  结论是：没有结论，我觉得只能抱着怀疑的眼光审视这个问题了。"><meta property="og:type" content="blog"><meta property="og:title" content="八个层面比较 Java 8, RxJava, Reactor"><meta property="og:url" content="https://www.cnkirito.moe/comparing-rxjava/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="前言这是一篇译文，原文出处 戳这里。其实很久以前我就看完了这篇文章，只不过个人对响应式编程研究的不够深入，羞于下笔翻译，在加上这类译文加了原创还有争议性，所以一直没有动力。恰逢今天交流群里两个大佬对响应式编程的话题辩得不可开交，趁印象还算深刻，借机把这篇文章翻译一下。说道辩论的点，不妨也在这里抛出来：  响应式编程在单机环境下是否鸡肋？  结论是：没有结论，我觉得只能抱着怀疑的眼光审视这个问题了。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/backpressure.jpg"><meta property="og:image" content="https://image.cnkirito.cn/7fec27a062235dff88ef1d56ee2ce483.png"><meta property="og:image" content="https://image.cnkirito.cn/6d4b0b357777b8caa2f87283027206ff.png"><meta property="og:image" content="https://image.cnkirito.cn/fac526768bed14d11933464646eb6471.png"><meta property="og:image" content="https://image.cnkirito.cn/5a57f2b1b694cc0f41320763a0cb1c0a.png"><meta property="og:image" content="https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg"><meta property="article:published_time" content="2018-10-15T17:25:14.000Z"><meta property="article:modified_time" content="2025-12-22T06:40:52.747Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="RxJava"><meta property="article:tag" content="Reactor"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/backpressure.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/comparing-rxjava/"},"headline":"八个层面比较 Java 8, RxJava, Reactor","image":["https://image.cnkirito.cn/backpressure.jpg","https://image.cnkirito.cn/7fec27a062235dff88ef1d56ee2ce483.png","https://image.cnkirito.cn/6d4b0b357777b8caa2f87283027206ff.png","https://image.cnkirito.cn/fac526768bed14d11933464646eb6471.png","https://image.cnkirito.cn/5a57f2b1b694cc0f41320763a0cb1c0a.png","https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg"],"datePublished":"2018-10-15T17:25:14.000Z","dateModified":"2025-12-22T06:40:52.747Z","author":{"@type":"Person","name":"徐靖峰"},"description":"前言这是一篇译文，原文出处 戳这里。其实很久以前我就看完了这篇文章，只不过个人对响应式编程研究的不够深入，羞于下笔翻译，在加上这类译文加了原创还有争议性，所以一直没有动力。恰逢今天交流群里两个大佬对响应式编程的话题辩得不可开交，趁印象还算深刻，借机把这篇文章翻译一下。说道辩论的点，不妨也在这里抛出来：  响应式编程在单机环境下是否鸡肋？  结论是：没有结论，我觉得只能抱着怀疑的眼光审视这个问题了。"}</script><link rel="canonical" href="https://www.cnkirito.moe/comparing-rxjava/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>八个层面比较 Java 8, RxJava, Reactor</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2018-10-16</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/">技术杂谈</a></span><span class="level-item">24 分钟读完 (大约3656个字)</span></div></div><div class="content"><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>这是一篇译文，原文出处 <a target="_blank" rel="noopener" href="http://alexsderkach.io/comparing-java-8-rxjava-reactor/">戳这里</a>。其实很久以前我就看完了这篇文章，只不过个人对响应式编程研究的不够深入，羞于下笔翻译，在加上这类译文加了原创还有争议性，所以一直没有动力。恰逢今天交流群里两个大佬对响应式编程的话题辩得不可开交，趁印象还算深刻，借机把这篇文章翻译一下。说道辩论的点，不妨也在这里抛出来：</p>
+<blockquote>
+<p>响应式编程在单机环境下是否鸡肋？</p>
+</blockquote>
+<p>结论是：没有结论，我觉得只能抱着怀疑的眼光审视这个问题了。另外还聊到了 RSocket 这个最近在 SpringOne 大会上比较火爆的响应式 “ 新“网络协议，github 地址 <a target="_blank" rel="noopener" href="https://github.com/rsocket/rsocket">戳这里</a>，为什么给”新“字打了个引号，仔细观察下 RSocket 的 commit log，其实三年前就有了。有兴趣的同学自行翻阅，说不定就是今年这最后两三个月的热点技术哦。</p>
+<p> Java 圈子有一个怪事，那就是对 RxJava，Reactor，WebFlux 这些响应式编程的名词、框架永远处于渴望了解，感到新鲜，却又不甚了解，使用贫乏的状态。之前转载小马哥的那篇《Reactive Programming 一种技术，各自表述》时，就已经聊过这个关于名词之争的话题了，今天群里的讨论更是加深了我的映像。Java 圈子里面很多朋友一直对响应式编程处于一个了解名词，知道基本原理，而不是深度用户的状态 (我也是之一)。可能真的和圈子有关，按石冲兄的说法，其实 Scala 圈子里面的那帮人，不知道比咱们高到哪里去了（就响应式编程而言）。</p>
+<p>实在是好久没发文章了，向大家说声抱歉，以后的更新频率肯定是没有以前那么勤了（说的好像以前很勤快似的），一部分原因是在公司内网写的文章没法贴到公众号中和大家分享讨论，另一部分是目前我也处于学习公司内部框架的阶段，不太方便提炼成文章，最后，最大的一部分原因还是我这段时间需要学 (tou) 习(lan)其 (da) 他(you)东 (xi) 西啦。好了，废话也说完了，下面是译文的正文部分。</p>
+<span id="more"></span>
+
+<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>关于响应式编程 (Reactive Programming)，你可能有过这样的疑问：我们已经有了 Java8 的 Stream, CompletableFuture, 以及 Optional，为什么还必要存在 RxJava 和 Reactor？</p>
+<p>回答这个问题并不难，如果在响应式编程中处理的问题非常简单，你的确不需要那些第三方类库的支持。 但随着复杂问题的出现，你写出了一堆难看的代码。然后这些代码变得越来越复杂，难以维护，而 RxJava 和 Reactor 具有许多方便的功能，可以解决你当下问题，并保障了未来一些可预见的需求。本文从响应式编程模型中抽象出了 8 个标准，这将有助于我们理解标准特性与这些库之间的区别：</p>
+<ol>
+<li>Composable（可组合）</li>
+<li>Lazy（惰性执行）</li>
+<li>Reusable（可复用）</li>
+<li>Asynchronous（异步）</li>
+<li>Cacheable（可缓存）</li>
+<li>Push or Pull（推拉模型）</li>
+<li>Backpressure（回压）(译者注：按照石冲老哥的建议，这个词应当翻译成 “回压” 而不是 “背压”)</li>
+<li>Operator fusion（操作融合）</li>
+</ol>
+<p>我们将会对以下这些类进行这些特性的对比：</p>
+<ol>
+<li>CompletableFuture（Java 8）</li>
+<li>Stream（Java 8）</li>
+<li>Optional（Java 8）</li>
+<li>Observable (RxJava 1)</li>
+<li>Observable (RxJava 2)</li>
+<li>Flowable (RxJava 2)</li>
+<li>Flux (Reactor Core)</li>
+</ol>
+<p>让我们开始吧 ~</p>
+<h3 id="1-Composable（可组合）"><a href="#1-Composable（可组合）" class="headerlink" title="1. Composable（可组合）"></a>1. Composable（可组合）</h3><p>这些类都是支持 Composable 特性的，使得各位使用者很便利地使用函数式编程的思想去思考问题，这也正是我们拥趸它们的原因。</p>
+<p><strong>CompletableFuture</strong> - 众多的 <code>.then*()</code> 方法使得我们可以构建一个 pipeline, 用以传递空值，单一的值，以及异常.</p>
+<p><strong>Stream</strong> - 提供了许多链式操作的编程接口，支持在各个操作之间传递多个值。</p>
+<p><strong>Optional</strong> - 提供了一些中间操作 <code>.map()</code>, <code>.flatMap()</code>, <code>.filter()</code>.</p>
+<p><strong>Observable, Flowable, Flux</strong> - 和 <strong>Stream</strong> 相同</p>
+<h3 id="2-Lazy（惰性执行）"><a href="#2-Lazy（惰性执行）" class="headerlink" title="2. Lazy（惰性执行）"></a>2. Lazy（惰性执行）</h3><p><strong>CompletableFuture</strong> - 不具备惰性执行的特性，它本质上只是一个异步结果的容器。这些对象的创建是用来表示对应的工作，CompletableFuture 创建时，对应的工作已经开始执行了。但它并不知道任何工作细节，只关心结果。所以，没有办法从上至下执行整个 pipeline。当结果被设置给 CompletableFuture 时，下一个阶段才开始执行。</p>
+<p><strong>Stream</strong> - 所有的中间操作都是延迟执行的。所有的终止操作 (terminal operations)，会触发真正的计算 (译者注：如 collect() 就是一个终止操作 )。</p>
+<p><strong>Optional</strong> - 不具备惰性执行的特性，所有的操作会立刻执行。</p>
+<p><strong>Observable, Flowable, Flux</strong> - 惰性执行，只有当订阅者出现时才会执行，否则不执行。</p>
+<h3 id="3-Reusable（可复用）"><a href="#3-Reusable（可复用）" class="headerlink" title="3. Reusable（可复用）"></a>3. Reusable（可复用）</h3><p><strong>CompletableFuture</strong> - 可以复用，它仅仅是一个实际值的包装类。但需要注意的是，这个包装是可更改的。<code>.obtrude*()</code> 方法会修改它的内容，如果你确定没有人会调用到这类方法，那么重用它还是安全的。</p>
+<p><strong>Stream</strong> - 不能复用。Java Doc 注释道：</p>
+<blockquote>
+<p>A stream should be operated on (invoking an intermediate or terminal stream operation) only once. A stream implementation may throw IllegalStateException if it detects that the stream is being reused. However, since some stream operations may return their receiver rather than a new stream object, it may not be possible to detect reuse in all cases. </p>
+</blockquote>
+<p>（译者注：Stream 只能被调用一次。如果被校测到流被重复使用了，它会跑出抛出一个 IllegalStateException 异常。但是某些流操作会返回他们的接受者，而不是一个新的流对象，所以无法在所有情况下检测出是否可以重用）</p>
+<p><strong>Optional</strong> - 完全可重用，因为它是不可变对象，而且所有操作都是立刻执行的。</p>
+<p><strong>Observable, Flowable, Flux</strong> - 生而重用，专门设计成如此。当存在订阅者时，每一次执行都会从初始点开始完整地执行一边。</p>
+<h3 id="4-Asynchronous（异步）"><a href="#4-Asynchronous（异步）" class="headerlink" title="4. Asynchronous（异步）"></a>4. Asynchronous（异步）</h3><p><strong>CompletableFuture</strong> - 这个类的要点在于它异步地把多个操作连接了起来。<code>CompletableFuture</code> 代表一项操作，它会跟一个 <code>Executor</code> 关联起来。如果不明确指定一个 <code>Executor</code>，那么会默认使用公共的 <code>ForkJoinPool</code> 线程池来执行。这个线程池可以用 <code>ForkJoinPool.commonPool()</code> 获取到。默认设置下它会创建系统硬件支持的线程数一样多的线程（通常和 CPU 的核心数相等，如果你的 CPU 支持超线程 (hyperthreading)，那么会设置成两倍的线程数）。不过你也可以使用 JVM 参数指定 ForkJoinPool 线程池的线程数，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Djava.util.concurrent.ForkJoinPool.common.parallelism=?</span><br></pre></td></tr></table></figure>
+
+<p>或者在创建 <code>CompletableFuture </code> 时提供一个指定的 Executor。</p>
+<p><strong>Stream</strong> - 不支持创建异步执行流程，但是可以使用 <code>stream.parallel()</code> 等方式创建并行流。</p>
+<p><strong>Optional</strong> - 不支持，它只是一个容器。</p>
+<p><strong>Observable, Flowable, Flux</strong> - 专门设计用以构建异步系统，但默认情况下是同步的。<code>subscribeOn</code> 和 <code>observeOn</code> 允许你来控制订阅以及接收（这个线程会调用 observer 的 <code>onNext</code> / <code>onError</code> / <code>onCompleted </code> 方法）。</p>
+<p><code>subscribeOn </code> 方法使得你可以决定由哪个 <code>Scheduler</code> 来执行 <code>Observable.create</code> 方法。即便你没有调用创建方法，系统内部也会做同样的事情。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Observable</span><br><span class="line">  .fromCallable(() -&gt; &#123;</span><br><span class="line">    log.info(<span class="string">&quot;Reading on thread:&quot;</span> + currentThread().getName());</span><br><span class="line">    <span class="keyword">return</span> readFile(<span class="string">&quot;input.txt&quot;</span>);</span><br><span class="line">  &#125;)</span><br><span class="line">  .map(text -&gt; &#123;</span><br><span class="line">    log.info(<span class="string">&quot;Map on thread:&quot;</span> + currentThread().getName());</span><br><span class="line">    <span class="keyword">return</span> text.length();</span><br><span class="line">  &#125;)</span><br><span class="line">  .subscribeOn(Schedulers.io()) <span class="comment">// &lt;-- setting scheduler</span></span><br><span class="line">  .subscribe(value -&gt; &#123;</span><br><span class="line">     log.info(<span class="string">&quot;Result on thread:&quot;</span> + currentThread().getName());</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Reading file on thread: RxIoScheduler-<span class="number">2</span></span><br><span class="line">Map on thread: RxIoScheduler-<span class="number">2</span></span><br><span class="line">Result on thread: RxIoScheduler-<span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>相反的，<code>observeOn()</code> 控制在 <code>observeOn()</code> 之后，用哪个 <code>Scheduler</code> 来运行下游的执行阶段。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Observable</span><br><span class="line">  .fromCallable(() -&gt; &#123;</span><br><span class="line">    log.info(<span class="string">&quot;Reading on thread:&quot;</span> + currentThread().getName());</span><br><span class="line">    <span class="keyword">return</span> readFile(<span class="string">&quot;input.txt&quot;</span>);</span><br><span class="line">  &#125;)</span><br><span class="line">  .observeOn(Schedulers.computation()) <span class="comment">// &lt;-- setting scheduler</span></span><br><span class="line">  .map(text -&gt; &#123;</span><br><span class="line">    log.info(<span class="string">&quot;Map on thread:&quot;</span> + currentThread().getName());</span><br><span class="line">    <span class="keyword">return</span> text.length();</span><br><span class="line">  &#125;)</span><br><span class="line">  .subscribeOn(Schedulers.io()) <span class="comment">// &lt;-- setting scheduler</span></span><br><span class="line">  .subscribe(value -&gt; &#123;</span><br><span class="line">     log.info(<span class="string">&quot;Result on thread:&quot;</span> + currentThread().getName());</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Reading file on thread: RxIoScheduler-<span class="number">2</span></span><br><span class="line">Map on thread: RxComputationScheduler-<span class="number">1</span></span><br><span class="line">Result on thread: RxComputationScheduler-<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-Cacheable（可缓存）"><a href="#5-Cacheable（可缓存）" class="headerlink" title="5. Cacheable（可缓存）"></a>5. Cacheable（可缓存）</h3><p>可缓存和可复用之间的区别是什么？假如我们有 pipeline <code>A</code>，重复使用它两次，来创建两个新的 pipeline <code>B = A + X </code> 以及 <code>C = A + Y</code></p>
+<ul>
+<li>如果 B 和 C 都能成功执行，那么这个 A 就是是可重用的。</li>
+<li>如果 B 和 C 都能成功执行，并且 A 在这个过程中，整个 pipeline 只执行了一次，那么我们便称 A 是可缓存的。这意味着，可缓存一定代表可重用。</li>
+</ul>
+<p><strong>CompletableFuture</strong> - 跟可重用的答案一样。</p>
+<p><strong>Stream</strong> - 不能缓存中间操作的结果，除非调用了终止操作。</p>
+<p><strong>Optional</strong> - 可缓存，所有操作立刻执行，并且进行了缓存。</p>
+<p><strong>Observable, Flowable, Flux</strong> - 默认不可缓存的，但是可以调用 <code>.cache()</code> 把这些类变成可缓存的。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Observable&lt;Integer&gt; work = Observable.fromCallable(() -&gt; &#123;</span><br><span class="line">  System.out.println(<span class="string">&quot;Doing some work&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">10</span>;</span><br><span class="line">&#125;);</span><br><span class="line">work.subscribe(System.out::println);</span><br><span class="line">work.map(i -&gt; i * <span class="number">2</span>).subscribe(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Doing some work</span><br><span class="line"><span class="number">10</span></span><br><span class="line">Doing some work</span><br><span class="line"><span class="number">20</span></span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>.cache()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Observable&lt;Integer&gt; work = Observable.fromCallable(() -&gt; &#123;</span><br><span class="line">  System.out.println(<span class="string">&quot;Doing some work&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">10</span>;</span><br><span class="line">&#125;).cache(); <span class="comment">// &lt;- apply caching</span></span><br><span class="line">work.subscribe(System.out::println);</span><br><span class="line">work.map(i -&gt; i * <span class="number">2</span>).subscribe(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Doing some work</span><br><span class="line"><span class="number">10</span></span><br><span class="line"><span class="number">20</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-Push-or-Pull（推拉模型）"><a href="#6-Push-or-Pull（推拉模型）" class="headerlink" title="6. Push or Pull（推拉模型）"></a>6. Push or Pull（推拉模型）</h3><p><strong>Stream 和 Optional</strong> - 拉模型。调用不同的方法（<code>.get()</code>, <code>.collect()</code> 等）从 pipeline 拉取结果。拉模型通常和阻塞、同步关联，那也是公平的。当调用方法时，线程会一直阻塞，直到有数据到达。</p>
+<p><strong>CompletableFuture, Observable, Flowable, Flux</strong> - 推模型。当订阅一个 pipeline ，并且某些事件被执行后，你会得到通知。推模型通常和非阻塞、异步这些词关联在一起。当 pipeline 在某个线程上执行时，你可以做任何事情。你已经定义了一段待执行的代码，当通知到达的时候，这段代码就会在下个阶段被执行。</p>
+<h3 id="7-Backpressure（回压）"><a href="#7-Backpressure（回压）" class="headerlink" title="7. Backpressure（回压）"></a>7. Backpressure（回压）</h3><ul>
+<li>支持回压的前提是 pipeline 必须是推模型。*</li>
+</ul>
+<p><strong>Backpressure（回压）</strong> 描述了 pipeline 中的一种场景：某些异步阶段的处理速度跟不上，需要告诉上游生产者放慢速度。直接失败是不能接受的，这会导致大量数据的丢失。</p>
+<p><img src="https://image.cnkirito.cn/backpressure.jpg" alt="backpressure.jpg"></p>
+<p><strong>Stream &amp; Optional</strong> - 不支持回压，因为它们是拉模型。</p>
+<p><strong>CompletableFuture</strong> - 不存在这个问题，因为它只产生 0 个或者 1 个结果。</p>
+<p><strong>Observable(RxJava 1), Flowable, Flux</strong> - 支持。常用策略如下：</p>
+<ul>
+<li><p>Buffering - 缓冲所有的 <code>onNext</code> 的值，直到下游消费它们。 </p>
+</li>
+<li><p>Drop Recent - 如果下游处理速率跟不上，丢弃最近的 <code>onNext</code> 值。</p>
+</li>
+<li><p>Use Latest - 如果下游处理速率跟不上，只提供最近的 <code>onNext</code> 值，之前的值会被覆盖。</p>
+</li>
+<li><p>None - <code>onNext</code> 事件直接被触发，不做缓冲和丢弃。</p>
+</li>
+<li><p>Exception - 如果下游处理跟不上的话，抛出异常。</p>
+</li>
+</ul>
+<p><strong>Observable(RxJava 2)</strong> - 不支持。很多 RxJava 1 的使用者用 <code>Observable</code> 来处理不适用回压的事件，或者是使用 <code>Observable</code> 的时候没有配置任何策略，导致了不可预知的异常。所以，RxJava 2 明确地区分两种情况，提供支持回压的 <code>Flowable</code> 和不支持回压的 <code>Observable</code>。</p>
+<h3 id="8-Operator-fusion（操作融合）"><a href="#8-Operator-fusion（操作融合）" class="headerlink" title="8. Operator fusion（操作融合）"></a>8. Operator fusion（操作融合）</h3><p>操作融合的内涵在于，它使得生命周期的不同点上的执行阶段得以改变，从而消除类库的架构因素所造成的系统开销。所有这些优化都在内部被处理完毕，从而让外部用户觉得这一切都是透明的。</p>
+<p>只有 RxJava 2 和 Reactor 支持这个特性，但支持的方式不同。总的来说，有两种类型的优化：</p>
+<p><strong>Macro-fusion</strong> - 用一个操作替换 2 个或更多的相继的操作</p>
+<p><img src="https://image.cnkirito.cn/7fec27a062235dff88ef1d56ee2ce483.png" alt="macro-fusion_.png"></p>
+<p><strong>Micro-fusion</strong> - 一个输出队列的结束操作，和在一个输入队列的开始操作，能够共享一个队列的实例。比如说，与其调用 <code>request(1)</code> 然后处理 onNext()`：</p>
+<p><img src="https://image.cnkirito.cn/6d4b0b357777b8caa2f87283027206ff.png" alt="micro-fusion-1_1.png"></p>
+<p>不然让订阅者直接从父 <code>observable</code> 拉取值。</p>
+<p><img src="https://image.cnkirito.cn/fac526768bed14d11933464646eb6471.png" alt="micro-fusion-2.png"></p>
+<p>更多信息可以参考 <a target="_blank" rel="noopener" href="http://akarnokd.blogspot.com/2016/03/operator-fusion-part-1.html">Part1</a> 和 <a target="_blank" rel="noopener" href="http://akarnokd.blogspot.com/2016/04/operator-fusion-part-2-final.html">Part2</a></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>一图胜千言</p>
+<p><img src="https://image.cnkirito.cn/5a57f2b1b694cc0f41320763a0cb1c0a.png" alt="2018-04-12_20-38-07.png"></p>
+<p><code>Stream</code>，<code>CompletableFuture</code> 和 <code>Optional</code> 这些类的创建，都是为了解决特定的问题。 并且他们非常适合用于解决这些问题。 如果它们满足你的需求，你可以立马使用它们。</p>
+<p>然而，不同的问题具有不同的复杂度，并且某些问题只有新技术才能很好的解决，新技术的出现也是为了解决那些高复杂度的问题。 RxJava 和 Reactor 是通用的工具，它们帮助你以声明方式来解决问题，而不是使用那些不够专业的工具，生搬硬套的使用其他的工具来解决响应式编程的问题，只会让你的解决方案变成一种 hack 行为。</p>
+<p>** 欢迎关注我的微信公众号：「Kirito 的技术分享」，关于文章的任何疑问都会得到回复，带来更多 Java 相关的技术分享。**</p>
+<p><img src="https://image.cnkirito.cn/qrcode_for_gh_c06057be7960_258%20%281%29.jpg" alt="关注微信公众号"></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>八个层面比较 Java 8, RxJava, Reactor</p><p><a href="https://www.cnkirito.moe/comparing-rxjava/">https://www.cnkirito.moe/comparing-rxjava/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2018-10-16</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/RxJava/">RxJava, </a><a class="link-muted" rel="tag" href="/tags/Reactor/">Reactor </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/file-io-best-practise/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">文件 IO 操作的一些最佳实践</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/thinking-2/"><span class="level-item">关于阿里面试、学习路线、公众号的一些想法</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#引言"><span class="level-left"><span class="level-item">2</span><span class="level-item">引言</span></span></a></li><li><a class="level is-mobile" href="#1-Composable（可组合）"><span class="level-left"><span class="level-item">3</span><span class="level-item">1. Composable（可组合）</span></span></a></li><li><a class="level is-mobile" href="#2-Lazy（惰性执行）"><span class="level-left"><span class="level-item">4</span><span class="level-item">2. Lazy（惰性执行）</span></span></a></li><li><a class="level is-mobile" href="#3-Reusable（可复用）"><span class="level-left"><span class="level-item">5</span><span class="level-item">3. Reusable（可复用）</span></span></a></li><li><a class="level is-mobile" href="#4-Asynchronous（异步）"><span class="level-left"><span class="level-item">6</span><span class="level-item">4. Asynchronous（异步）</span></span></a></li><li><a class="level is-mobile" href="#5-Cacheable（可缓存）"><span class="level-left"><span class="level-item">7</span><span class="level-item">5. Cacheable（可缓存）</span></span></a></li><li><a class="level is-mobile" href="#6-Push-or-Pull（推拉模型）"><span class="level-left"><span class="level-item">8</span><span class="level-item">6. Push or Pull（推拉模型）</span></span></a></li><li><a class="level is-mobile" href="#7-Backpressure（回压）"><span class="level-left"><span class="level-item">9</span><span class="level-item">7. Backpressure（回压）</span></span></a></li><li><a class="level is-mobile" href="#8-Operator-fusion（操作融合）"><span class="level-left"><span class="level-item">10</span><span class="level-item">8. Operator fusion（操作融合）</span></span></a></li><li><a class="level is-mobile" href="#总结"><span class="level-left"><span class="level-item">11</span><span class="level-item">总结</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

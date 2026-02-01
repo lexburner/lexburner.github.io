@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>QoderWork 来了！AI 接管电脑是什么体验？ - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="TL;DR  QoderWork 是 Qoder 推出的桌面级通用智能体助手，将 AI 能力从代码开发扩展到日常办公 核心能力覆盖文件整理、PPT 生成、信息图批量制作、视频合成等场景 本文分享了我结合自定义 Skill 的实战技巧：批量信息图制作、特定风格 PPT 生成等 关键洞察：Skill 是差异化的关键——同样的产品 + 不同的 Skill &amp;#x3D; 完全不同的产出质量 我的 Skill 合集："><meta property="og:type" content="blog"><meta property="og:title" content="QoderWork 来了！AI 接管电脑是什么体验？"><meta property="og:url" content="https://www.cnkirito.moe/qoderwork-experience/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="TL;DR  QoderWork 是 Qoder 推出的桌面级通用智能体助手，将 AI 能力从代码开发扩展到日常办公 核心能力覆盖文件整理、PPT 生成、信息图批量制作、视频合成等场景 本文分享了我结合自定义 Skill 的实战技巧：批量信息图制作、特定风格 PPT 生成等 关键洞察：Skill 是差异化的关键——同样的产品 + 不同的 Skill &amp;#x3D; 完全不同的产出质量 我的 Skill 合集："><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/a5ccd58f-5b30-4f25-b616-d7ff83e03591-20260201181625110.png"><meta property="og:image" content="https://image.cnkirito.cn/0c23ddd5-7555-4dd9-a540-9c3ced806f6a.png"><meta property="og:image" content="https://image.cnkirito.cn/8d9ecc08-089d-4b0e-9f40-8e5a28da3213.png"><meta property="og:image" content="https://image.cnkirito.cn/bad1f673-140a-4d51-91b2-6e0e4d752e6f.png"><meta property="og:image" content="https://image.cnkirito.cn/eb564ad0-b657-4786-9025-b16ad5b5d731.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20260201211305633.png"><meta property="og:image" content="https://image.cnkirito.cn/3e406d6a-baf1-4447-8d0d-64d5e8112492.png"><meta property="og:image" content="https://image.cnkirito.cn/image-20260201211511856.png"><meta property="og:image" content="https://image.cnkirito.cn/4167ed71-1f6f-41e7-ae6b-5f467da96bcf.png"><meta property="og:image" content="https://image.cnkirito.cn/74940a0d-1730-4437-b9c0-6cb623501066.png"><meta property="og:image" content="https://image.cnkirito.cn/8688f5b1-9bb4-4a59-93fe-98ab5db3a4ec.png"><meta property="og:image" content="https://image.cnkirito.cn/f0583526-c812-4957-932d-d003010deda3.png"><meta property="og:image" content="https://image.cnkirito.cn/434a9169-88f1-40dc-a2af-64db66fe722f.png"><meta property="og:image" content="https://image.cnkirito.cn/3f4209e6-82af-442d-b478-ceb7cbab277e.png"><meta property="og:image" content="https://image.cnkirito.cn/33f35e0c-278c-4441-8601-9d81c51e0c20.png"><meta property="article:published_time" content="2026-02-01T13:09:50.000Z"><meta property="article:modified_time" content="2026-02-01T13:20:10.171Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="Qoder"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/a5ccd58f-5b30-4f25-b616-d7ff83e03591-20260201181625110.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/qoderwork-experience/"},"headline":"QoderWork 来了！AI 接管电脑是什么体验？","image":["https://image.cnkirito.cn/a5ccd58f-5b30-4f25-b616-d7ff83e03591-20260201181625110.png","https://image.cnkirito.cn/0c23ddd5-7555-4dd9-a540-9c3ced806f6a.png","https://image.cnkirito.cn/8d9ecc08-089d-4b0e-9f40-8e5a28da3213.png","https://image.cnkirito.cn/bad1f673-140a-4d51-91b2-6e0e4d752e6f.png","https://image.cnkirito.cn/eb564ad0-b657-4786-9025-b16ad5b5d731.png","https://image.cnkirito.cn/image-20260201211305633.png","https://image.cnkirito.cn/3e406d6a-baf1-4447-8d0d-64d5e8112492.png","https://image.cnkirito.cn/image-20260201211511856.png","https://image.cnkirito.cn/4167ed71-1f6f-41e7-ae6b-5f467da96bcf.png","https://image.cnkirito.cn/74940a0d-1730-4437-b9c0-6cb623501066.png","https://image.cnkirito.cn/8688f5b1-9bb4-4a59-93fe-98ab5db3a4ec.png","https://image.cnkirito.cn/f0583526-c812-4957-932d-d003010deda3.png","https://image.cnkirito.cn/434a9169-88f1-40dc-a2af-64db66fe722f.png","https://image.cnkirito.cn/3f4209e6-82af-442d-b478-ceb7cbab277e.png","https://image.cnkirito.cn/33f35e0c-278c-4441-8601-9d81c51e0c20.png"],"datePublished":"2026-02-01T13:09:50.000Z","dateModified":"2026-02-01T13:20:10.171Z","author":{"@type":"Person","name":"徐靖峰"},"description":"TL;DR  QoderWork 是 Qoder 推出的桌面级通用智能体助手，将 AI 能力从代码开发扩展到日常办公 核心能力覆盖文件整理、PPT 生成、信息图批量制作、视频合成等场景 本文分享了我结合自定义 Skill 的实战技巧：批量信息图制作、特定风格 PPT 生成等 关键洞察：Skill 是差异化的关键——同样的产品 + 不同的 Skill &#x3D; 完全不同的产出质量 我的 Skill 合集："}</script><link rel="canonical" href="https://www.cnkirito.moe/qoderwork-experience/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>QoderWork 来了！AI 接管电脑是什么体验？</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2026-02-01</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2026-02-01</time></span><span class="level-item"><a class="link-muted" href="/categories/Qoder/">Qoder</a></span><span class="level-item">17 分钟读完 (大约2539个字)</span></div></div><div class="content"><p><strong>TL;DR</strong></p>
+<ul>
+<li>QoderWork 是 Qoder 推出的桌面级通用智能体助手，将 AI 能力从代码开发扩展到日常办公</li>
+<li>核心能力覆盖文件整理、PPT 生成、信息图批量制作、视频合成等场景</li>
+<li>本文分享了我结合自定义 Skill 的实战技巧：批量信息图制作、特定风格 PPT 生成等</li>
+<li>关键洞察：<strong>Skill 是差异化的关键</strong>——同样的产品 + 不同的 Skill = 完全不同的产出质量</li>
+<li>我的 Skill 合集：<a target="_blank" rel="noopener" href="https://github.com/lexburner/skill-collection">https://github.com/lexburner/skill-collection</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h2><p>最近 AI 热点实在太多了，我的钉钉工作群、朋友圈基本被 Claude Cowork、OpenClaw 这些新产品、新概念刷屏了，想不关注到都难。</p>
+<p>就在 1月底，Qoder 发布了 QoderWork 新产品， 跟上边两个工具定位类似，但做了国内适配，免去了复杂的安装步骤，我也是迫不及待试用了一下，跟大家一起看看是怎么一回事。</p>
+<p>目前 QoderWork 还在内测阶段，一周内估计就会正式开放，申请邀测：<a target="_blank" rel="noopener" href="https://qoder.com/qoderwork">https://qoder.com/qoderwork</a></p>
+<p><img src="https://image.cnkirito.cn/a5ccd58f-5b30-4f25-b616-d7ff83e03591-20260201181625110.png"></p>
+<span id="more"></span>
+
+<h2 id="QoderWork-是什么？"><a href="#QoderWork-是什么？" class="headerlink" title="QoderWork 是什么？"></a><strong>QoderWork 是什么？</strong></h2><p>QoderWork 定位是桌面级通用智能体助手，slogan 叫 “为真实工作而生”。</p>
+<p>Qoder IDE/Qoder CLI/Qoder JB 更多还是开发者在使用，QoderWork 则覆盖到日常办公场景的所有人群。</p>
+<p>与传统 AI 助手的对话式交互不同，QoderWork 是”任务驱动”的工作流引擎：</p>
+<table>
+<thead>
+<tr>
+<th><strong>传统 AI 助手</strong></th>
+<th><strong>QoderWork</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对话式交互</td>
+<td>任务驱动</td>
+</tr>
+<tr>
+<td>输出文本建议</td>
+<td>直接操作电脑</td>
+</tr>
+<tr>
+<td>需要人工执行</td>
+<td>自动化执行</td>
+</tr>
+<tr>
+<td>单次问答</td>
+<td>复杂任务编排</td>
+</tr>
+</tbody></table>
+<p>可以在左下角切换【语言】，在【设置】中配置 Skill 和 MCP。</p>
+<p>可以看到内置的 Skill 包含了 word、pdf、ppt 等常见办公场景涉及到的文档格式。也支持自定义 Skill，在本文后边的章节里面我也会分享我个人的一些工作流和自定义 Skill。</p>
+<p><img src="https://image.cnkirito.cn/0c23ddd5-7555-4dd9-a540-9c3ced806f6a.png"></p>
+<p>官方给出的三类主要场景：</p>
+<ul>
+<li>文件整理：智能整理和管理本地文件。提示词示例：扫描我的 Downloads 文件夹，找出所有重复的文件，保留最新版本。</li>
+<li>内容创作：创作演示文稿、文档和多媒体内容。提示词示例：生成一个用于演示光的折射原理的动画视频，并帮我制作一个 PPT 课件，将这个视频作为素材插入 PPT 中。</li>
+<li>文档处理：处理和分析文档数据。提示词示例：将『提案文件』文件夹中的 10 份 Word 文档统一调整为：标题宋体加粗 18 号、正文宋体 12 号、1.5 倍行距、首行缩进 2 字符。</li>
+</ul>
+<h2 id="文件整理"><a href="#文件整理" class="headerlink" title="文件整理"></a><strong>文件整理</strong></h2><p>如果没有 QoderWork，我更倾向于把所有日常工作用到的文件全堆到 Download 目录下，寻找最近使用的文件还可以按照时间排序，但是想要定位一些之前的文件，就很麻烦了。</p>
+<p><img src="https://image.cnkirito.cn/8d9ecc08-089d-4b0e-9f40-8e5a28da3213.png"></p>
+<p>经过 QoderWork 整理后，瞬间清爽多了。</p>
+<p><img src="https://image.cnkirito.cn/bad1f673-140a-4d51-91b2-6e0e4d752e6f.png"></p>
+<p>可能这么一项技能还不足以打动你，不过这只是开胃菜。</p>
+<h2 id="制作-PPT"><a href="#制作-PPT" class="headerlink" title="制作 PPT"></a><strong>制作 PPT</strong></h2><p>作为一个知识分享博主，我比较熟练的是进行文字内容的创作，但是偶尔也会进行一些现场技术交流，这里就涉及到将 markdown 格式的文字稿转成 PPT 的工作了，如果没有 QoderWork，我需要自己完成：观点提取、章节拆分、内容精简、排版等一系列复杂的工作，在 QoderWork 下一切变得简单了。</p>
+<p>就拿我最近刚写的<a href="https://www.cnkirito.moe/qoder-quest/">《Qoder Quest 1.0：把执行交给 AI，把选择留给人类》</a>来测试下：</p>
+<p><img src="https://image.cnkirito.cn/eb564ad0-b657-4786-9025-b16ad5b5d731.png"></p>
+<p>这是一句话提示词制作出来的效果：</p>
+<p><img src="https://image.cnkirito.cn/image-20260201211305633.png"></p>
+<p>可以发现基本已经能用了，但排版和配色缺乏品牌调性，而且有浓浓的 AI 味道——没错，是 AI 偏爱的渐变紫。</p>
+<p>不过别急，我们可以通过 Skill 来定制特定风格。比如我这里准备了一个 Qoder 品牌风格的 Skill 来指导 QoderWork 生成 PPT。</p>
+<p><img src="https://image.cnkirito.cn/3e406d6a-baf1-4447-8d0d-64d5e8112492.png"></p>
+<p>效果如下：</p>
+<p><img src="https://image.cnkirito.cn/image-20260201211511856.png"></p>
+<p>配色和排版符合预期风格了。同理，你也可以定制自己公司的品牌风格、极简风格、学术风格等任意 Skill。</p>
+<p>这给我一个启发：<strong>有没有 Skill 差距很大</strong>。未来即使使用相同的 QoderWork 产品，不同人搭配不同的 Skill，制作出来的产物质量也会有显著差异。</p>
+<p>这个 qoder-ppt Skill 我也开源了，有需要可以自取：<a target="_blank" rel="noopener" href="https://github.com/lexburner/skill-collection/tree/main/.qoder/skills/qoder-ppt">https://github.com/lexburner/skill-collection/tree/main/.qoder/skills/qoder-ppt</a></p>
+<h2 id="批量制作信息图"><a href="#批量制作信息图" class="headerlink" title="批量制作信息图"></a><strong>批量制作信息图</strong></h2><p>对于一些自媒体创作者、偏运营的用户，一定有过这样的感受，现在大家越来越不愿意阅读长文了，而信息图则通过插画 + 内容的方式形象地达到运营的效果，更适合传播和达成完播率。</p>
+<p>对于日常我们写一些 PPT 和文章来说，希望能展示出图文并茂的效果，同样也需要信息图来搭配。但是现在大多数 AI 图片生成的网站都只支持图片提示词和参考图片上传，不支持上传文章附件，这样的产品形态更像一个 API 而不是一个 Agent。过去这些工作我需要依赖 notebooklm、youmind 等垂类产品去搞定，但现在直接就可以在 QoderWork 中闭环了。</p>
+<p>以下信息长图就是 QoderWork +<a href="https://www.cnkirito.moe/qoder-quest/">《Qoder Quest 1.0：把执行交给 AI，把选择留给人类》</a>的产物。</p>
+<p>Notion 小女孩风格：</p>
+<p><img src="https://image.cnkirito.cn/4167ed71-1f6f-41e7-ae6b-5f467da96bcf.png"></p>
+<p>舰 C 岛风风格：</p>
+<p><img src="https://image.cnkirito.cn/74940a0d-1730-4437-b9c0-6cb623501066.png"></p>
+<p>在没有 QoderWork 时想达到相同的效果，痛点还是非常明显的：</p>
+<ol>
+<li>需要人工将文章拆解为多个图片主题</li>
+<li>每张图的提示词都需要手动保持风格一致</li>
+<li>生成效果不满意时反复调整，耗时耗力</li>
+</ol>
+<p>那我是怎么做到信息图制作的呢？也同样是依赖了 Skill：</p>
+<p><img src="https://image.cnkirito.cn/8688f5b1-9bb4-4a59-93fe-98ab5db3a4ec.png"></p>
+<p>通过自定义的 Skill，配合 QoderWork 自带的 imageGen 工具，就可以达到批量出图的效果，QoderWork 会自行根据文章语义拆分段落，组装图片提示词，并保障组图的一致性。对了，最后如果想像我一样把多张图片拼接成一个长图，也可以自然语言对话让 QoderWork 完成，不用再去找其他工具了。</p>
+<p>这 2 个 Skill 我也开源了，有需要可以自取：</p>
+<p>notion 小女孩风格：<a target="_blank" rel="noopener" href="https://github.com/lexburner/skill-collection/tree/main/.qoder/skills/notion-infographic">https://github.com/lexburner/skill-collection/tree/main/.qoder/skills/notion-infographic</a></p>
+<p>舰 C 岛风风格：<a target="_blank" rel="noopener" href="https://github.com/lexburner/skill-collection/tree/main/.qoder/skills/kancolle-infographic">https://github.com/lexburner/skill-collection/tree/main/.qoder/skills/kancolle-infographic</a></p>
+<h2 id="出行小助手"><a href="#出行小助手" class="headerlink" title="出行小助手"></a><strong>出行小助手</strong></h2><p>想出去玩但懒得做攻略、比价机票？这些事现在也可以交给 QoderWork。</p>
+<p>我让 QoderWork 帮我制作一个出行攻略：“从杭州去三亚旅游，帮我去飞猪携程搜索机票比价，然后帮我制定一个旅行攻略，生成一个 PDF，并且把日程加到 mac 自带的日历里边”，</p>
+<p><img src="https://image.cnkirito.cn/f0583526-c812-4957-932d-d003010deda3.png"></p>
+<p>结果它直接接管了我的电脑，直接打开浏览器帮我进行比价，抓取数据并进行了分析</p>
+<p><img src="https://image.cnkirito.cn/434a9169-88f1-40dc-a2af-64db66fe722f.png"></p>
+<p>并且提供了一份 PDF，详细介绍了旅游攻略：</p>
+<p><img src="https://image.cnkirito.cn/3f4209e6-82af-442d-b478-ceb7cbab277e.png"></p>
+<p>还可以直接把行程加到日历里面</p>
+<p><img src="https://image.cnkirito.cn/33f35e0c-278c-4441-8601-9d81c51e0c20.png"></p>
+<p>看到这详细的时间安排，原本我只是想做个功能演示，突然真的想去三亚了！</p>
+<h2 id="视频创作"><a href="#视频创作" class="headerlink" title="视频创作"></a><strong>视频创作</strong></h2><p>上文中提到的两个视频，其实也不是我自己录制的，也是 QoderWork 帮我合成的。</p>
+<p>提示词示例：</p>
+<p>@[file:local:/Users/xujingfeng/qoder/qoder-quest-presentation.pptx] 打开这个 ppt，浏览每一页 ppt，然后制作成一个视频，尽量时长短一点</p>
+<p>QoderWork 的视频能力还支持添加字幕、配音等，适合需要快速产出演示视频的场景。不过我本人并不是视频内容创作者，这方面实践较少，大家感兴趣可以自行探索。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a><strong>结语</strong></h2><p>以上工作流和 Skill，包括一些还没分享出来的小技巧，我早先就在 Qoder Quest 中日常使用了。但 Qoder 的定位毕竟是 AI IDE，产品形态决定了它很难兼顾非开发者人群。QoderWork 的推出则补齐了这块拼图——更面向办公场景，界面简洁，开箱即用。</p>
+<p>QoderWork 的发布，标志着 Qoder 从”AI Coding 工具”向”AI 办公平台”的领域拓宽。</p>
+<p>2026 年，AI 不再是遥远的概念，而是像 QoderWork 这样的产品，真正走进我们的工作环境，期待 QoderWork 的持续迭代。</p>
+<p><strong>延伸阅读</strong>：</p>
+<ul>
+<li>我的常用 Skill 合集：<a target="_blank" rel="noopener" href="https://github.com/lexburner/skill-collection">https://github.com/lexburner/skill-collection</a></li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>QoderWork 来了！AI 接管电脑是什么体验？</p><p><a href="https://www.cnkirito.moe/qoderwork-experience/">https://www.cnkirito.moe/qoderwork-experience/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2026-02-01</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2026-02-01</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Qoder/">Qoder </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/qoder-quest/"><span class="level-item">Qoder Quest 1.0：把执行交给 AI，把选择留给人类</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">1</span><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#QoderWork-是什么？"><span class="level-left"><span class="level-item">2</span><span class="level-item">QoderWork 是什么？</span></span></a></li><li><a class="level is-mobile" href="#文件整理"><span class="level-left"><span class="level-item">3</span><span class="level-item">文件整理</span></span></a></li><li><a class="level is-mobile" href="#制作-PPT"><span class="level-left"><span class="level-item">4</span><span class="level-item">制作 PPT</span></span></a></li><li><a class="level is-mobile" href="#批量制作信息图"><span class="level-left"><span class="level-item">5</span><span class="level-item">批量制作信息图</span></span></a></li><li><a class="level is-mobile" href="#出行小助手"><span class="level-left"><span class="level-item">6</span><span class="level-item">出行小助手</span></span></a></li><li><a class="level is-mobile" href="#视频创作"><span class="level-left"><span class="level-item">7</span><span class="level-item">视频创作</span></span></a></li><li><a class="level is-mobile" href="#结语"><span class="level-left"><span class="level-item">8</span><span class="level-item">结语</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

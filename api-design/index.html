@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>浅析 Open API 设计规范 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="背景最近由于业务需求，我负责的一块系统需要对外开放 Open API，原本不是什么难事，因为阿里云内部的 Open API 开放机制已经非常成熟了，根本不需要我去设计，但这次的需求主要是因为一些原因，需要自己设计一些规范，那就意味着，需要对 Open API 进行一些规范约束了，遂有此文。 Open API 和前端页面一样，一直都是产品的门面， Open API 不规范，会拉低产品的专业性。在云场"><meta property="og:type" content="blog"><meta property="og:title" content="浅析 Open API 设计规范"><meta property="og:url" content="https://www.cnkirito.moe/api-design/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="背景最近由于业务需求，我负责的一块系统需要对外开放 Open API，原本不是什么难事，因为阿里云内部的 Open API 开放机制已经非常成熟了，根本不需要我去设计，但这次的需求主要是因为一些原因，需要自己设计一些规范，那就意味着，需要对 Open API 进行一些规范约束了，遂有此文。 Open API 和前端页面一样，一直都是产品的门面， Open API 不规范，会拉低产品的专业性。在云场"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://www.cnkirito.moe/img/og_image.png"><meta property="article:published_time" content="2022-06-21T16:16:02.000Z"><meta property="article:modified_time" content="2025-12-22T06:40:52.074Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="技术杂谈"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/api-design/"},"headline":"浅析 Open API 设计规范","image":["https://www.cnkirito.moe/img/og_image.png"],"datePublished":"2022-06-21T16:16:02.000Z","dateModified":"2025-12-22T06:40:52.074Z","author":{"@type":"Person","name":"徐靖峰"},"description":"背景最近由于业务需求，我负责的一块系统需要对外开放 Open API，原本不是什么难事，因为阿里云内部的 Open API 开放机制已经非常成熟了，根本不需要我去设计，但这次的需求主要是因为一些原因，需要自己设计一些规范，那就意味着，需要对 Open API 进行一些规范约束了，遂有此文。 Open API 和前端页面一样，一直都是产品的门面， Open API 不规范，会拉低产品的专业性。在云场"}</script><link rel="canonical" href="https://www.cnkirito.moe/api-design/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>浅析 Open API 设计规范</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2022-06-22</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/">技术杂谈</a></span><span class="level-item">22 分钟读完 (大约3373个字)</span></div></div><div class="content"><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最近由于业务需求，我负责的一块系统需要对外开放 Open API，原本不是什么难事，因为阿里云内部的 Open API 开放机制已经非常成熟了，根本不需要我去设计，但这次的需求主要是因为一些原因，需要自己设计一些规范，那就意味着，需要对 Open API 进行一些规范约束了，遂有此文。</p>
+<p>Open API 和前端页面一样，一直都是产品的门面， Open API 不规范，会拉低产品的专业性。在云场景下，很多用户会选择自建门户，对接云产品的  Open API，这对我们提出的诉求便是构建一套成熟的 Open API 机制。</p>
+<p>站在业务角度，有一些指导原则，指导我们完善 Open API 机制：</p>
+<ul>
+<li>前端页面使用的接口和 Open API 提供的接口是同一套接口</li>
+<li>任意的前端页面接口都应该有对应的 Open API </li>
+</ul>
+<p>站在技术角度，有很多的 API 开放标准可供我们参考，一些开源产品的 Open API 文档也都非常完善。一方面，我会取其精华，另一方面，要考虑自身产品输出形态的特殊性。本文将围绕诸多因素，尝试探讨出一份合适的 Open API 开放规范。</p>
+<span id="more"></span>
+
+<h2 id="Open-API-设计考虑因素"><a href="#Open-API-设计考虑因素" class="headerlink" title="Open API 设计考虑因素"></a>Open API 设计考虑因素</h2><p>一个完善的 Open API 规范到底应该规范哪些东西？</p>
+<p>站在设计角度，需要考虑：命名规范，构成规范，路径规范，出入参规范，数据类型规范，统一返回值规范，错误码规范，分页规范。</p>
+<p>站在团队角度，团队中的后端初级中级开发以及前端研发是否有足够的经验，领悟并落地好制定的 API 规范。同时，伴随着人员流动，这份 Open API 规范是否可以很好地被传承下去。</p>
+<p>站在行业角度，需要考虑提供 Open API 的产品所在的市场是否已经成熟，API 风格可能已经有了对应的规范。</p>
+<p>站在产品角度，每个产品适合的 API 风格是不同的，下文会着重探讨这一角度。</p>
+<p>总之，Open API 的设计是很难形成定论的一个东西，我在介绍自身产品最终采用的 Open API 规范之前，会先来聊一下大家耳熟能详的一些概念，例如 restful。</p>
+<h2 id="restful-规范之争"><a href="#restful-规范之争" class="headerlink" title="restful 规范之争"></a>restful 规范之争</h2><p>有人的地方就会有江湖。</p>
+<p>有代码的地方也是如此。</p>
+<p>如果你在码圈混，一定听说过 restful 规范：</p>
+<ul>
+<li><p>增删改查应分别声明为：POST、DELETE、PUT、PATCH、GET</p>
+</li>
+<li><p>不应该出现动词，动词统一由 HTTP Method 表示</p>
+</li>
+<li><p>体现出“资源”的抽象</p>
+</li>
+<li><p>利用 pathVariable，queryParam，header，statusCode 表达很多业务语义</p>
+</li>
+</ul>
+<p>restful 规范看似美好，但如果你真正尝试过落地，一定会遇到一些类似的问题：</p>
+<ul>
+<li>以用户登录接口为例，此类接口难以映射到资源的增删改查</li>
+<li>以查询最近 7 个小时内的接口请求错误率为例，衍生到诸如 graphQL 这类复杂的查询场景，往往需要 json 结构，GET 是无法实现这一点的，只有 POST 才可以传递</li>
+</ul>
+<p>基于此，restful 规范逐渐有了反对的声音：</p>
+<ul>
+<li>强行让所有的事物都“资源”化一下，有悖于开发常识，接口不一定都能够通过简单的增删改查来映射</li>
+<li>复杂的查询语义不一定能够用 GET 表达</li>
+</ul>
+<p>restful 风格的拥趸者，不乏对这些反对言论进行抨击，社区中不免有“拒绝 restful 风格的主要是低水平不思进取的架构师和前后端程序员们，不会设计是人的问题，不是规范的问题”此类的言论。同时对 restful 进行了升华：复杂参数的检索问题，在 restful 语义中本就应当归类为 post，因为该行为并不是对资源的定位（GET），而是对资源的检索（POST）</p>
+<p>这显然刺激了 restful 风格反对者的神经，不屑道：呵，愚蠢的 restful 原教旨主义者呀。</p>
+<p>不知道你是 restful 的拥趸者还是反对者？亦或是，中立者。</p>
+<p>restful 之争暂时到此为止，这番争论纯属虚构，看官不必计较。无论你如何看待 restful，下面我的论述，你都可以作为一个中立者，否则效果减半。 </p>
+<h2 id="ROA-与-RPC"><a href="#ROA-与-RPC" class="headerlink" title="ROA 与 RPC"></a>ROA 与 RPC</h2><p>API 设计并不只有 restful 一种规范，在更大的视角中，主流的 API 设计风格其实可以分为</p>
+<ul>
+<li>面向资源的设计，即 ROA（Resource oriented architecture）</li>
+<li>面向过程的设计，即 RPC（Remote Procedure Call）</li>
+</ul>
+<p>restful 便是 ROA 风格的典型例子，而 RPC 风格则相对而言不太容易被大家熟知，但实际上可能大多数的系统的接口是 RPC 风格的，只不过 RPC 风格这个概念不太为人所知。</p>
+<p>以用户模块的 CRUD 为例，对比下两个风格：</p>
+<h3 id="ROA-风格"><a href="#ROA-风格" class="headerlink" title="ROA 风格"></a>ROA 风格</h3><h4 id="创建用户（POST）"><a href="#创建用户（POST）" class="headerlink" title="创建用户（POST）"></a>创建用户（POST）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">POST &#x2F;users</span><br><span class="line"></span><br><span class="line">&#123;&quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 18&#125;</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 201 Created</span><br><span class="line"></span><br><span class="line">&#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 18&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="查询用户（GET）"><a href="#查询用户（GET）" class="headerlink" title="查询用户（GET）"></a>查询用户（GET）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">GET &#x2F;users&#x2F;1</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 200 OK</span><br><span class="line"></span><br><span class="line">&#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 18&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="查询用户列表（GET）"><a href="#查询用户列表（GET）" class="headerlink" title="查询用户列表（GET）"></a>查询用户列表（GET）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">GET &#x2F;users</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 200 OK</span><br><span class="line"></span><br><span class="line">&#123;[&#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 18&#125;], &quot;next&quot;: &quot;&#x2F;users?offset&#x3D;1&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="创建-修改用户-PUT"><a href="#创建-修改用户-PUT" class="headerlink" title="创建/修改用户(PUT)"></a>创建/修改用户(PUT)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">PUT &#x2F;users&#x2F;1</span><br><span class="line"></span><br><span class="line">&#123;&quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 19&#125;</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 200 OK</span><br><span class="line"></span><br><span class="line">&#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 19&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改用户（PATCH）"><a href="#修改用户（PATCH）" class="headerlink" title="修改用户（PATCH）"></a>修改用户（PATCH）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">PATCH &#x2F;users&#x2F;1</span><br><span class="line"></span><br><span class="line">&#123;&quot;age&quot;: 20&#125;</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 200 OK</span><br><span class="line"></span><br><span class="line">&#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 20&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="删除用户（DELETE）"><a href="#删除用户（DELETE）" class="headerlink" title="删除用户（DELETE）"></a>删除用户（DELETE）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">DELETE &#x2F;users&#x2F;1</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 204 No Content</span><br></pre></td></tr></table></figure>
+
+<p>ROA 风格和 restful 规范说明的是一回事，为方便其与 RPC 风格接口的对比，特此说明上面示例的一些值得关注的点：</p>
+<ul>
+<li>使用 HTTP 响应码（200，201，204），完成 HTTP 语义与业务语义的映射，异常流也出现 404，401 等情况（出于篇幅考虑，本文未做异常流的介绍）</li>
+<li>PATCH 部分修改资源，请求体是修改部分的内容；PUT 创建/修改资源，请求体是新资源全部的内容</li>
+<li>id 是资源定位符，而 age、name 则为属性</li>
+</ul>
+<h3 id="RPC-风格"><a href="#RPC-风格" class="headerlink" title="RPC 风格"></a>RPC 风格</h3><h4 id="创建用户（POST）-1"><a href="#创建用户（POST）-1" class="headerlink" title="创建用户（POST）"></a>创建用户（POST）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">POST &#x2F;user&#x2F;createUser</span><br><span class="line"></span><br><span class="line">&#123;&quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 18&#125;</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 200 OK</span><br><span class="line"></span><br><span class="line">&#123;&quot;code&quot;: 0, &quot;message&quot;: &quot;&quot;, &quot;data&quot;: &#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 18&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="查询用户（POST）"><a href="#查询用户（POST）" class="headerlink" title="查询用户（POST）"></a>查询用户（POST）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">POST &#x2F;user&#x2F;getUser</span><br><span class="line"></span><br><span class="line">&#123;&quot;id&quot;: 1&#125;</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 200 OK</span><br><span class="line"></span><br><span class="line">&#123;&quot;code&quot;: 0, &quot;message&quot;: &quot;&quot;, &quot;data&quot;: &#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 18&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="查询用户列表（POST）"><a href="#查询用户列表（POST）" class="headerlink" title="查询用户列表（POST）"></a>查询用户列表（POST）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">POST &#x2F;user&#x2F;listUsers</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 200 OK</span><br><span class="line"></span><br><span class="line">&#123;&quot;code&quot;: 0, &quot;message&quot;: &quot;&quot;, &quot;data&quot;: &#123;&quot;user&quot;: [&#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 18&#125;], &quot;next&quot;: &quot;&#x2F;user&#x2F;listUsers?offset&#x3D;1&quot;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改用户-POST"><a href="#修改用户-POST" class="headerlink" title="修改用户(POST)"></a>修改用户(POST)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">POST &#x2F;user&#x2F;modifyUser</span><br><span class="line"></span><br><span class="line">&#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 19&#125;</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 200 OK</span><br><span class="line"></span><br><span class="line">&#123;&quot;code&quot;: 0, &quot;message&quot;: &quot;&quot;, &quot;data&quot;: &#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 19&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改用户名称-POST"><a href="#修改用户名称-POST" class="headerlink" title="修改用户名称(POST)"></a>修改用户名称(POST)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">POST &#x2F;user&#x2F;modifyUserAge</span><br><span class="line"></span><br><span class="line">&#123;&quot;id&quot;: 1, &quot;age&quot;: 20&#125;</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">HTTP 200 OK</span><br><span class="line"></span><br><span class="line">&#123;&quot;code&quot;: 0, &quot;message&quot;: &quot;&quot;, &quot;data&quot;: &#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;kirito&quot;, &quot;age&quot;: 20&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="删除用户（DELETE）-1"><a href="#删除用户（DELETE）-1" class="headerlink" title="删除用户（DELETE）"></a>删除用户（DELETE）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line">POST &#x2F;user&#x2F;deleteUser</span><br><span class="line"></span><br><span class="line">&#123;&quot;id&quot;: 1&#125;</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">&#123;&quot;code&quot;: 0, &quot;message&quot;: &quot;&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>RPC 风格不像 restful 一类的 ROA 风格存在一些约定俗称的规范，每个业务系统在落地时，都存在差异，故此处只是笔者个人的经验之谈，但愿读者能够求同存异：</p>
+<ul>
+<li>user 为模块名，不需要像 ROA 风格使用复数形式</li>
+<li>使用明确的动宾结构，而不是将 CRUD 映射到 HTTP Method，HTTP Method 统一使用 POST，查询场景也可以使用 GET</li>
+<li>返回值中携带 code、message 和 data，来映射响应状态及响应信息，一般可以自行定义 code 的状态码，本文使用 0 标识请求成功，message 仅在业务响应失败时有意义，data 代表业务响应结果</li>
+</ul>
+<p>如何选择 RPC 和 ROA，则需要根据产品自身的业务情况进行决策。有如下的指导原则：</p>
+<ul>
+<li>有复杂业务逻辑的 API ，无法使用简单的增、删、改、查描述时宜使用 RPC 风格。</li>
+<li>如果业务所属行业标准要求 restful 风格 API 或 ROA 能够满足业务需求，宜使用 ROA 风格。</li>
+</ul>
+<p>AWS 主要采用 RPC 风格，Azure、Google 主要采用 ROA（restful）风格，阿里云 OpenAPI 同时支持 RPC 和 ROA，以 RPC 为主。</p>
+<p>尽管规范是无罪的，但在 ROA 风格在实践过程中，我还是见识过不少“坑”的：</p>
+<ul>
+<li>要求资源先行，即先设计资源，后设计接口，对软件开发流程要求较高</li>
+<li>错误的 ROA 设计案例 1：tomcat 等应用服务器在处理 DELETE 方法的 HTTP 请求时，默认不允许携带 request body，需要显式开启，导致删除失败。（此案例为设计者的问题，复杂的删除场景，不应当映射成 DELELE，而应改成 POST，DELETE 不应当携带 request body）</li>
+<li>错误的 ROA 设计案例 2：restful 路径中携带的参数，可能会引发正则匹配的问题，例如误将邮箱作为路径参数，或者多级路径匹配的冲突问题（此案例为设计者的问题，复杂的查询场景，不应当映射成 GET，而应改成 POST，path 中只应该出现资源定位符，而不应当携带属性）</li>
+<li>响应码为 404 时，较难区分是真的 path 不存在，还是资源不存在</li>
+<li>不利于对接网关等需要配置路由转发的场景</li>
+</ul>
+<p>我负责的产品所需要的 Open API 规范需要满足以下的需求：</p>
+<ul>
+<li>后端开发设计接口时，有明确的设计思路，不至于因为一个接口到底用 POST 还是 GET 实现而纠结，不用花费太多时间在资源的抽象上（这并不是说明资源是不需要被设计的）</li>
+<li>前端开发对接接口时，能够较快地与后端协同，并且利于前端接口的封装</li>
+<li>用户对接 Open API 时，整体风格一致，模块清晰</li>
+</ul>
+<p>综上，在设计风格选择上，我计划采取 RPC 的设计规范。总结一下 RPC 风格的优势：</p>
+<ul>
+<li>满足独立输出，CNStack、企业版、公安部的规范</li>
+<li>API 设计难度较低，容易落地</li>
+<li>阿里云大多数成熟的 IAAS 层产品使用 RPC 规范</li>
+<li>适合复杂业务场景</li>
+</ul>
+<h2 id="一个详细的-RPC-接口文档示例"><a href="#一个详细的-RPC-接口文档示例" class="headerlink" title="一个详细的 RPC 接口文档示例"></a>一个详细的 RPC 接口文档示例</h2><h3 id="创建服务"><a href="#创建服务" class="headerlink" title="创建服务"></a>创建服务</h3><h4 id="请求参数"><a href="#请求参数" class="headerlink" title="请求参数"></a>请求参数</h4><table>
+<thead>
+<tr>
+<th>序号</th>
+<th>字段中文名</th>
+<th>字段英文名</th>
+<th>数据类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>名称</td>
+<td>name</td>
+<td>string</td>
+<td>是</td>
+<td>显示名称</td>
+</tr>
+<tr>
+<td>2</td>
+<td>协议</td>
+<td>protocol</td>
+<td>string</td>
+<td>是</td>
+<td>枚举值：http/grpc/webservice</td>
+</tr>
+<tr>
+<td>3</td>
+<td>负载均衡</td>
+<td>lb</td>
+<td>string</td>
+<td>是</td>
+<td>枚举值：random/roundrobin</td>
+</tr>
+<tr>
+<td>4</td>
+<td>上游类型</td>
+<td>upstreamType</td>
+<td>string</td>
+<td>是</td>
+<td>枚举值：fixed/discovery</td>
+</tr>
+<tr>
+<td>5</td>
+<td>节点列表</td>
+<td>nodes</td>
+<td>array</td>
+<td>否</td>
+<td>upstreamType=fixed 时必填，示例：[{“host”: “1.1.1.1”,”port”: “80”,”weight”: “1”}]</td>
+</tr>
+<tr>
+<td>6</td>
+<td>来源id</td>
+<td>originId</td>
+<td>string</td>
+<td>否</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>服务名称</td>
+<td>serviceName</td>
+<td>string</td>
+<td>否</td>
+<td>注册中心中的名称，upstreamType=discovery 时必填</td>
+</tr>
+<tr>
+<td>8</td>
+<td>服务描述</td>
+<td>description</td>
+<td>string</td>
+<td>否</td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>网关id</td>
+<td>gatewayId</td>
+<td>string</td>
+<td>是</td>
+<td></td>
+</tr>
+</tbody></table>
+<h4 id="返回参数"><a href="#返回参数" class="headerlink" title="返回参数"></a>返回参数</h4><table>
+<thead>
+<tr>
+<th>序号</th>
+<th>字段中文名</th>
+<th>字段英文名</th>
+<th>数据类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>响应码</td>
+<td>code</td>
+<td>int</td>
+<td>0 标识成功；1 标识失败</td>
+</tr>
+<tr>
+<td>2</td>
+<td>响应信息</td>
+<td>message</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>响应结果</td>
+<td>data</td>
+<td>string</td>
+<td>返回服务 id</td>
+</tr>
+</tbody></table>
+<h4 id="请求示例"><a href="#请求示例" class="headerlink" title="请求示例"></a>请求示例</h4><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">POST /service/createService</span><br><span class="line"></span><br><span class="line">Request:</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;httpbin&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;protocol&quot;</span>: <span class="string">&quot;http&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;lb&quot;</span>: <span class="string">&quot;random&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;upstreamType&quot;</span>: <span class="string">&quot;fixed&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;nodes&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;host&quot;</span>: <span class="string">&quot;httpbin.org&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;port&quot;</span>: <span class="string">&quot;80&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;weight&quot;</span>: <span class="string">&quot;1&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;gatewayId&quot;</span>: <span class="string">&quot;gw-1qw2e3e4&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;code&quot;</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">&quot;message&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;serviceId&quot;</span>: <span class="string">&quot;s-1qw2e3e4&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="API-命名规范"><a href="#API-命名规范" class="headerlink" title="API 命名规范"></a>API 命名规范</h2><ul>
+<li><p>API 应使用拼写正确的英文，符合语法规范，包括单复数、时态和语言习惯</p>
+</li>
+<li><p>不能出现多个含义相近但功能无实际差别的 API，如同时存在 /user/getUser 和 /user/describeUser</p>
+</li>
+<li><p>语言习惯：禁止使用拼音</p>
+</li>
+<li><p>如下常见场景的命名规则是固定的</p>
+<ul>
+<li>日期时间类型的参数应命名为 XxxxTime。例如：CreateTime</li>
+</ul>
+</li>
+<li><p>常用操作名称规范</p>
+<ul>
+<li><em>create：创建</em></li>
+<li><em>modify：变更</em></li>
+<li><em>delete：删除</em></li>
+<li><em>get：获取单个资源详情</em></li>
+<li><em>list：获取资源列表</em></li>
+<li><em>establishRelation：建立资源关系</em></li>
+<li><em>destroyRelation：销毁资源关系</em></li>
+</ul>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以本文推崇的一条规范为例：”所有接口全部使用 POST”，这不是为了迁就低水平不思进取的架构师和前后端程序员们（我在社区论坛上看到的言论），而是为了提高开发效率，降低沟通成本，降低运维和错误定位成本，把瞎折腾的成本，投入到了其他比如业务架构设计，测试体系，线上监控，容灾降级等领域上。</p>
+<p>接口规范也并非我总结的那样，只有 RPC 和 ROA，也有一些言论将 GraphQL 单独归为一类 API 设计风格，用于复杂查询场景，有兴趣的同学可以参考 es 的 API 文档。</p>
+<p>综上，我计划采用 RPC 的 API 设计风格。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>kong：<a target="_blank" rel="noopener" href="https://docs.konghq.com/gateway/2.8.x/admin-api/">https://docs.konghq.com/gateway/2.8.x/admin-api/</a></p>
+<p>google restful api design：<a target="_blank" rel="noopener" href="https://cloud.google.com/apis/design?hl=zh-cn">https://cloud.google.com/apis/design?hl=zh-cn</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/336797348">https://www.zhihu.com/question/336797348</a></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>浅析 Open API 设计规范</p><p><a href="https://www.cnkirito.moe/api-design/">https://www.cnkirito.moe/api-design/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2022-06-22</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/">技术杂谈 </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/service-pull-push/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">聊聊服务发现的推拉模型</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/docker-multi-arch/"><span class="level-item">构建多系统架构支持的 Docker 镜像</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#背景"><span class="level-left"><span class="level-item">1</span><span class="level-item">背景</span></span></a></li><li><a class="level is-mobile" href="#Open-API-设计考虑因素"><span class="level-left"><span class="level-item">2</span><span class="level-item">Open API 设计考虑因素</span></span></a></li><li><a class="level is-mobile" href="#restful-规范之争"><span class="level-left"><span class="level-item">3</span><span class="level-item">restful 规范之争</span></span></a></li><li><a class="level is-mobile" href="#ROA-与-RPC"><span class="level-left"><span class="level-item">4</span><span class="level-item">ROA 与 RPC</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#ROA-风格"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">ROA 风格</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#创建用户（POST）"><span class="level-left"><span class="level-item">4.1.1</span><span class="level-item">创建用户（POST）</span></span></a></li><li><a class="level is-mobile" href="#查询用户（GET）"><span class="level-left"><span class="level-item">4.1.2</span><span class="level-item">查询用户（GET）</span></span></a></li><li><a class="level is-mobile" href="#查询用户列表（GET）"><span class="level-left"><span class="level-item">4.1.3</span><span class="level-item">查询用户列表（GET）</span></span></a></li><li><a class="level is-mobile" href="#创建-修改用户-PUT"><span class="level-left"><span class="level-item">4.1.4</span><span class="level-item">创建/修改用户(PUT)</span></span></a></li><li><a class="level is-mobile" href="#修改用户（PATCH）"><span class="level-left"><span class="level-item">4.1.5</span><span class="level-item">修改用户（PATCH）</span></span></a></li><li><a class="level is-mobile" href="#删除用户（DELETE）"><span class="level-left"><span class="level-item">4.1.6</span><span class="level-item">删除用户（DELETE）</span></span></a></li></ul></li><li><a class="level is-mobile" href="#RPC-风格"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">RPC 风格</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#创建用户（POST）-1"><span class="level-left"><span class="level-item">4.2.1</span><span class="level-item">创建用户（POST）</span></span></a></li><li><a class="level is-mobile" href="#查询用户（POST）"><span class="level-left"><span class="level-item">4.2.2</span><span class="level-item">查询用户（POST）</span></span></a></li><li><a class="level is-mobile" href="#查询用户列表（POST）"><span class="level-left"><span class="level-item">4.2.3</span><span class="level-item">查询用户列表（POST）</span></span></a></li><li><a class="level is-mobile" href="#修改用户-POST"><span class="level-left"><span class="level-item">4.2.4</span><span class="level-item">修改用户(POST)</span></span></a></li><li><a class="level is-mobile" href="#修改用户名称-POST"><span class="level-left"><span class="level-item">4.2.5</span><span class="level-item">修改用户名称(POST)</span></span></a></li><li><a class="level is-mobile" href="#删除用户（DELETE）-1"><span class="level-left"><span class="level-item">4.2.6</span><span class="level-item">删除用户（DELETE）</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#一个详细的-RPC-接口文档示例"><span class="level-left"><span class="level-item">5</span><span class="level-item">一个详细的 RPC 接口文档示例</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#创建服务"><span class="level-left"><span class="level-item">5.1</span><span class="level-item">创建服务</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#请求参数"><span class="level-left"><span class="level-item">5.1.1</span><span class="level-item">请求参数</span></span></a></li><li><a class="level is-mobile" href="#返回参数"><span class="level-left"><span class="level-item">5.1.2</span><span class="level-item">返回参数</span></span></a></li><li><a class="level is-mobile" href="#请求示例"><span class="level-left"><span class="level-item">5.1.3</span><span class="level-item">请求示例</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#API-命名规范"><span class="level-left"><span class="level-item">6</span><span class="level-item">API 命名规范</span></span></a></li><li><a class="level is-mobile" href="#总结"><span class="level-left"><span class="level-item">7</span><span class="level-item">总结</span></span></a></li><li><a class="level is-mobile" href="#参考资料"><span class="level-left"><span class="level-item">8</span><span class="level-item">参考资料</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

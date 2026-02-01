@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>深入理解 RPC 之服务注册与发现篇 - 徐靖峰|个人博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kirito的技术分享"><meta name="msapplication-TileImage" content="/img/avatar.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kirito的技术分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="在我们之前 RPC 原理的分析中，主要将笔墨集中在 Client 和 Server 端。而成熟的服务治理框架中不止存在这两个角色，一般还会有一个 Registry（注册中心）的角色。一张图就可以解释注册中心的主要职责。   注册中心，用于服务端注册远程服务以及客户端发现服务 服务端，对外提供后台服务，将自己的服务信息注册到注册中心 客户端，从注册中心获取远程服务的注册信息，然后进行远程过程调用"><meta property="og:type" content="blog"><meta property="og:title" content="深入理解 RPC 之服务注册与发现篇"><meta property="og:url" content="https://www.cnkirito.moe/rpc-registry/"><meta property="og:site_name" content="徐靖峰|个人博客"><meta property="og:description" content="在我们之前 RPC 原理的分析中，主要将笔墨集中在 Client 和 Server 端。而成熟的服务治理框架中不止存在这两个角色，一般还会有一个 Registry（注册中心）的角色。一张图就可以解释注册中心的主要职责。   注册中心，用于服务端注册远程服务以及客户端发现服务 服务端，对外提供后台服务，将自己的服务信息注册到注册中心 客户端，从注册中心获取远程服务的注册信息，然后进行远程过程调用"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://image.cnkirito.cn/17071-20170522235215679-280378465.png"><meta property="article:published_time" content="2018-01-05T12:16:28.000Z"><meta property="article:modified_time" content="2025-12-22T06:40:52.957Z"><meta property="article:author" content="徐靖峰"><meta property="article:tag" content="RPC"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://image.cnkirito.cn/17071-20170522235215679-280378465.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.cnkirito.moe/rpc-registry/"},"headline":"深入理解 RPC 之服务注册与发现篇","image":["https://image.cnkirito.cn/17071-20170522235215679-280378465.png"],"datePublished":"2018-01-05T12:16:28.000Z","dateModified":"2025-12-22T06:40:52.957Z","author":{"@type":"Person","name":"徐靖峰"},"description":"在我们之前 RPC 原理的分析中，主要将笔墨集中在 Client 和 Server 端。而成熟的服务治理框架中不止存在这两个角色，一般还会有一个 Registry（注册中心）的角色。一张图就可以解释注册中心的主要职责。   注册中心，用于服务端注册远程服务以及客户端发现服务 服务端，对外提供后台服务，将自己的服务信息注册到注册中心 客户端，从注册中心获取远程服务的注册信息，然后进行远程过程调用"}</script><link rel="canonical" href="https://www.cnkirito.moe/rpc-registry/"><link rel="icon" href="/img/avatar.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=UA-118574570-1" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'UA-118574570-1');</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/.">主页</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" target="_blank" rel="noopener" href="https://github.com/YunaiV/onemall">开源项目</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" id="article-content" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-semibold article-main-title"><span class="has-text-dark"><i class="fas fa-angle-double-right"></i>深入理解 RPC 之服务注册与发现篇</span></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2018-01-05</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2025-12-22</time></span><span class="level-item"><a class="link-muted" href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a></span><span class="level-item">20 分钟读完 (大约3061个字)</span></div></div><div class="content"><p>在我们之前 RPC 原理的分析中，主要将笔墨集中在 Client 和 Server 端。而成熟的服务治理框架中不止存在这两个角色，一般还会有一个 Registry（注册中心）的角色。一张图就可以解释注册中心的主要职责。</p>
+<p><img src="https://image.cnkirito.cn/17071-20170522235215679-280378465.png" alt="注册中心的地位"></p>
+<ul>
+<li>注册中心，用于服务端注册远程服务以及客户端发现服务</li>
+<li>服务端，对外提供后台服务，将自己的服务信息注册到注册中心</li>
+<li>客户端，从注册中心获取远程服务的注册信息，然后进行远程过程调用</li>
+</ul>
+<p>目前主要的注册中心可以借由 zookeeper，eureka，consul，etcd 等开源框架实现。互联网公司也会因为自身业务的特性自研，如美团点评自研的 MNS，新浪微博自研的 vintage。</p>
+<p>本文定位是对注册中心有一定了解的读者，所以不过多阐述注册中心的基础概念。</p>
+<span id="more"></span>
+
+<h2 id="注册中心的抽象"><a href="#注册中心的抽象" class="headerlink" title="注册中心的抽象"></a>注册中心的抽象</h2><p>借用开源框架中的核心接口，可以帮助我们从一个较为抽象的高度去理解注册中心。例如 motan 中的相关接口：</p>
+<p>服务注册接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RegistryService</span> </span>&#123;</span><br><span class="line">	<span class="comment">//1. 向注册中心注册服务</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">register</span><span class="params">(URL url)</span></span>;</span><br><span class="line">    <span class="comment">//2. 从注册中心摘除服务</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unregister</span><span class="params">(URL url)</span></span>;</span><br><span class="line">    <span class="comment">//3. 将服务设置为可用，供客户端调用</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">available</span><span class="params">(URL url)</span></span>;</span><br><span class="line">    <span class="comment">//4. 禁用服务，客户端无法发现该服务</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unavailable</span><span class="params">(URL url)</span></span>;</span><br><span class="line">  	<span class="comment">//5. 获取已注册服务的集合</span></span><br><span class="line">    <span class="function">Collection&lt;URL&gt; <span class="title">getRegisteredServiceUrls</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>服务发现接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DiscoveryService</span> </span>&#123;</span><br><span class="line">    <span class="comment">//1. 订阅服务</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(URL url, NotifyListener listener)</span></span>;</span><br><span class="line">    <span class="comment">//2. 取消订阅</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unsubscribe</span><span class="params">(URL url, NotifyListener listener)</span></span>;</span><br><span class="line">    <span class="comment">//3. 发现服务列表</span></span><br><span class="line">    <span class="function">List&lt;URL&gt; <span class="title">discover</span><span class="params">(URL url)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主要使用的方法是 RegistryService#register(URL) 和 DiscoveryService#discover(URL)。其中这个 URL 参数被传递，显然也是很重要的一个类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">URL</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String protocol;<span class="comment">// 协议名称</span></span><br><span class="line">    <span class="keyword">private</span> String host;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> port;</span><br><span class="line">    <span class="comment">// interfaceName, 也代表着路径</span></span><br><span class="line">    <span class="keyword">private</span> String path;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, String&gt; parameters;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">transient</span> Map&lt;String, Number&gt; numbers;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注册中心也没那么玄乎，其实可以简单理解为：提供一个存储介质，供服务提供者和服务消费者共同连接，而存储的主要信息就是这里的 URL。但是具体 URL 都包含了什么实际信息，我们还没有一个直观的感受。</p>
+<h2 id="注册信息概览"><a href="#注册信息概览" class="headerlink" title="注册信息概览"></a>注册信息概览</h2><p>以元老级别的注册中心 zookeeper 为例，看看它实际都存储了什么信息以及它是如何持久化上一节的 URL。</p>
+<p>为了测试，我创建了一个 RPC 服务接口 <code>com.sinosoft.student.api.DemoApi</code> , 并且在 6666 端口暴露了这个服务的实现类，将其作为服务提供者。在 6667 端口远程调用这个服务，作为服务消费者。两者都连接本地的 zookeeper，本机 ip 为 192.168.150.1。</p>
+<p>使用 zkClient.bash 或者 zkClient.sh 作为客户端连接到本地的 zookeeper，执行如下的命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 1] ls &#x2F;motan&#x2F;demo_group&#x2F;com.sinosoft.student.api.DemoApi</span><br><span class="line">&gt; [client, server, unavailableServer]</span><br></pre></td></tr></table></figure>
+
+<p>zookeeper 有着和 linux 类似的命令和结构，其中 motan，demo_group，com.sinosoft.student.api.DemoApi，client, server, unavailableServer 都是一个个节点。可以从上述命令看出他们的父子关系。</p>
+<p><code>/motan/demo_group/com.sinosoft.student.api.DemoApi</code> 的结构为 / 框架标识 / 分组名 / 接口名，其中的分组是 motan 为了隔离不同组的服务而设置的。这样，接口名称相同，分组不同的服务无法互相发现。如果此时有一个分组名为 demo_group2 的服务，接口名称为 DemoApi2，则 motan 会为其创建一个新的节点 <code>/motan/demo_group2/com.sinosoft.student.api.DemoApi2</code></p>
+<p>而 client，server，unavailableServer 则就是服务注册与发现的核心节点了。我们先看看这些节点都存储了什么信息。</p>
+<p>server 节点：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 2] ls &#x2F;motan&#x2F;demo_group&#x2F;com.sinosoft.student.api.DemoApi&#x2F;server</span><br><span class="line">&gt; [192.168.150.1:6666]</span><br><span class="line"></span><br><span class="line">[zk: localhost:2181(CONNECTED) 3] get &#x2F;motan&#x2F;demo_group&#x2F;com.sinosoft.student.api.DemoApi&#x2F;server&#x2F;192.168.150.1:6666</span><br><span class="line">&gt; motan:&#x2F;&#x2F;192.168.150.1:6666&#x2F;com.sinosoft.student.api.DemoApi?serialization&#x3D;hessian2&amp;protocol&#x3D;motan&amp;isDefault&#x3D;true&amp;maxContentLength&#x3D;1548576&amp;shareChannel&#x3D;true&amp;refreshTimestamp&#x3D;1515122649835&amp;id&#x3D;motanServerBasicConfig&amp;nodeType&#x3D;service&amp;export&#x3D;motan:6666&amp;requestTimeout&#x3D;9000000&amp;accessLog&#x3D;false&amp;group&#x3D;demo_group&amp;</span><br></pre></td></tr></table></figure>
+
+<p>client 节点：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 4] ls &#x2F;motan&#x2F;demo_group&#x2F;com.sinosoft.student.api.DemoApi&#x2F;client</span><br><span class="line">&gt; [192.168.150.1]</span><br><span class="line">[zk: localhost:2181(CONNECTED) 5] get &#x2F;motan&#x2F;demo_group&#x2F;com.sinosoft.student.api.DemoApi&#x2F;client&#x2F;192.168.150.1</span><br><span class="line">&gt; motan:&#x2F;&#x2F;192.168.150.1:0&#x2F;com.sinosoft.student.api.DemoApi?singleton&#x3D;true&amp;maxContentLength&#x3D;1548576&amp;check&#x3D;false&amp;nodeType&#x3D;service&amp;version&#x3D;1.0&amp;throwException&#x3D;true&amp;accessLog&#x3D;false&amp;serialization&#x3D;hessian2&amp;retries&#x3D;0&amp;protocol&#x3D;motan&amp;isDefault&#x3D;true&amp;refreshTimestamp&#x3D;1515122631758&amp;id&#x3D;motanClientBasicConfig&amp;requestTimeout&#x3D;9000&amp;group&#x3D;demo_group&amp;</span><br></pre></td></tr></table></figure>
+
+<p>unavailableServer 节点是一个过渡节点，所以在一切正常的情况下不会存在信息，它的具体作用在下面会介绍。</p>
+<p>从这些输出数据可以发现，注册中心承担的一个职责就是存储服务调用中相关的信息，server 向 zookeeper 注册信息，保存在 server 节点，而 client 实际和 server 共享同一个接口，接口名称就是路径名，所以也到达了同样的 server 节点去获取信息。并且同时注册到了 client 节点下（为什么需要这么做在下面介绍）。</p>
+<h2 id="注册信息详解"><a href="#注册信息详解" class="headerlink" title="注册信息详解"></a>注册信息详解</h2><h3 id="Server-节点"><a href="#Server-节点" class="headerlink" title="Server 节点"></a>Server 节点</h3><p>server 节点承担着最重要的职责，它由服务提供者创建，以供服务消费者获取节点中的信息，从而定位到服务提供者真正网络拓扑位置以及得知如何调用。demo 中我只在本机  [192.168.150.1:6666] 启动了一个实例，所以在 server 节点之下，只存在这么一个节点，继续 get 这个节点，可以获取更详细的信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">motan:&#x2F;&#x2F;192.168.150.1:6666&#x2F;com.sinosoft.student.api.DemoApi?serialization&#x3D;hessian2&amp;protocol&#x3D;motan&amp;isDefault&#x3D;true&amp;maxContentLength&#x3D;1548576&amp;shareChannel&#x3D;true&amp;refreshTimestamp&#x3D;1515122649835&amp;id&#x3D;motanServerBasicConfig&amp;nodeType&#x3D;service&amp;export&#x3D;motan:6666&amp;requestTimeout&#x3D;9000000&amp;accessLog&#x3D;false&amp;group&#x3D;demo_group&amp;</span><br></pre></td></tr></table></figure>
+
+<p>作为一个 value 值，它和 http 协议的请求十分相似，不过是以 motan:// 开头，表达的意图也很明确，这是 motan 协议和相关的路径及参数，关于 RPC 中的协议，可以翻看我的上一篇文章《深入理解 RPC 之协议篇》。</p>
+<p>serialization 对应序列化方式，protocol 对应协议名称，maxContentLength 对应 RPC 传输中数据报文的最大长度，shareChannel 是传输层用到的参数，netty channel 中的一个属性，group 对应分组名称。</p>
+<p>上述的 value 包含了 RPC 调用中所需要的全部信息。</p>
+<h3 id="Client-节点"><a href="#Client-节点" class="headerlink" title="Client 节点"></a>Client 节点</h3><p>在 motan 中使用 zookeeper 作为注册中心时，客户端订阅服务时会向 zookeeper 注册自身，主要是方便对调用方进行统计、管理。但订阅时是否注册 client 不是必要行为，和不同的注册中心实现有关，例如使用 consul 时便没有注册。</p>
+<p>由于我们使用 zookeeper，也可以分析下 zookeeper 中都注册了什么信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">motan:&#x2F;&#x2F;192.168.150.1:0&#x2F;com.sinosoft.student.api.DemoApi?singleton&#x3D;true&amp;maxContentLength&#x3D;1548576&amp;check&#x3D;false&amp;nodeType&#x3D;service&amp;version&#x3D;1.0&amp;throwException&#x3D;true&amp;accessLog&#x3D;false&amp;serialization&#x3D;hessian2&amp;retries&#x3D;0&amp;protocol&#x3D;motan&amp;isDefault&#x3D;true&amp;refreshTimestamp&#x3D;1515122631758&amp;id&#x3D;motanClientBasicConfig&amp;requestTimeout&#x3D;9000&amp;group&#x3D;demo_group</span><br></pre></td></tr></table></figure>
+
+<p>和 Server 节点的值类似，但也有客户独有的一些属性，如 singleton 代表服务是否单例，check 检查服务提供者是否存在，retries 代表重试次数，这也是 RPC 中特别需要注意的一点。</p>
+<h3 id="UnavailableServer-节点"><a href="#UnavailableServer-节点" class="headerlink" title="UnavailableServer 节点"></a>UnavailableServer 节点</h3><p>unavailableServer 节点也不是必须存在的一个节点，它主要用来做 server 端的延迟上线，优雅关机。</p>
+<p>延迟上线：一般推荐的服务端启动流程为：server 向注册中心的 unavailableServer 注册，状态为 unavailable，此时整个服务处于启动状态，但不对外提供服务，在服务验证通过，预热完毕，此时打开心跳开关，此时正式提供服务。</p>
+<p>优雅关机：当需要对 server 方进行维护升级时，如果直接关闭，则会影响到客户端的请求。所以理想的情况应当是首先切断流量，再进行 server 的下线。具体的做法便是：先关闭心跳开关，客户端感知停止调用后，再关闭服务进程。</p>
+<h2 id="感知服务的下线"><a href="#感知服务的下线" class="headerlink" title="感知服务的下线"></a>感知服务的下线</h2><p>服务上线时自然要注册到注册中心，但下线时也得从注册中心中摘除。注册是一个主动的行为，这没有特别要注意的地方，但服务下线却是一个值得思考的问题。服务下线包含了主动下线和系统宕机等异常方式的下线。</p>
+<h3 id="临时节点-长连接"><a href="#临时节点-长连接" class="headerlink" title="临时节点 + 长连接"></a>临时节点 + 长连接</h3><p>在 zookeeper 中存在持久化节点和临时节点的概念。持久化节点一经创建，只要不主动删除，便会一直持久化存在；临时节点的生命周期则是和客户端的连接同生共死的，应用连接到 zookeeper 时创建一个临时节点，使用长连接维持会话，这样无论何种方式服务发生下线，zookeeper 都可以感知到，进而删除临时节点。zookeeper 的这一特性和服务下线的需求契合的比较好，所以临时节点被广泛应用。</p>
+<h3 id="主动下线-心跳检测"><a href="#主动下线-心跳检测" class="headerlink" title="主动下线 + 心跳检测"></a>主动下线 + 心跳检测</h3><p>并不是所有注册中心都有临时节点的概念，另外一种感知服务下线的方式是主动下线。例如在 eureka 中，会有 eureka-server 和 eureka-client 两个角色，其中 eureka-server 保存注册信息，地位等同于 zookeeper。当 eureka-client 需要关闭时，会发送一个通知给 eureka-server，从而让 eureka-server 摘除自己这个节点。但这么做最大的一个问题是，如果仅仅只有主动下线这么一个手段，一旦 eureka-client 非正常下线（如断电，断网），eureka-server 便会一直存在一个已经下线的服务节点，一旦被其他服务发现进而调用，便会带来问题。为了避免出现这样的情况，需要给 eureka-server 增加一个心跳检测功能，它会对服务提供者进行探测，比如每隔 30s 发送一个心跳，如果三次心跳结果都没有返回值，就认为该服务已下线。</p>
+<h2 id="注册中心对比"><a href="#注册中心对比" class="headerlink" title="注册中心对比"></a>注册中心对比</h2><table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Consul</th>
+<th>zookeeper</th>
+<th>etcd</th>
+<th>euerka</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>服务健康检查</td>
+<td>服务状态，内存，硬盘等</td>
+<td>(弱) 长连接，keepalive</td>
+<td>连接心跳</td>
+<td>可配支持</td>
+</tr>
+<tr>
+<td>多数据中心</td>
+<td>支持</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>kv 存储服务</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>—</td>
+</tr>
+<tr>
+<td>一致性</td>
+<td>raft</td>
+<td>paxos</td>
+<td>raft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>cap</td>
+<td>ca</td>
+<td>cp</td>
+<td>cp</td>
+<td>ap</td>
+</tr>
+<tr>
+<td>使用接口 (多语言能力)</td>
+<td>支持 http 和 dns</td>
+<td>客户端</td>
+<td>http/grpc</td>
+<td>http（sidecar）</td>
+</tr>
+<tr>
+<td>watch 支持</td>
+<td>全量 / 支持 long polling</td>
+<td>支持</td>
+<td>支持 long polling</td>
+<td>支持 long polling/ 大部分增量</td>
+</tr>
+<tr>
+<td>自身监控</td>
+<td>metrics</td>
+<td>—</td>
+<td>metrics</td>
+<td>metrics</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>acl /https</td>
+<td>acl</td>
+<td>https 支持（弱）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>spring cloud 集成</td>
+<td>已支持</td>
+<td>已支持</td>
+<td>已支持</td>
+<td>已支持</td>
+</tr>
+</tbody></table>
+<p>一般而言注册中心的特性决定了其使用的场景，例如很多框架支持 zookeeper，在我自己看来是因为其老牌，易用，但业界也有很多人认为 zookeeper 不适合做注册中心，它本身是一个分布式协调组件，并不是为注册服务而生，server 端注册一个服务节点，client 端并不需要在同一时刻拿到完全一致的服务列表，只要最终一致性即可。在跨 IDC，多数据中心等场景下 consul 发挥了很大的优势，这也是很多互联网公司选择使用 consul 的原因。 eureka 是 ap 注册中心，并且是 spring cloud 默认使用的组件，spring cloud eureka 较为贴近 spring cloud 生态。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>注册中心主要用于解耦服务调用中的定位问题，是分布式系统必须面对的一个问题。更多专业性的对比，可以期待 spring4all.com 的注册中心专题讨论，相信会有更为细致地对比。</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>深入理解 RPC 之服务注册与发现篇</p><p><a href="https://www.cnkirito.moe/rpc-registry/">https://www.cnkirito.moe/rpc-registry/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>徐靖峰</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2018-01-05</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-12-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/RPC/">RPC </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.png" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/gracefully-shutdown/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">研究优雅停机时的一点思考</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/rpc-protocol/"><span class="level-item">深入理解 RPC 之协议篇</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="徐靖峰"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">徐靖峰</p><p class="is-size-6 is-block">阿里巴巴中间件研发</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国·杭州</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">180</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">77</p></a></div></div></nav><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/wechat_public.jpg" alt="Kirito的技术分享"></figure><div class="level"><a class="level-item button is-primary is-rounded" target="_blank" rel="noopener">↑关注微信公众号↑</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/lexburner"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="WeChat" href="/img/wechat_public.jpg"><i class="fab fa-weixin"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#注册中心的抽象"><span class="level-left"><span class="level-item">1</span><span class="level-item">注册中心的抽象</span></span></a></li><li><a class="level is-mobile" href="#注册信息概览"><span class="level-left"><span class="level-item">2</span><span class="level-item">注册信息概览</span></span></a></li><li><a class="level is-mobile" href="#注册信息详解"><span class="level-left"><span class="level-item">3</span><span class="level-item">注册信息详解</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Server-节点"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Server 节点</span></span></a></li><li><a class="level is-mobile" href="#Client-节点"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Client 节点</span></span></a></li><li><a class="level is-mobile" href="#UnavailableServer-节点"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">UnavailableServer 节点</span></span></a></li></ul></li><li><a class="level is-mobile" href="#感知服务的下线"><span class="level-left"><span class="level-item">4</span><span class="level-item">感知服务的下线</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#临时节点-长连接"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">临时节点 + 长连接</span></span></a></li><li><a class="level is-mobile" href="#主动下线-心跳检测"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">主动下线 + 心跳检测</span></span></a></li></ul></li><li><a class="level is-mobile" href="#注册中心对比"><span class="level-left"><span class="level-item">5</span><span class="level-item">注册中心对比</span></span></a></li><li><a class="level is-mobile" href="#总结"><span class="level-left"><span class="level-item">6</span><span class="level-item">总结</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/avatar.png" alt="徐靖峰|个人博客" height="28"></a><p class="is-size-7"><span>&copy; 2026 徐靖峰</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/scroll-animations.js" defer></script><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
