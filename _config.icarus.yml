@@ -103,7 +103,20 @@ navbar:
         分类: categories
         归档: archives
         关于: about
-        开源项目: https://github.com/YunaiV/onemall
+        开源项目:
+            children:
+                - name: Higress
+                  url: https://github.com/alibaba/higress
+                  description: AI 原生的 API 网关
+                - name: HiMarket
+                  url: https://github.com/higress-group/himarket
+                  description: AI 能力市场与开发者生态平台
+                - name: HiClaw
+                  url: https://github.com/alibaba/hiclaw
+                  description: 协作式多智能体操作系统
+                - name: 芋道源码
+                  url: https://github.com/YunaiV/yudao-cloud
+                  description: 基于 Spring Cloud Alibaba 的后台管理系统 + 用户小程序
     # Links to be shown on the right of the navigation bar
     # links:
     #     Download on GitHub:
