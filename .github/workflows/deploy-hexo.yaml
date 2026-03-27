@@ -1,4 +1,4 @@
-name: Deploy Hexo site to Master and Sync to Gitee
+name: Deploy Hexo site to Master
 
 on:
   push:
@@ -11,9 +11,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      GITEE_USERNAME: xujingfeng
-      GITEE_REPO_NAME: lexburner.github.io
     steps:
       - name: Checkout source branch
         uses: actions/checkout@v3
@@ -47,18 +44,3 @@ jobs:
           publish_dir: ./public
           publish_branch: master
           force_orphan: true
-
-      - name: Push to Gitee master branch
-        env:
-          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          
-          cd public
-          git init
-          git checkout --orphan master
-          git add -A
-          git commit -m "Deploy to Gitee"
-          
-          git push --force https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_USERNAME}/${GITEE_REPO_NAME}.git master:master
